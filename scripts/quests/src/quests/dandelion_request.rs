@@ -115,8 +115,371 @@ fn guildsman_1_run(ctx: &Ctx, mut step: Guildsman1Step, args: Vec<Val>) -> Resul
                         ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
+                    } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?)
+                        || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN_HIGH")?))
+                    {
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
+                                "Great, I knew you'd",
+                                "show up sooner or later.",
+                                "Listen, I'm working here",
+                                "as a representative of the",
+                                "Swordman Assocation."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Listen, there's something",
+                                "big going on, and I think it's",
+                                "the most important thing the",
+                                "Swordman Association has ever",
+                                "been involved in. Pack your bags and head to Morocc right now!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args!["All the way to Morocc...?", "Why, what's going on?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "I don't know all the details,",
+                                "but the Assassin Guild is",
+                                "working on some missing",
+                                "children's case, and they've",
+                                "requested help from us and",
+                                "all the other guilds..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Rogues, Bards, Novices,",
+                                "Super Novices, Priests...",
+                                "You name it. This is gonna be",
+                                "huge. Listen, if you're going",
+                                "to help, then let me give you this letter of recommendation..."
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_LORD_KNIGHT")?))
+                    {
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
+                                "I knew you'd show up if",
+                                "Listen, I have a notice for",
+                                "you from the Prontera Chivalry."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args!["For me? That sounds", "strange, but would you", "please read it to me?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                ((Val::from("''RE: ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("")),
+                                "As leader of the Prontera",
+                                "Chivalry, I formally request",
+                                "you to represent the Knights of",
+                                "Rune-Midgarts in cooperation",
+                                "with the Assassin Guild.''"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Please assist the Assassin",
+                                "Guild in any way befitting of",
+                                "the Knighthood in a special",
+                                "mission to rescue children",
+                                "missing from Morocc.",
+                                "-- Captain Herman''"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "There, that's all it says.",
+                                "Here, I think you'll need",
+                                "this letter of recommendation",
+                                "if you plan to follow these",
+                                "orders. I hope you take that",
+                                "mission for those kids' sake..."
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CRUSADER")?)
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_PALADIN")?))
+                    {
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Excuse me...?",
+                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
+                                "I'm sorry to bother you, but",
+                                "I've got an urgent communique",
+                                "for you from Sir Michael Halig",
+                                "of the Crusaders..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args![
+                                "They usually don't",
+                                "send messages. I guess",
+                                "whatever he has to say",
+                                "must be really important.",
+                                "What does it say?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Let's see here... Something",
+                                "about a missing children's case",
+                                "the Assassin Guild is working on... Ah! The Assassin Guild has",
+                                "requested help from the Crusaders. So I guess you were recommended."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Look, here's the letter of",
+                                "recommendation that I'm",
+                                "supposed to give you if you",
+                                "plan on taking the mission.",
+                                "For the sake of those missing kids, I really hope that you do."
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                } else {
+                    if ctx.var("mao_request").get()? == 1 {
+                        if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?)
+                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SUPER_NOVICE")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Ah, I forgot to tell you",
+                                    "exactly where you need to",
+                                    "go for the mission details!",
+                                    "Let's see... You're supposed",
+                                    "to... Ah, now I remember~"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "If you check out the",
+                                    "west side of the Oasis",
+                                    "inside Morocc, you'll find",
+                                    "a very suspicious looking",
+                                    "hut. Your contact from the",
+                                    "Assassin Guild is near there."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "I'm sure you'll find it if",
+                                    "you keep your eyes open.",
+                                    "Anyway, that's all I know.",
+                                    "Why don't you go check it out?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?)
+                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN_HIGH")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Right, for this mission,",
+                                    "you'll need to meet with your",
+                                    "contact from the Assassin",
+                                    "Guild near a hut at the west",
+                                    "side of the Oasis inside Morocc. So keep an eye out for him."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "I doubt you'll have",
+                                    "trouble finding the guy,",
+                                    "even if all Thieves and",
+                                    "Assassins are starting",
+                                    "to look the same. You",
+                                    "know what I mean, right?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (((ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_LORD_KNIGHT")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CRUSADER")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_PALADIN")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Are you thinking of taking",
+                                    "the mission? That's great!",
+                                    "Now, you need to meet your",
+                                    "contact from the Assassin",
+                                    "Guild outside a hut on the west side of the Oasis inside Morocc."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "I know those directions",
+                                    "aren't very clear, but this",
+                                    "is supposedly a top secret",
+                                    "location that's usually only",
+                                    "known to the Assassins..."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
                     } else {
-                        if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?)
+                        if ((ctx.var("mao_request").get()?.number()? > 2 && ctx.var("mao_request").get()?.number()? < 27)
+                            || (ctx.var("mao_request").get()?.number()? > 102 && ctx.var("mao_request").get()?.number()? < 125))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "It looks like you're",
+                                    "working well with the",
+                                    "Assassin Guild. Still,",
+                                    "be careful. There might",
+                                    "be more to this mission",
+                                    "than meets the eye, you know?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "It's a nice day, isn't it?",
+                                    "Though, I hope something",
+                                    "exciting happens soon. Peace",
+                                    "is great and all, but I prefer",
+                                    "to have my life shook up",
+                                    "every now and then."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    }
+                }
+                step = Guildsman1Step::OnTouch;
+                continue 'machine;
+            }
+            Guildsman1Step::OnTouch => {
+                if ctx.call(Function::CheckWeight, vec![Val::from(7416), Val::from(1)])? != 1 {
+                    ctx.lines(args![
+                        "^3355FFWait a second!",
+                        "Right now, you're carrying",
+                        "too many things with you.",
+                        "Please come back after",
+                        "using the Kafra Service",
+                        "to store some of your items.^000000"
+                    ])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                if ctx.var("BaseLevel").get()?.number()? > 59
+                    && !(ctx.var("mao_request").get()?.is_true()) {
+                        if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?)
+                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SUPER_NOVICE")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    ((Val::from("Excuse me? ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("?")),
+                                    "Hi there, I've been waiting for",
+                                    "you to wander past me for such",
+                                    "a long time, you know that?",
+                                    "Novices and Super Novices",
+                                    "are so hard to track down..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Anyway, I don't know if you",
+                                    "know this, but a lot of kids are missing from Morocc recently.",
+                                    "We're not sure, but we think it's related to the latest assignment",
+                                    "for our Assassin Guild."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Anyway, the client for this",
+                                    "assignment needs all the help",
+                                    "he can get. Now, I've heard",
+                                    "about you, and I think that",
+                                    "you could be really helpful to",
+                                    "us in this specific situation."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Look, just do me a favor",
+                                    "and do the right thing like",
+                                    "you always do, okay? Here's",
+                                    "a letter of recommendation",
+                                    "to get you started on this",
+                                    "mission, alright?"
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?)
                             || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN_HIGH")?))
                         {
                             ctx.lines_as(
@@ -173,496 +536,116 @@ fn guildsman_1_run(ctx: &Ctx, mut step: Guildsman1Step, args: Vec<Val>) -> Resul
                             ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_LORD_KNIGHT")?))
-                            {
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
-                                        "I knew you'd show up if",
-                                        "Listen, I have a notice for",
-                                        "you from the Prontera Chivalry."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["For me? That sounds", "strange, but would you", "please read it to me?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        ((Val::from("''RE: ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("")),
-                                        "As leader of the Prontera",
-                                        "Chivalry, I formally request",
-                                        "you to represent the Knights of",
-                                        "Rune-Midgarts in cooperation",
-                                        "with the Assassin Guild.''"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Please assist the Assassin",
-                                        "Guild in any way befitting of",
-                                        "the Knighthood in a special",
-                                        "mission to rescue children",
-                                        "missing from Morocc.",
-                                        "-- Captain Herman''"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "There, that's all it says.",
-                                        "Here, I think you'll need",
-                                        "this letter of recommendation",
-                                        "if you plan to follow these",
-                                        "orders. I hope you take that",
-                                        "mission for those kids' sake..."
-                                    ],
-                                )?;
-                                ctx.var("mao_request").set(Val::from(1))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CRUSADER")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_PALADIN")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Excuse me...?",
-                                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
-                                            "I'm sorry to bother you, but",
-                                            "I've got an urgent communique",
-                                            "for you from Sir Michael Halig",
-                                            "of the Crusaders..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args![
-                                            "They usually don't",
-                                            "send messages. I guess",
-                                            "whatever he has to say",
-                                            "must be really important.",
-                                            "What does it say?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Let's see here... Something",
-                                            "about a missing children's case",
-                                            "the Assassin Guild is working on... Ah! The Assassin Guild has",
-                                            "requested help from the Crusaders. So I guess you were recommended."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Look, here's the letter of",
-                                            "recommendation that I'm",
-                                            "supposed to give you if you",
-                                            "plan on taking the mission.",
-                                            "For the sake of those missing kids, I really hope that you do."
-                                        ],
-                                    )?;
-                                    ctx.var("mao_request").set(Val::from(1))?;
-                                    ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    if ctx.var("mao_request").get()? == 1 {
-                        if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?)
-                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SUPER_NOVICE")?))
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_LORD_KNIGHT")?))
                         {
                             ctx.lines_as(
                                 "Guildsman",
                                 args![
-                                    "Ah, I forgot to tell you",
-                                    "exactly where you need to",
-                                    "go for the mission details!",
-                                    "Let's see... You're supposed",
-                                    "to... Ah, now I remember~"
+                                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
+                                    "I knew you'd show up if",
+                                    "Listen, I have a notice for",
+                                    "you from the Prontera Chivalry."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["For me? That sounds", "strange, but would you", "please read it to me?"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    ((Val::from("''RE: ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("")),
+                                    "As leader of the Prontera",
+                                    "Chivalry, I formally request",
+                                    "you to represent the Knights of",
+                                    "Rune-Midgarts in cooperation",
+                                    "with the Assassin Guild.''"
                                 ],
                             )?;
                             ctx.next()?;
                             ctx.lines_as(
                                 "Guildsman",
                                 args![
-                                    "If you check out the",
-                                    "west side of the Oasis",
-                                    "inside Morocc, you'll find",
-                                    "a very suspicious looking",
-                                    "hut. Your contact from the",
-                                    "Assassin Guild is near there."
+                                    "Please assist the Assassin",
+                                    "Guild in any way befitting of",
+                                    "the Knighthood in a special",
+                                    "mission to rescue children",
+                                    "missing from Morocc.",
+                                    "-- Captain Herman''"
                                 ],
                             )?;
                             ctx.next()?;
                             ctx.lines_as(
                                 "Guildsman",
                                 args![
-                                    "I'm sure you'll find it if",
-                                    "you keep your eyes open.",
-                                    "Anyway, that's all I know.",
-                                    "Why don't you go check it out?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?)
-                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN_HIGH")?))
-                            {
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Right, for this mission,",
-                                        "you'll need to meet with your",
-                                        "contact from the Assassin",
-                                        "Guild near a hut at the west",
-                                        "side of the Oasis inside Morocc. So keep an eye out for him."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "I doubt you'll have",
-                                        "trouble finding the guy,",
-                                        "even if all Thieves and",
-                                        "Assassins are starting",
-                                        "to look the same. You",
-                                        "know what I mean, right?"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (((ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_LORD_KNIGHT")?))
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CRUSADER")?))
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_PALADIN")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Are you thinking of taking",
-                                            "the mission? That's great!",
-                                            "Now, you need to meet your",
-                                            "contact from the Assassin",
-                                            "Guild outside a hut on the west side of the Oasis inside Morocc."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "I know those directions",
-                                            "aren't very clear, but this",
-                                            "is supposedly a top secret",
-                                            "location that's usually only",
-                                            "known to the Assassins..."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                    } else {
-                        if ((ctx.var("mao_request").get()?.number()? > 2 && ctx.var("mao_request").get()?.number()? < 27)
-                            || (ctx.var("mao_request").get()?.number()? > 102 && ctx.var("mao_request").get()?.number()? < 125))
-                        {
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "It looks like you're",
-                                    "working well with the",
-                                    "Assassin Guild. Still,",
-                                    "be careful. There might",
-                                    "be more to this mission",
-                                    "than meets the eye, you know?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "It's a nice day, isn't it?",
-                                    "Though, I hope something",
-                                    "exciting happens soon. Peace",
-                                    "is great and all, but I prefer",
-                                    "to have my life shook up",
-                                    "every now and then."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
-                step = Guildsman1Step::OnTouch;
-                continue 'machine;
-            }
-            Guildsman1Step::OnTouch => {
-                if ctx.call(Function::CheckWeight, vec![Val::from(7416), Val::from(1)])? != 1 {
-                    ctx.lines(args![
-                        "^3355FFWait a second!",
-                        "Right now, you're carrying",
-                        "too many things with you.",
-                        "Please come back after",
-                        "using the Kafra Service",
-                        "to store some of your items.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if ctx.var("BaseLevel").get()?.number()? > 59 {
-                    if !(ctx.var("mao_request").get()?.is_true()) {
-                        if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?)
-                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SUPER_NOVICE")?))
-                        {
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    ((Val::from("Excuse me? ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("?")),
-                                    "Hi there, I've been waiting for",
-                                    "you to wander past me for such",
-                                    "a long time, you know that?",
-                                    "Novices and Super Novices",
-                                    "are so hard to track down..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "Anyway, I don't know if you",
-                                    "know this, but a lot of kids are missing from Morocc recently.",
-                                    "We're not sure, but we think it's related to the latest assignment",
-                                    "for our Assassin Guild."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "Anyway, the client for this",
-                                    "assignment needs all the help",
-                                    "he can get. Now, I've heard",
-                                    "about you, and I think that",
-                                    "you could be really helpful to",
-                                    "us in this specific situation."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "Look, just do me a favor",
-                                    "and do the right thing like",
-                                    "you always do, okay? Here's",
-                                    "a letter of recommendation",
-                                    "to get you started on this",
-                                    "mission, alright?"
+                                    "There, that's all it says.",
+                                    "Here, I think you'll need",
+                                    "this letter of recommendation",
+                                    "if you plan to follow these",
+                                    "orders. I hope you take that",
+                                    "mission for those kids' sake..."
                                 ],
                             )?;
                             ctx.var("mao_request").set(Val::from(1))?;
                             ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?)
-                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN_HIGH")?))
-                            {
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
-                                        "Great, I knew you'd",
-                                        "show up sooner or later.",
-                                        "Listen, I'm working here",
-                                        "as a representative of the",
-                                        "Swordman Assocation."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Listen, there's something",
-                                        "big going on, and I think it's",
-                                        "the most important thing the",
-                                        "Swordman Association has ever",
-                                        "been involved in. Pack your bags and head to Morocc right now!"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["All the way to Morocc...?", "Why, what's going on?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "I don't know all the details,",
-                                        "but the Assassin Guild is",
-                                        "working on some missing",
-                                        "children's case, and they've",
-                                        "requested help from us and",
-                                        "all the other guilds..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Rogues, Bards, Novices,",
-                                        "Super Novices, Priests...",
-                                        "You name it. This is gonna be",
-                                        "huge. Listen, if you're going",
-                                        "to help, then let me give you this letter of recommendation..."
-                                    ],
-                                )?;
-                                ctx.var("mao_request").set(Val::from(1))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_LORD_KNIGHT")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
-                                            "I knew you'd show up if",
-                                            "Listen, I have a notice for",
-                                            "you from the Prontera Chivalry."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args!["For me? That sounds", "strange, but would you", "please read it to me?"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            ((Val::from("''RE: ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("")),
-                                            "As leader of the Prontera",
-                                            "Chivalry, I formally request",
-                                            "you to represent the Knights of",
-                                            "Rune-Midgarts in cooperation",
-                                            "with the Assassin Guild.''"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Please assist the Assassin",
-                                            "Guild in any way befitting of",
-                                            "the Knighthood in a special",
-                                            "mission to rescue children",
-                                            "missing from Morocc.",
-                                            "-- Captain Herman''"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "There, that's all it says.",
-                                            "Here, I think you'll need",
-                                            "this letter of recommendation",
-                                            "if you plan to follow these",
-                                            "orders. I hope you take that",
-                                            "mission for those kids' sake..."
-                                        ],
-                                    )?;
-                                    ctx.var("mao_request").set(Val::from(1))?;
-                                    ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CRUSADER")?)
-                                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_PALADIN")?))
-                                    {
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Excuse me...?",
-                                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                    + Val::from("...?")),
-                                                "I'm sorry to bother you, but",
-                                                "I've got an urgent communique",
-                                                "for you from Sir Michael Halig",
-                                                "of the Crusaders..."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args![
-                                                "They usually don't",
-                                                "send messages. I guess",
-                                                "whatever he has to say",
-                                                "must be really important.",
-                                                "What does it say?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Let's see here... Something",
-                                                "about a missing children's case",
-                                                "the Assassin Guild is working on... Ah! The Assassin Guild has",
-                                                "requested help from the Crusaders. So I guess you were recommended."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Look, here's the letter of",
-                                                "recommendation that I'm",
-                                                "supposed to give you if you",
-                                                "plan on taking the mission.",
-                                                "For the sake of those missing kids, I really hope that you do."
-                                            ],
-                                        )?;
-                                        ctx.var("mao_request").set(Val::from(1))?;
-                                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CRUSADER")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_PALADIN")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Excuse me...?",
+                                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from("...?")),
+                                    "I'm sorry to bother you, but",
+                                    "I've got an urgent communique",
+                                    "for you from Sir Michael Halig",
+                                    "of the Crusaders..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args![
+                                    "They usually don't",
+                                    "send messages. I guess",
+                                    "whatever he has to say",
+                                    "must be really important.",
+                                    "What does it say?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Let's see here... Something",
+                                    "about a missing children's case",
+                                    "the Assassin Guild is working on... Ah! The Assassin Guild has",
+                                    "requested help from the Crusaders. So I guess you were recommended."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Look, here's the letter of",
+                                    "recommendation that I'm",
+                                    "supposed to give you if you",
+                                    "plan on taking the mission.",
+                                    "For the sake of those missing kids, I really hope that you do."
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
-                }
                 return Ok(Val::from(0));
             }
         }
@@ -794,75 +777,71 @@ fn nun_moc_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("mao_request").get()? == 1 {
+        ctx.lines_as(
+            "Nun",
+            args![
+                "Now, for this mission, you",
+                "will need to meet your contact",
+                "from the Assassin Guild near",
+                "a hut on the west side of the",
+                "Oasis inside Morocc. I wonder",
+                "why they chose that location?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Nun",
+            args![
+                "Normally, a representative",
+                "of the Prontera Church would",
+                "simply visit the Assassin Guild itself. Be careful. The Assassins",
+                "must be being extra secret because of extraordinary circumstances..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ((ctx.var("mao_request").get()?.number()? > 2 && ctx.var("mao_request").get()?.number()? < 27)
+        || (ctx.var("mao_request").get()?.number()? > 102 && ctx.var("mao_request").get()?.number()? < 125))
+    {
+        ctx.lines_as(
+            "Nun",
+            args![
+                "It pleases me to see that",
+                "you're working well with the",
+                "Assassin Guild. They operate",
+                "on a different methodology",
+                "than the Prontera Church, but",
+                "I still greatly respect them."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Nun",
+            args![
+                "Remember that you're",
+                "representing the Prontera",
+                "Church in this effort, so be",
+                "sure to demonstrate your",
+                "best for the Assassins, okay?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("mao_request").get()? == 1 {
-            ctx.lines_as(
-                "Nun",
-                args![
-                    "Now, for this mission, you",
-                    "will need to meet your contact",
-                    "from the Assassin Guild near",
-                    "a hut on the west side of the",
-                    "Oasis inside Morocc. I wonder",
-                    "why they chose that location?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Nun",
-                args![
-                    "Normally, a representative",
-                    "of the Prontera Church would",
-                    "simply visit the Assassin Guild itself. Be careful. The Assassins",
-                    "must be being extra secret because of extraordinary circumstances..."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ((ctx.var("mao_request").get()?.number()? > 2 && ctx.var("mao_request").get()?.number()? < 27)
-                || (ctx.var("mao_request").get()?.number()? > 102 && ctx.var("mao_request").get()?.number()? < 125))
-            {
-                ctx.lines_as(
-                    "Nun",
-                    args![
-                        "It pleases me to see that",
-                        "you're working well with the",
-                        "Assassin Guild. They operate",
-                        "on a different methodology",
-                        "than the Prontera Church, but",
-                        "I still greatly respect them."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Nun",
-                    args![
-                        "Remember that you're",
-                        "representing the Prontera",
-                        "Church in this effort, so be",
-                        "sure to demonstrate your",
-                        "best for the Assassins, okay?"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Nun",
-                    args![
-                        "Although it is a time",
-                        "of peace, I can't help",
-                        "but feel this lingering",
-                        "anxiety. It's almost as if",
-                        "some monumental event",
-                        "is just over the horizon..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
+        ctx.lines_as(
+            "Nun",
+            args![
+                "Although it is a time",
+                "of peace, I can't help",
+                "but feel this lingering",
+                "anxiety. It's almost as if",
+                "some monumental event",
+                "is just over the horizon..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -883,9 +862,9 @@ fn nun_moc_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         return Err(Stop::End);
     }
-    if ctx.var("BaseLevel").get()?.number()? > 59 {
-        if !(ctx.var("mao_request").get()?.is_true()) {
-            if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
+    if ctx.var("BaseLevel").get()?.number()? > 59
+        && !(ctx.var("mao_request").get()?.is_true())
+            && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
                 ctx.lines_as(
                     "Nun",
                     args![
@@ -949,8 +928,6 @@ fn nun_moc_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-        }
-    }
     Ok(Val::from(0))
 }
 
@@ -1107,147 +1084,141 @@ fn guildsman_2_run(ctx: &Ctx, mut step: Guildsman2Step, args: Vec<Val>) -> Resul
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
-                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
-                        {
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "Well, if it isn't",
-                                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(". Hey,")),
-                                    "would you wait a minute?",
-                                    "I've got a message for you",
-                                    "from the Merchant Guild."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "I'm not sure why, but",
-                                    "the Assassin Guild has",
-                                    "been requesting help from",
-                                    "someone in the Merchant",
-                                    "Guild. Would you go help",
-                                    "them and represent us?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "I think they're working for",
-                                    "a client, investigating these",
-                                    "children that are missing",
-                                    "from Morocc. If you want to",
-                                    "help them, you'll need this",
-                                    "letter of recommendation, okay?"
-                                ],
-                            )?;
-                            ctx.var("mao_request").set(Val::from(1))?;
-                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?)
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
-                            {
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        ((Val::from("Oh, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...!")),
-                                        "I'm so glad that I finally",
-                                        "ran into you. I know this is",
-                                        "sudden, but the Blacksmith",
-                                        "Guild has an assignment",
-                                        "for you over in Morocc."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "You see, the Assassin Guild",
-                                        "has formally requested for our",
-                                        "help in a mission regarding",
-                                        "children that have been missing",
-                                        "from Morocc recently. Here, take this letter of recommendation..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "If the Assassin Guild",
-                                        "is asking for help, I have",
-                                        "no doubt that this will be",
-                                        "a very difficult mission.",
-                                        "You should prepare yourself",
-                                        "if you plan to get involved..."
-                                    ],
-                                )?;
-                                ctx.var("mao_request").set(Val::from(1))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("?")),
-                                            "I've got a message for",
-                                            "you from the Alchemist",
-                                            "Guild. Well, they're more",
-                                            "like orders than a message.",
-                                            "I'm so lucky to have found you."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "The Assassin Guild has",
-                                            "officially asked our guild",
-                                            "for help in a mission regarding",
-                                            "children that have been missing",
-                                            "from Morocc, and they want us",
-                                            "to send somebody... you!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Or... At least, you're",
-                                            "one of the people that the",
-                                            "Alchemist Guild wants to send",
-                                            "to represent us. So why don't",
-                                            "you go? You know, do it for the",
-                                            "children. Just think about it."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Here, take this letter of",
-                                            "recommendation with you and",
-                                            "head over to Morocc as soon",
-                                            "as you can. If even the Assassin Guild needs help, I'm sure that",
-                                            "spells really big trouble..."
-                                        ],
-                                    )?;
-                                    ctx.var("mao_request").set(Val::from(1))?;
-                                    ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
+                    } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
+                        || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
+                    {
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Well, if it isn't",
+                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(". Hey,")),
+                                "would you wait a minute?",
+                                "I've got a message for you",
+                                "from the Merchant Guild."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "I'm not sure why, but",
+                                "the Assassin Guild has",
+                                "been requesting help from",
+                                "someone in the Merchant",
+                                "Guild. Would you go help",
+                                "them and represent us?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "I think they're working for",
+                                "a client, investigating these",
+                                "children that are missing",
+                                "from Morocc. If you want to",
+                                "help them, you'll need this",
+                                "letter of recommendation, okay?"
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?)
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
+                    {
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                ((Val::from("Oh, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...!")),
+                                "I'm so glad that I finally",
+                                "ran into you. I know this is",
+                                "sudden, but the Blacksmith",
+                                "Guild has an assignment",
+                                "for you over in Morocc."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "You see, the Assassin Guild",
+                                "has formally requested for our",
+                                "help in a mission regarding",
+                                "children that have been missing",
+                                "from Morocc recently. Here, take this letter of recommendation..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "If the Assassin Guild",
+                                "is asking for help, I have",
+                                "no doubt that this will be",
+                                "a very difficult mission.",
+                                "You should prepare yourself",
+                                "if you plan to get involved..."
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
+                    {
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("?")),
+                                "I've got a message for",
+                                "you from the Alchemist",
+                                "Guild. Well, they're more",
+                                "like orders than a message.",
+                                "I'm so lucky to have found you."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "The Assassin Guild has",
+                                "officially asked our guild",
+                                "for help in a mission regarding",
+                                "children that have been missing",
+                                "from Morocc, and they want us",
+                                "to send somebody... you!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Or... At least, you're",
+                                "one of the people that the",
+                                "Alchemist Guild wants to send",
+                                "to represent us. So why don't",
+                                "you go? You know, do it for the",
+                                "children. Just think about it."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Here, take this letter of",
+                                "recommendation with you and",
+                                "head over to Morocc as soon",
+                                "as you can. If even the Assassin Guild needs help, I'm sure that",
+                                "spells really big trouble..."
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 } else {
                     if ctx.var("mao_request").get()? == 1 {
@@ -1289,83 +1260,77 @@ fn guildsman_2_run(ctx: &Ctx, mut step: Guildsman2Step, args: Vec<Val>) -> Resul
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
-                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
-                            {
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "So you're gonna represent",
-                                        "the Merchants and help out",
-                                        "the Assassin Guild? Great!",
-                                        "You can meet your contact",
-                                        "on the west side of the oasis,",
-                                        "next to a hut, inside Morocc."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Hey, good luck and",
-                                        "be careful, okay?",
-                                        "I think something",
-                                        "major is behind the",
-                                        "mission that they",
-                                        "have for you..."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "So have you decided to",
-                                            "aid the Assassin Guild on",
-                                            "behalf of the Blacksmiths?",
-                                            "Then please meet your contact",
-                                            "at the west side of the Oasis",
-                                            "inside Morocc. Good luck~"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
-                                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
-                                    {
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Ah, I almost forgot to",
-                                                "tell you that your contact",
-                                                "from the Assassin Guild",
-                                                "will be waiting for you",
-                                                "at the west side of the",
-                                                "Oasis inside Morocc."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Please help the",
-                                                "Assassin Guild as",
-                                                "much as you can on",
-                                                "behalf of the Alchemists,",
-                                                "and watch out for trouble..."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
+                        } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
+                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "So you're gonna represent",
+                                    "the Merchants and help out",
+                                    "the Assassin Guild? Great!",
+                                    "You can meet your contact",
+                                    "on the west side of the oasis,",
+                                    "next to a hut, inside Morocc."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Hey, good luck and",
+                                    "be careful, okay?",
+                                    "I think something",
+                                    "major is behind the",
+                                    "mission that they",
+                                    "have for you..."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "So have you decided to",
+                                    "aid the Assassin Guild on",
+                                    "behalf of the Blacksmiths?",
+                                    "Then please meet your contact",
+                                    "at the west side of the Oasis",
+                                    "inside Morocc. Good luck~"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Ah, I almost forgot to",
+                                    "tell you that your contact",
+                                    "from the Assassin Guild",
+                                    "will be waiting for you",
+                                    "at the west side of the",
+                                    "Oasis inside Morocc."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Please help the",
+                                    "Assassin Guild as",
+                                    "much as you can on",
+                                    "behalf of the Alchemists,",
+                                    "and watch out for trouble..."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     } else {
                         if ((ctx.var("mao_request").get()?.number()? > 2 && ctx.var("mao_request").get()?.number()? < 27)
@@ -1384,59 +1349,53 @@ fn guildsman_2_run(ctx: &Ctx, mut step: Guildsman2Step, args: Vec<Val>) -> Resul
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
-                                    || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "So you've been working",
-                                            "well with the Assassins?",
-                                            "That's good news. This is a",
-                                            "great chance for us to show",
-                                            "the strength of Merchants!",
-                                            "Still, be on your guard."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?)
-                                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
-                                    {
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "I trust that you've been of",
-                                                "great help to the Assassins.",
-                                                "Stay on your guard: it seems",
-                                                "that there may be powerful",
-                                                "influences behind all of this... "
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
-                                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
-                                        {
-                                            ctx.lines_as(
-                                                "Guildsman",
-                                                args![
-                                                    "I'm glad to hear that",
-                                                    "you're getting along with",
-                                                    "the Assassins. Working ",
-                                                    "together, I'm sure that you'll",
-                                                    "be able to accomplish the",
-                                                    "mission, whatever it may be."
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
-                                }
+                            } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
+                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
+                            {
+                                ctx.lines_as(
+                                    "Guildsman",
+                                    args![
+                                        "So you've been working",
+                                        "well with the Assassins?",
+                                        "That's good news. This is a",
+                                        "great chance for us to show",
+                                        "the strength of Merchants!",
+                                        "Still, be on your guard."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?)
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
+                            {
+                                ctx.lines_as(
+                                    "Guildsman",
+                                    args![
+                                        "I trust that you've been of",
+                                        "great help to the Assassins.",
+                                        "Stay on your guard: it seems",
+                                        "that there may be powerful",
+                                        "influences behind all of this... "
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
+                            {
+                                ctx.lines_as(
+                                    "Guildsman",
+                                    args![
+                                        "I'm glad to hear that",
+                                        "you're getting along with",
+                                        "the Assassins. Working ",
+                                        "together, I'm sure that you'll",
+                                        "be able to accomplish the",
+                                        "mission, whatever it may be."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         } else {
                             if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_SOUL_LINKER")?) {
@@ -1464,42 +1423,38 @@ fn guildsman_2_run(ctx: &Ctx, mut step: Guildsman2Step, args: Vec<Val>) -> Resul
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
-                                    || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?))
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "It's a nice, quiet",
-                                            "day, but the stillness",
-                                            "in the air is unsettling.",
-                                            "It's almost as if... I feel",
-                                            "like something incredible",
-                                            "may happen soon, you know?"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
-                                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
-                                    {
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Ah, it's a nice day...",
-                                                "Sometimes, though, I wish",
-                                                "that something big would",
-                                                "happen to break the monotony."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
+                            } else if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
+                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?))
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
+                            {
+                                ctx.lines_as(
+                                    "Guildsman",
+                                    args![
+                                        "It's a nice, quiet",
+                                        "day, but the stillness",
+                                        "in the air is unsettling.",
+                                        "It's almost as if... I feel",
+                                        "like something incredible",
+                                        "may happen soon, you know?"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
+                            {
+                                ctx.lines_as(
+                                    "Guildsman",
+                                    args![
+                                        "Ah, it's a nice day...",
+                                        "Sometimes, though, I wish",
+                                        "that something big would",
+                                        "happen to break the monotony."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         }
                     }
@@ -1520,8 +1475,8 @@ fn guildsman_2_run(ctx: &Ctx, mut step: Guildsman2Step, args: Vec<Val>) -> Resul
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if ctx.var("BaseLevel").get()?.number()? > 59 {
-                    if !(ctx.var("mao_request").get()?.is_true()) {
+                if ctx.var("BaseLevel").get()?.number()? > 59
+                    && !(ctx.var("mao_request").get()?.is_true()) {
                         if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_SOUL_LINKER")?) {
                             ctx.lines_as(
                                 "Guildsman",
@@ -1620,152 +1575,145 @@ fn guildsman_2_run(ctx: &Ctx, mut step: Guildsman2Step, args: Vec<Val>) -> Resul
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
-                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
-                            {
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Well, if it isn't",
-                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(". Hey,")),
-                                        "would you wait a minute?",
-                                        "I've got a message for you",
-                                        "from the Merchant Guild."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "I'm not sure why, but",
-                                        "the Assassin Guild has",
-                                        "been requesting help from",
-                                        "someone in the Merchant",
-                                        "Guild. Would you go help",
-                                        "them and represent us?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "I think they're working for",
-                                        "a client, investigating these",
-                                        "children that are missing",
-                                        "from Morocc. If you want to",
-                                        "help them, you'll need this",
-                                        "letter of recommendation, okay?"
-                                    ],
-                                )?;
-                                ctx.var("mao_request").set(Val::from(1))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            ((Val::from("Oh, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from("...!")),
-                                            "I'm so glad that I finally",
-                                            "ran into you. I know this is",
-                                            "sudden, but the Blacksmith",
-                                            "Guild has an assignment",
-                                            "for you over in Morocc."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "You see, the Assassin Guild",
-                                            "has formally requested for our",
-                                            "help in a mission regarding",
-                                            "children that have been missing",
-                                            "from Morocc recently. Here, take this letter of recommendation..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "If the Assassin Guild",
-                                            "is asking for help, I have",
-                                            "no doubt that this will be",
-                                            "a very difficult mission.",
-                                            "You should prepare yourself",
-                                            "if you plan to get involved..."
-                                        ],
-                                    )?;
-                                    ctx.var("mao_request").set(Val::from(1))?;
-                                    ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
-                                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
-                                    {
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                    + Val::from("?")),
-                                                "I've got a message for",
-                                                "you from the Alchemist",
-                                                "Guild. Well, they're more",
-                                                "like orders than a message.",
-                                                "I'm so lucky to have found you."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "The Assassin Guild has",
-                                                "officially asked our guild",
-                                                "for help in a mission regarding",
-                                                "children that have been missing",
-                                                "from Morocc, and they want us",
-                                                "to send somebody... you!"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Or... At least, you're",
-                                                "one of the people that the",
-                                                "Alchemist Guild wants to send",
-                                                "to represent us. So why don't",
-                                                "you go? You know, do it for the",
-                                                "children. Just think about it."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Here, take this letter of",
-                                                "recommendation with you and",
-                                                "head over to Morocc as soon",
-                                                "as you can. If even the Assassin Guild needs help, I'm sure that",
-                                                "spells really big trouble..."
-                                            ],
-                                        )?;
-                                        ctx.var("mao_request").set(Val::from(1))?;
-                                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
+                        } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)
+                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT_HIGH")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Well, if it isn't",
+                                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(". Hey,")),
+                                    "would you wait a minute?",
+                                    "I've got a message for you",
+                                    "from the Merchant Guild."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "I'm not sure why, but",
+                                    "the Assassin Guild has",
+                                    "been requesting help from",
+                                    "someone in the Merchant",
+                                    "Guild. Would you go help",
+                                    "them and represent us?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "I think they're working for",
+                                    "a client, investigating these",
+                                    "children that are missing",
+                                    "from Morocc. If you want to",
+                                    "help them, you'll need this",
+                                    "letter of recommendation, okay?"
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WHITESMITH")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    ((Val::from("Oh, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from("...!")),
+                                    "I'm so glad that I finally",
+                                    "ran into you. I know this is",
+                                    "sudden, but the Blacksmith",
+                                    "Guild has an assignment",
+                                    "for you over in Morocc."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "You see, the Assassin Guild",
+                                    "has formally requested for our",
+                                    "help in a mission regarding",
+                                    "children that have been missing",
+                                    "from Morocc recently. Here, take this letter of recommendation..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "If the Assassin Guild",
+                                    "is asking for help, I have",
+                                    "no doubt that this will be",
+                                    "a very difficult mission.",
+                                    "You should prepare yourself",
+                                    "if you plan to get involved..."
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CREATOR")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from("?")),
+                                    "I've got a message for",
+                                    "you from the Alchemist",
+                                    "Guild. Well, they're more",
+                                    "like orders than a message.",
+                                    "I'm so lucky to have found you."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "The Assassin Guild has",
+                                    "officially asked our guild",
+                                    "for help in a mission regarding",
+                                    "children that have been missing",
+                                    "from Morocc, and they want us",
+                                    "to send somebody... you!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Or... At least, you're",
+                                    "one of the people that the",
+                                    "Alchemist Guild wants to send",
+                                    "to represent us. So why don't",
+                                    "you go? You know, do it for the",
+                                    "children. Just think about it."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Here, take this letter of",
+                                    "recommendation with you and",
+                                    "head over to Morocc as soon",
+                                    "as you can. If even the Assassin Guild needs help, I'm sure that",
+                                    "spells really big trouble..."
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
-                }
                 return Ok(Val::from(0));
             }
         }
@@ -1868,66 +1816,62 @@ fn academy_staff_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("mao_request").get()? == 1 {
+        ctx.lines_as(
+            "Academy Staff",
+            args![
+                "Have you decided to help",
+                "the Assassin Guild? Then",
+                "please, head to Morocc and",
+                "meet your contact that will",
+                "be waiting for you west of",
+                "the Oasis inside of the city."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Academy Staff",
+            args![
+                "The Assassins don't ask",
+                "for help very often, so I'm",
+                "sure that this must be a very",
+                "serious matter. Be careful",
+                "and bring pride to the magic",
+                "community. Good luck..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ((ctx.var("mao_request").get()?.number()? > 2 && ctx.var("mao_request").get()?.number()? < 27)
+        || (ctx.var("mao_request").get()?.number()? > 102 && ctx.var("mao_request").get()?.number()? < 125))
+    {
+        ctx.lines_as(
+            "Academy Staff",
+            args![
+                "I've heard that the",
+                "Assassins are very",
+                "impressed with your use",
+                "of magic. Cooperate with",
+                "them to finish the mission,",
+                "and remember to be careful."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("mao_request").get()? == 1 {
-            ctx.lines_as(
-                "Academy Staff",
-                args![
-                    "Have you decided to help",
-                    "the Assassin Guild? Then",
-                    "please, head to Morocc and",
-                    "meet your contact that will",
-                    "be waiting for you west of",
-                    "the Oasis inside of the city."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Academy Staff",
-                args![
-                    "The Assassins don't ask",
-                    "for help very often, so I'm",
-                    "sure that this must be a very",
-                    "serious matter. Be careful",
-                    "and bring pride to the magic",
-                    "community. Good luck..."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ((ctx.var("mao_request").get()?.number()? > 2 && ctx.var("mao_request").get()?.number()? < 27)
-                || (ctx.var("mao_request").get()?.number()? > 102 && ctx.var("mao_request").get()?.number()? < 125))
-            {
-                ctx.lines_as(
-                    "Academy Staff",
-                    args![
-                        "I've heard that the",
-                        "Assassins are very",
-                        "impressed with your use",
-                        "of magic. Cooperate with",
-                        "them to finish the mission,",
-                        "and remember to be careful."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Academy Staff",
-                    args![
-                        "The weather is certainly",
-                        "pleasant right now, but the",
-                        "worst storms come when the",
-                        "winds are at their calmest.",
-                        "Verily, the peacefulness",
-                        "in the air disturbs me..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
+        ctx.lines_as(
+            "Academy Staff",
+            args![
+                "The weather is certainly",
+                "pleasant right now, but the",
+                "worst storms come when the",
+                "winds are at their calmest.",
+                "Verily, the peacefulness",
+                "in the air disturbs me..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -1948,9 +1892,9 @@ fn academy_staff_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         return Err(Stop::End);
     }
-    if ctx.var("BaseLevel").get()?.number()? > 59 {
-        if !(ctx.var("mao_request").get()?.is_true()) {
-            if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MAGE")?) {
+    if ctx.var("BaseLevel").get()?.number()? > 59
+        && !(ctx.var("mao_request").get()?.is_true())
+            && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MAGE")?) {
                 ctx.lines_as(
                     "Academy Staff",
                     args![
@@ -2001,8 +1945,6 @@ fn academy_staff_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-        }
-    }
     Ok(Val::from(0))
 }
 
@@ -2113,86 +2055,82 @@ fn miya_run(ctx: &Ctx, mut step: MiyaStep, args: Vec<Val>) -> Result<Val, Stop> 
                         ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
-                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
-                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
-                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
-                        {
-                            ctx.lines_as(
-                                "Miya",
-                                args![
-                                    ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(",")),
-                                    "I've got some important",
-                                    "work for you. The Assassin",
-                                    "Guild actually asked the Thief",
-                                    "and Rogue Guilds for help!",
-                                    "Can you believe that?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Miya",
-                                args![
-                                    "Anyway, all of us ruffians",
-                                    "are supposed to help out if",
-                                    "we can. Here, take this letter",
-                                    "of recommendation and talk to",
-                                    "Jack, our contact west in this city. You better go right away..."
-                                ],
-                            )?;
-                            ctx.var("mao_request").set(Val::from(1))?;
-                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                            {
-                                ctx.lines_as(
-                                    "Miya",
-                                    args![
-                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
-                                        "The Assassin Guild Master",
-                                        "wants you right away. Do you",
-                                        "know where the secret pub is?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["Ah, h-hi, Miya,", "it's been a while.", "What secret pub?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Miya",
-                                    args![
-                                        "I figured you might not",
-                                        "have heard of it. Just talk",
-                                        "to Jack, west of the Oasis",
-                                        "in this city, and he'll let you",
-                                        "in. From now on, you'll be",
-                                        "spending plenty of time there."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Miya",
-                                    args![
-                                        "That pub is probably the",
-                                        "only place where Assassins",
-                                        "like us can relax. But yeah,",
-                                        "this mission is pretty major.",
-                                        "We'll need all the help that",
-                                        "we can possibly get..."
-                                    ],
-                                )?;
-                                ctx.var("mao_request").set(Val::from(1))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
+                    } else if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
+                        || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
+                    {
+                        ctx.lines_as(
+                            "Miya",
+                            args![
+                                ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(",")),
+                                "I've got some important",
+                                "work for you. The Assassin",
+                                "Guild actually asked the Thief",
+                                "and Rogue Guilds for help!",
+                                "Can you believe that?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Miya",
+                            args![
+                                "Anyway, all of us ruffians",
+                                "are supposed to help out if",
+                                "we can. Here, take this letter",
+                                "of recommendation and talk to",
+                                "Jack, our contact west in this city. You better go right away..."
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                    {
+                        ctx.lines_as(
+                            "Miya",
+                            args![
+                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
+                                "The Assassin Guild Master",
+                                "wants you right away. Do you",
+                                "know where the secret pub is?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args!["Ah, h-hi, Miya,", "it's been a while.", "What secret pub?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Miya",
+                            args![
+                                "I figured you might not",
+                                "have heard of it. Just talk",
+                                "to Jack, west of the Oasis",
+                                "in this city, and he'll let you",
+                                "in. From now on, you'll be",
+                                "spending plenty of time there."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Miya",
+                            args![
+                                "That pub is probably the",
+                                "only place where Assassins",
+                                "like us can relax. But yeah,",
+                                "this mission is pretty major.",
+                                "We'll need all the help that",
+                                "we can possibly get..."
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 } else {
                     if ctx.var("mao_request").get()? == 1 {
@@ -2210,43 +2148,39 @@ fn miya_run(ctx: &Ctx, mut step: MiyaStep, args: Vec<Val>) -> Result<Val, Stop> 
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
-                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
-                            {
-                                ctx.lines_as(
-                                    "Miya",
-                                    args![
-                                        "There's supposed to be",
-                                        "some private pub to the",
-                                        "west of the Oasis in this",
-                                        "city. Ah, you're supposed",
-                                        "to talk to our contact, Jack,",
-                                        "who's right outside of the pub."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                                {
-                                    ctx.lines_as(
-                                        "Miya",
-                                        args![
-                                            "Look west of the Oasis",
-                                            "here in Morocc to find Jack,",
-                                            "who will let you go inside the",
-                                            "pub. Our guildmaster will be",
-                                            "waiting for you inside..."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
+                        } else if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
+                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
+                        {
+                            ctx.lines_as(
+                                "Miya",
+                                args![
+                                    "There's supposed to be",
+                                    "some private pub to the",
+                                    "west of the Oasis in this",
+                                    "city. Ah, you're supposed",
+                                    "to talk to our contact, Jack,",
+                                    "who's right outside of the pub."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                        {
+                            ctx.lines_as(
+                                "Miya",
+                                args![
+                                    "Look west of the Oasis",
+                                    "here in Morocc to find Jack,",
+                                    "who will let you go inside the",
+                                    "pub. Our guildmaster will be",
+                                    "waiting for you inside..."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     } else {
                         if ((ctx.var("mao_request").get()?.number()? > 2 && ctx.var("mao_request").get()?.number()? < 27)
@@ -2270,24 +2204,22 @@ fn miya_run(ctx: &Ctx, mut step: MiyaStep, args: Vec<Val>) -> Result<Val, Stop> 
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                                {
-                                    ctx.lines_as(
-                                        "Miya",
-                                        args![
-                                            "How's your current",
-                                            "assignment coming along?",
-                                            "The guildmaster must have",
-                                            "given you something really",
-                                            "weird or almost impossible",
-                                            "to do again, didn't he?"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
+                            } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                            {
+                                ctx.lines_as(
+                                    "Miya",
+                                    args![
+                                        "How's your current",
+                                        "assignment coming along?",
+                                        "The guildmaster must have",
+                                        "given you something really",
+                                        "weird or almost impossible",
+                                        "to do again, didn't he?"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         } else {
                             ctx.lines_as(
@@ -2321,8 +2253,8 @@ fn miya_run(ctx: &Ctx, mut step: MiyaStep, args: Vec<Val>) -> Result<Val, Stop> 
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if ctx.var("BaseLevel").get()?.number()? > 59 {
-                    if !(ctx.var("mao_request").get()?.is_true()) {
+                if ctx.var("BaseLevel").get()?.number()? > 59
+                    && !(ctx.var("mao_request").get()?.is_true()) {
                         if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STAR_GLADIATOR")?) {
                             ctx.lines_as(
                                 "Miya",
@@ -2361,88 +2293,83 @@ fn miya_run(ctx: &Ctx, mut step: MiyaStep, args: Vec<Val>) -> Result<Val, Stop> 
                             ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
-                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
-                            {
-                                ctx.lines_as(
-                                    "Miya",
-                                    args![
-                                        ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(",")),
-                                        "I've got some important",
-                                        "work for you. The Assassin",
-                                        "Guild actually asked the Thief",
-                                        "and Rogue Guilds for help!",
-                                        "Can you believe that?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Miya",
-                                    args![
-                                        "Anyway, all of us ruffians",
-                                        "are supposed to help out if",
-                                        "we can. Here, take this letter",
-                                        "of recommendation and talk to",
-                                        "Jack, our contact west in this city. You better go right away..."
-                                    ],
-                                )?;
-                                ctx.var("mao_request").set(Val::from(1))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                                {
-                                    ctx.lines_as(
-                                        "Miya",
-                                        args![
-                                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
-                                            "The Assassin Guild Master",
-                                            "wants you right away. Do you",
-                                            "know where the secret pub is?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args!["Ah, h-hi, Miya,", "it's been a while.", "What secret pub?"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Miya",
-                                        args![
-                                            "I figured you might not",
-                                            "have heard of it. Just talk",
-                                            "to Jack, west of the Oasis",
-                                            "in this city, and he'll let you",
-                                            "in. From now on, you'll be",
-                                            "spending plenty of time there."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Miya",
-                                        args![
-                                            "That pub is probably the",
-                                            "only place where Assassins",
-                                            "like us can relax. But yeah,",
-                                            "this mission is pretty major.",
-                                            "We'll need all the help that",
-                                            "we can possibly get..."
-                                        ],
-                                    )?;
-                                    ctx.var("mao_request").set(Val::from(1))?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
+                        } else if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
+                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
+                        {
+                            ctx.lines_as(
+                                "Miya",
+                                args![
+                                    ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(",")),
+                                    "I've got some important",
+                                    "work for you. The Assassin",
+                                    "Guild actually asked the Thief",
+                                    "and Rogue Guilds for help!",
+                                    "Can you believe that?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Miya",
+                                args![
+                                    "Anyway, all of us ruffians",
+                                    "are supposed to help out if",
+                                    "we can. Here, take this letter",
+                                    "of recommendation and talk to",
+                                    "Jack, our contact west in this city. You better go right away..."
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                        {
+                            ctx.lines_as(
+                                "Miya",
+                                args![
+                                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
+                                    "The Assassin Guild Master",
+                                    "wants you right away. Do you",
+                                    "know where the secret pub is?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["Ah, h-hi, Miya,", "it's been a while.", "What secret pub?"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Miya",
+                                args![
+                                    "I figured you might not",
+                                    "have heard of it. Just talk",
+                                    "to Jack, west of the Oasis",
+                                    "in this city, and he'll let you",
+                                    "in. From now on, you'll be",
+                                    "spending plenty of time there."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Miya",
+                                args![
+                                    "That pub is probably the",
+                                    "only place where Assassins",
+                                    "like us can relax. But yeah,",
+                                    "this mission is pretty major.",
+                                    "We'll need all the help that",
+                                    "we can possibly get..."
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
-                }
                 return Ok(Val::from(0));
             }
         }
@@ -2559,184 +2486,178 @@ fn guildsman_3_run(ctx: &Ctx, mut step: Guildsman3Step, args: Vec<Val>) -> Resul
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?)
-                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER_HIGH")?))
-                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?))
-                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_SNIPER")?))
-                        {
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
-                                    "Oh, wow, I'm so lucky to",
-                                    "have finally found you!",
-                                    "Listen, I've got a message",
-                                    "for you from the Icarus Guild."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "It looks like the Assassin",
-                                    "Guild has formally asked them",
-                                    "for help in some mission, so",
-                                    "Icarus has decided to send you.",
-                                    "I hope you choose to represent",
-                                    "us and help those Assassins."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Guildsman",
-                                args![
-                                    "Here, please take this",
-                                    "letter of recommendation",
-                                    "and meet with our Assassin",
-                                    "Guild contact to the west",
-                                    "of the Oasis in Morocc.",
-                                    "Well, good luck, pal~"
-                                ],
-                            )?;
-                            ctx.var("mao_request").set(Val::from(1))?;
-                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CLOWN")?))
-                            {
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
-                                        "I've been looking all over",
-                                        "for you! I've got a message",
-                                        "for you from Lalo. You...",
-                                        "You remember him, right?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args![
-                                        "Sure, I do! I owe",
-                                        "Lalo so much... If it",
-                                        "weren't for him, I'd never",
-                                        "have job changed to a Bard",
-                                        "in the first place. So what",
-                                        "exactly does he need?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Well, I'm not too sure. All",
-                                        "I heard was something about",
-                                        "a request from the Assassin",
-                                        "Guild and a recommendation",
-                                        "that you help them. Yeah.",
-                                        "Here's the letter he wrote."
-                                    ],
-                                )?;
-                                ctx.var("mao_request").set(Val::from(1))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Just... Just meet with the",
-                                        "contact from the Assassin",
-                                        "Guild just west of the Oasis",
-                                        "inside Morocc. I'm sure he",
-                                        "can explain everything better."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_GYPSY")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Hey... Th-That face!",
-                                            "Just like Aile described!",
-                                            ((Val::from("You're ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from(", right?")),
-                                            "This is great, I've been",
-                                            "looking all over for you!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args![
-                                            "Aile? Oh, that's right,",
-                                            "she was there during my",
-                                            "job change test and helped",
-                                            "me become a Dancer. Sure,",
-                                            "I remember her now...",
-                                            "So what did you need?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Ah, right. From what",
-                                            "I know, the Assassin Guild",
-                                            "asked Aile to recommend",
-                                            "a Dancer that might be able",
-                                            "to help them in a mission",
-                                            "of pretty major importance."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Anyway, Aile then sent me",
-                                            "out to look for you and give",
-                                            "this letter of recommendation.",
-                                            "I guess she thinks you'll do",
-                                            "the best job. So, um, congrats~"
-                                        ],
-                                    )?;
-                                    ctx.var("mao_request").set(Val::from(1))?;
-                                    ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "For now, your cooperation",
-                                            "with the Assassin Guild is",
-                                            "probably your biggest priority.",
-                                            "Head over to Morocc and look",
-                                            "for your contact to the west",
-                                            "of the Oasis inside town."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Alright, then.",
-                                            "Good luck! Ah, I almost",
-                                            "forgot. Aile wants you to",
-                                            "remember that you'll be a",
-                                            "representative of Dancers",
-                                            "everywhere, so do a good job!"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
+                    } else if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?)
+                        || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER_HIGH")?))
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?))
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_SNIPER")?))
+                    {
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
+                                "Oh, wow, I'm so lucky to",
+                                "have finally found you!",
+                                "Listen, I've got a message",
+                                "for you from the Icarus Guild."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "It looks like the Assassin",
+                                "Guild has formally asked them",
+                                "for help in some mission, so",
+                                "Icarus has decided to send you.",
+                                "I hope you choose to represent",
+                                "us and help those Assassins."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Here, please take this",
+                                "letter of recommendation",
+                                "and meet with our Assassin",
+                                "Guild contact to the west",
+                                "of the Oasis in Morocc.",
+                                "Well, good luck, pal~"
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CLOWN")?))
+                    {
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
+                                "I've been looking all over",
+                                "for you! I've got a message",
+                                "for you from Lalo. You...",
+                                "You remember him, right?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args![
+                                "Sure, I do! I owe",
+                                "Lalo so much... If it",
+                                "weren't for him, I'd never",
+                                "have job changed to a Bard",
+                                "in the first place. So what",
+                                "exactly does he need?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Well, I'm not too sure. All",
+                                "I heard was something about",
+                                "a request from the Assassin",
+                                "Guild and a recommendation",
+                                "that you help them. Yeah.",
+                                "Here's the letter he wrote."
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Just... Just meet with the",
+                                "contact from the Assassin",
+                                "Guild just west of the Oasis",
+                                "inside Morocc. I'm sure he",
+                                "can explain everything better."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)
+                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_GYPSY")?))
+                    {
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Hey... Th-That face!",
+                                "Just like Aile described!",
+                                ((Val::from("You're ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from(", right?")),
+                                "This is great, I've been",
+                                "looking all over for you!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args![
+                                "Aile? Oh, that's right,",
+                                "she was there during my",
+                                "job change test and helped",
+                                "me become a Dancer. Sure,",
+                                "I remember her now...",
+                                "So what did you need?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Ah, right. From what",
+                                "I know, the Assassin Guild",
+                                "asked Aile to recommend",
+                                "a Dancer that might be able",
+                                "to help them in a mission",
+                                "of pretty major importance."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Anyway, Aile then sent me",
+                                "out to look for you and give",
+                                "this letter of recommendation.",
+                                "I guess she thinks you'll do",
+                                "the best job. So, um, congrats~"
+                            ],
+                        )?;
+                        ctx.var("mao_request").set(Val::from(1))?;
+                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "For now, your cooperation",
+                                "with the Assassin Guild is",
+                                "probably your biggest priority.",
+                                "Head over to Morocc and look",
+                                "for your contact to the west",
+                                "of the Oasis inside town."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Guildsman",
+                            args![
+                                "Alright, then.",
+                                "Good luck! Ah, I almost",
+                                "forgot. Aile wants you to",
+                                "remember that you'll be a",
+                                "representative of Dancers",
+                                "everywhere, so do a good job!"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 } else {
                     if ctx.var("mao_request").get()? == 1 {
@@ -2753,73 +2674,67 @@ fn guildsman_3_run(ctx: &Ctx, mut step: Guildsman3Step, args: Vec<Val>) -> Resul
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?)
-                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER_HIGH")?))
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?))
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_SNIPER")?))
-                            {
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Please take your",
-                                        "letter of recommendation",
-                                        "and meet with our Assassin",
-                                        "Guild contact to the west",
-                                        "of the Oasis in Morocc.",
-                                        "Well, good luck, pal~"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CLOWN")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Just... Just meet with the",
-                                            "contact from the Assassin",
-                                            "Guild just west of the Oasis",
-                                            "inside Morocc. I'm sure he",
-                                            "can explain everything better."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)
-                                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_GYPSY")?))
-                                    {
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "For now, your cooperation",
-                                                "with the Assassin Guild is",
-                                                "probably your biggest priority.",
-                                                "Head over to Morocc and look",
-                                                "for your contact to the west",
-                                                "of the Oasis inside town."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Alright, then.",
-                                                "Good luck! Ah, I almost",
-                                                "forgot. Aile wants you to",
-                                                "remember that you'll be a",
-                                                "representative of Dancers",
-                                                "everywhere, so do a good job!"
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
+                        } else if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?)
+                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER_HIGH")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_SNIPER")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Please take your",
+                                    "letter of recommendation",
+                                    "and meet with our Assassin",
+                                    "Guild contact to the west",
+                                    "of the Oasis in Morocc.",
+                                    "Well, good luck, pal~"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CLOWN")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Just... Just meet with the",
+                                    "contact from the Assassin",
+                                    "Guild just west of the Oasis",
+                                    "inside Morocc. I'm sure he",
+                                    "can explain everything better."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_GYPSY")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "For now, your cooperation",
+                                    "with the Assassin Guild is",
+                                    "probably your biggest priority.",
+                                    "Head over to Morocc and look",
+                                    "for your contact to the west",
+                                    "of the Oasis inside town."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Alright, then.",
+                                    "Good luck! Ah, I almost",
+                                    "forgot. Aile wants you to",
+                                    "remember that you'll be a",
+                                    "representative of Dancers",
+                                    "everywhere, so do a good job!"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     } else {
                         if ((ctx.var("mao_request").get()?.number()? > 2 && ctx.var("mao_request").get()?.number()? < 27)
@@ -2838,61 +2753,55 @@ fn guildsman_3_run(ctx: &Ctx, mut step: Guildsman3Step, args: Vec<Val>) -> Resul
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
-                                    || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "It's good to see that",
-                                            "you showing pretty good",
-                                            "teamwork with the Assassins.",
-                                            "I hope that you're giving them",
-                                            "a good impression of bowmen..."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
-                                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CLOWN")?))
-                                    {
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Lalo will be pleased to",
-                                                "know that you've been an",
-                                                "asset to the Assassins.",
-                                                "But until the mission is",
-                                                "accomplished, remember that",
-                                                "you're representing all Bards!"
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)
-                                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_GYPSY")?))
-                                        {
-                                            ctx.lines_as(
-                                                "Guildsman",
-                                                args![
-                                                    "I think Aile will be",
-                                                    "very happy to know that",
-                                                    "the Assassins are pleased",
-                                                    "with your assistance. But",
-                                                    "until the mission is over,",
-                                                    "be careful out there, okay?"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
-                                }
+                            } else if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
+                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
+                            {
+                                ctx.lines_as(
+                                    "Guildsman",
+                                    args![
+                                        "It's good to see that",
+                                        "you showing pretty good",
+                                        "teamwork with the Assassins.",
+                                        "I hope that you're giving them",
+                                        "a good impression of bowmen..."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CLOWN")?))
+                            {
+                                ctx.lines_as(
+                                    "Guildsman",
+                                    args![
+                                        "Lalo will be pleased to",
+                                        "know that you've been an",
+                                        "asset to the Assassins.",
+                                        "But until the mission is",
+                                        "accomplished, remember that",
+                                        "you're representing all Bards!"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)
+                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_GYPSY")?))
+                            {
+                                ctx.lines_as(
+                                    "Guildsman",
+                                    args![
+                                        "I think Aile will be",
+                                        "very happy to know that",
+                                        "the Assassins are pleased",
+                                        "with your assistance. But",
+                                        "until the mission is over,",
+                                        "be careful out there, okay?"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         } else {
                             ctx.lines_as(
@@ -2927,8 +2836,8 @@ fn guildsman_3_run(ctx: &Ctx, mut step: Guildsman3Step, args: Vec<Val>) -> Resul
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if ctx.var("BaseLevel").get()?.number()? > 59 {
-                    if !(ctx.var("mao_request").get()?.is_true()) {
+                if ctx.var("BaseLevel").get()?.number()? > 59
+                    && !(ctx.var("mao_request").get()?.is_true()) {
                         if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_TAEKWON")?) {
                             ctx.lines_as(
                                 "Guildsman",
@@ -2977,187 +2886,180 @@ fn guildsman_3_run(ctx: &Ctx, mut step: Guildsman3Step, args: Vec<Val>) -> Resul
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?)
-                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER_HIGH")?))
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?))
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_SNIPER")?))
-                            {
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
-                                        "Oh, wow, I'm so lucky to",
-                                        "have finally found you!",
-                                        "Listen, I've got a message",
-                                        "for you from the Icarus Guild."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "It looks like the Assassin",
-                                        "Guild has formally asked them",
-                                        "for help in some mission, so",
-                                        "Icarus has decided to send you.",
-                                        "I hope you choose to represent",
-                                        "us and help those Assassins."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Guildsman",
-                                    args![
-                                        "Here, please take this",
-                                        "letter of recommendation",
-                                        "and meet with our Assassin",
-                                        "Guild contact to the west",
-                                        "of the Oasis in Morocc.",
-                                        "Well, good luck, pal~"
-                                    ],
-                                )?;
-                                ctx.var("mao_request").set(Val::from(1))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CLOWN")?))
-                                {
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
-                                            "I've been looking all over",
-                                            "for you! I've got a message",
-                                            "for you from Lalo. You...",
-                                            "You remember him, right?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args![
-                                            "Sure, I do! I owe",
-                                            "Lalo so much... If it",
-                                            "weren't for him, I'd never",
-                                            "have job changed to a Bard",
-                                            "in the first place. So what",
-                                            "exactly does he need?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Well, I'm not too sure. All",
-                                            "I heard was something about",
-                                            "a request from the Assassin",
-                                            "Guild and a recommendation",
-                                            "that you help them. Yeah.",
-                                            "Here's the letter he wrote."
-                                        ],
-                                    )?;
-                                    ctx.var("mao_request").set(Val::from(1))?;
-                                    ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Guildsman",
-                                        args![
-                                            "Just... Just meet with the",
-                                            "contact from the Assassin",
-                                            "Guild just west of the Oasis",
-                                            "inside Morocc. I'm sure he",
-                                            "can explain everything better."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)
-                                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_GYPSY")?))
-                                    {
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Hey... Th-That face!",
-                                                "Just like Aile described!",
-                                                ((Val::from("You're ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                    + Val::from(", right?")),
-                                                "This is great, I've been",
-                                                "looking all over for you!"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args![
-                                                "Aile? Oh, that's right,",
-                                                "she was there during my",
-                                                "job change test and helped",
-                                                "me become a Dancer. Sure,",
-                                                "I remember her now...",
-                                                "So what did you need?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Ah, right. From what",
-                                                "I know, the Assassin Guild",
-                                                "asked Aile to recommend",
-                                                "a Dancer that might be able",
-                                                "to help them in a mission",
-                                                "of pretty major importance."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Anyway, Aile then sent me",
-                                                "out to look for you and give",
-                                                "this letter of recommendation.",
-                                                "I guess she thinks you'll do",
-                                                "the best job. So, um, congrats~"
-                                            ],
-                                        )?;
-                                        ctx.var("mao_request").set(Val::from(1))?;
-                                        ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "For now, your cooperation",
-                                                "with the Assassin Guild is",
-                                                "probably your biggest priority.",
-                                                "Head over to Morocc and look",
-                                                "for your contact to the west",
-                                                "of the Oasis inside town."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guildsman",
-                                            args![
-                                                "Alright, then.",
-                                                "Good luck! Ah, I almost",
-                                                "forgot. Aile wants you to",
-                                                "remember that you'll be a",
-                                                "representative of Dancers",
-                                                "everywhere, so do a good job!"
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
+                        } else if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?)
+                            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ARCHER_HIGH")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?))
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_SNIPER")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...?")),
+                                    "Oh, wow, I'm so lucky to",
+                                    "have finally found you!",
+                                    "Listen, I've got a message",
+                                    "for you from the Icarus Guild."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "It looks like the Assassin",
+                                    "Guild has formally asked them",
+                                    "for help in some mission, so",
+                                    "Icarus has decided to send you.",
+                                    "I hope you choose to represent",
+                                    "us and help those Assassins."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Here, please take this",
+                                    "letter of recommendation",
+                                    "and meet with our Assassin",
+                                    "Guild contact to the west",
+                                    "of the Oasis in Morocc.",
+                                    "Well, good luck, pal~"
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_CLOWN")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    ((Val::from("Hey, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!")),
+                                    "I've been looking all over",
+                                    "for you! I've got a message",
+                                    "for you from Lalo. You...",
+                                    "You remember him, right?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args![
+                                    "Sure, I do! I owe",
+                                    "Lalo so much... If it",
+                                    "weren't for him, I'd never",
+                                    "have job changed to a Bard",
+                                    "in the first place. So what",
+                                    "exactly does he need?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Well, I'm not too sure. All",
+                                    "I heard was something about",
+                                    "a request from the Assassin",
+                                    "Guild and a recommendation",
+                                    "that you help them. Yeah.",
+                                    "Here's the letter he wrote."
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Just... Just meet with the",
+                                    "contact from the Assassin",
+                                    "Guild just west of the Oasis",
+                                    "inside Morocc. I'm sure he",
+                                    "can explain everything better."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)
+                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_GYPSY")?))
+                        {
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Hey... Th-That face!",
+                                    "Just like Aile described!",
+                                    ((Val::from("You're ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from(", right?")),
+                                    "This is great, I've been",
+                                    "looking all over for you!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args![
+                                    "Aile? Oh, that's right,",
+                                    "she was there during my",
+                                    "job change test and helped",
+                                    "me become a Dancer. Sure,",
+                                    "I remember her now...",
+                                    "So what did you need?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Ah, right. From what",
+                                    "I know, the Assassin Guild",
+                                    "asked Aile to recommend",
+                                    "a Dancer that might be able",
+                                    "to help them in a mission",
+                                    "of pretty major importance."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Anyway, Aile then sent me",
+                                    "out to look for you and give",
+                                    "this letter of recommendation.",
+                                    "I guess she thinks you'll do",
+                                    "the best job. So, um, congrats~"
+                                ],
+                            )?;
+                            ctx.var("mao_request").set(Val::from(1))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7416), Val::from(1)])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "For now, your cooperation",
+                                    "with the Assassin Guild is",
+                                    "probably your biggest priority.",
+                                    "Head over to Morocc and look",
+                                    "for your contact to the west",
+                                    "of the Oasis inside town."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guildsman",
+                                args![
+                                    "Alright, then.",
+                                    "Good luck! Ah, I almost",
+                                    "forgot. Aile wants you to",
+                                    "remember that you'll be a",
+                                    "representative of Dancers",
+                                    "everywhere, so do a good job!"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
-                }
                 return Ok(Val::from(0));
             }
         }
@@ -3200,34 +3102,32 @@ fn sharp_looking_kid_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if ctx.var("mao_request").get()?.number()? > 1 {
+            ctx.lines_as(
+                "Jack",
+                args![
+                    "Hey, it looks like",
+                    "you've been keeping",
+                    "busy. Good for you~",
+                    "Hey, I'll see you around."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("mao_request").get()?.number()? > 1 {
-                ctx.lines_as(
-                    "Jack",
-                    args![
-                        "Hey, it looks like",
-                        "you've been keeping",
-                        "busy. Good for you~",
-                        "Hey, I'll see you around."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Jack",
-                    args![
-                        "Whoa, whoa...",
-                        "Wait. I dunno if I can",
-                        "let you in just yet. Ah,",
-                        "whatever, you're one of",
-                        "us. If it's just for a drink,",
-                        "I shouldn't get in trouble..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines_as(
+                "Jack",
+                args![
+                    "Whoa, whoa...",
+                    "Wait. I dunno if I can",
+                    "let you in just yet. Ah,",
+                    "whatever, you're one of",
+                    "us. If it's just for a drink,",
+                    "I shouldn't get in trouble..."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if (ctx.var("mao_request").get()? == 1 && ctx.call(Function::CountItem, vec![Val::from(7416)])?.is_true()) {
@@ -3244,35 +3144,33 @@ fn sharp_looking_kid_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("mao_request").get()?.number()? > 1 {
+        ctx.lines_as(
+            "Jack",
+            args![
+                "It's a little weird since",
+                "you're not really part of",
+                "our guild, but you're allowed",
+                "to enter our secret hideaway",
+                "from now on. But don't you",
+                "dare tell anybody about this!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("mao_request").get()?.number()? > 1 {
-            ctx.lines_as(
-                "Jack",
-                args![
-                    "It's a little weird since",
-                    "you're not really part of",
-                    "our guild, but you're allowed",
-                    "to enter our secret hideaway",
-                    "from now on. But don't you",
-                    "dare tell anybody about this!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "Jack",
-                args![
-                    "What? I don't have",
-                    "anything to talk to",
-                    "you about. Move along,",
-                    "adventurer, and don't",
-                    "bother me anymore."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as(
+            "Jack",
+            args![
+                "What? I don't have",
+                "anything to talk to",
+                "you about. Move along,",
+                "adventurer, and don't",
+                "bother me anymore."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -3647,36 +3545,34 @@ fn bar_master_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
     {
         ctx.lines_as("Master", args!["Welcome to my", "little pub. What", "will you be having?"])?;
+    } else if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
+        || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
+        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
+        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
+    {
+        ctx.lines_as(
+            "Master",
+            args![
+                "Huh. How did",
+                "a ruffian like you",
+                "get in here? Well, if",
+                "Jack let you in, I guess",
+                "you must be alright. So",
+                "what do you wanna drink?"
+            ],
+        )?;
     } else {
-        if (((ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
-            || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF_HIGH")?))
-            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
-            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_STALKER")?))
-        {
-            ctx.lines_as(
-                "Master",
-                args![
-                    "Huh. How did",
-                    "a ruffian like you",
-                    "get in here? Well, if",
-                    "Jack let you in, I guess",
-                    "you must be alright. So",
-                    "what do you wanna drink?"
-                ],
-            )?;
-        } else {
-            ctx.lines_as(
-                "Master",
-                args![
-                    "This place is supposed",
-                    "to be Assassins only, but",
-                    "I guess I'll make an exception",
-                    "for you. Hell, you must have",
-                    "had a rough time just getting",
-                    "in. So what are you drinking?"
-                ],
-            )?;
-        }
+        ctx.lines_as(
+            "Master",
+            args![
+                "This place is supposed",
+                "to be Assassins only, but",
+                "I guess I'll make an exception",
+                "for you. Hell, you must have",
+                "had a rough time just getting",
+                "in. So what are you drinking?"
+            ],
+        )?;
     }
     ctx.next()?;
     'b1: {
@@ -3922,133 +3818,127 @@ fn bar_master_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 ctx.call(Function::Warp, vec![Val::from("morocc"), Val::from(45), Val::from(106)])?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("mao_request").get()? == 2 {
-                    if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                    {
-                        ctx.lines_as(
-                            "Master",
-                            args![
-                                "Just go through the",
-                                "door behind Litheron.",
-                                "You know the drill, so",
-                                "hurry it up, willya?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+            } else if ctx.var("mao_request").get()? == 2 {
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
                     ctx.lines_as(
                         "Master",
                         args![
-                            "Go through the door",
-                            "behind Litheron if you",
-                            "wanna learn more about",
-                            "your secret mission."
+                            "Just go through the",
+                            "door behind Litheron.",
+                            "You know the drill, so",
+                            "hurry it up, willya?"
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("mao_request").get()?.number()? > 2 {
-                        if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                        {
-                            ctx.lines_as(
-                                "Master",
-                                args![
-                                    "How's your assignment",
-                                    "coming along? Sometimes,",
-                                    "you need to relax and take a",
-                                    "break. When that time comes,",
-                                    "I'll have a drink ready for you."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as(
-                            "Master",
-                            args![
-                                "How are you doing",
-                                "with the mission? It's",
-                                "good to see you getting",
-                                "along with the Assasssins.",
-                                "Anyway, best of luck, pal."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if (ctx.var("mao_request").get()? == 30 || ctx.var("mao_request").get()? == 128) {
-                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                            {
-                                ctx.lines_as(
-                                    "Master",
-                                    args!["Hey, thanks for all", "of your hard work, pal.", "I'll see you around."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            ctx.lines_as(
-                                "Master",
-                                args![
-                                    "Thanks for all of your",
-                                    "help, even if you did go",
-                                    "through a little more trouble",
-                                    "than you should have. Anyway,",
-                                    "you seem alright, so go ahead and come back whenever you want."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                            {
-                                ctx.lines_as(
-                                    "Master",
-                                    args![
-                                        "So you haven't been",
-                                        "assigned any missions",
-                                        "from this joint, eh? By the",
-                                        "way, you like this place?",
-                                        "I happen to really love",
-                                        "this little pub of mine."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Master",
-                                    args![
-                                        "If you want, I'll recommend",
-                                        "you to the guildmaster for",
-                                        "a mission. Until then, you've",
-                                        "got to focus on your training.",
-                                        "And until you train... Why",
-                                        "don't you enjoy a drink?"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            ctx.lines_as(
-                                "Master",
-                                args![
-                                    "Mission...?",
-                                    "Come on, what are",
-                                    "you talking about?",
-                                    "Stop talking crazy and",
-                                    "order something to drink."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
                 }
+                ctx.lines_as(
+                    "Master",
+                    args![
+                        "Go through the door",
+                        "behind Litheron if you",
+                        "wanna learn more about",
+                        "your secret mission."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("mao_request").get()?.number()? > 2 {
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
+                    ctx.lines_as(
+                        "Master",
+                        args![
+                            "How's your assignment",
+                            "coming along? Sometimes,",
+                            "you need to relax and take a",
+                            "break. When that time comes,",
+                            "I'll have a drink ready for you."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Master",
+                    args![
+                        "How are you doing",
+                        "with the mission? It's",
+                        "good to see you getting",
+                        "along with the Assasssins.",
+                        "Anyway, best of luck, pal."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if (ctx.var("mao_request").get()? == 30 || ctx.var("mao_request").get()? == 128) {
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
+                    ctx.lines_as(
+                        "Master",
+                        args!["Hey, thanks for all", "of your hard work, pal.", "I'll see you around."],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Master",
+                    args![
+                        "Thanks for all of your",
+                        "help, even if you did go",
+                        "through a little more trouble",
+                        "than you should have. Anyway,",
+                        "you seem alright, so go ahead and come back whenever you want."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
+                    ctx.lines_as(
+                        "Master",
+                        args![
+                            "So you haven't been",
+                            "assigned any missions",
+                            "from this joint, eh? By the",
+                            "way, you like this place?",
+                            "I happen to really love",
+                            "this little pub of mine."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Master",
+                        args![
+                            "If you want, I'll recommend",
+                            "you to the guildmaster for",
+                            "a mission. Until then, you've",
+                            "got to focus on your training.",
+                            "And until you train... Why",
+                            "don't you enjoy a drink?"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Master",
+                    args![
+                        "Mission...?",
+                        "Come on, what are",
+                        "you talking about?",
+                        "Stop talking crazy and",
+                        "order something to drink."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(3)) {
@@ -4192,22 +4082,16 @@ fn roombar1_run(ctx: &Ctx, mut step: Roombar1Step, args: Vec<Val>) -> Result<Val
                             ctx.call(Function::DoNpcEvent, vec![Val::from("Valdes#1::OnEnter")])?;
                             ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#1::OnEnter")])?;
                             ctx.call(Function::DoNpcEvent, vec![Val::from("Kidd#1::OnEnter")])?;
-                        } else {
-                            if ctx.var("mao_request").get()? == 24 {
-                                ctx.call(Function::DoNpcEvent, vec![Val::from("Valdes#2::OnEnter")])?;
-                                ctx.call(Function::DoNpcEvent, vec![Val::from("Kidd#2::OnEnter")])?;
-                                ctx.call(Function::DoNpcEvent, vec![Val::from("#mao_table::OnEnter")])?;
-                            } else {
-                                if ctx.var("mao_request").get()? == 123 {
-                                    ctx.call(Function::DoNpcEvent, vec![Val::from("Valdes#2::OnEnter")])?;
-                                    ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#2::OnEnter")])?;
-                                    ctx.call(Function::DoNpcEvent, vec![Val::from("#mao_table::OnEnter")])?;
-                                } else {
-                                    if ctx.var("prt_curse").get()? == 24 {
-                                        ctx.call(Function::DoNpcEvent, vec![Val::from("Marjana#poison::OnEnable")])?;
-                                    }
-                                }
-                            }
+                        } else if ctx.var("mao_request").get()? == 24 {
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Valdes#2::OnEnter")])?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Kidd#2::OnEnter")])?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("#mao_table::OnEnter")])?;
+                        } else if ctx.var("mao_request").get()? == 123 {
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Valdes#2::OnEnter")])?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#2::OnEnter")])?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("#mao_table::OnEnter")])?;
+                        } else if ctx.var("prt_curse").get()? == 24 {
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Marjana#poison::OnEnable")])?;
                         }
                         ctx.lines_as(
                             "Tao",
@@ -4461,10 +4345,8 @@ fn roombar2_run(ctx: &Ctx, mut step: Roombar2Step, args: Vec<Val>) -> Result<Val
                             ctx.call(Function::DoNpcEvent, vec![Val::from("Valdes#3::OnEnter")])?;
                             ctx.call(Function::DoNpcEvent, vec![Val::from("Kidd#3::OnEnter")])?;
                             ctx.call(Function::DoNpcEvent, vec![Val::from("#Rabsent::OnEnter")])?;
-                        } else {
-                            if ctx.var("mao_request").get()? == 122 {
-                                ctx.call(Function::DoNpcEvent, vec![Val::from("#mao_empty::OnEnter")])?;
-                            }
+                        } else if ctx.var("mao_request").get()? == 122 {
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("#mao_empty::OnEnter")])?;
                         }
                         ctx.lines_as(
                             "Tao",
@@ -5077,427 +4959,415 @@ fn valdes_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if (ctx.var("mao_request").get()?.number()? > 103 && ctx.var("mao_request").get()?.number()? < 105) {
+            } else if (ctx.var("mao_request").get()?.number()? > 103 && ctx.var("mao_request").get()?.number()? < 105) {
+                ctx.lines_as(
+                    "Valdes",
+                    args![
+                        "Your first priority is",
+                        "to speak to Lin, your",
+                        "immediate superior in the",
+                        "mission that you've accepted.",
+                        "Please do your best to protect Mr. R. as his personal bodyguard."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if (ctx.var("mao_request").get()? == 28 || ctx.var("mao_request").get()? == 29) {
+                ctx.lines_as(
+                    "Valdes",
+                    args![
+                        "So how do you feel?",
+                        "Although this mission",
+                        "is technically a failure,",
+                        "we shouldn't feel too bad.",
+                        "Considering all the unknowns,",
+                        "we did surprisingly well."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "W-wait; a minute...",
+                        "Are you saying we stopped",
+                        "Satan Morocc's revival, but",
+                        "Raiyan Moore escaped?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lin",
+                    args!["Yeah...", "That snake managed", "to get away in all of", "that confusion."],
+                )?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                ctx.next()?;
+                ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["L-Lin...?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lin",
+                    args![
+                        "Not only did he play",
+                        "me for a fool, but he",
+                        "escaped right before",
+                        "my eyes! Don't bother",
+                        "chasing him... I'll be",
+                        "the one who turns him in!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kidd",
+                    args![
+                        "Lin, I understand how",
+                        "you must feel, but don't",
+                        "be so hard on yourself.",
+                        "Lin, you did your job",
+                        "perfectly, and there's no",
+                        "way we could have known..."
+                    ],
+                )?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_kid01.bmp"), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Valdes",
+                    args![
+                        "Although I agree with Kidd,",
+                        "I will entrust with the task",
+                        "of bringing back Raiyan, Lin,",
+                        "if that's what you really want.",
+                        "Everyone else must feel very exhausted, so let's take a break."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lin",
+                    args![
+                        "...I'm sorry, Valdes,",
+                        "but I don't want to lose",
+                        "Moore's trail. I'd better",
+                        "go now while I can..."
+                    ],
+                )?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                ctx.next()?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#1::OnInit")])?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["She seems upset...."],
+                )?;
+                ctx.next()?;
+                ctx.mes("[Valdes]")?;
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
+                    ctx.lines(args![
+                        "Well, as a fellow Assassin,",
+                        "I'm sure you can understand",
+                        "what's she going through.",
+                        "We have too much pride to",
+                        "take this kind of failure lightly. "
+                    ])?;
+                } else {
+                    ctx.lines(args![
+                        "Well, she's an Assassin.",
+                        "All of us have too much pride",
+                        "to accept any kind of failure.",
+                        "It's just... It's just not in",
+                        "our vocabulary, you see?"
+                    ])?;
+                }
+                ctx.call(
+                    Function::DelItem,
+                    vec![Val::from(7416), ctx.call(Function::CountItem, vec![Val::from(7416)])?],
+                )?;
+                ctx.call(
+                    Function::DelItem,
+                    vec![Val::from(7417), ctx.call(Function::CountItem, vec![Val::from(7417)])?],
+                )?;
+                if ctx.var("mao_request").get()? == 28 {
+                    ctx.call(Function::GetExperience, vec![Val::from(1050000), Val::from(0)])?;
+                } else if ctx.var("mao_request").get()? == 29 {
+                    ctx.call(Function::GetExperience, vec![Val::from(1280000), Val::from(0)])?;
+                }
+                ctx.var("mao_request").set(Val::from(30))?;
+                ctx.call(Function::GetItem, vec![Val::from(12107), Val::from(1)])?;
+                ctx.next()?;
+                ctx.mes("[Valdes]")?;
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
+                    ctx.lines(args![
+                        "Regardless of our",
+                        "original objective,",
+                        "I must say that you",
+                        "did a good job. We",
+                        "didn't save the children,",
+                        "but we stopped Satan Morocc."
+                    ])?;
+                } else {
+                    ctx.lines(args![
+                        "We failed our original",
+                        "objective to save those kids,",
+                        "but we did stop Satan Morocc.",
+                        "You did a good job, and we'll",
+                        "notify your guild of your good",
+                        "work. Thanks for your help."
+                    ])?;
+                    ctx.next()?;
                     ctx.lines_as(
                         "Valdes",
                         args![
-                            "Your first priority is",
-                            "to speak to Lin, your",
-                            "immediate superior in the",
-                            "mission that you've accepted.",
-                            "Please do your best to protect Mr. R. as his personal bodyguard."
+                            "Take care of yourself,",
+                            "and take pride in the fact",
+                            "that the Assassin Guild",
+                            "considers you a valuable",
+                            "ally. Be safe, adventurer..."
                         ],
                     )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if (ctx.var("mao_request").get()? == 28 || ctx.var("mao_request").get()? == 29) {
-                        ctx.lines_as(
-                            "Valdes",
-                            args![
-                                "So how do you feel?",
-                                "Although this mission",
-                                "is technically a failure,",
-                                "we shouldn't feel too bad.",
-                                "Considering all the unknowns,",
-                                "we did surprisingly well."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "W-wait; a minute...",
-                                "Are you saying we stopped",
-                                "Satan Morocc's revival, but",
-                                "Raiyan Moore escaped?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lin",
-                            args!["Yeah...", "That snake managed", "to get away in all of", "that confusion."],
-                        )?;
-                        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                        ctx.next()?;
-                        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["L-Lin...?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lin",
-                            args![
-                                "Not only did he play",
-                                "me for a fool, but he",
-                                "escaped right before",
-                                "my eyes! Don't bother",
-                                "chasing him... I'll be",
-                                "the one who turns him in!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Kidd",
-                            args![
-                                "Lin, I understand how",
-                                "you must feel, but don't",
-                                "be so hard on yourself.",
-                                "Lin, you did your job",
-                                "perfectly, and there's no",
-                                "way we could have known..."
-                            ],
-                        )?;
-                        ctx.call(Function::Cutin, vec![Val::from("mocseal_kid01.bmp"), Val::from(0)])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Valdes",
-                            args![
-                                "Although I agree with Kidd,",
-                                "I will entrust with the task",
-                                "of bringing back Raiyan, Lin,",
-                                "if that's what you really want.",
-                                "Everyone else must feel very exhausted, so let's take a break."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lin",
-                            args![
-                                "...I'm sorry, Valdes,",
-                                "but I don't want to lose",
-                                "Moore's trail. I'd better",
-                                "go now while I can..."
-                            ],
-                        )?;
-                        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                        ctx.next()?;
-                        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#1::OnInit")])?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["She seems upset...."],
-                        )?;
-                        ctx.next()?;
-                        ctx.mes("[Valdes]")?;
-                        if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                        {
-                            ctx.lines(args![
-                                "Well, as a fellow Assassin,",
-                                "I'm sure you can understand",
-                                "what's she going through.",
-                                "We have too much pride to",
-                                "take this kind of failure lightly. "
-                            ])?;
-                        } else {
-                            ctx.lines(args![
-                                "Well, she's an Assassin.",
-                                "All of us have too much pride",
-                                "to accept any kind of failure.",
-                                "It's just... It's just not in",
-                                "our vocabulary, you see?"
-                            ])?;
-                        }
-                        ctx.call(
-                            Function::DelItem,
-                            vec![Val::from(7416), ctx.call(Function::CountItem, vec![Val::from(7416)])?],
-                        )?;
-                        ctx.call(
-                            Function::DelItem,
-                            vec![Val::from(7417), ctx.call(Function::CountItem, vec![Val::from(7417)])?],
-                        )?;
-                        if ctx.var("mao_request").get()? == 28 {
-                            ctx.call(Function::GetExperience, vec![Val::from(1050000), Val::from(0)])?;
-                        } else {
-                            if ctx.var("mao_request").get()? == 29 {
-                                ctx.call(Function::GetExperience, vec![Val::from(1280000), Val::from(0)])?;
-                            }
-                        }
-                        ctx.var("mao_request").set(Val::from(30))?;
-                        ctx.call(Function::GetItem, vec![Val::from(12107), Val::from(1)])?;
-                        ctx.next()?;
-                        ctx.mes("[Valdes]")?;
-                        if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                            || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                        {
-                            ctx.lines(args![
-                                "Regardless of our",
-                                "original objective,",
-                                "I must say that you",
-                                "did a good job. We",
-                                "didn't save the children,",
-                                "but we stopped Satan Morocc."
-                            ])?;
-                        } else {
-                            ctx.lines(args![
-                                "We failed our original",
-                                "objective to save those kids,",
-                                "but we did stop Satan Morocc.",
-                                "You did a good job, and we'll",
-                                "notify your guild of your good",
-                                "work. Thanks for your help."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Valdes",
-                                args![
-                                    "Take care of yourself,",
-                                    "and take pride in the fact",
-                                    "that the Assassin Guild",
-                                    "considers you a valuable",
-                                    "ally. Be safe, adventurer..."
-                                ],
-                            )?;
-                        }
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Valdes",
-                            args![
-                                "Kidd, when you're",
-                                "ready, I have another",
-                                "assignment for you in",
-                                "Prontera. But for now,",
-                                "I want you to take it easy."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Kidd",
-                            args!["Heh. Alright,", "Valdes. I guess", "my work is never", "finished~"],
-                        )?;
-                        ctx.close_window()?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Kidd#1::OnInit")])?;
-                    } else {
-                        if (ctx.var("mao_request").get()? == 126 || ctx.var("mao_request").get()? == 127) {
-                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                            {
-                                ctx.lines_as(
-                                    "Valdes",
-                                    args![
-                                        "How are you feeling?",
-                                        "I've got some bad news:",
-                                        "All of us, every member of",
-                                        "the Assassin Guild... We",
-                                        "were tricked by Raiyan Moore..."
-                                    ],
-                                )?;
-                            } else {
-                                ctx.lines_as(
-                                    "Valdes",
-                                    args![
-                                        "How are you feeling?",
-                                        "I've got some bad news:",
-                                        "these missions we were",
-                                        "assigned... They were all",
-                                        "part of an elaborate scheme",
-                                        "that all of us fell for..."
-                                    ],
-                                )?;
-                            }
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Lin",
-                                args![
-                                    "We were fooled by that",
-                                    "damned bastard. Everything",
-                                    "that Raiyan Moore wanted us",
-                                    "to do was for the sake of",
-                                    "Satan Morocc's reincarnation.",
-                                    "He almost got away with it..."
-                                ],
-                            )?;
-                            ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Lin",
-                                args![
-                                    "He got away from us",
-                                    "this time... I'm sorry.",
-                                    "I should have caught him,",
-                                    "but he had help. I failed you."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Lin..."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Kidd",
-                                args![
-                                    "Lin, you don't gotta",
-                                    "apologize. There's no",
-                                    "way you could've known.",
-                                    "C'mon, we understand",
-                                    "how you feel, but it's not",
-                                    "your fault at all."
-                                ],
-                            )?;
-                            ctx.call(Function::Cutin, vec![Val::from("mocseal_kid01.bmp"), Val::from(0)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Valdes",
-                                args![
-                                    "Kidd is right. We shouldn't",
-                                    "be blaming ourselves or ",
-                                    "each other. For now, we can",
-                                    "be satisfied with preventing",
-                                    "Satan Morocc's revival, and",
-                                    "then focus on Raiyan Moore."
-                                ],
-                            )?;
-                            ctx.call(Function::Cutin, vec![Val::from("mocseal_kid01.bmp"), Val::from(255)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Lin",
-                                args![
-                                    "Don't worry, Valdes.",
-                                    "I'm going to take care of",
-                                    "Raiyan Moore. He's not going",
-                                    "to get away from me again."
-                                ],
-                            )?;
-                            ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Valdes",
-                                args![
-                                    "Well, Lin...",
-                                    "Although I'd prefer for",
-                                    "you to rest for now, I can",
-                                    "respect your conviction.",
-                                    "Alright, I'll entrust you with",
-                                    "the task of finding Moore."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.mes("[Valdes]")?;
-                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                            {
-                                ctx.lines(args![
-                                    "Ah, and before I forget,",
-                                    "let me give you your fee",
-                                    "for taking this mission.",
-                                    "We may have technically",
-                                    "failed our original objective,",
-                                    "but you did very good work."
-                                ])?;
-                            } else {
-                                ctx.lines(args![
-                                    "Ah, and before I forget,",
-                                    "let me give you your fee",
-                                    "for taking this mission.",
-                                    "I thank you on behalf of",
-                                    "the Assassin Guild for",
-                                    "your efforts and hard work."
-                                ])?;
-                            }
-                            ctx.call(
-                                Function::DelItem,
-                                vec![Val::from(7416), ctx.call(Function::CountItem, vec![Val::from(7416)])?],
-                            )?;
-                            ctx.call(
-                                Function::DelItem,
-                                vec![Val::from(7418), ctx.call(Function::CountItem, vec![Val::from(7418)])?],
-                            )?;
-                            if ctx.var("mao_request").get()? == 126 {
-                                ctx.call(Function::GetExperience, vec![Val::from(1050000), Val::from(0)])?;
-                            } else {
-                                if ctx.var("mao_request").get()? == 127 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(1280000), Val::from(0)])?;
-                                }
-                            }
-                            ctx.var("mao_request").set(Val::from(128))?;
-                            ctx.call(Function::GetItem, vec![Val::from(12106), Val::from(1)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Valdes",
-                                args![
-                                    "Technically, we failed to",
-                                    "achieve our original mission",
-                                    "objective, but I will notify your guild and tell them that you were",
-                                    "instrumental in preventing",
-                                    "a worldwide catastrophe."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Lin",
-                                args![
-                                    "Valdes...",
-                                    "I'm leaving now.",
-                                    ((Val::from("Wish me luck, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#1::OnInit")])?;
-                            ctx.mes("[Valdes]")?;
-                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                            {
-                                ctx.lines(args!["Alright, then.", "You're dismissed.", "I'll see you next time."])?;
-                            } else {
-                                ctx.lines(args![
-                                    "Alright, then.",
-                                    "You're dismissed.",
-                                    "Once again, thank you",
-                                    "for helping us. You've",
-                                    "been a valuable ally to the",
-                                    "Assassin Guild, so be proud."
-                                ])?;
-                            }
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Valdes",
-                                args![
-                                    "Kidd, when you're",
-                                    "ready, I have another",
-                                    "assignment for you in",
-                                    "Prontera. But for now,",
-                                    "I want you to take it easy."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Kidd",
-                                args!["Heh. Alright,", "Valdes. I guess", "my work is never", "finished~"],
-                            )?;
-                            ctx.close_window()?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Kidd#1::OnInit")])?;
-                        } else {
-                            if (ctx.var("mao_request").get()? == 30 || ctx.var("mao_request").get()? == 128) {
-                                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
-                                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
-                                {
-                                    ctx.lines_as(
-                                        "Valdes",
-                                        args![
-                                            "You may go ahead",
-                                            "and take a rest. The",
-                                            "last mission you took",
-                                            "was so critical, you",
-                                            "can afford to take",
-                                            "a short vacation."
-                                        ],
-                                    )?;
-                                } else {
-                                    ctx.lines_as(
-                                        "Valdes",
-                                        args![
-                                            "You've been of great",
-                                            "help to the Assassin",
-                                            "Guild. Your aid will",
-                                            "always be welcome here.",
-                                            "If it weren't for you, then",
-                                            "Satan Morocc would have..."
-                                        ],
-                                    )?;
-                                }
-                                ctx.close_window()?;
-                            }
-                        }
-                    }
                 }
+                ctx.next()?;
+                ctx.lines_as(
+                    "Valdes",
+                    args![
+                        "Kidd, when you're",
+                        "ready, I have another",
+                        "assignment for you in",
+                        "Prontera. But for now,",
+                        "I want you to take it easy."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kidd",
+                    args!["Heh. Alright,", "Valdes. I guess", "my work is never", "finished~"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("Kidd#1::OnInit")])?;
+            } else if (ctx.var("mao_request").get()? == 126 || ctx.var("mao_request").get()? == 127) {
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
+                    ctx.lines_as(
+                        "Valdes",
+                        args![
+                            "How are you feeling?",
+                            "I've got some bad news:",
+                            "All of us, every member of",
+                            "the Assassin Guild... We",
+                            "were tricked by Raiyan Moore..."
+                        ],
+                    )?;
+                } else {
+                    ctx.lines_as(
+                        "Valdes",
+                        args![
+                            "How are you feeling?",
+                            "I've got some bad news:",
+                            "these missions we were",
+                            "assigned... They were all",
+                            "part of an elaborate scheme",
+                            "that all of us fell for..."
+                        ],
+                    )?;
+                }
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lin",
+                    args![
+                        "We were fooled by that",
+                        "damned bastard. Everything",
+                        "that Raiyan Moore wanted us",
+                        "to do was for the sake of",
+                        "Satan Morocc's reincarnation.",
+                        "He almost got away with it..."
+                    ],
+                )?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lin",
+                    args![
+                        "He got away from us",
+                        "this time... I'm sorry.",
+                        "I should have caught him,",
+                        "but he had help. I failed you."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Lin..."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kidd",
+                    args![
+                        "Lin, you don't gotta",
+                        "apologize. There's no",
+                        "way you could've known.",
+                        "C'mon, we understand",
+                        "how you feel, but it's not",
+                        "your fault at all."
+                    ],
+                )?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_kid01.bmp"), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Valdes",
+                    args![
+                        "Kidd is right. We shouldn't",
+                        "be blaming ourselves or ",
+                        "each other. For now, we can",
+                        "be satisfied with preventing",
+                        "Satan Morocc's revival, and",
+                        "then focus on Raiyan Moore."
+                    ],
+                )?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_kid01.bmp"), Val::from(255)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lin",
+                    args![
+                        "Don't worry, Valdes.",
+                        "I'm going to take care of",
+                        "Raiyan Moore. He's not going",
+                        "to get away from me again."
+                    ],
+                )?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Valdes",
+                    args![
+                        "Well, Lin...",
+                        "Although I'd prefer for",
+                        "you to rest for now, I can",
+                        "respect your conviction.",
+                        "Alright, I'll entrust you with",
+                        "the task of finding Moore."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.mes("[Valdes]")?;
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
+                    ctx.lines(args![
+                        "Ah, and before I forget,",
+                        "let me give you your fee",
+                        "for taking this mission.",
+                        "We may have technically",
+                        "failed our original objective,",
+                        "but you did very good work."
+                    ])?;
+                } else {
+                    ctx.lines(args![
+                        "Ah, and before I forget,",
+                        "let me give you your fee",
+                        "for taking this mission.",
+                        "I thank you on behalf of",
+                        "the Assassin Guild for",
+                        "your efforts and hard work."
+                    ])?;
+                }
+                ctx.call(
+                    Function::DelItem,
+                    vec![Val::from(7416), ctx.call(Function::CountItem, vec![Val::from(7416)])?],
+                )?;
+                ctx.call(
+                    Function::DelItem,
+                    vec![Val::from(7418), ctx.call(Function::CountItem, vec![Val::from(7418)])?],
+                )?;
+                if ctx.var("mao_request").get()? == 126 {
+                    ctx.call(Function::GetExperience, vec![Val::from(1050000), Val::from(0)])?;
+                } else if ctx.var("mao_request").get()? == 127 {
+                    ctx.call(Function::GetExperience, vec![Val::from(1280000), Val::from(0)])?;
+                }
+                ctx.var("mao_request").set(Val::from(128))?;
+                ctx.call(Function::GetItem, vec![Val::from(12106), Val::from(1)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Valdes",
+                    args![
+                        "Technically, we failed to",
+                        "achieve our original mission",
+                        "objective, but I will notify your guild and tell them that you were",
+                        "instrumental in preventing",
+                        "a worldwide catastrophe."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lin",
+                    args![
+                        "Valdes...",
+                        "I'm leaving now.",
+                        ((Val::from("Wish me luck, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#1::OnInit")])?;
+                ctx.mes("[Valdes]")?;
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
+                    ctx.lines(args!["Alright, then.", "You're dismissed.", "I'll see you next time."])?;
+                } else {
+                    ctx.lines(args![
+                        "Alright, then.",
+                        "You're dismissed.",
+                        "Once again, thank you",
+                        "for helping us. You've",
+                        "been a valuable ally to the",
+                        "Assassin Guild, so be proud."
+                    ])?;
+                }
+                ctx.next()?;
+                ctx.lines_as(
+                    "Valdes",
+                    args![
+                        "Kidd, when you're",
+                        "ready, I have another",
+                        "assignment for you in",
+                        "Prontera. But for now,",
+                        "I want you to take it easy."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kidd",
+                    args!["Heh. Alright,", "Valdes. I guess", "my work is never", "finished~"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("Kidd#1::OnInit")])?;
+            } else if (ctx.var("mao_request").get()? == 30 || ctx.var("mao_request").get()? == 128) {
+                if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN_CROSS")?))
+                {
+                    ctx.lines_as(
+                        "Valdes",
+                        args![
+                            "You may go ahead",
+                            "and take a rest. The",
+                            "last mission you took",
+                            "was so critical, you",
+                            "can afford to take",
+                            "a short vacation."
+                        ],
+                    )?;
+                } else {
+                    ctx.lines_as(
+                        "Valdes",
+                        args![
+                            "You've been of great",
+                            "help to the Assassin",
+                            "Guild. Your aid will",
+                            "always be welcome here.",
+                            "If it weren't for you, then",
+                            "Satan Morocc would have..."
+                        ],
+                    )?;
+                }
+                ctx.close_window()?;
             }
         }
     }
@@ -5616,66 +5486,58 @@ fn lin_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.close_window()?;
-    } else {
-        if ctx.var("mao_request").get()? == 3 {
-            ctx.lines_as(
-                "Lin",
-                args![
-                    "Hey. You're working",
-                    "with Kidd, right? He's",
-                    "right over there. Anyway,",
-                    "don't worry, he's pretty",
-                    "easy to get along with."
-                ],
-            )?;
-            ctx.close_window()?;
-        } else {
-            if ctx.var("mao_request").get()? == 103 {
-                ctx.lines_as(
-                    "Lin",
-                    args![
-                        "First things first.",
-                        "We need to talk to our",
-                        "client, R, over in the next",
-                        "room. I'll meet you there."
-                    ],
-                )?;
-                ctx.close_window()?;
-                ctx.call(Function::DisableNpc, vec![Val::from("Lin#1")])?;
-            } else {
-                if (ctx.var("mao_request").get()? == 28 || ctx.var("mao_request").get()? == 29) {
-                    ctx.lines_as("Lin", args!["...", "......", "........."])?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^3355FFLin seems extremely",
-                        "exhausted and depressed.",
-                        "For now, let's go talk to Valdes, the commanding officer.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                } else {
-                    if (ctx.var("mao_request").get()? == 126 || ctx.var("mao_request").get()? == 127) {
-                        ctx.lines_as(
-                            "Lin",
-                            args![
-                                "H-hey...",
-                                "I hear that",
-                                "Kidd saved you.",
-                                "...............................",
-                                ((Val::from("Sorry, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...")),
-                                "I l-let you down..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFLin seems extremely",
-                            "exhausted and depressed.",
-                            "For now, let's go talk to Valdes, the commanding officer.^000000"
-                        ])?;
-                        ctx.close_window()?;
-                    }
-                }
-            }
-        }
+    } else if ctx.var("mao_request").get()? == 3 {
+        ctx.lines_as(
+            "Lin",
+            args![
+                "Hey. You're working",
+                "with Kidd, right? He's",
+                "right over there. Anyway,",
+                "don't worry, he's pretty",
+                "easy to get along with."
+            ],
+        )?;
+        ctx.close_window()?;
+    } else if ctx.var("mao_request").get()? == 103 {
+        ctx.lines_as(
+            "Lin",
+            args![
+                "First things first.",
+                "We need to talk to our",
+                "client, R, over in the next",
+                "room. I'll meet you there."
+            ],
+        )?;
+        ctx.close_window()?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Lin#1")])?;
+    } else if (ctx.var("mao_request").get()? == 28 || ctx.var("mao_request").get()? == 29) {
+        ctx.lines_as("Lin", args!["...", "......", "........."])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFLin seems extremely",
+            "exhausted and depressed.",
+            "For now, let's go talk to Valdes, the commanding officer.^000000"
+        ])?;
+        ctx.close_window()?;
+    } else if (ctx.var("mao_request").get()? == 126 || ctx.var("mao_request").get()? == 127) {
+        ctx.lines_as(
+            "Lin",
+            args![
+                "H-hey...",
+                "I hear that",
+                "Kidd saved you.",
+                "...............................",
+                ((Val::from("Sorry, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...")),
+                "I l-let you down..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFLin seems extremely",
+            "exhausted and depressed.",
+            "For now, let's go talk to Valdes, the commanding officer.^000000"
+        ])?;
+        ctx.close_window()?;
     }
     ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
     return Err(Stop::End);
@@ -6281,213 +6143,205 @@ fn lin_2_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     ],
                                                 )?;
                                                 ctx.close_window()?;
-                                            } else {
-                                                if ctx.var("mao_request").get()? == 118 {
-                                                    ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                                                    ctx.lines_as("Lin", args!["Oh, good.", "You're finally back~"])?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
-                                                    ctx.lines_as(
-                                                        "R. Moore",
-                                                        args![
-                                                            "Ah! You've finally returned.",
-                                                            "I have another request that",
-                                                            "I must ask of you that pertains",
-                                                            "to the missing children."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                                                    ctx.lines_as(
-                                                        "Lin",
-                                                        args![
-                                                            "Yeah, alright.",
-                                                            "Depending on what",
-                                                            "it is, maybe we'll do it.",
-                                                            "But if it's some crazy",
-                                                            "nonsense errand, we won't."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
-                                                    ctx.lines_as(
-                                                        "R. Moore",
-                                                        args![
-                                                            "For the sake of my",
-                                                            "research, I want you to",
-                                                            "investigate Thanatos Tower.",
-                                                            "Learn more about its origin",
-                                                            "through any means possible. I didn't want to say this, but..."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "R. Moore",
-                                                        args![
-                                                            "I think it's possible that the",
-                                                            "missing children were kidnapped",
-                                                            "to revive an ancient evil, Satan Morocc. I believe we can learn",
-                                                            "more about the kidnappers by",
-                                                            "learning about Satan Morocc."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "R. Moore",
-                                                        args![
-                                                            "I know this all sounds",
-                                                            "crazy, but please trust me.",
-                                                            "Thanatos Tower is somehow",
-                                                            "related to Satan Morocc, so",
-                                                            "if you could tell me what",
-                                                            "you can learn from there..."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                                                    ctx.lines_as(
-                                                        "Lin",
-                                                        args![
-                                                            "Thanatos Tower, huh?",
-                                                            "Alright, it's not like we don't",
-                                                            "believe you, but we need some",
-                                                            "time to consider your request",
-                                                            "before we can go ahead with the investigation you're asking for..."
-                                                        ],
-                                                    )?;
-                                                    ctx.var("mao_request").set(Val::from(119))?;
-                                                    ctx.close_window()?;
-                                                } else {
-                                                    if ctx.var("mao_request").get()? == 119 {
-                                                        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                                                        ctx.lines_as(
-                                                            "Lin",
-                                                            args![
-                                                                "Alright... Before",
-                                                                "we go and do this, we",
-                                                                "need to make absolutely",
-                                                                "sure of a few things."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
-                                                        ctx.lines_as(
-                                                            "R. Moore",
-                                                            args!["Of course.", "What is it that", "you want to ask me?"],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                                                        ctx.lines_as(
-                                                            "Lin",
-                                                            args![
-                                                                "First, those men that",
-                                                                "attacked you. Are they",
-                                                                "trying to revive Satan",
-                                                                "Morocc? And those crests...",
-                                                                "Were they built to break Satan",
-                                                                "Morocc's seal or protect it?"
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(1)])?;
-                                                        ctx.lines_as(
-                                                            "R. Moore",
-                                                            args![
-                                                                "Oh, my attackers. I have no",
-                                                                "idea what they could want.",
-                                                                "As for the elemental crests,",
-                                                                "they were originally built by",
-                                                                "a madman to revive Satan Morocc. "
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "R. Moore",
-                                                            args![
-                                                                "However, once that crazed",
-                                                                "man's plot was discovered,",
-                                                                "the crests were modified to",
-                                                                "further shield the seal that",
-                                                                "contains Satan Morocc."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "R. Moore",
-                                                            args![
-                                                                "But as a historian...",
-                                                                "These stories about Satan",
-                                                                "Morocc and seals are just",
-                                                                "conjecture. I need concrete",
-                                                                "proof that the threat of",
-                                                                "Satan Morocc truly exists."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "R. Moore",
-                                                            args![
-                                                                "If I can obtain that,",
-                                                                "people would be able to",
-                                                                "take Satan Morocc's threat",
-                                                                "more seriously. And Thanatos Tower wouldn't be a tourist area."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "R. Moore",
-                                                            args![
-                                                                "I'm begging you, please",
-                                                                "go to Thanatos Tower and",
-                                                                "try to find some sort of solid",
-                                                                "historical record that proves",
-                                                                "that Satan Morocc really",
-                                                                "existed in our world."
-                                                            ],
-                                                        )?;
-                                                        ctx.var("mao_request").set(Val::from(120))?;
-                                                        ctx.close_window()?;
-                                                    } else {
-                                                        if ctx.var("mao_request").get()? == 120 {
-                                                            ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                                                            ctx.lines_as(
-                                                                "Lin",
-                                                                args![
-                                                                    "I'm not sure what to",
-                                                                    "believe, but investigating",
-                                                                    "Thanatos Tower seems to be",
-                                                                    "our best course of action now."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Lin",
-                                                                args![
-                                                                    "While you work on that,",
-                                                                    "I will be trying to piece",
-                                                                    "together the information that",
-                                                                    "we've collected so far, as well",
-                                                                    "as keep an eye on Mr. R. Moore.",
-                                                                    "Good luck, and be careful."
-                                                                ],
-                                                            )?;
-                                                            ctx.var("mao_request").set(Val::from(121))?;
-                                                            ctx.close_window()?;
-                                                        } else {
-                                                            if ctx.var("mao_request").get()? == 121 {
-                                                                ctx.lines(args![
-                                                                    "^3355FFLin seems to be lost",
-                                                                    "in thought, carefully",
-                                                                    "weighing your mission's",
-                                                                    "options. For now, you",
-                                                                    "better do your part and",
-                                                                    "investigate Thanatos Tower.^000000"
-                                                                ])?;
-                                                                ctx.close_window()?;
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                                            } else if ctx.var("mao_request").get()? == 118 {
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                                                ctx.lines_as("Lin", args!["Oh, good.", "You're finally back~"])?;
+                                                ctx.next()?;
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args![
+                                                        "Ah! You've finally returned.",
+                                                        "I have another request that",
+                                                        "I must ask of you that pertains",
+                                                        "to the missing children."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                                                ctx.lines_as(
+                                                    "Lin",
+                                                    args![
+                                                        "Yeah, alright.",
+                                                        "Depending on what",
+                                                        "it is, maybe we'll do it.",
+                                                        "But if it's some crazy",
+                                                        "nonsense errand, we won't."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args![
+                                                        "For the sake of my",
+                                                        "research, I want you to",
+                                                        "investigate Thanatos Tower.",
+                                                        "Learn more about its origin",
+                                                        "through any means possible. I didn't want to say this, but..."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args![
+                                                        "I think it's possible that the",
+                                                        "missing children were kidnapped",
+                                                        "to revive an ancient evil, Satan Morocc. I believe we can learn",
+                                                        "more about the kidnappers by",
+                                                        "learning about Satan Morocc."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args![
+                                                        "I know this all sounds",
+                                                        "crazy, but please trust me.",
+                                                        "Thanatos Tower is somehow",
+                                                        "related to Satan Morocc, so",
+                                                        "if you could tell me what",
+                                                        "you can learn from there..."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                                                ctx.lines_as(
+                                                    "Lin",
+                                                    args![
+                                                        "Thanatos Tower, huh?",
+                                                        "Alright, it's not like we don't",
+                                                        "believe you, but we need some",
+                                                        "time to consider your request",
+                                                        "before we can go ahead with the investigation you're asking for..."
+                                                    ],
+                                                )?;
+                                                ctx.var("mao_request").set(Val::from(119))?;
+                                                ctx.close_window()?;
+                                            } else if ctx.var("mao_request").get()? == 119 {
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                                                ctx.lines_as(
+                                                    "Lin",
+                                                    args![
+                                                        "Alright... Before",
+                                                        "we go and do this, we",
+                                                        "need to make absolutely",
+                                                        "sure of a few things."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args!["Of course.", "What is it that", "you want to ask me?"],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                                                ctx.lines_as(
+                                                    "Lin",
+                                                    args![
+                                                        "First, those men that",
+                                                        "attacked you. Are they",
+                                                        "trying to revive Satan",
+                                                        "Morocc? And those crests...",
+                                                        "Were they built to break Satan",
+                                                        "Morocc's seal or protect it?"
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(1)])?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args![
+                                                        "Oh, my attackers. I have no",
+                                                        "idea what they could want.",
+                                                        "As for the elemental crests,",
+                                                        "they were originally built by",
+                                                        "a madman to revive Satan Morocc. "
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args![
+                                                        "However, once that crazed",
+                                                        "man's plot was discovered,",
+                                                        "the crests were modified to",
+                                                        "further shield the seal that",
+                                                        "contains Satan Morocc."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args![
+                                                        "But as a historian...",
+                                                        "These stories about Satan",
+                                                        "Morocc and seals are just",
+                                                        "conjecture. I need concrete",
+                                                        "proof that the threat of",
+                                                        "Satan Morocc truly exists."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args![
+                                                        "If I can obtain that,",
+                                                        "people would be able to",
+                                                        "take Satan Morocc's threat",
+                                                        "more seriously. And Thanatos Tower wouldn't be a tourist area."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "R. Moore",
+                                                    args![
+                                                        "I'm begging you, please",
+                                                        "go to Thanatos Tower and",
+                                                        "try to find some sort of solid",
+                                                        "historical record that proves",
+                                                        "that Satan Morocc really",
+                                                        "existed in our world."
+                                                    ],
+                                                )?;
+                                                ctx.var("mao_request").set(Val::from(120))?;
+                                                ctx.close_window()?;
+                                            } else if ctx.var("mao_request").get()? == 120 {
+                                                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                                                ctx.lines_as(
+                                                    "Lin",
+                                                    args![
+                                                        "I'm not sure what to",
+                                                        "believe, but investigating",
+                                                        "Thanatos Tower seems to be",
+                                                        "our best course of action now."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Lin",
+                                                    args![
+                                                        "While you work on that,",
+                                                        "I will be trying to piece",
+                                                        "together the information that",
+                                                        "we've collected so far, as well",
+                                                        "as keep an eye on Mr. R. Moore.",
+                                                        "Good luck, and be careful."
+                                                    ],
+                                                )?;
+                                                ctx.var("mao_request").set(Val::from(121))?;
+                                                ctx.close_window()?;
+                                            } else if ctx.var("mao_request").get()? == 121 {
+                                                ctx.lines(args![
+                                                    "^3355FFLin seems to be lost",
+                                                    "in thought, carefully",
+                                                    "weighing your mission's",
+                                                    "options. For now, you",
+                                                    "better do your part and",
+                                                    "investigate Thanatos Tower.^000000"
+                                                ])?;
+                                                ctx.close_window()?;
                                             }
                                         }
                                     }
@@ -6982,141 +6836,133 @@ fn r_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             ],
                                                         )?;
                                                         ctx.close_window()?;
-                                                    } else {
-                                                        if ctx.var("mao_request").get()? == 118 {
-                                                            ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
-                                                            ctx.lines_as(
-                                                                "R. Moore",
-                                                                args![
-                                                                    "Ah, you've finally returned.",
-                                                                    "I have another request that",
-                                                                    "I must ask of you that pertains",
-                                                                    "to the missing children."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                                                            ctx.lines_as(
-                                                                "Lin",
-                                                                args![
-                                                                    "Yeah, alright.",
-                                                                    "Depending on what",
-                                                                    "it is, maybe we'll do it.",
-                                                                    "But if it's some crazy",
-                                                                    "nonsense errand, we won't."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
-                                                            ctx.lines_as(
-                                                                "R. Moore",
-                                                                args![
-                                                                    "For the sake of my",
-                                                                    "research, I want you to",
-                                                                    "investigate Thanatos Tower.",
-                                                                    "Learn more about its origin",
-                                                                    "through any means possible. I didn't want to say this, but..."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "R. Moore",
-                                                                args![
-                                                                    "I think it's possible that the",
-                                                                    "missing children were kidnapped",
-                                                                    "to revive an ancient evil, Satan Morocc. I believe we can learn",
-                                                                    "more about the kidnappers by",
-                                                                    "learning about Satan Morocc."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "R. Moore",
-                                                                args![
-                                                                    "I know this all sounds",
-                                                                    "crazy, but please trust me.",
-                                                                    "Thanatos Tower is somehow",
-                                                                    "related to Satan Morocc, so",
-                                                                    "if you could tell me what",
-                                                                    "you can learn from there..."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                                                            ctx.lines_as(
-                                                                "Lin",
-                                                                args![
-                                                                    "Thanatos Tower, huh?",
-                                                                    "Alright, it's not like we don't",
-                                                                    "believe you, but we need some",
-                                                                    "time to consider your request",
-                                                                    "before we can go ahead with the investigation you're asking for..."
-                                                                ],
-                                                            )?;
-                                                            ctx.var("mao_request").set(Val::from(119))?;
-                                                            ctx.close_window()?;
-                                                        } else {
-                                                            if ctx.var("mao_request").get()? == 119 {
-                                                                ctx.call(
-                                                                    Function::Cutin,
-                                                                    vec![Val::from("mocseal_dan01.bmp"), Val::from(1)],
-                                                                )?;
-                                                                ctx.lines_as(
-                                                                    "R. Moore",
-                                                                    args![
-                                                                        "Lin has something to ask",
-                                                                        "me, so I should probably",
-                                                                        "answer her questions before",
-                                                                        "requesting you to do anything."
-                                                                    ],
-                                                                )?;
-                                                                ctx.close_window()?;
-                                                            } else {
-                                                                if ctx.var("mao_request").get()? == 120 {
-                                                                    ctx.call(
-                                                                        Function::Cutin,
-                                                                        vec![Val::from("mocseal_dan01.bmp"), Val::from(1)],
-                                                                    )?;
-                                                                    ctx.lines_as(
-                                                                        "R. Moore",
-                                                                        args![
-                                                                            "I'm begging you, please",
-                                                                            "go to Thanatos Tower and",
-                                                                            "try to find some sort of solid",
-                                                                            "historical record that proves",
-                                                                            "that Satan Morocc really",
-                                                                            "existed in our world."
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.close_window()?;
-                                                                } else {
-                                                                    if ctx.var("mao_request").get()? == 121 {
-                                                                        ctx.call(
-                                                                            Function::Cutin,
-                                                                            vec![Val::from("mocseal_dan01.bmp"), Val::from(1)],
-                                                                        )?;
-                                                                        ctx.lines_as(
-                                                                            "R. Moore",
-                                                                            args![
-                                                                                "You'll be investigating",
-                                                                                "Thanatos Tower, then?",
-                                                                                "Good, good, I'll soon be",
-                                                                                "able to complete my work."
-                                                                            ],
-                                                                        )?;
-                                                                        ctx.next()?;
-                                                                        ctx.lines(args![
-                                                                            "^3355FFMr. R pulled out a pendant",
-                                                                            "from his necklace, placed it",
-                                                                            "against his forehead, and then",
-                                                                            "quickly mumbled something",
-                                                                            "before raising his head.^000000"
-                                                                        ])?;
-                                                                        ctx.close_window()?;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
+                                                    } else if ctx.var("mao_request").get()? == 118 {
+                                                        ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
+                                                        ctx.lines_as(
+                                                            "R. Moore",
+                                                            args![
+                                                                "Ah, you've finally returned.",
+                                                                "I have another request that",
+                                                                "I must ask of you that pertains",
+                                                                "to the missing children."
+                                                            ],
+                                                        )?;
+                                                        ctx.next()?;
+                                                        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                                                        ctx.lines_as(
+                                                            "Lin",
+                                                            args![
+                                                                "Yeah, alright.",
+                                                                "Depending on what",
+                                                                "it is, maybe we'll do it.",
+                                                                "But if it's some crazy",
+                                                                "nonsense errand, we won't."
+                                                            ],
+                                                        )?;
+                                                        ctx.next()?;
+                                                        ctx.call(Function::Cutin, vec![Val::from("mocseal_dan01.bmp"), Val::from(0)])?;
+                                                        ctx.lines_as(
+                                                            "R. Moore",
+                                                            args![
+                                                                "For the sake of my",
+                                                                "research, I want you to",
+                                                                "investigate Thanatos Tower.",
+                                                                "Learn more about its origin",
+                                                                "through any means possible. I didn't want to say this, but..."
+                                                            ],
+                                                        )?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as(
+                                                            "R. Moore",
+                                                            args![
+                                                                "I think it's possible that the",
+                                                                "missing children were kidnapped",
+                                                                "to revive an ancient evil, Satan Morocc. I believe we can learn",
+                                                                "more about the kidnappers by",
+                                                                "learning about Satan Morocc."
+                                                            ],
+                                                        )?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as(
+                                                            "R. Moore",
+                                                            args![
+                                                                "I know this all sounds",
+                                                                "crazy, but please trust me.",
+                                                                "Thanatos Tower is somehow",
+                                                                "related to Satan Morocc, so",
+                                                                "if you could tell me what",
+                                                                "you can learn from there..."
+                                                            ],
+                                                        )?;
+                                                        ctx.next()?;
+                                                        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+                                                        ctx.lines_as(
+                                                            "Lin",
+                                                            args![
+                                                                "Thanatos Tower, huh?",
+                                                                "Alright, it's not like we don't",
+                                                                "believe you, but we need some",
+                                                                "time to consider your request",
+                                                                "before we can go ahead with the investigation you're asking for..."
+                                                            ],
+                                                        )?;
+                                                        ctx.var("mao_request").set(Val::from(119))?;
+                                                        ctx.close_window()?;
+                                                    } else if ctx.var("mao_request").get()? == 119 {
+                                                        ctx.call(
+                                                            Function::Cutin,
+                                                            vec![Val::from("mocseal_dan01.bmp"), Val::from(1)],
+                                                        )?;
+                                                        ctx.lines_as(
+                                                            "R. Moore",
+                                                            args![
+                                                                "Lin has something to ask",
+                                                                "me, so I should probably",
+                                                                "answer her questions before",
+                                                                "requesting you to do anything."
+                                                            ],
+                                                        )?;
+                                                        ctx.close_window()?;
+                                                    } else if ctx.var("mao_request").get()? == 120 {
+                                                        ctx.call(
+                                                            Function::Cutin,
+                                                            vec![Val::from("mocseal_dan01.bmp"), Val::from(1)],
+                                                        )?;
+                                                        ctx.lines_as(
+                                                            "R. Moore",
+                                                            args![
+                                                                "I'm begging you, please",
+                                                                "go to Thanatos Tower and",
+                                                                "try to find some sort of solid",
+                                                                "historical record that proves",
+                                                                "that Satan Morocc really",
+                                                                "existed in our world."
+                                                            ],
+                                                        )?;
+                                                        ctx.close_window()?;
+                                                    } else if ctx.var("mao_request").get()? == 121 {
+                                                        ctx.call(
+                                                            Function::Cutin,
+                                                            vec![Val::from("mocseal_dan01.bmp"), Val::from(1)],
+                                                        )?;
+                                                        ctx.lines_as(
+                                                            "R. Moore",
+                                                            args![
+                                                                "You'll be investigating",
+                                                                "Thanatos Tower, then?",
+                                                                "Good, good, I'll soon be",
+                                                                "able to complete my work."
+                                                            ],
+                                                        )?;
+                                                        ctx.next()?;
+                                                        ctx.lines(args![
+                                                            "^3355FFMr. R pulled out a pendant",
+                                                            "from his necklace, placed it",
+                                                            "against his forehead, and then",
+                                                            "quickly mumbled something",
+                                                            "before raising his head.^000000"
+                                                        ])?;
+                                                        ctx.close_window()?;
                                                     }
                                                 }
                                             }
@@ -7181,49 +7027,41 @@ fn kidd_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.var("mao_request").get()?.number()? < 3 {
         ctx.lines_as("Kidd", args!["...", "......", "Um. Hey."])?;
         ctx.close_window()?;
-    } else {
-        if (ctx.var("mao_request").get()?.number()? > 102 && ctx.var("mao_request").get()?.number()? < 126) {
-            ctx.lines_as(
-                "Kidd",
-                args![
-                    "Oh hey, you're the one who's",
-                    "working with Lin, right? We're",
-                    "all glad you came on board for",
-                    "that mission. I mean, we can't do everything ourselves, you know?"
-                ],
-            )?;
-            ctx.close_window()?;
-        } else {
-            if ctx.var("mao_request").get()? == 3 {
-                ctx.lines_as(
-                    "Kidd",
-                    args![
-                        "The representative from",
-                        "the Dandelion organization",
-                        "is waiting for us in the hall,",
-                        "so you better hustle over to",
-                        "him. Don't worry, I'll meet you",
-                        "as soon as you get there."
-                    ],
-                )?;
-                ctx.close_window()?;
-                ctx.call(Function::DisableNpc, vec![Val::from("Kidd#1")])?;
-            } else {
-                if (ctx.var("mao_request").get()? == 28 || ctx.var("mao_request").get()? == 29) {
-                    ctx.lines_as("Kidd", args!["Oh, hey...", "You're here,", "you really came back."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Valdes", args!["Excuse me...", "But can we", "talk for a second?"])?;
-                    ctx.close_window()?;
-                } else {
-                    if (ctx.var("mao_request").get()? == 126 || ctx.var("mao_request").get()? == 127) {
-                        ctx.lines_as("Kidd", args!["Oh, hey...", "You're here,", "you really came back."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Valdes", args!["Excuse me...", "But can we", "talk for a second?"])?;
-                        ctx.close_window()?;
-                    }
-                }
-            }
-        }
+    } else if (ctx.var("mao_request").get()?.number()? > 102 && ctx.var("mao_request").get()?.number()? < 126) {
+        ctx.lines_as(
+            "Kidd",
+            args![
+                "Oh hey, you're the one who's",
+                "working with Lin, right? We're",
+                "all glad you came on board for",
+                "that mission. I mean, we can't do everything ourselves, you know?"
+            ],
+        )?;
+        ctx.close_window()?;
+    } else if ctx.var("mao_request").get()? == 3 {
+        ctx.lines_as(
+            "Kidd",
+            args![
+                "The representative from",
+                "the Dandelion organization",
+                "is waiting for us in the hall,",
+                "so you better hustle over to",
+                "him. Don't worry, I'll meet you",
+                "as soon as you get there."
+            ],
+        )?;
+        ctx.close_window()?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Kidd#1")])?;
+    } else if (ctx.var("mao_request").get()? == 28 || ctx.var("mao_request").get()? == 29) {
+        ctx.lines_as("Kidd", args!["Oh, hey...", "You're here,", "you really came back."])?;
+        ctx.next()?;
+        ctx.lines_as("Valdes", args!["Excuse me...", "But can we", "talk for a second?"])?;
+        ctx.close_window()?;
+    } else if (ctx.var("mao_request").get()? == 126 || ctx.var("mao_request").get()? == 127) {
+        ctx.lines_as("Kidd", args!["Oh, hey...", "You're here,", "you really came back."])?;
+        ctx.next()?;
+        ctx.lines_as("Valdes", args!["Excuse me...", "But can we", "talk for a second?"])?;
+        ctx.close_window()?;
     }
     ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
     return Err(Stop::End);
@@ -8487,135 +8325,127 @@ fn kidd_hall_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                         ],
                                                                                     )?;
                                                                                     ctx.close_window()?;
+                                                                                } else if ctx.var("mao_request").get()? == 25 {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![
+                                                                                            Val::from("mocseal_kid01.bmp"),
+                                                                                            Val::from(2),
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.lines_as("Kidd", args!["Raiyan Moore's supposed", "to be in the room on the other", "side of the commanding officer's room. Check it, quickly! Once", "I get my hands on that guy..."])?;
+                                                                                    ctx.close_window()?;
+                                                                                } else if (ctx.var("mao_request").get()? == 26
+                                                                                    || ctx.var("mao_request").get()? == 27)
+                                                                                {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![
+                                                                                            Val::from("mocseal_kid01.bmp"),
+                                                                                            Val::from(2),
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.lines_as("Kidd", args!["Something huge is going", "on at Morocc Castle. If that's", "where Satan Morocc is sealed,", "then the demon is beginning", "to revive. We gotta stop it before Satan Morocc can enter our world!"])?;
+                                                                                    ctx.close_window()?;
+                                                                                } else if (((ctx.var("mao_request").get()? == 28
+                                                                                    || ctx.var("mao_request").get()? == 29)
+                                                                                    || ctx.var("mao_request").get()? == 126)
+                                                                                    || ctx.var("mao_request").get()? == 127)
+                                                                                {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![
+                                                                                            Val::from("mocseal_kid01.bmp"),
+                                                                                            Val::from(2),
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Kidd",
+                                                                                        args![
+                                                                                            "Man, that was close!",
+                                                                                            "We got really lucky.",
+                                                                                            "Yeah... Let's talk about this",
+                                                                                            "some more with Valdes in",
+                                                                                            "the commanding officer's room."
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![
+                                                                                            Val::from("mocseal_dan01.bmp"),
+                                                                                            Val::from(0),
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Dandelion Member",
+                                                                                        args![
+                                                                                            "I still can't believe it...",
+                                                                                            "Those poor, poor children..."
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.call(
+                                                                                        Function::Emotion,
+                                                                                        vec![
+                                                                                            ctx.constant("ET_SCRATCH")?,
+                                                                                            Val::from(
+                                                                                                ctx.call(
+                                                                                                    Function::GetCharacterId,
+                                                                                                    vec![Val::from(0)],
+                                                                                                )?
+                                                                                                .is_true(),
+                                                                                            ),
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.close_window()?;
+                                                                                } else if (ctx
+                                                                                    .var("mao_request")
+                                                                                    .get()?
+                                                                                    .number()?
+                                                                                    > 102
+                                                                                    && ctx
+                                                                                        .var("mao_request")
+                                                                                        .get()?
+                                                                                        .number()?
+                                                                                        < 126)
+                                                                                {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![
+                                                                                            Val::from("mocseal_kid01.bmp"),
+                                                                                            Val::from(2),
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Kidd",
+                                                                                        args![
+                                                                                            "Hey, you're...",
+                                                                                            "You're Lin's partner,",
+                                                                                            "aren't you? Good luck",
+                                                                                            "working with her-- she",
+                                                                                            "can be pretty bossy."
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.close_window()?;
                                                                                 } else {
-                                                                                    if ctx.var("mao_request").get()? == 25 {
-                                                                                        ctx.call(
-                                                                                            Function::Cutin,
-                                                                                            vec![
-                                                                                                Val::from("mocseal_kid01.bmp"),
-                                                                                                Val::from(2),
-                                                                                            ],
-                                                                                        )?;
-                                                                                        ctx.lines_as("Kidd", args!["Raiyan Moore's supposed", "to be in the room on the other", "side of the commanding officer's room. Check it, quickly! Once", "I get my hands on that guy..."])?;
-                                                                                        ctx.close_window()?;
-                                                                                    } else {
-                                                                                        if (ctx.var("mao_request").get()? == 26
-                                                                                            || ctx.var("mao_request").get()? == 27)
-                                                                                        {
-                                                                                            ctx.call(
-                                                                                                Function::Cutin,
-                                                                                                vec![
-                                                                                                    Val::from("mocseal_kid01.bmp"),
-                                                                                                    Val::from(2),
-                                                                                                ],
-                                                                                            )?;
-                                                                                            ctx.lines_as("Kidd", args!["Something huge is going", "on at Morocc Castle. If that's", "where Satan Morocc is sealed,", "then the demon is beginning", "to revive. We gotta stop it before Satan Morocc can enter our world!"])?;
-                                                                                            ctx.close_window()?;
-                                                                                        } else {
-                                                                                            if (((ctx.var("mao_request").get()? == 28
-                                                                                                || ctx.var("mao_request").get()? == 29)
-                                                                                                || ctx.var("mao_request").get()? == 126)
-                                                                                                || ctx.var("mao_request").get()? == 127)
-                                                                                            {
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("mocseal_kid01.bmp"),
-                                                                                                        Val::from(2),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Kidd",
-                                                                                                    args![
-                                                                                                        "Man, that was close!",
-                                                                                                        "We got really lucky.",
-                                                                                                        "Yeah... Let's talk about this",
-                                                                                                        "some more with Valdes in",
-                                                                                                        "the commanding officer's room."
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("mocseal_dan01.bmp"),
-                                                                                                        Val::from(0),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Dandelion Member",
-                                                                                                    args![
-                                                                                                        "I still can't believe it...",
-                                                                                                        "Those poor, poor children..."
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.call(
-                                                                                                    Function::Emotion,
-                                                                                                    vec![
-                                                                                                        ctx.constant("ET_SCRATCH")?,
-                                                                                                        Val::from(
-                                                                                                            ctx.call(
-                                                                                                                Function::GetCharacterId,
-                                                                                                                vec![Val::from(0)],
-                                                                                                            )?
-                                                                                                            .is_true(),
-                                                                                                        ),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.close_window()?;
-                                                                                            } else {
-                                                                                                if (ctx
-                                                                                                    .var("mao_request")
-                                                                                                    .get()?
-                                                                                                    .number()?
-                                                                                                    > 102
-                                                                                                    && ctx
-                                                                                                        .var("mao_request")
-                                                                                                        .get()?
-                                                                                                        .number()?
-                                                                                                        < 126)
-                                                                                                {
-                                                                                                    ctx.call(
-                                                                                                        Function::Cutin,
-                                                                                                        vec![
-                                                                                                            Val::from("mocseal_kid01.bmp"),
-                                                                                                            Val::from(2),
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.lines_as(
-                                                                                                        "Kidd",
-                                                                                                        args![
-                                                                                                            "Hey, you're...",
-                                                                                                            "You're Lin's partner,",
-                                                                                                            "aren't you? Good luck",
-                                                                                                            "working with her-- she",
-                                                                                                            "can be pretty bossy."
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.close_window()?;
-                                                                                                } else {
-                                                                                                    ctx.call(
-                                                                                                        Function::Cutin,
-                                                                                                        vec![
-                                                                                                            Val::from("mocseal_kid01.bmp"),
-                                                                                                            Val::from(1),
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.lines_as(
-                                                                                                        "Kidd",
-                                                                                                        args![
-                                                                                                            "Damn it, I feel like",
-                                                                                                            "we all failed. I can",
-                                                                                                            "understand how Lin feels.",
-                                                                                                            "Still, I hate standing by",
-                                                                                                            "and waiting around..."
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.close_window()?;
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![
+                                                                                            Val::from("mocseal_kid01.bmp"),
+                                                                                            Val::from(1),
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Kidd",
+                                                                                        args![
+                                                                                            "Damn it, I feel like",
+                                                                                            "we all failed. I can",
+                                                                                            "understand how Lin feels.",
+                                                                                            "Still, I hate standing by",
+                                                                                            "and waiting around..."
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.close_window()?;
                                                                                 }
                                                                             }
                                                                         }
@@ -9212,165 +9042,157 @@ fn dandelion_member_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                     ],
                                                                                 )?;
                                                                                 ctx.close_window()?;
+                                                                            } else if ctx.var("mao_request").get()? == 25 {
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![Val::from("mocseal_dan01.bmp"), Val::from(0)],
+                                                                                )?;
+                                                                                ctx.lines_as(
+                                                                                    "Dandelion Member",
+                                                                                    args![
+                                                                                        "I can't believe that",
+                                                                                        "Raiyan Moore was under",
+                                                                                        "our noses this whole time...",
+                                                                                        "Do you know where he is now?"
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.next()?;
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![Val::from("mocseal_kid01.bmp"), Val::from(2)],
+                                                                                )?;
+                                                                                ctx.lines_as(
+                                                                                    "Kidd",
+                                                                                    args![
+                                                                                        "Yeah. Yeah...",
+                                                                                        "Don't get too",
+                                                                                        "worked up, he'll",
+                                                                                        "be right here soon."
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.close_window()?;
+                                                                            } else if (ctx.var("mao_request").get()? == 26
+                                                                                || ctx.var("mao_request").get()? == 27)
+                                                                            {
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![
+                                                                                        Val::from("mocseal_dan01.bmp"),
+                                                                                        Val::from(1),
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.lines_as(
+                                                                                    "Dandelion Member",
+                                                                                    args![
+                                                                                        "This is bad news...",
+                                                                                        "It looks like Raiyan Moore",
+                                                                                        "is performing the ritual to",
+                                                                                        "revive Satan Morocc. We need",
+                                                                                        "to go to Morocc Castle, where",
+                                                                                        "Satan Morocc is sealed..."
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.close_window()?;
+                                                                            } else if (((ctx.var("mao_request").get()? == 28
+                                                                                || ctx.var("mao_request").get()? == 29)
+                                                                                || ctx.var("mao_request").get()? == 126)
+                                                                                || ctx.var("mao_request").get()? == 127)
+                                                                            {
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![
+                                                                                        Val::from("mocseal_dan01.bmp"),
+                                                                                        Val::from(1),
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.lines_as(
+                                                                                    "Dandelion Member",
+                                                                                    args![
+                                                                                        "Well, we've sent some",
+                                                                                        "people to purse Raiyan,",
+                                                                                        "though I honestly doubt",
+                                                                                        "that they'll be able to get",
+                                                                                        "him. Luckily, though, you",
+                                                                                        "seem to be alright..."
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.close_window()?;
+                                                                            } else if (ctx.var("mao_request").get()?.number()?
+                                                                                > 102
+                                                                                && ctx
+                                                                                    .var("mao_request")
+                                                                                    .get()?
+                                                                                    .number()?
+                                                                                    < 126)
+                                                                            {
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![
+                                                                                        Val::from("mocseal_dan01.bmp"),
+                                                                                        Val::from(1),
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.lines_as(
+                                                                                    "Dandelion Member",
+                                                                                    args![
+                                                                                        "I'm sorry...",
+                                                                                        "But I'm far too busy",
+                                                                                        "to speak with you now.",
+                                                                                        "This matter requires",
+                                                                                        "my full attention!"
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.close_window()?;
                                                                             } else {
-                                                                                if ctx.var("mao_request").get()? == 25 {
-                                                                                    ctx.call(
-                                                                                        Function::Cutin,
-                                                                                        vec![Val::from("mocseal_dan01.bmp"), Val::from(0)],
-                                                                                    )?;
-                                                                                    ctx.lines_as(
-                                                                                        "Dandelion Member",
-                                                                                        args![
-                                                                                            "I can't believe that",
-                                                                                            "Raiyan Moore was under",
-                                                                                            "our noses this whole time...",
-                                                                                            "Do you know where he is now?"
-                                                                                        ],
-                                                                                    )?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.call(
-                                                                                        Function::Cutin,
-                                                                                        vec![Val::from("mocseal_kid01.bmp"), Val::from(2)],
-                                                                                    )?;
-                                                                                    ctx.lines_as(
-                                                                                        "Kidd",
-                                                                                        args![
-                                                                                            "Yeah. Yeah...",
-                                                                                            "Don't get too",
-                                                                                            "worked up, he'll",
-                                                                                            "be right here soon."
-                                                                                        ],
-                                                                                    )?;
-                                                                                    ctx.close_window()?;
-                                                                                } else {
-                                                                                    if (ctx.var("mao_request").get()? == 26
-                                                                                        || ctx.var("mao_request").get()? == 27)
-                                                                                    {
-                                                                                        ctx.call(
-                                                                                            Function::Cutin,
-                                                                                            vec![
-                                                                                                Val::from("mocseal_dan01.bmp"),
-                                                                                                Val::from(1),
-                                                                                            ],
-                                                                                        )?;
-                                                                                        ctx.lines_as(
-                                                                                            "Dandelion Member",
-                                                                                            args![
-                                                                                                "This is bad news...",
-                                                                                                "It looks like Raiyan Moore",
-                                                                                                "is performing the ritual to",
-                                                                                                "revive Satan Morocc. We need",
-                                                                                                "to go to Morocc Castle, where",
-                                                                                                "Satan Morocc is sealed..."
-                                                                                            ],
-                                                                                        )?;
-                                                                                        ctx.close_window()?;
-                                                                                    } else {
-                                                                                        if (((ctx.var("mao_request").get()? == 28
-                                                                                            || ctx.var("mao_request").get()? == 29)
-                                                                                            || ctx.var("mao_request").get()? == 126)
-                                                                                            || ctx.var("mao_request").get()? == 127)
-                                                                                        {
-                                                                                            ctx.call(
-                                                                                                Function::Cutin,
-                                                                                                vec![
-                                                                                                    Val::from("mocseal_dan01.bmp"),
-                                                                                                    Val::from(1),
-                                                                                                ],
-                                                                                            )?;
-                                                                                            ctx.lines_as(
-                                                                                                "Dandelion Member",
-                                                                                                args![
-                                                                                                    "Well, we've sent some",
-                                                                                                    "people to purse Raiyan,",
-                                                                                                    "though I honestly doubt",
-                                                                                                    "that they'll be able to get",
-                                                                                                    "him. Luckily, though, you",
-                                                                                                    "seem to be alright..."
-                                                                                                ],
-                                                                                            )?;
-                                                                                            ctx.close_window()?;
-                                                                                        } else {
-                                                                                            if (ctx.var("mao_request").get()?.number()?
-                                                                                                > 102
-                                                                                                && ctx
-                                                                                                    .var("mao_request")
-                                                                                                    .get()?
-                                                                                                    .number()?
-                                                                                                    < 126)
-                                                                                            {
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("mocseal_dan01.bmp"),
-                                                                                                        Val::from(1),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Dandelion Member",
-                                                                                                    args![
-                                                                                                        "I'm sorry...",
-                                                                                                        "But I'm far too busy",
-                                                                                                        "to speak with you now.",
-                                                                                                        "This matter requires",
-                                                                                                        "my full attention!"
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.close_window()?;
-                                                                                            } else {
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("mocseal_dan01.bmp"),
-                                                                                                        Val::from(0),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Dandelion Member",
-                                                                                                    args![
-                                                                                                        "Those poor children...",
-                                                                                                        "And what are we going",
-                                                                                                        "to tell their parents?",
-                                                                                                        "Still, perhaps this is",
-                                                                                                        "the will of ^4D4DFFFreya^000000."
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Dandelion Member",
-                                                                                                    args![
-                                                                                                        "Their deaths may have",
-                                                                                                        "been horrific, but I believe",
-                                                                                                        "that those children are now",
-                                                                                                        "safe in Freya's loving arms.",
-                                                                                                        "Who can understand the ",
-                                                                                                        "divine will of Freya?"
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("mocseal_kid01.bmp"),
-                                                                                                        Val::from(2),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Kidd",
-                                                                                                    args![
-                                                                                                        "Freya...?",
-                                                                                                        "I thought most",
-                                                                                                        "people around here",
-                                                                                                        "prayed to Odin. Well,",
-                                                                                                        "I suppose that explains",
-                                                                                                        "a couple things."
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.close_window()?;
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![
+                                                                                        Val::from("mocseal_dan01.bmp"),
+                                                                                        Val::from(0),
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.lines_as(
+                                                                                    "Dandelion Member",
+                                                                                    args![
+                                                                                        "Those poor children...",
+                                                                                        "And what are we going",
+                                                                                        "to tell their parents?",
+                                                                                        "Still, perhaps this is",
+                                                                                        "the will of ^4D4DFFFreya^000000."
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.next()?;
+                                                                                ctx.lines_as(
+                                                                                    "Dandelion Member",
+                                                                                    args![
+                                                                                        "Their deaths may have",
+                                                                                        "been horrific, but I believe",
+                                                                                        "that those children are now",
+                                                                                        "safe in Freya's loving arms.",
+                                                                                        "Who can understand the ",
+                                                                                        "divine will of Freya?"
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.next()?;
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![
+                                                                                        Val::from("mocseal_kid01.bmp"),
+                                                                                        Val::from(2),
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.lines_as(
+                                                                                    "Kidd",
+                                                                                    args![
+                                                                                        "Freya...?",
+                                                                                        "I thought most",
+                                                                                        "people around here",
+                                                                                        "prayed to Odin. Well,",
+                                                                                        "I suppose that explains",
+                                                                                        "a couple things."
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.close_window()?;
                                                                             }
                                                                         }
                                                                     }
@@ -9565,293 +9387,285 @@ fn reading_girl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("mao_request").get()? == 6 {
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args!["I was wondering if", "I could look through", "that Mr. Moore was studying..."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Yunia",
-                args![
-                    "Well, I gave most of the",
-                    "documents that I organized",
-                    "to someone else already, but",
-                    "now that I think about it, there are a few leftover, unorganized",
-                    "files that you can check out."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Yunia",
-                args![
-                    "Actually, the person that took",
-                    "the organized documents did",
-                    "so on Mr. Moore's behalf. Then,",
-                    "she quickly vanished before",
-                    "I could ask her for her name or Mr. Moore's contact information."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    "Damn! That information",
-                    "would have been really",
-                    "helpful! (^333333I better not let",
-                    "her know that I'm actually",
-                    "trying to hunt Raiyan Moore^FFFFFF ^333333 down, or that he's a kidnapper.^000000)"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Yunia",
-                args![
-                    "I hope Mr. Moore is",
-                    "alright. Oh, why don't",
-                    "you try reading his notes",
-                    "and his journal on his desk?",
-                    "That might be really helpful."
-                ],
-            )?;
-            ctx.var("mao_request").set(Val::from(7))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("mao_request").get()? == 7 {
+    } else if ctx.var("mao_request").get()? == 6 {
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["I was wondering if", "I could look through", "that Mr. Moore was studying..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Yunia",
+            args![
+                "Well, I gave most of the",
+                "documents that I organized",
+                "to someone else already, but",
+                "now that I think about it, there are a few leftover, unorganized",
+                "files that you can check out."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Yunia",
+            args![
+                "Actually, the person that took",
+                "the organized documents did",
+                "so on Mr. Moore's behalf. Then,",
+                "she quickly vanished before",
+                "I could ask her for her name or Mr. Moore's contact information."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Damn! That information",
+                "would have been really",
+                "helpful! (^333333I better not let",
+                "her know that I'm actually",
+                "trying to hunt Raiyan Moore^FFFFFF ^333333 down, or that he's a kidnapper.^000000)"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Yunia",
+            args![
+                "I hope Mr. Moore is",
+                "alright. Oh, why don't",
+                "you try reading his notes",
+                "and his journal on his desk?",
+                "That might be really helpful."
+            ],
+        )?;
+        ctx.var("mao_request").set(Val::from(7))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("mao_request").get()? == 7 {
+        ctx.lines_as(
+            "Yunia",
+            args![
+                "Mr. Moore's desk?",
+                "Just go upstairs and",
+                "look for it in the corner.",
+                "You should be able to",
+                "easily find his notes and",
+                "journal right on top of it."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("mao_request").get()? == 105 {
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Excuse me, but I'm", "looking for a Ms. Yunia?"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Yunia", args!["Oh, that's me!", "So how can I help you?"])?;
+        ctx.next()?;
+        'b3: {
+            let subject3 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Mr. R's Documents"), Val::from("What are you reading?")],
+            )?);
+            let mut matched3 = false;
+            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                matched3 = true;
+            }
+            if matched3 {
                 ctx.lines_as(
                     "Yunia",
                     args![
-                        "Mr. Moore's desk?",
-                        "Just go upstairs and",
-                        "look for it in the corner.",
-                        "You should be able to",
-                        "easily find his notes and",
-                        "journal right on top of it."
+                        "Mr. R? Ohhhh...",
+                        "Mr. R. Moore. Is...",
+                        "Is he alright? I was",
+                        "so scared when those",
+                        "strange men attacked him",
+                        "right here in Juno Library!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Oh, he's perfectly safe.",
+                        "We've got a professional to",
+                        "ensure nothing happens to him.",
+                        "But yes, he wanted me to come",
+                        "here to pick up some research documents. Do you know about that?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Yunia",
+                    args![
+                        "Ah, yes, I do!",
+                        "I've been organizing",
+                        "them for his return.",
+                        "Would you like to take",
+                        "a look before delivering",
+                        "them to Mr. R. Moore?"
+                    ],
+                )?;
+                ctx.next()?;
+                'b4: {
+                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("May I?"), Val::from("No, thanks...")])?);
+                    let mut matched4 = false;
+                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        break 'b4;
+                    }
+                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        break 'b4;
+                    }
+                }
+                ctx.lines_as(
+                    "Yunia",
+                    args![
+                        "Heh heh~ Alright~",
+                        "First you should make sure",
+                        "that the documents you're",
+                        "delivering are the ones",
+                        "that he needs, am I right?"
+                    ],
+                )?;
+                ctx.var("mao_request").set(Val::from(106))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    "Yunia",
+                    args![
+                        "Oh... You know. Just this",
+                        "story about this guy who's",
+                        "cursed so that he transforms",
+                        "into a fat dork around beautiful girls, and into a svelte, handsome",
+                        "man around dorky women."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Yunia",
+                    args![
+                        "So then he gets into this",
+                        "crazy love triangle, and now",
+                        "I'm at the part when he has to",
+                        "go on a date with both a gorgeous girl AND a geeky girl. How's",
+                        "he going to transform next...?"
                     ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("mao_request").get()? == 105 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Excuse me, but I'm", "looking for a Ms. Yunia?"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Yunia", args!["Oh, that's me!", "So how can I help you?"])?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Mr. R's Documents"), Val::from("What are you reading?")],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Yunia",
-                                args![
-                                    "Mr. R? Ohhhh...",
-                                    "Mr. R. Moore. Is...",
-                                    "Is he alright? I was",
-                                    "so scared when those",
-                                    "strange men attacked him",
-                                    "right here in Juno Library!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args![
-                                    "Oh, he's perfectly safe.",
-                                    "We've got a professional to",
-                                    "ensure nothing happens to him.",
-                                    "But yes, he wanted me to come",
-                                    "here to pick up some research documents. Do you know about that?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Yunia",
-                                args![
-                                    "Ah, yes, I do!",
-                                    "I've been organizing",
-                                    "them for his return.",
-                                    "Would you like to take",
-                                    "a look before delivering",
-                                    "them to Mr. R. Moore?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            'b4: {
-                                let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("May I?"), Val::from("No, thanks...")])?);
-                                let mut matched4 = false;
-                                let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    break 'b4;
-                                }
-                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    break 'b4;
-                                }
-                            }
-                            ctx.lines_as(
-                                "Yunia",
-                                args![
-                                    "Heh heh~ Alright~",
-                                    "First you should make sure",
-                                    "that the documents you're",
-                                    "delivering are the ones",
-                                    "that he needs, am I right?"
-                                ],
-                            )?;
-                            ctx.var("mao_request").set(Val::from(106))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Yunia",
-                                args![
-                                    "Oh... You know. Just this",
-                                    "story about this guy who's",
-                                    "cursed so that he transforms",
-                                    "into a fat dork around beautiful girls, and into a svelte, handsome",
-                                    "man around dorky women."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Yunia",
-                                args![
-                                    "So then he gets into this",
-                                    "crazy love triangle, and now",
-                                    "I'm at the part when he has to",
-                                    "go on a date with both a gorgeous girl AND a geeky girl. How's",
-                                    "he going to transform next...?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                } else {
-                    if ctx.var("mao_request").get()? == 106 {
-                        ctx.lines_as(
-                            "Yunia",
-                            args![
-                                "Okay, these should",
-                                "be the documents that",
-                                "Mr. Moore wants to read.",
-                                "Just read through them",
-                                "quickly to make sure that",
-                                "I gave you the right ones."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Let's see here...",
-                                "Some of these sentences",
-                                "are underlined... Ah, and here",
-                                "are some notes in the margins.",
-                                "Maybe this'll tell me about",
-                                "Mr. R. Moore's research..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^4d4dffSatan Morocc appeared,",
-                            "turning the world into a",
-                            "living hell. Somehow, the",
-                            "monster was sealed, and a",
-                            "castle and town was built over^FFFFFF ^4d4dff its prison. This place is Morocc."
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Whoa, that's actually",
-                                "pretty interesting. But",
-                                "I need to do my job first.",
-                                "Perhaps I'll ask Mr. R. Moore",
-                                "about this later. Hey, Yunia,",
-                                "thanks for all of your help."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Yunia",
-                            args![
-                                "You're welcome~",
-                                "Oh, and please give",
-                                "my regards to Mr. Moore",
-                                "when you see him, okay?"
-                            ],
-                        )?;
-                        ctx.var("mao_request").set(Val::from(107))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["Excuse me...", "But what are", "you reading?"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Yunia",
-                            args![
-                                "Oh... You know.",
-                                "This story about this girl",
-                                "who becomes a princess.",
-                                "And then she owns this harem",
-                                "of handsome boys, see? But",
-                                "then, she meets this one boy..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Yunia",
-                            args![
-                                "This boy refuses to join",
-                                "her harem, and it's, like, so",
-                                "ironic because he's the one she",
-                                "really wants. Even though any",
-                                "other boy in the world would",
-                                "join her harem ^FF0000willingly^000000."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Yunia",
-                            args![
-                                "Anyway, I'm reading the part",
-                                "where he-- his name's Extopher-- has to defeat Count Guillermo",
-                                "in a sword duel for the right",
-                                "to ride the unicorn pegasus.",
-                                "Ooh, what'll happen next?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
             }
         }
+    } else if ctx.var("mao_request").get()? == 106 {
+        ctx.lines_as(
+            "Yunia",
+            args![
+                "Okay, these should",
+                "be the documents that",
+                "Mr. Moore wants to read.",
+                "Just read through them",
+                "quickly to make sure that",
+                "I gave you the right ones."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Let's see here...",
+                "Some of these sentences",
+                "are underlined... Ah, and here",
+                "are some notes in the margins.",
+                "Maybe this'll tell me about",
+                "Mr. R. Moore's research..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^4d4dffSatan Morocc appeared,",
+            "turning the world into a",
+            "living hell. Somehow, the",
+            "monster was sealed, and a",
+            "castle and town was built over^FFFFFF ^4d4dff its prison. This place is Morocc."
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Whoa, that's actually",
+                "pretty interesting. But",
+                "I need to do my job first.",
+                "Perhaps I'll ask Mr. R. Moore",
+                "about this later. Hey, Yunia,",
+                "thanks for all of your help."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Yunia",
+            args![
+                "You're welcome~",
+                "Oh, and please give",
+                "my regards to Mr. Moore",
+                "when you see him, okay?"
+            ],
+        )?;
+        ctx.var("mao_request").set(Val::from(107))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Excuse me...", "But what are", "you reading?"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Yunia",
+            args![
+                "Oh... You know.",
+                "This story about this girl",
+                "who becomes a princess.",
+                "And then she owns this harem",
+                "of handsome boys, see? But",
+                "then, she meets this one boy..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Yunia",
+            args![
+                "This boy refuses to join",
+                "her harem, and it's, like, so",
+                "ironic because he's the one she",
+                "really wants. Even though any",
+                "other boy in the world would",
+                "join her harem ^FF0000willingly^000000."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Yunia",
+            args![
+                "Anyway, I'm reading the part",
+                "where he-- his name's Extopher-- has to defeat Count Guillermo",
+                "in a sword duel for the right",
+                "to ride the unicorn pegasus.",
+                "Ooh, what'll happen next?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -10164,256 +9978,250 @@ fn linstairs_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
         ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnInit")])?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("mao_request").get()? == 115 {
-            ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-            ctx.lines_as(
-                "Lin",
-                args![
-                    "Hey, I gotta talk to you",
-                    "real quick without Mr. R",
-                    "overhearing... I'm not",
-                    "taking any chances with him!"
-                ],
-            )?;
-            ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnEnter")])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lin",
-                args![
-                    "I tried to visit our local",
-                    "historian to learn more about",
-                    "Mr. R's research. To do that,",
-                    "I left Mr. R alone for a little",
-                    "while under our magic security system. However, I kinda failed."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lin",
-                args![
-                    "I got a little peeved at",
-                    "the historian guy, and he",
-                    "got a little intimidated. Now",
-                    "he's holed up somewhere",
-                    "in the Morocc Inn, and I don't",
-                    "think he's seeing anybody."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lin",
-                args![
-                    "I want you to find Morocc's",
-                    "historian and find out what",
-                    "you can about Satan Morocc,",
-                    "Morocc, and Thanatos Tower.",
-                    "We need to know how they're",
-                    "linked to the missing kids."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    "I guess since he hasn't",
-                    "met me yet, maybe he'll",
-                    "talk to me. Alright, I'll do it. "
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lin",
-                args![
-                    "Great, thanks a lot.",
-                    "Okay then, I'll see",
-                    "you later. Remember,",
-                    "the Morocc Inn, alright?"
-                ],
-            )?;
-            ctx.var("mao_request").set(Val::from(116))?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
-            ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnInit")])?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("mao_request").get()? == 117 {
-                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["L-Lin...?", "You there?"],
-                )?;
-                ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnEnter")])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lin",
-                    args![
-                        "Yeah, I'm here.",
-                        "So, were you able",
-                        "to find that historian?",
-                        "What exactly did you learn?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "Well, I was only able to",
-                        "speak to the historian's",
-                        "assistant. Let's see...",
-                        "I found out about the",
-                        "origin of this city's name..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "Thanatos Tower was used",
-                        "by Morocc Satan to summon",
-                        "his own monsters into our",
-                        "world. Now, it's being rebuilt,",
-                        "even though it houses these",
-                        "demons that look like angels..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lin",
-                    args![
-                        "Huh. That's strange.",
-                        "I heard that those are",
-                        "actually real angels that",
-                        "are guarding the tower for",
-                        "some reason. Hm. What else",
-                        "did you manage to learn?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "Well, Satan Morocc, if it",
-                        "exists, might be able to",
-                        "come back into our world",
-                        "if the seal is broken by",
-                        "sacrificing children..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lin",
-                    args![
-                        "That... That sounds",
-                        "really bad, especially",
-                        "with all of those children",
-                        "missing from Morocc lately.",
-                        "What'll be our next move?",
-                        "I guess we'll talk to Mr. R."
-                    ],
-                )?;
-                ctx.var("mao_request").set(Val::from(118))?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lin",
-                    args![
-                        "The way things are going,",
-                        "he's probably gonna ask us",
-                        "to investigate Thanatos Tower.",
-                        "For now, we'll see what he wants. Ah, and not a word of anything",
-                        "that we've discussed out here."
-                    ],
-                )?;
-                ctx.close_window()?;
-                ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
-                ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnInit")])?;
-                return Err(Stop::End);
-            } else {
-                if (ctx.var("mao_request").get()? == 121 && ctx.var("thana_quest").get()?.number()? > 1) {
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
-                    ctx.lines_as(
-                        "Lin",
-                        args!["Report to me first.", "Did you learn anything", "about Thanatos Tower?"],
-                    )?;
-                    ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnEnter")])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "Well, I found some old log",
-                            "entries about Satan Morocc.",
-                            "They pretty much confirm that",
-                            "Satan Morocc is real, and that",
-                            "it's sealed under Morocc Castle. "
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "The Rekenber Corporation",
-                            "is also responsible for the",
-                            "tower's reconstruction, and",
-                            "they ultimately plan to repair",
-                            "all tweleve of its levels."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lin",
-                        args![
-                            "Why would they want to do",
-                            "something crazy like that?",
-                            "If Mr. R is really preventing",
-                            "Morocc Satan's return, then",
-                            "his attackers must want",
-                            "to revive Morocc Satan..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lin",
-                        args![
-                            "But if he's lying, and",
-                            "he's trying to bring Morocc",
-                            "Satan into our world, then",
-                            "he's wanted by the Dandelion",
-                            "group... meaning, he may be",
-                            "the target for Kidd's mission."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lin",
-                        args![
-                            "Crap! This could be",
-                            "really bad. I need to",
-                            "talk about this to our",
-                            "commanding officer Valdes",
-                            "about this. While I do that,",
-                            "you go and check on Mr. R."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lin",
-                        args![
-                            "Why did Valdes accept",
-                            "both of these missions?!",
-                            "In the worst case scenario,",
-                            "we might be the ones who'll",
-                            "have to keep Satan Morocc",
-                            "from returning to this world..."
-                        ],
-                    )?;
-                    ctx.var("mao_request").set(Val::from(122))?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
-                    ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnInit")])?;
-                    return Err(Stop::End);
-                }
-            }
-        }
+    } else if ctx.var("mao_request").get()? == 115 {
+        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "Hey, I gotta talk to you",
+                "real quick without Mr. R",
+                "overhearing... I'm not",
+                "taking any chances with him!"
+            ],
+        )?;
+        ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnEnter")])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "I tried to visit our local",
+                "historian to learn more about",
+                "Mr. R's research. To do that,",
+                "I left Mr. R alone for a little",
+                "while under our magic security system. However, I kinda failed."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "I got a little peeved at",
+                "the historian guy, and he",
+                "got a little intimidated. Now",
+                "he's holed up somewhere",
+                "in the Morocc Inn, and I don't",
+                "think he's seeing anybody."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "I want you to find Morocc's",
+                "historian and find out what",
+                "you can about Satan Morocc,",
+                "Morocc, and Thanatos Tower.",
+                "We need to know how they're",
+                "linked to the missing kids."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "I guess since he hasn't",
+                "met me yet, maybe he'll",
+                "talk to me. Alright, I'll do it. "
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "Great, thanks a lot.",
+                "Okay then, I'll see",
+                "you later. Remember,",
+                "the Morocc Inn, alright?"
+            ],
+        )?;
+        ctx.var("mao_request").set(Val::from(116))?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
+        ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnInit")])?;
+        return Err(Stop::End);
+    } else if ctx.var("mao_request").get()? == 117 {
+        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["L-Lin...?", "You there?"],
+        )?;
+        ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnEnter")])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "Yeah, I'm here.",
+                "So, were you able",
+                "to find that historian?",
+                "What exactly did you learn?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Well, I was only able to",
+                "speak to the historian's",
+                "assistant. Let's see...",
+                "I found out about the",
+                "origin of this city's name..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Thanatos Tower was used",
+                "by Morocc Satan to summon",
+                "his own monsters into our",
+                "world. Now, it's being rebuilt,",
+                "even though it houses these",
+                "demons that look like angels..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "Huh. That's strange.",
+                "I heard that those are",
+                "actually real angels that",
+                "are guarding the tower for",
+                "some reason. Hm. What else",
+                "did you manage to learn?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Well, Satan Morocc, if it",
+                "exists, might be able to",
+                "come back into our world",
+                "if the seal is broken by",
+                "sacrificing children..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "That... That sounds",
+                "really bad, especially",
+                "with all of those children",
+                "missing from Morocc lately.",
+                "What'll be our next move?",
+                "I guess we'll talk to Mr. R."
+            ],
+        )?;
+        ctx.var("mao_request").set(Val::from(118))?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "The way things are going,",
+                "he's probably gonna ask us",
+                "to investigate Thanatos Tower.",
+                "For now, we'll see what he wants. Ah, and not a word of anything",
+                "that we've discussed out here."
+            ],
+        )?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
+        ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnInit")])?;
+        return Err(Stop::End);
+    } else if (ctx.var("mao_request").get()? == 121 && ctx.var("thana_quest").get()?.number()? > 1) {
+        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(2)])?;
+        ctx.lines_as(
+            "Lin",
+            args!["Report to me first.", "Did you learn anything", "about Thanatos Tower?"],
+        )?;
+        ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnEnter")])?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Well, I found some old log",
+                "entries about Satan Morocc.",
+                "They pretty much confirm that",
+                "Satan Morocc is real, and that",
+                "it's sealed under Morocc Castle. "
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "The Rekenber Corporation",
+                "is also responsible for the",
+                "tower's reconstruction, and",
+                "they ultimately plan to repair",
+                "all tweleve of its levels."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "Why would they want to do",
+                "something crazy like that?",
+                "If Mr. R is really preventing",
+                "Morocc Satan's return, then",
+                "his attackers must want",
+                "to revive Morocc Satan..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "But if he's lying, and",
+                "he's trying to bring Morocc",
+                "Satan into our world, then",
+                "he's wanted by the Dandelion",
+                "group... meaning, he may be",
+                "the target for Kidd's mission."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "Crap! This could be",
+                "really bad. I need to",
+                "talk about this to our",
+                "commanding officer Valdes",
+                "about this. While I do that,",
+                "you go and check on Mr. R."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lin",
+            args![
+                "Why did Valdes accept",
+                "both of these missions?!",
+                "In the worst case scenario,",
+                "we might be the ones who'll",
+                "have to keep Satan Morocc",
+                "from returning to this world..."
+            ],
+        )?;
+        ctx.var("mao_request").set(Val::from(122))?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("mocseal_rin01.bmp"), Val::from(255)])?;
+        ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#stairs::OnInit")])?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -10471,69 +10279,63 @@ fn upturned_spot_water_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.lines(args!["^3355FFYou probably need a Rough", "Wind to counter its power.^000000"])?;
             ctx.close_window()?;
         }
-    } else {
-        if (ctx.var("mao_request").get()?.number()? > 14 && ctx.var("mao_request").get()?.number()? < 100) {
+    } else if (ctx.var("mao_request").get()?.number()? > 14 && ctx.var("mao_request").get()?.number()? < 100) {
+        ctx.lines(args![
+            "^3355FFYou find a gleaming",
+            "crest that looks like a",
+            "splashing wave of water.^000000",
+            "^3355FFHowever, you don't sense",
+            "anything strange about it.^000000"
+        ])?;
+        ctx.call(Function::Cutin, vec![Val::from("mocseal_ice02.bmp"), Val::from(2)])?;
+        ctx.close_window()?;
+    } else if ctx.var("mao_request").get()? == 113 {
+        ctx.lines(args![
+            "^3355FFYou find a gleaming",
+            "crest that looks like a",
+            "splashing wave of water.^000000"
+        ])?;
+        ctx.call(Function::Cutin, vec![Val::from("mocseal_ice02.bmp"), Val::from(2)])?;
+        if ctx.call(Function::CountItem, vec![Val::from(995)])?.is_true() {
             ctx.lines(args![
-                "^3355FFYou find a gleaming",
-                "crest that looks like a",
-                "splashing wave of water.^000000",
-                "^3355FFHowever, you don't sense",
-                "anything strange about it.^000000"
+                "^3355FFYou bring out a Mystic Frozen",
+                "to enhance the crest's power.^000000"
             ])?;
-            ctx.call(Function::Cutin, vec![Val::from("mocseal_ice02.bmp"), Val::from(2)])?;
+            ctx.next()?;
+            ctx.call(Function::Cutin, vec![Val::from("mocseal_ice01.bmp"), Val::from(2)])?;
+            ctx.lines(args![
+                "^3355FFThe crest resonates",
+                "with the Mystic Frozen,",
+                "suddenly causing the air",
+                "to chill and raising the",
+                "waves in the oasis.^000000"
+            ])?;
+            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL2")?])?;
+            ctx.call(Function::DelItem, vec![Val::from(995), Val::from(1)])?;
+            ctx.var("mao_request").set(Val::from(114))?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args![
+                    "Alright...",
+                    "Now I should look for",
+                    "the crest hidden in the",
+                    "field north of Morocc."
+                ],
+            )?;
             ctx.close_window()?;
         } else {
-            if ctx.var("mao_request").get()? == 113 {
-                ctx.lines(args![
-                    "^3355FFYou find a gleaming",
-                    "crest that looks like a",
-                    "splashing wave of water.^000000"
-                ])?;
-                ctx.call(Function::Cutin, vec![Val::from("mocseal_ice02.bmp"), Val::from(2)])?;
-                if ctx.call(Function::CountItem, vec![Val::from(995)])?.is_true() {
-                    ctx.lines(args![
-                        "^3355FFYou bring out a Mystic Frozen",
-                        "to enhance the crest's power.^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_ice01.bmp"), Val::from(2)])?;
-                    ctx.lines(args![
-                        "^3355FFThe crest resonates",
-                        "with the Mystic Frozen,",
-                        "suddenly causing the air",
-                        "to chill and raising the",
-                        "waves in the oasis.^000000"
-                    ])?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL2")?])?;
-                    ctx.call(Function::DelItem, vec![Val::from(995), Val::from(1)])?;
-                    ctx.var("mao_request").set(Val::from(114))?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "Alright...",
-                            "Now I should look for",
-                            "the crest hidden in the",
-                            "field north of Morocc."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                } else {
-                    ctx.lines(args!["^3355FFYou probably need a Mystic", "Frozen to enhance its power."])?;
-                    ctx.close_window()?;
-                }
-            } else {
-                if ctx.var("mao_request").get()?.number()? > 112 {
-                    ctx.lines(args![
-                        "^3355FFYou find a gleaming",
-                        "crest that looks like a",
-                        "splashing wave of water.^000000"
-                    ])?;
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_ice01.bmp"), Val::from(2)])?;
-                    ctx.close_window()?;
-                }
-            }
+            ctx.lines(args!["^3355FFYou probably need a Mystic", "Frozen to enhance its power."])?;
+            ctx.close_window()?;
         }
+    } else if ctx.var("mao_request").get()?.number()? > 112 {
+        ctx.lines(args![
+            "^3355FFYou find a gleaming",
+            "crest that looks like a",
+            "splashing wave of water.^000000"
+        ])?;
+        ctx.call(Function::Cutin, vec![Val::from("mocseal_ice01.bmp"), Val::from(2)])?;
+        ctx.close_window()?;
     }
     ctx.call(Function::Cutin, vec![Val::from("mocseal_ice01.bmp"), Val::from(255)])?;
     ctx.call(Function::Cutin, vec![Val::from("mocseal_ice02.bmp"), Val::from(255)])?;
@@ -10588,228 +10390,220 @@ fn unturned_spot_wind_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ],
             )?;
             ctx.close_window()?;
-        } else {
-            if ctx.var("mao_request").get()? == 12 {
-                if ctx.call(Function::CountItem, vec![Val::from(997)])?.is_true() {
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_wind01.bmp"), Val::from(2)])?;
-                    ctx.lines(args![
-                        "^3355FFYou find a shining crest",
-                        "that looks like a symbol of",
-                        "the Wind. As you approach it,",
-                        "you can feel the wind blowing",
-                        "strongly against your skin.^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "Okay, the power of the",
-                            "Earth counteracts the ",
-                            "Wind. I'll just pull out this",
-                            "Great Nature and... Eh?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^3355FFThe Wind elemental crest",
-                        "quickly responds to the",
-                        "Great Nature stone.^000000"
-                    ])?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL4")?])?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL5")?])?;
-                    ctx.next()?;
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
-                    ctx.lines(args![
-                        "^3355FFThe Wind and Earth",
-                        "neutralized each other,",
-                        "causing the power of the",
-                        "Wind in this area to stabilize.^000000"
-                    ])?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SPHERE")?])?;
-                    ctx.call(Function::DelItem, vec![Val::from(997), Val::from(1)])?;
-                    ctx.var("mao_request").set(Val::from(13))?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "Great, now that I'm done",
-                            "with this crest, I need to",
-                            "find the next one. Let's see,",
-                            "I need to find the one to the",
-                            "south that Kidd already found."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                } else {
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_wind01.bmp"), Val::from(2)])?;
-                    ctx.lines(args![
-                        "^3355FFYou find a shining crest",
-                        "that looks like a symbol of",
-                        "the Wind. As you approach it,",
-                        "you can feel the wind blowing",
-                        "strongly against your skin.^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Wind, wind, wind...", "What do I use to counteract", "the Wind property? It was..."],
-                    )?;
-                    ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Fire"), Val::from("Ice"), Val::from("Wind"), Val::from("Earth")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3))
-                            && !subject1.loosely_equals(&Val::from(4));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args!["Fire...? No, that's...", "Wind and Fire sort of", "go together, don't they?"],
-                            )?;
-                            ctx.close_window()?;
-                            break 'b1;
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args![
-                                    "Ice...? No...",
-                                    "The power of Wind, of",
-                                    "lightning, supersedes",
-                                    "the power of Ice and water..."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            break 'b1;
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args!["I got it...!", "I'll fight Wind", "with Wind! No...", "Don't be ridiculous."],
-                            )?;
-                            ctx.close_window()?;
-                            break 'b1;
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args!["Earth...?", "That's it! I need a", "Great Nature to use", "on this Wind crest!"],
-                            )?;
-                            ctx.close_window()?;
-                            break 'b1;
-                        }
-                    }
-                }
+        } else if ctx.var("mao_request").get()? == 12 {
+            if ctx.call(Function::CountItem, vec![Val::from(997)])?.is_true() {
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind01.bmp"), Val::from(2)])?;
+                ctx.lines(args![
+                    "^3355FFYou find a shining crest",
+                    "that looks like a symbol of",
+                    "the Wind. As you approach it,",
+                    "you can feel the wind blowing",
+                    "strongly against your skin.^000000"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Okay, the power of the",
+                        "Earth counteracts the ",
+                        "Wind. I'll just pull out this",
+                        "Great Nature and... Eh?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines(args![
+                    "^3355FFThe Wind elemental crest",
+                    "quickly responds to the",
+                    "Great Nature stone.^000000"
+                ])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL4")?])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL5")?])?;
+                ctx.next()?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
+                ctx.lines(args![
+                    "^3355FFThe Wind and Earth",
+                    "neutralized each other,",
+                    "causing the power of the",
+                    "Wind in this area to stabilize.^000000"
+                ])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SPHERE")?])?;
+                ctx.call(Function::DelItem, vec![Val::from(997), Val::from(1)])?;
+                ctx.var("mao_request").set(Val::from(13))?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Great, now that I'm done",
+                        "with this crest, I need to",
+                        "find the next one. Let's see,",
+                        "I need to find the one to the",
+                        "south that Kidd already found."
+                    ],
+                )?;
+                ctx.close_window()?;
             } else {
-                if (ctx.var("mao_request").get()?.number()? > 12 && ctx.var("mao_request").get()?.number()? < 100) {
-                    ctx.lines(args![
-                        "^3355FFYou find a shining crest",
-                        "that looks like a symbol of",
-                        "the Wind. However, you don't",
-                        "think that it's particularly",
-                        "worthy of an investigation.^000000"
-                    ])?;
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
-                    ctx.close_window()?;
-                } else {
-                    if ctx.var("mao_request").get()? == 110 {
-                        ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
-                        ctx.lines(args![
-                            "^3355FFYou find a shining crest",
-                            "that looks like a symbol of",
-                            "the Wind. However, the air",
-                            "flow around it seems weak.^000000"
-                        ])?;
-                        ctx.next()?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind01.bmp"), Val::from(2)])?;
+                ctx.lines(args![
+                    "^3355FFYou find a shining crest",
+                    "that looks like a symbol of",
+                    "the Wind. As you approach it,",
+                    "you can feel the wind blowing",
+                    "strongly against your skin.^000000"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Wind, wind, wind...", "What do I use to counteract", "the Wind property? It was..."],
+                )?;
+                ctx.next()?;
+                'b1: {
+                    let subject1 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Fire"), Val::from("Ice"), Val::from("Wind"), Val::from("Earth")],
+                    )?);
+                    let mut matched1 = false;
+                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                        && !subject1.loosely_equals(&Val::from(2))
+                        && !subject1.loosely_equals(&Val::from(3))
+                        && !subject1.loosely_equals(&Val::from(4));
+                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args!["Fire...? No, that's...", "Wind and Fire sort of", "go together, don't they?"],
+                        )?;
+                        ctx.close_window()?;
+                        break 'b1;
+                    }
+                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
                         ctx.lines_as(
                             ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                             args![
-                                "This must be what I'm looking",
-                                "for. It looks like an artifact of the Wind element, but the wind",
-                                "around here isn't as strong as it should be. I think I might need",
-                                "to bring a ^4D4DFFRough Wind^000000 here..."
+                                "Ice...? No...",
+                                "The power of Wind, of",
+                                "lightning, supersedes",
+                                "the power of Ice and water..."
                             ],
                         )?;
-                        ctx.var("mao_request").set(Val::from(111))?;
                         ctx.close_window()?;
-                    } else {
-                        if ctx.var("mao_request").get()? == 111 {
-                            if ctx.call(Function::CountItem, vec![Val::from(996)])?.is_true() {
-                                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args![
-                                        "Let's see...",
-                                        "Hopefully this",
-                                        "Rough Wind will do",
-                                        "the trick. Whoa. Um...",
-                                        "Something's happening..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^3355FFThe elemental crest",
-                                    "quickly responds to the",
-                                    "Rough Wind, causing the",
-                                    "crest to shine brighter and",
-                                    "the wind to blow stronger.^000000"
-                                ])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL4")?])?;
-                                ctx.call(Function::DelItem, vec![Val::from(996), Val::from(1)])?;
-                                ctx.var("mao_request").set(Val::from(112))?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind01.bmp"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args![
-                                        "Well, I guess that's that.",
-                                        "Now I need to talk to Lin",
-                                        "and figure out if there are",
-                                        "more of these things to be",
-                                        "found outside of Morocc."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                            } else {
-                                ctx.lines(args![
-                                    "^3355FFYou need to bring",
-                                    "a Rough Wind to activate",
-                                    "this Wind elemental crest.^000000"
-                                ])?;
-                                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
-                                ctx.close_window()?;
-                            }
-                        } else {
-                            if ctx.var("mao_request").get()?.number()? > 111 {
-                                ctx.lines(args![
-                                    "^3355FFYou find a shining crest",
-                                    "that looks like a symbol of",
-                                    "the Wind. As you approach it,",
-                                    "you can feel the wind blowing",
-                                    "strongly against your skin.^000000"
-                                ])?;
-                                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind01.bmp"), Val::from(2)])?;
-                                ctx.close_window()?;
-                            }
-                        }
+                        break 'b1;
+                    }
+                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args!["I got it...!", "I'll fight Wind", "with Wind! No...", "Don't be ridiculous."],
+                        )?;
+                        ctx.close_window()?;
+                        break 'b1;
+                    }
+                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args!["Earth...?", "That's it! I need a", "Great Nature to use", "on this Wind crest!"],
+                        )?;
+                        ctx.close_window()?;
+                        break 'b1;
                     }
                 }
+            }
+        } else {
+            if (ctx.var("mao_request").get()?.number()? > 12 && ctx.var("mao_request").get()?.number()? < 100) {
+                ctx.lines(args![
+                    "^3355FFYou find a shining crest",
+                    "that looks like a symbol of",
+                    "the Wind. However, you don't",
+                    "think that it's particularly",
+                    "worthy of an investigation.^000000"
+                ])?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
+                ctx.close_window()?;
+            } else if ctx.var("mao_request").get()? == 110 {
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
+                ctx.lines(args![
+                    "^3355FFYou find a shining crest",
+                    "that looks like a symbol of",
+                    "the Wind. However, the air",
+                    "flow around it seems weak.^000000"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "This must be what I'm looking",
+                        "for. It looks like an artifact of the Wind element, but the wind",
+                        "around here isn't as strong as it should be. I think I might need",
+                        "to bring a ^4D4DFFRough Wind^000000 here..."
+                    ],
+                )?;
+                ctx.var("mao_request").set(Val::from(111))?;
+                ctx.close_window()?;
+            } else if ctx.var("mao_request").get()? == 111 {
+                if ctx.call(Function::CountItem, vec![Val::from(996)])?.is_true() {
+                    ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args![
+                            "Let's see...",
+                            "Hopefully this",
+                            "Rough Wind will do",
+                            "the trick. Whoa. Um...",
+                            "Something's happening..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFThe elemental crest",
+                        "quickly responds to the",
+                        "Rough Wind, causing the",
+                        "crest to shine brighter and",
+                        "the wind to blow stronger.^000000"
+                    ])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL4")?])?;
+                    ctx.call(Function::DelItem, vec![Val::from(996), Val::from(1)])?;
+                    ctx.var("mao_request").set(Val::from(112))?;
+                    ctx.next()?;
+                    ctx.call(Function::Cutin, vec![Val::from("mocseal_wind01.bmp"), Val::from(2)])?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args![
+                            "Well, I guess that's that.",
+                            "Now I need to talk to Lin",
+                            "and figure out if there are",
+                            "more of these things to be",
+                            "found outside of Morocc."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                } else {
+                    ctx.lines(args![
+                        "^3355FFYou need to bring",
+                        "a Rough Wind to activate",
+                        "this Wind elemental crest.^000000"
+                    ])?;
+                    ctx.call(Function::Cutin, vec![Val::from("mocseal_wind02.bmp"), Val::from(2)])?;
+                    ctx.close_window()?;
+                }
+            } else if ctx.var("mao_request").get()?.number()? > 111 {
+                ctx.lines(args![
+                    "^3355FFYou find a shining crest",
+                    "that looks like a symbol of",
+                    "the Wind. As you approach it,",
+                    "you can feel the wind blowing",
+                    "strongly against your skin.^000000"
+                ])?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_wind01.bmp"), Val::from(2)])?;
+                ctx.close_window()?;
             }
         }
     }
@@ -10896,58 +10690,54 @@ fn unturned_spot_earth_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ])?;
             ctx.call(Function::Cutin, vec![Val::from("mocseal_earth02.bmp"), Val::from(2)])?;
             ctx.close_window()?;
-        } else {
-            if ctx.var("mao_request").get()? == 112 {
+        } else if ctx.var("mao_request").get()? == 112 {
+            ctx.lines(args![
+                "^3355FFYou find a shimmering",
+                "crest that symbolizes",
+                "the power of the Earth.",
+                "You'll need a Great Nature",
+                "stone to enhance its power.^000000"
+            ])?;
+            ctx.call(Function::Cutin, vec![Val::from("mocseal_earth02.bmp"), Val::from(2)])?;
+            ctx.next()?;
+            if ctx.call(Function::CountItem, vec![Val::from(997)])?.is_true() {
                 ctx.lines(args![
-                    "^3355FFYou find a shimmering",
-                    "crest that symbolizes",
-                    "the power of the Earth.",
-                    "You'll need a Great Nature",
-                    "stone to enhance its power.^000000"
+                    "^3355FFYou pull out a",
+                    "Great Nature, which",
+                    "causes tremors in the",
+                    "ground and sand to flow",
+                    "towards the crest.^000000"
                 ])?;
-                ctx.call(Function::Cutin, vec![Val::from("mocseal_earth02.bmp"), Val::from(2)])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL5")?])?;
+                ctx.call(Function::DelItem, vec![Val::from(997), Val::from(1)])?;
+                ctx.var("mao_request").set(Val::from(113))?;
                 ctx.next()?;
-                if ctx.call(Function::CountItem, vec![Val::from(997)])?.is_true() {
-                    ctx.lines(args![
-                        "^3355FFYou pull out a",
-                        "Great Nature, which",
-                        "causes tremors in the",
-                        "ground and sand to flow",
-                        "towards the crest.^000000"
-                    ])?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL5")?])?;
-                    ctx.call(Function::DelItem, vec![Val::from(997), Val::from(1)])?;
-                    ctx.var("mao_request").set(Val::from(113))?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "Great, I think that actually",
-                            "worked! Now, I should try",
-                            "to find the crest hidden to",
-                            "the east of Morocc."
-                        ],
-                    )?;
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_earth01.bmp"), Val::from(2)])?;
-                    ctx.close_window()?;
-                } else {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["The next time that", "I come here, I better", "have a Great Nature ready..."],
-                    )?;
-                    ctx.close_window()?;
-                }
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Great, I think that actually",
+                        "worked! Now, I should try",
+                        "to find the crest hidden to",
+                        "the east of Morocc."
+                    ],
+                )?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_earth01.bmp"), Val::from(2)])?;
+                ctx.close_window()?;
             } else {
-                if ctx.var("mao_request").get()?.number()? > 111 {
-                    ctx.lines(args![
-                        "^3355FFYou find a shimmering",
-                        "crest that symbolizes",
-                        "the power of the Earth.^000000"
-                    ])?;
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_earth01.bmp"), Val::from(2)])?;
-                    ctx.close_window()?;
-                }
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["The next time that", "I come here, I better", "have a Great Nature ready..."],
+                )?;
+                ctx.close_window()?;
             }
+        } else if ctx.var("mao_request").get()?.number()? > 111 {
+            ctx.lines(args![
+                "^3355FFYou find a shimmering",
+                "crest that symbolizes",
+                "the power of the Earth.^000000"
+            ])?;
+            ctx.call(Function::Cutin, vec![Val::from("mocseal_earth01.bmp"), Val::from(2)])?;
+            ctx.close_window()?;
         }
     }
     ctx.call(Function::Cutin, vec![Val::from("mocseal_earth01.bmp"), Val::from(255)])?;
@@ -11026,45 +10816,41 @@ fn unturned_spot_fire_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ])?;
             ctx.call(Function::Cutin, vec![Val::from("mocseal_fire02.bmp"), Val::from(2)])?;
             ctx.close_window()?;
-        } else {
-            if ctx.var("mao_request").get()? == 114 {
-                ctx.call(Function::Cutin, vec![Val::from("mocseal_fire02.bmp"), Val::from(2)])?;
-                ctx.lines(args!["^3355FFYou find a gleaming", "crest that symbolizes Fire."])?;
-                if ctx.call(Function::CountItem, vec![Val::from(994)])?.is_true() {
-                    ctx.lines(args!["You'll need a Flame Heart", "in order to enhance its power.^000000"])?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^3355FFYou pull out a Flame",
-                        "Heart, and the crest",
-                        "begins to shine as the",
-                        "air around you heats up.^000000"
-                    ])?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL3")?])?;
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_fire01.bmp"), Val::from(2)])?;
-                    ctx.call(Function::DelItem, vec![Val::from(994), Val::from(1)])?;
-                    ctx.var("mao_request").set(Val::from(115))?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "Well, that's the",
-                            "last elemental crest.",
-                            "Now I better go back",
-                            "and report to Lin."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                } else {
-                    ctx.lines(args!["You'll need a Flame Heart", "in order to enhance its power.^000000"])?;
-                    ctx.close_window()?;
-                }
+        } else if ctx.var("mao_request").get()? == 114 {
+            ctx.call(Function::Cutin, vec![Val::from("mocseal_fire02.bmp"), Val::from(2)])?;
+            ctx.lines(args!["^3355FFYou find a gleaming", "crest that symbolizes Fire."])?;
+            if ctx.call(Function::CountItem, vec![Val::from(994)])?.is_true() {
+                ctx.lines(args!["You'll need a Flame Heart", "in order to enhance its power.^000000"])?;
+                ctx.next()?;
+                ctx.lines(args![
+                    "^3355FFYou pull out a Flame",
+                    "Heart, and the crest",
+                    "begins to shine as the",
+                    "air around you heats up.^000000"
+                ])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL3")?])?;
+                ctx.call(Function::Cutin, vec![Val::from("mocseal_fire01.bmp"), Val::from(2)])?;
+                ctx.call(Function::DelItem, vec![Val::from(994), Val::from(1)])?;
+                ctx.var("mao_request").set(Val::from(115))?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Well, that's the",
+                        "last elemental crest.",
+                        "Now I better go back",
+                        "and report to Lin."
+                    ],
+                )?;
+                ctx.close_window()?;
             } else {
-                if ctx.var("mao_request").get()?.number()? > 113 {
-                    ctx.lines(args!["^3355FFYou find a gleaming", "crest that symbolizes Fire.^000000"])?;
-                    ctx.call(Function::Cutin, vec![Val::from("mocseal_fire01.bmp"), Val::from(2)])?;
-                    ctx.close_window()?;
-                }
+                ctx.lines(args!["You'll need a Flame Heart", "in order to enhance its power.^000000"])?;
+                ctx.close_window()?;
             }
+        } else if ctx.var("mao_request").get()?.number()? > 113 {
+            ctx.lines(args!["^3355FFYou find a gleaming", "crest that symbolizes Fire.^000000"])?;
+            ctx.call(Function::Cutin, vec![Val::from("mocseal_fire01.bmp"), Val::from(2)])?;
+            ctx.close_window()?;
         }
     }
     ctx.call(Function::Cutin, vec![Val::from("mocseal_fire01.bmp"), Val::from(255)])?;
@@ -11091,403 +10877,397 @@ fn assistant_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("mao_request").get()?.number()? > 116 {
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Hopefully, I was able to",
+                "help you with whatever",
+                "information that you needed.",
+                "Morocc has a much richer",
+                "history than most people",
+                "realize, don't you think?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "When I get some time,",
+                "I really want to investigate",
+                "that Thanatos Tower. I get",
+                "the feeling that there's so",
+                "much I can learn there~"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("mao_request").get()? == 18 {
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Oh, we usually don't",
+                "have many visitors here.",
+                "Are you here to speak to",
+                "our local historian? He's",
+                "pretty busy right now, so",
+                "I hope you can come back later."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Though, to be honest,",
+                "he's kind of hiding under",
+                "the covers at the moment.",
+                "Some Assassin came to",
+                "request some information,",
+                "but he scared him off..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "It was pretty funny, actually.",
+                "The guy walked in, flashed",
+                "his dagger, and declared that",
+                "he needed some important",
+                "information. I guess my boss",
+                "was pretty intimidated by him."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "If it's really important,",
+                "then I might be able to",
+                "answer your questions if",
+                "they're about Morocc's most",
+                "ancient histories and legends."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou ask Sephit about the",
+            "four elemental crests around",
+            "Morocc, their significance, and",
+            "about Raiyan Moore. You also",
+            "inform her that you've already",
+            "stabilized the crests' power.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Moore... Moore...",
+                "His work sounds really",
+                "important, so I'm surprised",
+                "I haven't heard of him. I'd ask",
+                "my boss, but I can't disturb",
+                "him right now. Ah, well..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Oh, first of all, not too",
+                "many people know about",
+                "those crests. Still, you did",
+                "a great service by stabilizing",
+                "them. Otherwise, the seal under",
+                "Morocc Castle would break."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "The seal beneath Morocc",
+                "Castle actually keeps Satan",
+                "Morocc from entering our world.",
+                "If he ever returned, he might",
+                "repeat the mass destruction"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "When Satan Morocc",
+                "was terrorizing the human",
+                "world, he used Thanatos",
+                "Tower as his power base.",
+                "There, he would summon",
+                "countless hordes of minions."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "That tower has been in ruins",
+                "for years, but recently some",
+                "company started reconstructing",
+                "it, even though demons, well,",
+                "disguised as angels, still",
+                "roam that place freely."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Satan Morocc may have been",
+                "unimaginably powerful, but",
+                "it would take a lot of work",
+                "to bring him back into our",
+                "world. Let's see, you could",
+                "destroy Morocc's seal..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "There was also... Oh, God.",
+                "Long ago, someone actually",
+                "sacrificed children in a failed",
+                "attempt to revive Morocc Satan.",
+                "The children missing here in",
+                "Morocc-- Y-you don't think..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "But who really knows?",
+                "I mean we have historical",
+                "records of Satan Morocc, ",
+                "but maybe it's just a legend.",
+                "Aside from that, we have no",
+                "proof that he really exists."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "...Well, aside from those",
+                "elemental crests, I mean.",
+                "Then again, maybe they just",
+                "regulate this region's elements",
+                "to make it possible for people",
+                "to live here in the desert."
+            ],
+        )?;
+        ctx.var("mao_request").set(Val::from(19))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("mao_request").get()? == 116 {
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Oh, we usually don't",
+                "have many visitors here.",
+                "Are you here to speak to",
+                "our local historian? He's",
+                "pretty busy right now, so",
+                "I hope you can come back later."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Though, to be honest,",
+                "he's kind of hiding under",
+                "the covers at the moment.",
+                "Some Assassin came to",
+                "request some information,",
+                "but she scared him off..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "If it's really important,",
+                "then I might be able to",
+                "answer your questions if",
+                "they're about Morocc's most",
+                "ancient histories and legends."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou ask Sephit for any",
+            "information related to",
+            "Satan Morocc and Thanatos",
+            "Tower, particularly their",
+            "significance and how",
+            "they might be related.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou also inform her",
+            "about Moore's research,",
+            "and about the elemental",
+            "crests hidden throughout",
+            "Morocc that you've balanced.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Moore... Moore...",
+                "His work sounds really",
+                "important, so I'm surprised",
+                "I haven't heard of him. I'd ask",
+                "my boss, but I can't disturb",
+                "him right now. Ah, well..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Oh, first of all, not too",
+                "many people know about",
+                "those crests. Still, you did",
+                "a great service by stabilizing",
+                "them. Otherwise, the seal under",
+                "Morocc Castle would break."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "The seal beneath Morocc",
+                "Castle actually keeps Satan",
+                "Morocc from entering our world.",
+                "If he ever returned, he might",
+                "repeat the mass destruction",
+                "that he caused in the past."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "It's funny that you should ask",
+                "about Thanatos Tower. When",
+                "Satan Morocc was terrorizing",
+                "our world, he used that place",
+                "to summon hordes of minions",
+                "that would menace us humans."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "That tower has been in ruins",
+                "for years, but recently some",
+                "company started reconstructing",
+                "it, even though demons, well,",
+                "disguised as angels, still",
+                "roam that place freely."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Satan Morocc may have been",
+                "unimaginably powerful, but",
+                "it would take a lot of work",
+                "to bring him back into our",
+                "world. Let's see, you could",
+                "destroy Morocc's seal..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "There was also... Oh, God.",
+                "Long ago, someone actually",
+                "sacrificed children in a failed",
+                "attempt to revive Morocc Satan.",
+                "The children missing here in",
+                "Morocc-- Y-you don't think..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "But who really knows?",
+                "I mean we have historical",
+                "records of Satan Morocc, ",
+                "but maybe it's just a legend.",
+                "Aside from that, we have no",
+                "proof that he really exists."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "...Well, aside from those",
+                "elemental crests, I mean.",
+                "Then again, maybe they just",
+                "regulate this region's elements",
+                "to make it possible for people",
+                "to live here in the desert."
+            ],
+        )?;
+        ctx.var("mao_request").set(Val::from(117))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("mao_request").get()?.number()? > 116 {
-            ctx.lines_as(
-                "Sephit",
-                args![
-                    "Hopefully, I was able to",
-                    "help you with whatever",
-                    "information that you needed.",
-                    "Morocc has a much richer",
-                    "history than most people",
-                    "realize, don't you think?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Sephit",
-                args![
-                    "When I get some time,",
-                    "I really want to investigate",
-                    "that Thanatos Tower. I get",
-                    "the feeling that there's so",
-                    "much I can learn there~"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("mao_request").get()? == 18 {
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "Oh, we usually don't",
-                        "have many visitors here.",
-                        "Are you here to speak to",
-                        "our local historian? He's",
-                        "pretty busy right now, so",
-                        "I hope you can come back later."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "Though, to be honest,",
-                        "he's kind of hiding under",
-                        "the covers at the moment.",
-                        "Some Assassin came to",
-                        "request some information,",
-                        "but he scared him off..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "It was pretty funny, actually.",
-                        "The guy walked in, flashed",
-                        "his dagger, and declared that",
-                        "he needed some important",
-                        "information. I guess my boss",
-                        "was pretty intimidated by him."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "If it's really important,",
-                        "then I might be able to",
-                        "answer your questions if",
-                        "they're about Morocc's most",
-                        "ancient histories and legends."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^3355FFYou ask Sephit about the",
-                    "four elemental crests around",
-                    "Morocc, their significance, and",
-                    "about Raiyan Moore. You also",
-                    "inform her that you've already",
-                    "stabilized the crests' power.^000000"
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "Moore... Moore...",
-                        "His work sounds really",
-                        "important, so I'm surprised",
-                        "I haven't heard of him. I'd ask",
-                        "my boss, but I can't disturb",
-                        "him right now. Ah, well..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "Oh, first of all, not too",
-                        "many people know about",
-                        "those crests. Still, you did",
-                        "a great service by stabilizing",
-                        "them. Otherwise, the seal under",
-                        "Morocc Castle would break."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "The seal beneath Morocc",
-                        "Castle actually keeps Satan",
-                        "Morocc from entering our world.",
-                        "If he ever returned, he might",
-                        "repeat the mass destruction"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "When Satan Morocc",
-                        "was terrorizing the human",
-                        "world, he used Thanatos",
-                        "Tower as his power base.",
-                        "There, he would summon",
-                        "countless hordes of minions."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "That tower has been in ruins",
-                        "for years, but recently some",
-                        "company started reconstructing",
-                        "it, even though demons, well,",
-                        "disguised as angels, still",
-                        "roam that place freely."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "Satan Morocc may have been",
-                        "unimaginably powerful, but",
-                        "it would take a lot of work",
-                        "to bring him back into our",
-                        "world. Let's see, you could",
-                        "destroy Morocc's seal..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "There was also... Oh, God.",
-                        "Long ago, someone actually",
-                        "sacrificed children in a failed",
-                        "attempt to revive Morocc Satan.",
-                        "The children missing here in",
-                        "Morocc-- Y-you don't think..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "But who really knows?",
-                        "I mean we have historical",
-                        "records of Satan Morocc, ",
-                        "but maybe it's just a legend.",
-                        "Aside from that, we have no",
-                        "proof that he really exists."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sephit",
-                    args![
-                        "...Well, aside from those",
-                        "elemental crests, I mean.",
-                        "Then again, maybe they just",
-                        "regulate this region's elements",
-                        "to make it possible for people",
-                        "to live here in the desert."
-                    ],
-                )?;
-                ctx.var("mao_request").set(Val::from(19))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("mao_request").get()? == 116 {
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "Oh, we usually don't",
-                            "have many visitors here.",
-                            "Are you here to speak to",
-                            "our local historian? He's",
-                            "pretty busy right now, so",
-                            "I hope you can come back later."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "Though, to be honest,",
-                            "he's kind of hiding under",
-                            "the covers at the moment.",
-                            "Some Assassin came to",
-                            "request some information,",
-                            "but she scared him off..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "If it's really important,",
-                            "then I might be able to",
-                            "answer your questions if",
-                            "they're about Morocc's most",
-                            "ancient histories and legends."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^3355FFYou ask Sephit for any",
-                        "information related to",
-                        "Satan Morocc and Thanatos",
-                        "Tower, particularly their",
-                        "significance and how",
-                        "they might be related.^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^3355FFYou also inform her",
-                        "about Moore's research,",
-                        "and about the elemental",
-                        "crests hidden throughout",
-                        "Morocc that you've balanced.^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "Moore... Moore...",
-                            "His work sounds really",
-                            "important, so I'm surprised",
-                            "I haven't heard of him. I'd ask",
-                            "my boss, but I can't disturb",
-                            "him right now. Ah, well..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "Oh, first of all, not too",
-                            "many people know about",
-                            "those crests. Still, you did",
-                            "a great service by stabilizing",
-                            "them. Otherwise, the seal under",
-                            "Morocc Castle would break."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "The seal beneath Morocc",
-                            "Castle actually keeps Satan",
-                            "Morocc from entering our world.",
-                            "If he ever returned, he might",
-                            "repeat the mass destruction",
-                            "that he caused in the past."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "It's funny that you should ask",
-                            "about Thanatos Tower. When",
-                            "Satan Morocc was terrorizing",
-                            "our world, he used that place",
-                            "to summon hordes of minions",
-                            "that would menace us humans."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "That tower has been in ruins",
-                            "for years, but recently some",
-                            "company started reconstructing",
-                            "it, even though demons, well,",
-                            "disguised as angels, still",
-                            "roam that place freely."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "Satan Morocc may have been",
-                            "unimaginably powerful, but",
-                            "it would take a lot of work",
-                            "to bring him back into our",
-                            "world. Let's see, you could",
-                            "destroy Morocc's seal..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "There was also... Oh, God.",
-                            "Long ago, someone actually",
-                            "sacrificed children in a failed",
-                            "attempt to revive Morocc Satan.",
-                            "The children missing here in",
-                            "Morocc-- Y-you don't think..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "But who really knows?",
-                            "I mean we have historical",
-                            "records of Satan Morocc, ",
-                            "but maybe it's just a legend.",
-                            "Aside from that, we have no",
-                            "proof that he really exists."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "...Well, aside from those",
-                            "elemental crests, I mean.",
-                            "Then again, maybe they just",
-                            "regulate this region's elements",
-                            "to make it possible for people",
-                            "to live here in the desert."
-                        ],
-                    )?;
-                    ctx.var("mao_request").set(Val::from(117))?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "Oh, we usually don't",
-                            "have many visitors here.",
-                            "Are you here to speak to",
-                            "our local historian? He's",
-                            "pretty busy right now, so",
-                            "I hope you can come back later."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "Lately, I've been",
-                            "digging through some",
-                            "old historical records and",
-                            "learned something about",
-                            "a monster called Satan Morocc."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sephit",
-                        args![
-                            "According to the legends,",
-                            "he's sealed beneath Morocc",
-                            "Castle, and our town gets its",
-                            "name from him. That sounds",
-                            "pretty grotesque, don't you",
-                            "think? Too weird to be true..."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
-        }
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Oh, we usually don't",
+                "have many visitors here.",
+                "Are you here to speak to",
+                "our local historian? He's",
+                "pretty busy right now, so",
+                "I hope you can come back later."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "Lately, I've been",
+                "digging through some",
+                "old historical records and",
+                "learned something about",
+                "a monster called Satan Morocc."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sephit",
+            args![
+                "According to the legends,",
+                "he's sealed beneath Morocc",
+                "Castle, and our town gets its",
+                "name from him. That sounds",
+                "pretty grotesque, don't you",
+                "think? Too weird to be true..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -11574,150 +11354,148 @@ fn mao_table_run(ctx: &Ctx, mut step: MaoTableStep, args: Vec<Val>) -> Result<Va
                     ctx.close_window()?;
                     ctx.call(Function::DoNpcEvent, vec![Val::from("Kidd#2::OnInit")])?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("mao_request").get()? == 123 {
-                        ctx.lines_as(
-                            "Lin",
-                            args![
-                                "Master, did you know",
-                                "from the beginning?!",
-                                "You knew that the person",
-                                "I was supposed to protect",
-                                "is the same person that",
-                                "Kidd is supposed to find?!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Valdes",
-                            args![
-                                "Lin, calm down. Yes,",
-                                "I suspected as such from",
-                                "the start. However, I did",
-                                "know whether to trust Mr. R",
-                                "or the Dandelion organization."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Valdes",
-                            args![
-                                "Since both parties claimed",
-                                "to be able to help the missing",
-                                "children, I took the chance.",
-                                "For now, the best thing to",
-                                "do would be to ask if Mr. R's",
-                                "attackers are from Dandelion..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lin",
-                            args![
-                                "Alright... I can't believe",
-                                "it... Mr. R. Moore... Kidd",
-                                "is supposed to hunt down",
-                                "Raiyan Moore... It's too",
-                                "much of a coincidence..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Lin! I'm sorry to",
-                                "interrupt, but Mr. R",
-                                "is missing... I don't",
-                                "know where he is!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lin",
-                            args![
-                                "What?! What do yo--",
-                                "Wh-what's going on?!",
-                                "What's this noise in",
-                                "my f-freakin' head?!"
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                Val::from("que_job01"),
-                                Val::from("...Blood... is the currency... of the soul..."),
-                                Val::from(1),
-                                Val::from(8087790),
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Lin", args!["Oh no...", "This is what", "I feared the most..."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["What's...", "What's going on?"],
-                        )?;
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                Val::from("que_job01"),
-                                Val::from("...We... need... blood... of... innocence..."),
-                                Val::from(1),
-                                Val::from(8087790),
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lin",
-                            args![
-                                "I think...",
-                                "I think it's the",
-                                "ceremony to revive",
-                                "Satan Morocc! Mr. R must",
-                                "have went there to stop",
-                                "them... or to join them!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Valdes",
-                            args![
-                                "Lin, go call everyone",
-                                "in the guild! And you,",
-                                "try to find the source",
-                                "of that weird echo!",
-                                "Hurry, there's no time!"
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                Val::from("que_job01"),
-                                Val::from("...Grant... us... immortality... Satan Morocc..."),
-                                Val::from(1),
-                                Val::from(8087790),
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Lin", args!["Yes, sir!"])?;
-                        ctx.next()?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#2::OnInit")])?;
-                        ctx.lines_as(
-                            "Valdes",
-                            args![
-                                "No matter what the ",
-                                "cost, we can't let",
-                                "that ritual finish...!",
-                                "If Satan Morocc really",
-                                "exists, we can't let",
-                                "him enter our world!"
-                            ],
-                        )?;
-                        ctx.var("mao_request").set(Val::from(124))?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("que_job01"), Val::from(11), Val::from(4)])?;
-                        return Err(Stop::End);
-                    }
+                } else if ctx.var("mao_request").get()? == 123 {
+                    ctx.lines_as(
+                        "Lin",
+                        args![
+                            "Master, did you know",
+                            "from the beginning?!",
+                            "You knew that the person",
+                            "I was supposed to protect",
+                            "is the same person that",
+                            "Kidd is supposed to find?!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Valdes",
+                        args![
+                            "Lin, calm down. Yes,",
+                            "I suspected as such from",
+                            "the start. However, I did",
+                            "know whether to trust Mr. R",
+                            "or the Dandelion organization."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Valdes",
+                        args![
+                            "Since both parties claimed",
+                            "to be able to help the missing",
+                            "children, I took the chance.",
+                            "For now, the best thing to",
+                            "do would be to ask if Mr. R's",
+                            "attackers are from Dandelion..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Lin",
+                        args![
+                            "Alright... I can't believe",
+                            "it... Mr. R. Moore... Kidd",
+                            "is supposed to hunt down",
+                            "Raiyan Moore... It's too",
+                            "much of a coincidence..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args![
+                            "Lin! I'm sorry to",
+                            "interrupt, but Mr. R",
+                            "is missing... I don't",
+                            "know where he is!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Lin",
+                        args![
+                            "What?! What do yo--",
+                            "Wh-what's going on?!",
+                            "What's this noise in",
+                            "my f-freakin' head?!"
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("que_job01"),
+                            Val::from("...Blood... is the currency... of the soul..."),
+                            Val::from(1),
+                            Val::from(8087790),
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Lin", args!["Oh no...", "This is what", "I feared the most..."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["What's...", "What's going on?"],
+                    )?;
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("que_job01"),
+                            Val::from("...We... need... blood... of... innocence..."),
+                            Val::from(1),
+                            Val::from(8087790),
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Lin",
+                        args![
+                            "I think...",
+                            "I think it's the",
+                            "ceremony to revive",
+                            "Satan Morocc! Mr. R must",
+                            "have went there to stop",
+                            "them... or to join them!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Valdes",
+                        args![
+                            "Lin, go call everyone",
+                            "in the guild! And you,",
+                            "try to find the source",
+                            "of that weird echo!",
+                            "Hurry, there's no time!"
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("que_job01"),
+                            Val::from("...Grant... us... immortality... Satan Morocc..."),
+                            Val::from(1),
+                            Val::from(8087790),
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Lin", args!["Yes, sir!"])?;
+                    ctx.next()?;
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("Lin#2::OnInit")])?;
+                    ctx.lines_as(
+                        "Valdes",
+                        args![
+                            "No matter what the ",
+                            "cost, we can't let",
+                            "that ritual finish...!",
+                            "If Satan Morocc really",
+                            "exists, we can't let",
+                            "him enter our world!"
+                        ],
+                    )?;
+                    ctx.var("mao_request").set(Val::from(124))?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("que_job01"), Val::from(11), Val::from(4)])?;
+                    return Err(Stop::End);
                 }
                 step = MaoTableStep::OnInit;
                 continue 'machine;
@@ -11999,26 +11777,24 @@ fn man_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.var("$mao_gate1").set(Val::from(1))?;
             return Err(Stop::End);
         }
-    } else {
-        if (ctx.var("mao_request").get()? == 124 || ctx.var("mao_request").get()? == 125) {
-            ctx.next()?;
-            ctx.lines_as(
-                "Man",
-                args![
-                    "Ghhhk~! Fr-fresh...",
-                    "B-blood! Hee hee hee~",
-                    "For th-the ritual, I-I'll",
-                    "d-dedicate... Myself...",
-                    "For the s-sacrifice!",
-                    "^333333*Cough Cough!*^000000"
-                ],
-            )?;
-            if !(ctx.var("$mao_gate2").get()?.is_true()) {
-                ctx.close_window()?;
-                ctx.call(Function::Warp, vec![Val::from("que_job03"), Val::from(14), Val::from(182)])?;
-                ctx.var("$mao_gate2").set(Val::from(1))?;
-                return Err(Stop::End);
-            }
+    } else if (ctx.var("mao_request").get()? == 124 || ctx.var("mao_request").get()? == 125) {
+        ctx.next()?;
+        ctx.lines_as(
+            "Man",
+            args![
+                "Ghhhk~! Fr-fresh...",
+                "B-blood! Hee hee hee~",
+                "For th-the ritual, I-I'll",
+                "d-dedicate... Myself...",
+                "For the s-sacrifice!",
+                "^333333*Cough Cough!*^000000"
+            ],
+        )?;
+        if !(ctx.var("$mao_gate2").get()?.is_true()) {
+            ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("que_job03"), Val::from(14), Val::from(182)])?;
+            ctx.var("$mao_gate2").set(Val::from(1))?;
+            return Err(Stop::End);
         }
     }
     ctx.close_window()?;

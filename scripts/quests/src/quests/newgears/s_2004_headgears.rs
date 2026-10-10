@@ -1049,268 +1049,266 @@ fn old_blacksmith_hgear_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if (ctx.call(Function::CountItem, vec![Val::from(2255)])?.number()? > 0
-            && ctx.call(Function::CountItem, vec![Val::from(2286)])?.number()? > 0)
-        {
-            ctx.lines_as(
-                "Hatbyr Mhore",
-                args!["Oh? It seems that you're carrying some valuable stuff with you."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Hatbyr Mhore", args!["Hmm, if you like, I could make you something truly amazing with that ^4d4dffEvil Wing^000000 and ^4d4dffElven Ears^000000 that you have."])?;
-            ctx.next()?;
-            ctx.lines_as("Hatbyr Mhore", args!["How does that sound?", "Oh, and don't you worry about my skill! I'm pretty well known among Blacksmiths for my talent, and my knack of making great things out of junk."])?;
-            ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Umm, let me think.:Okay, make it for me then.:Can you make it with an Angel Wing..?",
-                    )],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines_as(
-                        "Hatbyr Mhore",
-                        args![
-                            "Huh. What's to think about?! I was gonna use all of my skill to create something special for you. Ah well..."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines_as(
-                        "Hatbyr Mhore",
-                        args!["Aha~ Good good good.", "Let's see let's see...", "1 Devil Wing", "1 Elven Ears..."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Hatbyr Mhore",
-                        args![
-                            "Some other crap and",
-                            "...20,000 zeny.",
-                            "I must say this is a very cheap price to pay for such a great item. But before I start, I should tell you..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Hatbyr Mhore", args!["I don't care how many times you've upgraded the items you brought, but please ^4d4dff carry only items that you need to create this item. I can't mess up my artwork because of some mistake you might make. ^000000"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("I am ready.:Okay, let me go store my other items first.")],
-                    )?) == 1
-                    {
-                        if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? < 2000 {
-                            ctx.lines_as(
-                                "Hatbyr Mhore",
-                                args![
-                                    "Ouch, why are you carrying",
-                                    "so many items with you?",
-                                    "Leave all your extra baggage somewhere else and come back."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ((ctx.call(Function::CountItem, vec![Val::from(2255)])?.number()? > 0
-                                && ctx.call(Function::CountItem, vec![Val::from(2286)])?.number()? > 0)
-                                && ctx.var("Zeny").get()?.number()? > 19999)
-                            {
-                                ctx.lines_as("Hatbyr Mhore", args!["Alright...", "Let's get a groove on!"])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_REPAIRWEAPON")?])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Hatbyr Mhore",
-                                    args![
-                                        "There you go, buddy.",
-                                        "I am proud to say this is my masterpiece. Please take this item. I call it... 'Devil Wing Ears!'"
-                                    ],
-                                )?;
-                                ctx.call(Function::DelItem, vec![Val::from(2255), Val::from(1)])?;
-                                ctx.call(Function::DelItem, vec![Val::from(2286), Val::from(1)])?;
-                                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(20000))?))?;
-                                ctx.call(Function::GetItem, vec![Val::from(5068), Val::from(1)])?;
-                                ctx.next()?;
-                                ctx.lines_as("Hatbyr Mhore", args!["You'll be wowing everyone on the streets with your fashionable new look that says 'It feels so good to be so bad.' Glad to be of service~!"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            ctx.lines_as("Hatbyr Mhore", args!["I'm sorry buddy, but I can't make this item without having the things I need. Remember, I need 1 Devil Wing, 1 Elven Ears and 20,000 zeny."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                    ctx.lines_as(
-                        "Hatbyr Mhore",
-                        args!["No problem.", "Come back anytime you want.", "I'll just be here enjoying the view."],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines_as(
-                        "Hatbyr Mhore",
-                        args![
-                            "Of course, I can make an item",
-                            "out of an Angel Wing as well!",
-                            "That sort of thing is simple for me!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Hatbyr Mhore",
-                        args![
-                            "Okay then, then I'll need...",
-                            "1 Angel Wing,",
-                            "1 Elven Ears,",
-                            "...and 20,000 zeny."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Hatbyr Mhore", args!["I must say this is a very cheap price considering the item I will make for you. But before I start, I should tell you..."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Hatbyr Mhore", args!["I don't care how many times you've upgraded the items you brought, but please ^4d4dff carry only items that you need to create this item.^000000 I can't mess up my artwork because of some mistake you might make."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("I am ready.:Okay, let me go store my other items first.")],
-                    )?) == 1
-                    {
-                        if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? < 2000 {
-                            ctx.lines_as(
-                                "Hatbyr Mhore",
-                                args![
-                                    "Ouch, why are you carrying",
-                                    "so many items with you?",
-                                    "Leave all your extra baggage somewhere else and come back."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ((ctx.call(Function::CountItem, vec![Val::from(2254)])?.number()? > 0
-                                && ctx.call(Function::CountItem, vec![Val::from(2286)])?.number()? > 0)
-                                && ctx.var("Zeny").get()?.number()? > 19999)
-                            {
-                                ctx.lines(args!["Alright...", "Let's get a groove on!"])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_REPAIRWEAPON")?])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Hatbyr Mhore",
-                                    args![
-                                        "There you go, buddy.",
-                                        "I am proud to say this is my masterpiece. Please take this item. I call it... 'Angel Wing Ears!'"
-                                    ],
-                                )?;
-                                ctx.call(Function::DelItem, vec![Val::from(2254), Val::from(1)])?;
-                                ctx.call(Function::DelItem, vec![Val::from(2286), Val::from(1)])?;
-                                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(20000))?))?;
-                                ctx.call(Function::GetItem, vec![Val::from(5074), Val::from(1)])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Hatbyr Mhore",
-                                    args!["There's no doubt that you'll be the talk of the town sporting these fashionable things."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Hatbyr Mhore", args!["The glamour of an angel and the cuteness of Elven Ears is almost too much goodness for one headgear~!"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            ctx.lines_as("Hatbyr Mhore", args!["I'm sorry buddy, but I can't make this item without having the things I need. Remember, I need 1 Angel Wing, 1 Elven Ears and 20,000 zeny."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                    ctx.lines_as(
-                        "Hatbyr Mhore",
-                        args![
-                            "No problem.",
-                            "Come back anytime you want.",
-                            " ",
-                            "I'll just be here enjoying the view."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
-        } else {
-            ctx.lines_as("Hatbyr Mhore", args!["I happened to come to Juno while I was traveling around the world. Being someplace up in the clouds makes me a little nervous, but still, the scenery looks great from up here."])?;
-            ctx.next()?;
-            ctx.lines_as("Hatbyr Mhore", args!["Although I really enjoy traveling more than staying in my shop, I'm still a Blacksmith at heart and I always gotta be making something. It's been a while since I've made my last creation..."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Hatbyr Mhore",
-                args![
-                    "Hmm...",
-                    "If I had some materials, I think I could put together some pretty amazing stuff."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Hatbyr Mhore",
-                args![
-                    "If by any chance, you have an Angel Wing or Evil Wing, and",
-                    "Elven Ears, would you give me a chance to smith something?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Hatbyr Mhore", args!["I was thinking...", "Elven Ears are great...", "And everyone loves Angel Wing or Devil Wing. Wouldn't it be totally fab if I could combine the Elven Ears with one of the wings?!"])?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(
+    } else if (ctx.call(Function::CountItem, vec![Val::from(2255)])?.number()? > 0
+        && ctx.call(Function::CountItem, vec![Val::from(2286)])?.number()? > 0)
+    {
+        ctx.lines_as(
+            "Hatbyr Mhore",
+            args!["Oh? It seems that you're carrying some valuable stuff with you."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Hatbyr Mhore", args!["Hmm, if you like, I could make you something truly amazing with that ^4d4dffEvil Wing^000000 and ^4d4dffElven Ears^000000 that you have."])?;
+        ctx.next()?;
+        ctx.lines_as("Hatbyr Mhore", args!["How does that sound?", "Oh, and don't you worry about my skill! I'm pretty well known among Blacksmiths for my talent, and my knack of making great things out of junk."])?;
+        ctx.next()?;
+        'b2: {
+            let subject2 = Val::from(runtime::select_values(
                 ctx,
-                &[Val::from("Give me more information.:Yeah, I will think about it.")],
-            )?) == 1
-            {
-                ctx.lines_as("Hatbyr Mhore", args!["Oh, right.", "Let me tell", "you exactly I need."])?;
-                ctx.next()?;
+                &[Val::from(
+                    "Umm, let me think.:Okay, make it for me then.:Can you make it with an Angel Wing..?",
+                )],
+            )?);
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                && !subject2.loosely_equals(&Val::from(2))
+                && !subject2.loosely_equals(&Val::from(3));
+            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                matched2 = true;
+            }
+            if matched2 {
                 ctx.lines_as(
                     "Hatbyr Mhore",
                     args![
-                        "For creating Angel Wing Ears, I need 1 ^4d4dffAngel Wing^000000,",
-                        "1 ^4d4dffElven Ears^000000 and",
-                        "^4d4dff20,000 zeny^000000."
+                        "Huh. What's to think about?! I was gonna use all of my skill to create something special for you. Ah well..."
                     ],
                 )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hatbyr Mhore",
-                    args![
-                        "For creating Devil Wing Ears,",
-                        "I need 1 ^4d4dffDevil Wing^000000,",
-                        "1 ^4d4dffElven Ears^000000 and",
-                        "^4d4dff20,000 zeny^000000."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Hatbyr Mhore", args!["Come back anytime when you have those materials.", "I will let you have either the elegance of an angel or the charisma of a demon with the wearables only I can craft."])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as(
+                    "Hatbyr Mhore",
+                    args!["Aha~ Good good good.", "Let's see let's see...", "1 Devil Wing", "1 Elven Ears..."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Hatbyr Mhore",
+                    args![
+                        "Some other crap and",
+                        "...20,000 zeny.",
+                        "I must say this is a very cheap price to pay for such a great item. But before I start, I should tell you..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Hatbyr Mhore", args!["I don't care how many times you've upgraded the items you brought, but please ^4d4dff carry only items that you need to create this item. I can't mess up my artwork because of some mistake you might make. ^000000"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("I am ready.:Okay, let me go store my other items first.")],
+                )?) == 1
+                {
+                    if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? < 2000 {
+                        ctx.lines_as(
+                            "Hatbyr Mhore",
+                            args![
+                                "Ouch, why are you carrying",
+                                "so many items with you?",
+                                "Leave all your extra baggage somewhere else and come back."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        if ((ctx.call(Function::CountItem, vec![Val::from(2255)])?.number()? > 0
+                            && ctx.call(Function::CountItem, vec![Val::from(2286)])?.number()? > 0)
+                            && ctx.var("Zeny").get()?.number()? > 19999)
+                        {
+                            ctx.lines_as("Hatbyr Mhore", args!["Alright...", "Let's get a groove on!"])?;
+                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_REPAIRWEAPON")?])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Hatbyr Mhore",
+                                args![
+                                    "There you go, buddy.",
+                                    "I am proud to say this is my masterpiece. Please take this item. I call it... 'Devil Wing Ears!'"
+                                ],
+                            )?;
+                            ctx.call(Function::DelItem, vec![Val::from(2255), Val::from(1)])?;
+                            ctx.call(Function::DelItem, vec![Val::from(2286), Val::from(1)])?;
+                            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(20000))?))?;
+                            ctx.call(Function::GetItem, vec![Val::from(5068), Val::from(1)])?;
+                            ctx.next()?;
+                            ctx.lines_as("Hatbyr Mhore", args!["You'll be wowing everyone on the streets with your fashionable new look that says 'It feels so good to be so bad.' Glad to be of service~!"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        ctx.lines_as("Hatbyr Mhore", args!["I'm sorry buddy, but I can't make this item without having the things I need. Remember, I need 1 Devil Wing, 1 Elven Ears and 20,000 zeny."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+                ctx.lines_as(
+                    "Hatbyr Mhore",
+                    args!["No problem.", "Come back anytime you want.", "I'll just be here enjoying the view."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as(
+                    "Hatbyr Mhore",
+                    args![
+                        "Of course, I can make an item",
+                        "out of an Angel Wing as well!",
+                        "That sort of thing is simple for me!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Hatbyr Mhore",
+                    args![
+                        "Okay then, then I'll need...",
+                        "1 Angel Wing,",
+                        "1 Elven Ears,",
+                        "...and 20,000 zeny."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Hatbyr Mhore", args!["I must say this is a very cheap price considering the item I will make for you. But before I start, I should tell you..."])?;
+                ctx.next()?;
+                ctx.lines_as("Hatbyr Mhore", args!["I don't care how many times you've upgraded the items you brought, but please ^4d4dff carry only items that you need to create this item.^000000 I can't mess up my artwork because of some mistake you might make."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("I am ready.:Okay, let me go store my other items first.")],
+                )?) == 1
+                {
+                    if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? < 2000 {
+                        ctx.lines_as(
+                            "Hatbyr Mhore",
+                            args![
+                                "Ouch, why are you carrying",
+                                "so many items with you?",
+                                "Leave all your extra baggage somewhere else and come back."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        if ((ctx.call(Function::CountItem, vec![Val::from(2254)])?.number()? > 0
+                            && ctx.call(Function::CountItem, vec![Val::from(2286)])?.number()? > 0)
+                            && ctx.var("Zeny").get()?.number()? > 19999)
+                        {
+                            ctx.lines(args!["Alright...", "Let's get a groove on!"])?;
+                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_REPAIRWEAPON")?])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Hatbyr Mhore",
+                                args![
+                                    "There you go, buddy.",
+                                    "I am proud to say this is my masterpiece. Please take this item. I call it... 'Angel Wing Ears!'"
+                                ],
+                            )?;
+                            ctx.call(Function::DelItem, vec![Val::from(2254), Val::from(1)])?;
+                            ctx.call(Function::DelItem, vec![Val::from(2286), Val::from(1)])?;
+                            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(20000))?))?;
+                            ctx.call(Function::GetItem, vec![Val::from(5074), Val::from(1)])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Hatbyr Mhore",
+                                args!["There's no doubt that you'll be the talk of the town sporting these fashionable things."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Hatbyr Mhore", args!["The glamour of an angel and the cuteness of Elven Ears is almost too much goodness for one headgear~!"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        ctx.lines_as("Hatbyr Mhore", args!["I'm sorry buddy, but I can't make this item without having the things I need. Remember, I need 1 Angel Wing, 1 Elven Ears and 20,000 zeny."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+                ctx.lines_as(
+                    "Hatbyr Mhore",
+                    args![
+                        "No problem.",
+                        "Come back anytime you want.",
+                        " ",
+                        "I'll just be here enjoying the view."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else {
+        ctx.lines_as("Hatbyr Mhore", args!["I happened to come to Juno while I was traveling around the world. Being someplace up in the clouds makes me a little nervous, but still, the scenery looks great from up here."])?;
+        ctx.next()?;
+        ctx.lines_as("Hatbyr Mhore", args!["Although I really enjoy traveling more than staying in my shop, I'm still a Blacksmith at heart and I always gotta be making something. It's been a while since I've made my last creation..."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hatbyr Mhore",
+            args![
+                "Hmm...",
+                "If I had some materials, I think I could put together some pretty amazing stuff."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hatbyr Mhore",
+            args![
+                "If by any chance, you have an Angel Wing or Evil Wing, and",
+                "Elven Ears, would you give me a chance to smith something?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Hatbyr Mhore", args!["I was thinking...", "Elven Ears are great...", "And everyone loves Angel Wing or Devil Wing. Wouldn't it be totally fab if I could combine the Elven Ears with one of the wings?!"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("Give me more information.:Yeah, I will think about it.")],
+        )?) == 1
+        {
+            ctx.lines_as("Hatbyr Mhore", args!["Oh, right.", "Let me tell", "you exactly I need."])?;
+            ctx.next()?;
             ctx.lines_as(
                 "Hatbyr Mhore",
                 args![
-                    "No problem.",
-                    "I'm always here at this scenic spot so I can enjoy the view. Just come back whenever you feel like it."
+                    "For creating Angel Wing Ears, I need 1 ^4d4dffAngel Wing^000000,",
+                    "1 ^4d4dffElven Ears^000000 and",
+                    "^4d4dff20,000 zeny^000000."
                 ],
             )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hatbyr Mhore",
+                args![
+                    "For creating Devil Wing Ears,",
+                    "I need 1 ^4d4dffDevil Wing^000000,",
+                    "1 ^4d4dffElven Ears^000000 and",
+                    "^4d4dff20,000 zeny^000000."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Hatbyr Mhore", args!["Come back anytime when you have those materials.", "I will let you have either the elegance of an angel or the charisma of a demon with the wearables only I can craft."])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        ctx.lines_as(
+            "Hatbyr Mhore",
+            args![
+                "No problem.",
+                "I'm always here at this scenic spot so I can enjoy the view. Just come back whenever you feel like it."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -1335,41 +1333,39 @@ fn pretty_lindsay_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Pretty Lindsay", args!["I know you brought everything you need for me to make you a hat, but you're carrying too much stuff. Why don't you put some of your things in Kafra Storage?"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.call(Function::CountItem, vec![Val::from(5033)])?.number()? > 0
-            && ctx.call(Function::CountItem, vec![Val::from(5064)])?.number()? > 0)
-        {
-            ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
-            ctx.lines_as(
-                "Pretty Lindsay",
-                args!["Whoa~", "You brought everything!", "Okay, hold on a bit.", "Let me make your hat."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Pretty Lindsay",
-                args!["As my mom taught me,", "put this down on the ground...", "Okay, I am ready..."],
-            )?;
-            ctx.next()?;
-            ctx.mes("^FF0000Lindsay put the Raccoon Hat on the ground, threw the Smokie Leaf onto the hat and mumbled some words while hugging herself.^000000")?;
-            ctx.next()?;
-            ctx.mes("^FF0000Then, suddenly with a dazzling light, the Raccoon Hat turned blue and slowly transformed into a Sea-Otter Hat.^000000")?;
-            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_FLASHER")?])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Pretty Lindsay",
-                args!["Phew! It's done!", "Gosh! I think I", "spent all my energy.", "Okay, take this~"],
-            )?;
-            ctx.call(Function::DelItem, vec![Val::from(5033), Val::from(1)])?;
-            ctx.call(Function::DelItem, vec![Val::from(5064), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(5078), Val::from(1)])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Pretty Lindsay",
-                args!["I made this hat with all my heart, so you gotta promise me you will take care of this, okay?"],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (ctx.call(Function::CountItem, vec![Val::from(5033)])?.number()? > 0
+        && ctx.call(Function::CountItem, vec![Val::from(5064)])?.number()? > 0)
+    {
+        ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
+        ctx.lines_as(
+            "Pretty Lindsay",
+            args!["Whoa~", "You brought everything!", "Okay, hold on a bit.", "Let me make your hat."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Pretty Lindsay",
+            args!["As my mom taught me,", "put this down on the ground...", "Okay, I am ready..."],
+        )?;
+        ctx.next()?;
+        ctx.mes("^FF0000Lindsay put the Raccoon Hat on the ground, threw the Smokie Leaf onto the hat and mumbled some words while hugging herself.^000000")?;
+        ctx.next()?;
+        ctx.mes("^FF0000Then, suddenly with a dazzling light, the Raccoon Hat turned blue and slowly transformed into a Sea-Otter Hat.^000000")?;
+        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_FLASHER")?])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Pretty Lindsay",
+            args!["Phew! It's done!", "Gosh! I think I", "spent all my energy.", "Okay, take this~"],
+        )?;
+        ctx.call(Function::DelItem, vec![Val::from(5033), Val::from(1)])?;
+        ctx.call(Function::DelItem, vec![Val::from(5064), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(5078), Val::from(1)])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Pretty Lindsay",
+            args!["I made this hat with all my heart, so you gotta promise me you will take care of this, okay?"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
         ctx.lines_as("Pretty Lindsay", args!["Hello, there?", "Mister...?"])?;
@@ -4673,471 +4669,459 @@ fn orc_warrior_1_run(ctx: &Ctx, mut step: OrcWarrior1Step, args: Vec<Val>) -> Re
                                                             )?;
                                                             ctx.close_window()?;
                                                             return Err(Stop::End);
-                                                        } else {
-                                                            if ctx.var("orcs_hero_hat").get()? == 11 {
-                                                                if ctx.call(Function::CountItem, vec![Val::from(1304)])?.number()? > 0 {
-                                                                    ctx.lines_as("Orc Warrior", args!["You have made a lot of effort to show me your respect. Now, if you want to learn more about Orcs, feel free to come back anytime, my friend."])?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                } else {
-                                                                    if ctx.call(Function::CountItem, vec![Val::from(931)])?.number()? > 99 {
-                                                                        if ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])? == 5
-                                                                        {
-                                                                            ctx.lines_as("Orc Warrior", args!["Oh, I see you've taken my advice and have been meeting many other Orcs through battle.", "You must have learned much about the Orc's spirit of battle by seeing it for yourself firsthand."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Orc Warrior", args!["These Orchish Vouchers you have been collecting are the true token of Orc warriors. We recognize an Orc who won over 1,000 battles as a true Orc Warrior."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Orc Warrior", args!["Still...", "You're a human, so I don't give we can give you that honor so easily..."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Orc Warrior",
-                                                                                args!["Alright...", "Go win over 10,000 battles."],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Orc Warrior", args!["Then, I'm sure you can be granted status as a real Orc warrior. But, make sure you are fighting for honorable purposes, and that you have no other motive."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Orc Warrior", args!["You only achieve honor by winning battles. Even among Orcs, I'm sure you can prove your battle prowess by defeating 10,000 Orc Warriors."])?;
-                                                                            ctx.next()?;
-                                                                            if Val::from(runtime::select_values(
-                                                                                ctx,
-                                                                                &[Val::from(
-                                                                                    "I don't think that is necessary.:I will win 10,000 battles!",
-                                                                                )],
-                                                                            )?) == 1
-                                                                            {
-                                                                                ctx.lines_as("Orc Warrior", args!["I see. I will not force you to choose what I wish to see you do. I respect your decision."])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["Although...", "I wished for other Orcs to see and understand that not all humans are wicked and selfish."])?;
-                                                                                ctx.close_window()?;
-                                                                                return Err(Stop::End);
-                                                                            }
-                                                                            ctx.lines_as("Orc Warrior", args!["Ah, spoken like a true warrior. Alright then, go forth and do battle with others of my tribe, and bring me 10,000 Orcish Vouchers."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.call(
-                                                                                Function::DelItem,
-                                                                                vec![Val::from(931), Val::from(100)],
-                                                                            )?;
-                                                                            ctx.var("orcs_hero_hat").set(Val::from(13))?;
-                                                                            ctx.var("orcs_hero_hat2").set(Val::from(100))?;
-                                                                            ctx.lines_as("Orc Warrior", args!["I took 100 Orcish Voucher from you now. Now, fight and fight until you have defeated 10,000 more Orc Warriors so that the whole tribe will have to recognize you!"])?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        }
-                                                                        ctx.lines_as("Orc Warrior", args!["Hm? You don't seem to understand our way of life completely. It's strange that you are so curious about other races, human."])?;
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    } else {
-                                                                        if ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])? == 5
-                                                                        {
-                                                                            ctx.lines_as("Orc Warrior", args!["The best way of understanding the Orc tribe is to do battle with them. By competing in power and skills, eventually you will understand and respect your opponent."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Orc Warrior", args!["So, go outside and fight.", "Although you may be learning theory by talking with me, you must experience our way of life for yourself."])?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        }
-                                                                        ctx.lines_as("Orc Warrior", args!["Hm? You don't seem to understand our way of life completely. It's strange that you are so curious about other races, human."])?;
+                                                        } else if ctx.var("orcs_hero_hat").get()? == 11 {
+                                                            if ctx.call(Function::CountItem, vec![Val::from(1304)])?.number()? > 0 {
+                                                                ctx.lines_as("Orc Warrior", args!["You have made a lot of effort to show me your respect. Now, if you want to learn more about Orcs, feel free to come back anytime, my friend."])?;
+                                                                ctx.close_window()?;
+                                                                return Err(Stop::End);
+                                                            } else if ctx.call(Function::CountItem, vec![Val::from(931)])?.number()? > 99 {
+                                                                if ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])? == 5
+                                                                {
+                                                                    ctx.lines_as("Orc Warrior", args!["Oh, I see you've taken my advice and have been meeting many other Orcs through battle.", "You must have learned much about the Orc's spirit of battle by seeing it for yourself firsthand."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Orc Warrior", args!["These Orchish Vouchers you have been collecting are the true token of Orc warriors. We recognize an Orc who won over 1,000 battles as a true Orc Warrior."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Orc Warrior", args!["Still...", "You're a human, so I don't give we can give you that honor so easily..."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as(
+                                                                        "Orc Warrior",
+                                                                        args!["Alright...", "Go win over 10,000 battles."],
+                                                                    )?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Orc Warrior", args!["Then, I'm sure you can be granted status as a real Orc warrior. But, make sure you are fighting for honorable purposes, and that you have no other motive."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Orc Warrior", args!["You only achieve honor by winning battles. Even among Orcs, I'm sure you can prove your battle prowess by defeating 10,000 Orc Warriors."])?;
+                                                                    ctx.next()?;
+                                                                    if Val::from(runtime::select_values(
+                                                                        ctx,
+                                                                        &[Val::from(
+                                                                            "I don't think that is necessary.:I will win 10,000 battles!",
+                                                                        )],
+                                                                    )?) == 1
+                                                                    {
+                                                                        ctx.lines_as("Orc Warrior", args!["I see. I will not force you to choose what I wish to see you do. I respect your decision."])?;
+                                                                        ctx.next()?;
+                                                                        ctx.lines_as("Orc Warrior", args!["Although...", "I wished for other Orcs to see and understand that not all humans are wicked and selfish."])?;
                                                                         ctx.close_window()?;
                                                                         return Err(Stop::End);
                                                                     }
+                                                                    ctx.lines_as("Orc Warrior", args!["Ah, spoken like a true warrior. Alright then, go forth and do battle with others of my tribe, and bring me 10,000 Orcish Vouchers."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.call(
+                                                                        Function::DelItem,
+                                                                        vec![Val::from(931), Val::from(100)],
+                                                                    )?;
+                                                                    ctx.var("orcs_hero_hat").set(Val::from(13))?;
+                                                                    ctx.var("orcs_hero_hat2").set(Val::from(100))?;
+                                                                    ctx.lines_as("Orc Warrior", args!["I took 100 Orcish Voucher from you now. Now, fight and fight until you have defeated 10,000 more Orc Warriors so that the whole tribe will have to recognize you!"])?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                }
+                                                                ctx.lines_as("Orc Warrior", args!["Hm? You don't seem to understand our way of life completely. It's strange that you are so curious about other races, human."])?;
+                                                                ctx.close_window()?;
+                                                                return Err(Stop::End);
+                                                            } else {
+                                                                if ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])? == 5
+                                                                {
+                                                                    ctx.lines_as("Orc Warrior", args!["The best way of understanding the Orc tribe is to do battle with them. By competing in power and skills, eventually you will understand and respect your opponent."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Orc Warrior", args!["So, go outside and fight.", "Although you may be learning theory by talking with me, you must experience our way of life for yourself."])?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                }
+                                                                ctx.lines_as("Orc Warrior", args!["Hm? You don't seem to understand our way of life completely. It's strange that you are so curious about other races, human."])?;
+                                                                ctx.close_window()?;
+                                                                return Err(Stop::End);
+                                                            }
+                                                        } else {
+                                                            if (ctx.var("orcs_hero_hat2").get()?.number()? > 99
+                                                                && ctx.var("orcs_hero_hat2").get()?.number()? < 10000)
+                                                            {
+                                                                if ctx.call(Function::CountItem, vec![Val::from(931)])?.number()? > 0 {
+                                                                    if ctx.var("orcs_hero_hat2").get()?.number()? > 9999 {
+                                                                        ctx.var("orcs_hero_hat2").set(Val::from(10000))?;
+                                                                    }
+                                                                    ctx.lines_as("Orc Warrior", args!["You've come back...", "It doesn't seem that you've accomplished your goal yet, but I do not expect you to defeat 10,000 Orc Warriors so easily."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Orc Warrrior", args![((Val::from("If you wish, you may rest here. ") + ctx.var("orcs_hero_hat2").get()?) + Val::from(" victories over Orc Warriors are recognized by our tribe."))])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as(
+                                                                        "Orc Warrior",
+                                                                        args![
+                                                                            "Do you wish to",
+                                                                            "record your current",
+                                                                            "victory with me?"
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.next()?;
+                                                                    if Val::from(runtime::select_values(
+                                                                        ctx,
+                                                                        &[Val::from("Yes, I do.:I will do it later.")],
+                                                                    )?) == 1
+                                                                    {
+                                                                        l_total_vouchers = (ctx.var("orcs_hero_hat2").get()?
+                                                                            + ctx.call(Function::CountItem, vec![Val::from(931)])?);
+                                                                        if l_total_vouchers.clone().number()? < 10000 {
+                                                                            ctx.call(
+                                                                                Function::DelItem,
+                                                                                vec![
+                                                                                    Val::from(931),
+                                                                                    ctx.call(
+                                                                                        Function::CountItem,
+                                                                                        vec![Val::from(931)],
+                                                                                    )?,
+                                                                                ],
+                                                                            )?;
+                                                                            ctx.var("orcs_hero_hat2").set(l_total_vouchers.clone())?;
+                                                                            ctx.lines_as(
+                                                                                "Orc Warrior",
+                                                                                args![
+                                                                                    "I hope you will",
+                                                                                    "continue your efforts",
+                                                                                    "in understanding the Orc",
+                                                                                    "way of life through battle.",
+                                                                                    "Don't give up."
+                                                                                ],
+                                                                            )?;
+                                                                            ctx.next()?;
+                                                                            ctx.lines_as("Orc Warrior", args![((Val::from("There are ") + (Val::from(10000).try_sub(l_total_vouchers.clone())?)) + Val::from(" battles ahead of you before you reach your goal. I understand the difficulty of this challenge, but I hope you make it."))])?;
+                                                                            ctx.close_window()?;
+                                                                            return Err(Stop::End);
+                                                                        } else {
+                                                                            ctx.lines_as(
+                                                                                "Orc Warrior",
+                                                                                args![
+                                                                                    "Now...",
+                                                                                    "You won over",
+                                                                                    "10,000 battles",
+                                                                                    "with Orcs."
+                                                                                ],
+                                                                            )?;
+                                                                            ctx.next()?;
+                                                                            ctx.lines_as("Orc Warrior", args!["For a human, accomplishing such a feat is truly astonishing. Through all of that fighting, I'm sure that you have learned both good and bad things about my tribe."])?;
+                                                                            ctx.next()?;
+                                                                            ctx.lines_as(
+                                                                                "Orc Warrior",
+                                                                                args![
+                                                                                    "Although you're a",
+                                                                                    "human, you have",
+                                                                                    "demonstrated incredible",
+                                                                                    "bravery and honor...",
+                                                                                    "I shall grant you true",
+                                                                                    "Orc Warrior status!!"
+                                                                                ],
+                                                                            )?;
+                                                                            ctx.next()?;
+                                                                            ctx.lines_as("Orc Warrior", args!["You are now..."])?;
+                                                                            if ctx
+                                                                                .var("Sex")
+                                                                                .get()?
+                                                                                .loosely_equals(&ctx.constant("SEX_MALE")?)
+                                                                            {
+                                                                                ctx.mes("an Orc Warrior!!")?;
+                                                                            } else {
+                                                                                ctx.mes("an Orc Lady!!")?;
+                                                                            }
+                                                                            ctx.next()?;
+                                                                            ctx.call(
+                                                                                Function::DelItem,
+                                                                                vec![
+                                                                                    Val::from(931),
+                                                                                    ctx.call(
+                                                                                        Function::CountItem,
+                                                                                        vec![Val::from(931)],
+                                                                                    )?,
+                                                                                ],
+                                                                            )?;
+                                                                            ctx.var("orcs_hero_hat").set(Val::from(14))?;
+                                                                            ctx.var("orcs_hero_hat2").set(Val::from(10000))?;
+                                                                            ctx.call(
+                                                                                Function::GetItem,
+                                                                                vec![Val::from(2299), Val::from(1)],
+                                                                            )?;
+                                                                            ctx.lines_as("Orc Warrior", args!["This is a present for you. I am not sure if it will fit to your head or not, but try it. If your head is too big to wear this, I suggest that you carry this with you."])?;
+                                                                            ctx.next()?;
+                                                                            ctx.call(
+                                                                                Function::GetItem,
+                                                                                vec![Val::from(931), Val::from(1)],
+                                                                            )?;
+                                                                            ctx.lines_as(
+                                                                                "Orc Warrior",
+                                                                                args![
+                                                                                    "As an Orc Warrior,",
+                                                                                    "I will now give you",
+                                                                                    "an Orcish Voucher",
+                                                                                    "of your very own."
+                                                                                ],
+                                                                            )?;
+                                                                            ctx.next()?;
+                                                                            ctx.lines_as("Orc Warrior", args!["Although it doesn't look different from the others, please keep this with care. You can only be recognized as an Orc warrior with this."])?;
+                                                                            ctx.next()?;
+                                                                            ctx.lines_as("Orc Warrior", args!["Now, you may go back to where you have come from. Come drop by whenever my tribe comes to your mind."])?;
+                                                                            ctx.next()?;
+                                                                            ctx.lines_as("Orc Warrior", args!["As you are now one who feels the true intent of the opponent after endless battles, I will now return you to the battleground."])?;
+                                                                            ctx.close_window()?;
+                                                                            return Err(Stop::End);
+                                                                        }
+                                                                    }
+                                                                    ctx.lines_as("Orc Warrior", args!["I see, do as you wish.", "I will be really disappointed in you if you quit in a challenge you have undertaken."])?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                }
+                                                                ctx.lines_as(
+                                                                    "Orc Warrior",
+                                                                    args![
+                                                                        "Come take a rest here.",
+                                                                        ((Val::from("You have won ")
+                                                                            + ctx.var("orcs_hero_hat2").get()?)
+                                                                            + Val::from(" victories over Orc Warriors."))
+                                                                    ],
+                                                                )?;
+                                                                ctx.close_window()?;
+                                                                return Err(Stop::End);
+                                                            } else if ctx.var("orcs_hero_hat").get()? == 14 {
+                                                                if (ctx.call(Function::CountItem, vec![Val::from(931)])? == 1
+                                                                    && (ctx
+                                                                        .call(Function::CountItem, vec![Val::from(2299)])?
+                                                                        .number()?
+                                                                        > 0
+                                                                        || ctx
+                                                                            .call(Function::IsEquipped, vec![Val::from(2299)])?
+                                                                            .is_true()))
+                                                                {
+                                                                    ctx.lines_as("Orc Warrior", args!["Hm? You don't think you cannot come back to where you originally came, just because now you're an Orc Warrior, do you? Hahahahaha!"])?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                } else if (ctx
+                                                                    .call(Function::CountItem, vec![Val::from(2299)])?
+                                                                    .number()?
+                                                                    > 0
+                                                                    || ctx
+                                                                        .call(Function::IsEquipped, vec![Val::from(2299)])?
+                                                                        .is_true())
+                                                                {
+                                                                    ctx.lines_as(
+                                                                        "Orc Warrior",
+                                                                        args![
+                                                                            "Warrior...",
+                                                                            "May a fresh",
+                                                                            "light be with",
+                                                                            "you in battle."
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Orc Warrior", args!["Show your opponents your indomitable spirit. Take pride in being a human that has been given the title of Orc Warrior!"])?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                } else {
+                                                                    if ctx.call(
+                                                                        Function::Rand,
+                                                                        vec![Val::from(1), Val::from(10)],
+                                                                    )? == 1
+                                                                    {
+                                                                        ctx.lines_as(
+                                                                            "Orc Warrior",
+                                                                            args![
+                                                                                "My my...",
+                                                                                "Are you still",
+                                                                                "hungry for blood...?"
+                                                                            ],
+                                                                        )?;
+                                                                        ctx.next()?;
+                                                                        ctx.lines_as("Orc Warrior", args!["You don't seem to be satisfied even after being recognized as a warrior. But... I suppose the path of the warrior is to seek new and more difficult challenges."])?;
+                                                                        ctx.next()?;
+                                                                        ctx.lines_as("Orc Warrior", args!["Okay, would you like to go through another test? It may reduce all your effort in coming here to nothing. Even seasoned Orc Warriors fear taking this test."])?;
+                                                                        ctx.next()?;
+                                                                        ctx.lines_as("Orc Warrior", args!["But, since you're an exceptional case, it might be possible for you to accomplish..."])?;
+                                                                        ctx.next()?;
+                                                                        if Val::from(runtime::select_values(
+                                                                            ctx,
+                                                                            &[Val::from(
+                                                                                "I am already satisfied.:...I will take this challenge.",
+                                                                            )],
+                                                                        )?) == 1
+                                                                        {
+                                                                            ctx.lines_as(
+                                                                                "Orc Warrior",
+                                                                                args![
+                                                                                    "Yes, that's a good",
+                                                                                    "attitude. Sometimes,",
+                                                                                    "you must accept your",
+                                                                                    "limitations, or that",
+                                                                                    "you cannot beat",
+                                                                                    "certain opponents."
+                                                                                ],
+                                                                            )?;
+                                                                            ctx.close_window()?;
+                                                                            return Err(Stop::End);
+                                                                        }
+                                                                        ctx.lines_as("Orc Warrior", args!["Excellent, I admire your enthusiasm. This is a very rare chance to do battle with the strongest Orc Warriors."])?;
+                                                                        ctx.next()?;
+                                                                        ctx.lines_as("Orc Warrior", args!["Go fight with 100 Orc Heroes and bring me the tokens of the battles you have endured. Even if you're an excellent warrior, I assure you this test will be the hardest one you'll ever get."])?;
+                                                                        ctx.next()?;
+                                                                        ctx.var("orcs_hero_hat").set(Val::from(15))?;
+                                                                        ctx.lines_as("Orc Warrior", args!["Now, go, warrior! I believe that you have a chance to succeed. Fight with 100 Orc Heroes, and I will grant you, a human, recognition as an Orc Hero!"])?;
+                                                                        ctx.close_window()?;
+                                                                        return Err(Stop::End);
+                                                                    }
+                                                                    ctx.lines_as("Orc Warrior", args!["Warrior, may a fresh light be with you in battle. Show your opponents your indomitable spirit. Take pride in being a human that has been given the title of Orc Warrior!"])?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
                                                                 }
                                                             } else {
-                                                                if (ctx.var("orcs_hero_hat2").get()?.number()? > 99
-                                                                    && ctx.var("orcs_hero_hat2").get()?.number()? < 10000)
-                                                                {
-                                                                    if ctx.call(Function::CountItem, vec![Val::from(931)])?.number()? > 0 {
-                                                                        if ctx.var("orcs_hero_hat2").get()?.number()? > 9999 {
-                                                                            ctx.var("orcs_hero_hat2").set(Val::from(10000))?;
-                                                                        }
-                                                                        ctx.lines_as("Orc Warrior", args!["You've come back...", "It doesn't seem that you've accomplished your goal yet, but I do not expect you to defeat 10,000 Orc Warriors so easily."])?;
+                                                                if ctx.var("orcs_hero_hat").get()? == 15 {
+                                                                    if ctx
+                                                                        .call(Function::CountItem, vec![Val::from(968)])?
+                                                                        .number()?
+                                                                        > 99
+                                                                    {
+                                                                        ctx.lines_as(
+                                                                            "Orc Warrior",
+                                                                            args!["Ah...", "I knew you would succeed!"],
+                                                                        )?;
                                                                         ctx.next()?;
-                                                                        ctx.lines_as("Orc Warrrior", args![((Val::from("If you wish, you may rest here. ") + ctx.var("orcs_hero_hat2").get()?) + Val::from(" victories over Orc Warriors are recognized by our tribe."))])?;
+                                                                        ctx.lines_as("Orc Warrior", args!["The Orc Heroes who were defeated by you also must have recognized your courage. Thank you, human, for showing us what is true strength."])?;
                                                                         ctx.next()?;
                                                                         ctx.lines_as(
                                                                             "Orc Warrior",
                                                                             args![
-                                                                                "Do you wish to",
-                                                                                "record your current",
-                                                                                "victory with me?"
+                                                                                "On behalf of",
+                                                                                "the Orc tribe,",
+                                                                                "let me pay",
+                                                                                "you homage."
                                                                             ],
                                                                         )?;
                                                                         ctx.next()?;
-                                                                        if Val::from(runtime::select_values(
-                                                                            ctx,
-                                                                            &[Val::from("Yes, I do.:I will do it later.")],
-                                                                        )?) == 1
-                                                                        {
-                                                                            l_total_vouchers = (ctx.var("orcs_hero_hat2").get()?
-                                                                                + ctx.call(Function::CountItem, vec![Val::from(931)])?);
-                                                                            if l_total_vouchers.clone().number()? < 10000 {
-                                                                                ctx.call(
-                                                                                    Function::DelItem,
-                                                                                    vec![
-                                                                                        Val::from(931),
-                                                                                        ctx.call(
-                                                                                            Function::CountItem,
-                                                                                            vec![Val::from(931)],
-                                                                                        )?,
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.var("orcs_hero_hat2").set(l_total_vouchers.clone())?;
+                                                                        ctx.lines_as("Orc Warrior", args!["Now, make one last choice. What would you do with those Heroic Emblems? They might not be valuable to you humans, but for Orcs, they are treasured by those who own them."])?;
+                                                                        ctx.next()?;
+                                                                        ctx.lines_as("Orc Warrior", args!["Since you are the victor of those battles, you have every right to keep them. But you could also return them to the Orc Heroes, meaning that you wish to meet them in battle once again."])?;
+                                                                        ctx.next()?;
+                                                                        ctx.lines_as(
+                                                                            "Orc Warrior",
+                                                                            args![
+                                                                                "Now, what would",
+                                                                                "you want to do",
+                                                                                "with the vouchers?"
+                                                                            ],
+                                                                        )?;
+                                                                        ctx.next()?;
+                                                                        'b1: {
+                                                                            let subject1 = Val::from(runtime::select_values(
+                                                                                ctx,
+                                                                                &[Val::from(
+                                                                                    "I want to keep them.:I shall return them to the Orc Heroes.",
+                                                                                )],
+                                                                            )?);
+                                                                            let mut matched1 = false;
+                                                                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                                                                                && !subject1.loosely_equals(&Val::from(2));
+                                                                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                                                                                matched1 = true;
+                                                                            }
+                                                                            if matched1 {
                                                                                 ctx.lines_as(
                                                                                     "Orc Warrior",
                                                                                     args![
-                                                                                        "I hope you will",
-                                                                                        "continue your efforts",
-                                                                                        "in understanding the Orc",
-                                                                                        "way of life through battle.",
-                                                                                        "Don't give up."
+                                                                                        "Yes, that's",
+                                                                                        "not bad...",
+                                                                                        "Not bad at all."
                                                                                     ],
                                                                                 )?;
                                                                                 ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args![((Val::from("There are ") + (Val::from(10000).try_sub(l_total_vouchers.clone())?)) + Val::from(" battles ahead of you before you reach your goal. I understand the difficulty of this challenge, but I hope you make it."))])?;
+                                                                                ctx.lines_as("Orc Warrior", args!["Nobody has the right to tell you what you can or cannot do. Please keep them as a memory of your victory."])?;
                                                                                 ctx.close_window()?;
                                                                                 return Err(Stop::End);
-                                                                            } else {
-                                                                                ctx.lines_as(
-                                                                                    "Orc Warrior",
-                                                                                    args![
-                                                                                        "Now...",
-                                                                                        "You won over",
-                                                                                        "10,000 battles",
-                                                                                        "with Orcs."
-                                                                                    ],
-                                                                                )?;
+                                                                            }
+                                                                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                                                                                matched1 = true;
+                                                                            }
+                                                                            if matched1 {
+                                                                                ctx.lines_as("Orc Warrior", args!["What a great attitude for a warrior...! It will be a model to other Orcs to show respect to opponents that you have defeated!"])?;
                                                                                 ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["For a human, accomplishing such a feat is truly astonishing. Through all of that fighting, I'm sure that you have learned both good and bad things about my tribe."])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as(
-                                                                                    "Orc Warrior",
-                                                                                    args![
-                                                                                        "Although you're a",
-                                                                                        "human, you have",
-                                                                                        "demonstrated incredible",
-                                                                                        "bravery and honor...",
-                                                                                        "I shall grant you true",
-                                                                                        "Orc Warrior status!!"
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["You are now..."])?;
-                                                                                if ctx
-                                                                                    .var("Sex")
-                                                                                    .get()?
-                                                                                    .loosely_equals(&ctx.constant("SEX_MALE")?)
-                                                                                {
-                                                                                    ctx.mes("an Orc Warrior!!")?;
-                                                                                } else {
-                                                                                    ctx.mes("an Orc Lady!!")?;
-                                                                                }
+                                                                                ctx.lines_as("Orc Warrior", args!["You deserve to be an Orc Hero, the most powerful Orc warrior! As of today, you are now an Orc Hero!"])?;
                                                                                 ctx.next()?;
                                                                                 ctx.call(
                                                                                     Function::DelItem,
-                                                                                    vec![
-                                                                                        Val::from(931),
-                                                                                        ctx.call(
-                                                                                            Function::CountItem,
-                                                                                            vec![Val::from(931)],
-                                                                                        )?,
-                                                                                    ],
+                                                                                    vec![Val::from(968), Val::from(100)],
                                                                                 )?;
-                                                                                ctx.var("orcs_hero_hat").set(Val::from(14))?;
-                                                                                ctx.var("orcs_hero_hat2").set(Val::from(10000))?;
+                                                                                ctx.var("orcs_hero_hat").set(Val::from(16))?;
                                                                                 ctx.call(
                                                                                     Function::GetItem,
-                                                                                    vec![Val::from(2299), Val::from(1)],
+                                                                                    vec![Val::from(1124), Val::from(1)],
                                                                                 )?;
-                                                                                ctx.lines_as("Orc Warrior", args!["This is a present for you. I am not sure if it will fit to your head or not, but try it. If your head is too big to wear this, I suggest that you carry this with you."])?;
+                                                                                ctx.lines_as("Orc Warrior", args!["This is a sword only given to our heroes. I am not sure if you can use this or not, but as an Orc Hero, you're obligated to carry this with you always."])?;
                                                                                 ctx.next()?;
                                                                                 ctx.call(
                                                                                     Function::GetItem,
-                                                                                    vec![Val::from(931), Val::from(1)],
+                                                                                    vec![Val::from(968), Val::from(1)],
                                                                                 )?;
                                                                                 ctx.lines_as(
                                                                                     "Orc Warrior",
                                                                                     args![
-                                                                                        "As an Orc Warrior,",
-                                                                                        "I will now give you",
-                                                                                        "an Orcish Voucher",
-                                                                                        "of your very own."
+                                                                                        "Now that you",
+                                                                                        "are an Orc Hero,",
+                                                                                        "let me give you",
+                                                                                        "your own Heroic",
+                                                                                        "Emblem."
                                                                                     ],
                                                                                 )?;
                                                                                 ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["Although it doesn't look different from the others, please keep this with care. You can only be recognized as an Orc warrior with this."])?;
+                                                                                ctx.lines_as("Orc Warrior", args!["Although it doesn't look different from the others, I hope you will keep it with care. You can only be recognized as an Orc Hero with this token."])?;
                                                                                 ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["Now, you may go back to where you have come from. Come drop by whenever my tribe comes to your mind."])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["As you are now one who feels the true intent of the opponent after endless battles, I will now return you to the battleground."])?;
+                                                                                ctx.lines_as("Orc Warrior", args!["Then, you may leave now....", "A human who has a better understanding than other humans. One who showed others power regardless of the race, I leave you to the future of Chaos."])?;
                                                                                 ctx.close_window()?;
                                                                                 return Err(Stop::End);
                                                                             }
                                                                         }
-                                                                        ctx.lines_as("Orc Warrior", args!["I see, do as you wish.", "I will be really disappointed in you if you quit in a challenge you have undertaken."])?;
+                                                                    }
+                                                                    ctx.lines_as(
+                                                                        "Orc Warrior",
+                                                                        args!["Hm...", "Struggling, are you?"],
+                                                                    )?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Orc Warrior", args!["Well, Orc Hero is held in high regard by other Orcs for their great power. As a human, you will probably have difficulty in dealing with him."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Orc Warrior", args!["However, you made the decision to go through with this test! Still, there's no need to rush it. Life is an endless series of battles, so the combat will come."])?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                } else if ctx.var("orcs_hero_hat").get()?.number()? > 15 {
+                                                                    if ctx
+                                                                        .call(Function::CountItem, vec![Val::from(968)])?
+                                                                        .number()?
+                                                                        < 1
+                                                                    {
+                                                                        ctx.lines_as("Orc Warrior", args!["Warrior, where did you leave your Heroic Emblem? Without the token, I cannot recognize you as an Orc Hero. Please find it and keep it with you anywhere you go."])?;
+                                                                        ctx.close_window()?;
+                                                                        return Err(Stop::End);
+                                                                    } else if (ctx
+                                                                        .call(Function::CountItem, vec![Val::from(1124)])?
+                                                                        .number()?
+                                                                        < 1
+                                                                        && ctx.call(
+                                                                            Function::IsEquipped,
+                                                                            vec![Val::from(1124)],
+                                                                        )? == 0)
+                                                                    {
+                                                                        ctx.lines_as("Orc Warrior", args!["Warrior, where did you leave your sword? Without the sword, I cannot recognize you as an Orc Hero. Please find it and keep it with you anywhere you go."])?;
                                                                         ctx.close_window()?;
                                                                         return Err(Stop::End);
                                                                     }
                                                                     ctx.lines_as(
                                                                         "Orc Warrior",
                                                                         args![
-                                                                            "Come take a rest here.",
-                                                                            ((Val::from("You have won ")
-                                                                                + ctx.var("orcs_hero_hat2").get()?)
-                                                                                + Val::from(" victories over Orc Warriors."))
+                                                                            "The most",
+                                                                            "powerful warrior...",
+                                                                            "Orc Hero!",
+                                                                            "That's who you are!",
+                                                                            "May God be with you in battle!"
                                                                         ],
                                                                     )?;
                                                                     ctx.close_window()?;
                                                                     return Err(Stop::End);
                                                                 } else {
-                                                                    if ctx.var("orcs_hero_hat").get()? == 14 {
-                                                                        if (ctx.call(Function::CountItem, vec![Val::from(931)])? == 1
-                                                                            && (ctx
-                                                                                .call(Function::CountItem, vec![Val::from(2299)])?
-                                                                                .number()?
-                                                                                > 0
-                                                                                || ctx
-                                                                                    .call(Function::IsEquipped, vec![Val::from(2299)])?
-                                                                                    .is_true()))
-                                                                        {
-                                                                            ctx.lines_as("Orc Warrior", args!["Hm? You don't think you cannot come back to where you originally came, just because now you're an Orc Warrior, do you? Hahahahaha!"])?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        } else {
-                                                                            if (ctx
-                                                                                .call(Function::CountItem, vec![Val::from(2299)])?
-                                                                                .number()?
-                                                                                > 0
-                                                                                || ctx
-                                                                                    .call(Function::IsEquipped, vec![Val::from(2299)])?
-                                                                                    .is_true())
-                                                                            {
-                                                                                ctx.lines_as(
-                                                                                    "Orc Warrior",
-                                                                                    args![
-                                                                                        "Warrior...",
-                                                                                        "May a fresh",
-                                                                                        "light be with",
-                                                                                        "you in battle."
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["Show your opponents your indomitable spirit. Take pride in being a human that has been given the title of Orc Warrior!"])?;
-                                                                                ctx.close_window()?;
-                                                                                return Err(Stop::End);
-                                                                            } else {
-                                                                                if ctx.call(
-                                                                                    Function::Rand,
-                                                                                    vec![Val::from(1), Val::from(10)],
-                                                                                )? == 1
-                                                                                {
-                                                                                    ctx.lines_as(
-                                                                                        "Orc Warrior",
-                                                                                        args![
-                                                                                            "My my...",
-                                                                                            "Are you still",
-                                                                                            "hungry for blood...?"
-                                                                                        ],
-                                                                                    )?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as("Orc Warrior", args!["You don't seem to be satisfied even after being recognized as a warrior. But... I suppose the path of the warrior is to seek new and more difficult challenges."])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as("Orc Warrior", args!["Okay, would you like to go through another test? It may reduce all your effort in coming here to nothing. Even seasoned Orc Warriors fear taking this test."])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as("Orc Warrior", args!["But, since you're an exceptional case, it might be possible for you to accomplish..."])?;
-                                                                                    ctx.next()?;
-                                                                                    if Val::from(runtime::select_values(
-                                                                                        ctx,
-                                                                                        &[Val::from(
-                                                                                            "I am already satisfied.:...I will take this challenge.",
-                                                                                        )],
-                                                                                    )?) == 1
-                                                                                    {
-                                                                                        ctx.lines_as(
-                                                                                            "Orc Warrior",
-                                                                                            args![
-                                                                                                "Yes, that's a good",
-                                                                                                "attitude. Sometimes,",
-                                                                                                "you must accept your",
-                                                                                                "limitations, or that",
-                                                                                                "you cannot beat",
-                                                                                                "certain opponents."
-                                                                                            ],
-                                                                                        )?;
-                                                                                        ctx.close_window()?;
-                                                                                        return Err(Stop::End);
-                                                                                    }
-                                                                                    ctx.lines_as("Orc Warrior", args!["Excellent, I admire your enthusiasm. This is a very rare chance to do battle with the strongest Orc Warriors."])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as("Orc Warrior", args!["Go fight with 100 Orc Heroes and bring me the tokens of the battles you have endured. Even if you're an excellent warrior, I assure you this test will be the hardest one you'll ever get."])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.var("orcs_hero_hat").set(Val::from(15))?;
-                                                                                    ctx.lines_as("Orc Warrior", args!["Now, go, warrior! I believe that you have a chance to succeed. Fight with 100 Orc Heroes, and I will grant you, a human, recognition as an Orc Hero!"])?;
-                                                                                    ctx.close_window()?;
-                                                                                    return Err(Stop::End);
-                                                                                }
-                                                                                ctx.lines_as("Orc Warrior", args!["Warrior, may a fresh light be with you in battle. Show your opponents your indomitable spirit. Take pride in being a human that has been given the title of Orc Warrior!"])?;
-                                                                                ctx.close_window()?;
-                                                                                return Err(Stop::End);
-                                                                            }
-                                                                        }
-                                                                    } else {
-                                                                        if ctx.var("orcs_hero_hat").get()? == 15 {
-                                                                            if ctx
-                                                                                .call(Function::CountItem, vec![Val::from(968)])?
-                                                                                .number()?
-                                                                                > 99
-                                                                            {
-                                                                                ctx.lines_as(
-                                                                                    "Orc Warrior",
-                                                                                    args!["Ah...", "I knew you would succeed!"],
-                                                                                )?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["The Orc Heroes who were defeated by you also must have recognized your courage. Thank you, human, for showing us what is true strength."])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as(
-                                                                                    "Orc Warrior",
-                                                                                    args![
-                                                                                        "On behalf of",
-                                                                                        "the Orc tribe,",
-                                                                                        "let me pay",
-                                                                                        "you homage."
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["Now, make one last choice. What would you do with those Heroic Emblems? They might not be valuable to you humans, but for Orcs, they are treasured by those who own them."])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as("Orc Warrior", args!["Since you are the victor of those battles, you have every right to keep them. But you could also return them to the Orc Heroes, meaning that you wish to meet them in battle once again."])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as(
-                                                                                    "Orc Warrior",
-                                                                                    args![
-                                                                                        "Now, what would",
-                                                                                        "you want to do",
-                                                                                        "with the vouchers?"
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.next()?;
-                                                                                'b1: {
-                                                                                    let subject1 = Val::from(runtime::select_values(
-                                                                                        ctx,
-                                                                                        &[Val::from(
-                                                                                            "I want to keep them.:I shall return them to the Orc Heroes.",
-                                                                                        )],
-                                                                                    )?);
-                                                                                    let mut matched1 = false;
-                                                                                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                                                                        && !subject1.loosely_equals(&Val::from(2));
-                                                                                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                                                                        matched1 = true;
-                                                                                    }
-                                                                                    if matched1 {
-                                                                                        ctx.lines_as(
-                                                                                            "Orc Warrior",
-                                                                                            args![
-                                                                                                "Yes, that's",
-                                                                                                "not bad...",
-                                                                                                "Not bad at all."
-                                                                                            ],
-                                                                                        )?;
-                                                                                        ctx.next()?;
-                                                                                        ctx.lines_as("Orc Warrior", args!["Nobody has the right to tell you what you can or cannot do. Please keep them as a memory of your victory."])?;
-                                                                                        ctx.close_window()?;
-                                                                                        return Err(Stop::End);
-                                                                                    }
-                                                                                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                                                                        matched1 = true;
-                                                                                    }
-                                                                                    if matched1 {
-                                                                                        ctx.lines_as("Orc Warrior", args!["What a great attitude for a warrior...! It will be a model to other Orcs to show respect to opponents that you have defeated!"])?;
-                                                                                        ctx.next()?;
-                                                                                        ctx.lines_as("Orc Warrior", args!["You deserve to be an Orc Hero, the most powerful Orc warrior! As of today, you are now an Orc Hero!"])?;
-                                                                                        ctx.next()?;
-                                                                                        ctx.call(
-                                                                                            Function::DelItem,
-                                                                                            vec![Val::from(968), Val::from(100)],
-                                                                                        )?;
-                                                                                        ctx.var("orcs_hero_hat").set(Val::from(16))?;
-                                                                                        ctx.call(
-                                                                                            Function::GetItem,
-                                                                                            vec![Val::from(1124), Val::from(1)],
-                                                                                        )?;
-                                                                                        ctx.lines_as("Orc Warrior", args!["This is a sword only given to our heroes. I am not sure if you can use this or not, but as an Orc Hero, you're obligated to carry this with you always."])?;
-                                                                                        ctx.next()?;
-                                                                                        ctx.call(
-                                                                                            Function::GetItem,
-                                                                                            vec![Val::from(968), Val::from(1)],
-                                                                                        )?;
-                                                                                        ctx.lines_as(
-                                                                                            "Orc Warrior",
-                                                                                            args![
-                                                                                                "Now that you",
-                                                                                                "are an Orc Hero,",
-                                                                                                "let me give you",
-                                                                                                "your own Heroic",
-                                                                                                "Emblem."
-                                                                                            ],
-                                                                                        )?;
-                                                                                        ctx.next()?;
-                                                                                        ctx.lines_as("Orc Warrior", args!["Although it doesn't look different from the others, I hope you will keep it with care. You can only be recognized as an Orc Hero with this token."])?;
-                                                                                        ctx.next()?;
-                                                                                        ctx.lines_as("Orc Warrior", args!["Then, you may leave now....", "A human who has a better understanding than other humans. One who showed others power regardless of the race, I leave you to the future of Chaos."])?;
-                                                                                        ctx.close_window()?;
-                                                                                        return Err(Stop::End);
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                            ctx.lines_as(
-                                                                                "Orc Warrior",
-                                                                                args!["Hm...", "Struggling, are you?"],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Orc Warrior", args!["Well, Orc Hero is held in high regard by other Orcs for their great power. As a human, you will probably have difficulty in dealing with him."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Orc Warrior", args!["However, you made the decision to go through with this test! Still, there's no need to rush it. Life is an endless series of battles, so the combat will come."])?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        } else {
-                                                                            if ctx.var("orcs_hero_hat").get()?.number()? > 15 {
-                                                                                if ctx
-                                                                                    .call(Function::CountItem, vec![Val::from(968)])?
-                                                                                    .number()?
-                                                                                    < 1
-                                                                                {
-                                                                                    ctx.lines_as("Orc Warrior", args!["Warrior, where did you leave your Heroic Emblem? Without the token, I cannot recognize you as an Orc Hero. Please find it and keep it with you anywhere you go."])?;
-                                                                                    ctx.close_window()?;
-                                                                                    return Err(Stop::End);
-                                                                                } else {
-                                                                                    if (ctx
-                                                                                        .call(Function::CountItem, vec![Val::from(1124)])?
-                                                                                        .number()?
-                                                                                        < 1
-                                                                                        && ctx.call(
-                                                                                            Function::IsEquipped,
-                                                                                            vec![Val::from(1124)],
-                                                                                        )? == 0)
-                                                                                    {
-                                                                                        ctx.lines_as("Orc Warrior", args!["Warrior, where did you leave your sword? Without the sword, I cannot recognize you as an Orc Hero. Please find it and keep it with you anywhere you go."])?;
-                                                                                        ctx.close_window()?;
-                                                                                        return Err(Stop::End);
-                                                                                    }
-                                                                                }
-                                                                                ctx.lines_as(
-                                                                                    "Orc Warrior",
-                                                                                    args![
-                                                                                        "The most",
-                                                                                        "powerful warrior...",
-                                                                                        "Orc Hero!",
-                                                                                        "That's who you are!",
-                                                                                        "May God be with you in battle!"
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.close_window()?;
-                                                                                return Err(Stop::End);
-                                                                            } else {
-                                                                                ctx.lines_as("Orc Warrior", args!["...................."])?;
-                                                                                ctx.close_window()?;
-                                                                                return Err(Stop::End);
-                                                                            }
-                                                                        }
-                                                                    }
+                                                                    ctx.lines_as("Orc Warrior", args!["...................."])?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
                                                                 }
                                                             }
                                                         }
@@ -5197,124 +5181,120 @@ fn orc_hero_1_run(ctx: &Ctx, mut step: OrcHero1Step, args: Vec<Val>) -> Result<V
                     ctx.lines_as("Orc Hero", args!["Now, hurry", "up and scram!!"])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("orcs_hero_hat").get()? == 16 {
-                        if (ctx.call(Function::CountItem, vec![Val::from(968)])? == 1
-                            && (ctx.call(Function::CountItem, vec![Val::from(1124)])?.number()? > 0
-                                || ctx.call(Function::IsEquipped, vec![Val::from(1124)])? == 1))
-                        {
-                            if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])? == 1 {
-                                ctx.lines_as(
-                                    "Orc Hero",
-                                    args!["Hm, are you the human who was granted status as an Orc Hero?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Orc Hero", args!["I hope you know the meaning of returning my Emblem. I expect that we will meet again on the battlefield."])?;
-                                if ctx.call(Function::CountItem, vec![Val::from(2299)])?.number()? > 0 {
-                                    ctx.next()?;
-                                    ctx.lines_as("Orc Hero", args!["Wait...", "Isn't that an Orc Warrior's Helm...?"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Orc Hero",
-                                        args![
-                                            "Wait a second...",
-                                            "It's not! Ha...!",
-                                            "Interesting!",
-                                            "That's very",
-                                            "interesting."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Orc Hero",
-                                        args!["I guess you don't know what's so special about this particular helm..."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Orc Hero", args!["It actually belonged to one of our Orc Lords who was defeated by a human. He was so furious about losing that he broke the middle horn and threw it away!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Orc Hero", args!["I was told that it somehow ended in the hands of a human, but I didn't know it was you, the human Orc Hero."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Orc Hero", args!["Alright, that belongs to the Orc Lord. I mean, even though it's now yours, it was given to you by mistake."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Orc Hero",
-                                        args!["Would you mind giving the item back to its owner, my human Orc Hero?"],
-                                    )?;
-                                    ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("Yes, I mind.:No, I don't mind.")])?) == 1 {
-                                        ctx.lines_as("Orc Hero", args!["Wow, you're so stubborn! Just treat the helm with care, and wear it with respect. Recognize that it has a long history..."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    ctx.lines_as("Orc Hero", args!["Good, that's a good decision. I will give this back to him. Muhahahahaha... I didn't expect to see this thing again."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Orc Hero", args!["Okay...", "Let me give you", "something useful!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Orc Hero", args!["Although you're a human, you're an Orc Hero amongst us now, so you should have a helm suitable for your position..."])?;
-                                    ctx.next()?;
-                                    ctx.call(Function::DelItem, vec![Val::from(2299), Val::from(1)])?;
-                                    ctx.var("orcs_hero_hat").set(Val::from(17))?;
-                                    ctx.call(
-                                        Function::GetNamedItem,
-                                        vec![Val::from(5094), ctx.call(Function::StrCharInfo, vec![Val::from(0)])?],
-                                    )?;
-                                    ctx.lines_as("Orc Hero", args!["There you go. I marked a small indication on it. So wear this helm from now on. Do you understand? My human Orc Hero."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                } else if ctx.var("orcs_hero_hat").get()? == 16 {
+                    if (ctx.call(Function::CountItem, vec![Val::from(968)])? == 1
+                        && (ctx.call(Function::CountItem, vec![Val::from(1124)])?.number()? > 0
+                            || ctx.call(Function::IsEquipped, vec![Val::from(1124)])? == 1))
+                    {
+                        if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])? == 1 {
                             ctx.lines_as(
                                 "Orc Hero",
                                 args!["Hm, are you the human who was granted status as an Orc Hero?"],
                             )?;
                             ctx.next()?;
-                            ctx.lines_as("Orc Hero", args![" I hope you know the meaning of returning my Emblem. I expect that we will meet again on the battlefield."])?;
+                            ctx.lines_as("Orc Hero", args!["I hope you know the meaning of returning my Emblem. I expect that we will meet again on the battlefield."])?;
+                            if ctx.call(Function::CountItem, vec![Val::from(2299)])?.number()? > 0 {
+                                ctx.next()?;
+                                ctx.lines_as("Orc Hero", args!["Wait...", "Isn't that an Orc Warrior's Helm...?"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Orc Hero",
+                                    args![
+                                        "Wait a second...",
+                                        "It's not! Ha...!",
+                                        "Interesting!",
+                                        "That's very",
+                                        "interesting."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Orc Hero",
+                                    args!["I guess you don't know what's so special about this particular helm..."],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Orc Hero", args!["It actually belonged to one of our Orc Lords who was defeated by a human. He was so furious about losing that he broke the middle horn and threw it away!"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Orc Hero", args!["I was told that it somehow ended in the hands of a human, but I didn't know it was you, the human Orc Hero."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Orc Hero", args!["Alright, that belongs to the Orc Lord. I mean, even though it's now yours, it was given to you by mistake."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Orc Hero",
+                                    args!["Would you mind giving the item back to its owner, my human Orc Hero?"],
+                                )?;
+                                ctx.next()?;
+                                if Val::from(runtime::select_values(ctx, &[Val::from("Yes, I mind.:No, I don't mind.")])?) == 1 {
+                                    ctx.lines_as("Orc Hero", args!["Wow, you're so stubborn! Just treat the helm with care, and wear it with respect. Recognize that it has a long history..."])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                ctx.lines_as("Orc Hero", args!["Good, that's a good decision. I will give this back to him. Muhahahahaha... I didn't expect to see this thing again."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Orc Hero", args!["Okay...", "Let me give you", "something useful!"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Orc Hero", args!["Although you're a human, you're an Orc Hero amongst us now, so you should have a helm suitable for your position..."])?;
+                                ctx.next()?;
+                                ctx.call(Function::DelItem, vec![Val::from(2299), Val::from(1)])?;
+                                ctx.var("orcs_hero_hat").set(Val::from(17))?;
+                                ctx.call(
+                                    Function::GetNamedItem,
+                                    vec![Val::from(5094), ctx.call(Function::StrCharInfo, vec![Val::from(0)])?],
+                                )?;
+                                ctx.lines_as("Orc Hero", args!["There you go. I marked a small indication on it. So wear this helm from now on. Do you understand? My human Orc Hero."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
                         ctx.lines_as(
                             "Orc Hero",
-                            args!["Hm, are you the human that was granted status as an Orc Hero?"],
+                            args!["Hm, are you the human who was granted status as an Orc Hero?"],
                         )?;
                         ctx.next()?;
-                        ctx.lines_as("Orc Hero", args!["Hmpf, I'm not convinced. Are you really the one who gave us our Emblems back? I don't think I can trust you..."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Orc Hero", args!["Yeh, you would think I'd remember getting whupped by an ugly human, but I tend not to remember faces when I'm too busy getting whomped on."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Orc Hero",
-                            args![
-                                "I refuse to",
-                                "acknowledge someone",
-                                "like you who forgets",
-                                "our most basic customs!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Orc Hero",
-                            args![
-                                "Grrrr...",
-                                "Come on!",
-                                "Let's meet outside west of the forest, and I'll test your strength again!"
-                            ],
-                        )?;
+                        ctx.lines_as("Orc Hero", args![" I hope you know the meaning of returning my Emblem. I expect that we will meet again on the battlefield."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("orcs_hero_hat").get()? == 17 {
-                            ctx.lines_as(
-                                "Orc Hero",
-                                args!["Muhahahaha~", "You're the", "strangest human", "I've ever met.", "Hahahahaha..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Orc Hero", args!["I like you,", "human, I like you."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
                     }
+                    ctx.lines_as(
+                        "Orc Hero",
+                        args!["Hm, are you the human that was granted status as an Orc Hero?"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Orc Hero", args!["Hmpf, I'm not convinced. Are you really the one who gave us our Emblems back? I don't think I can trust you..."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Orc Hero", args!["Yeh, you would think I'd remember getting whupped by an ugly human, but I tend not to remember faces when I'm too busy getting whomped on."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Orc Hero",
+                        args![
+                            "I refuse to",
+                            "acknowledge someone",
+                            "like you who forgets",
+                            "our most basic customs!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Orc Hero",
+                        args![
+                            "Grrrr...",
+                            "Come on!",
+                            "Let's meet outside west of the forest, and I'll test your strength again!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("orcs_hero_hat").get()? == 17 {
+                    ctx.lines_as(
+                        "Orc Hero",
+                        args!["Muhahahaha~", "You're the", "strangest human", "I've ever met.", "Hahahahaha..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Orc Hero", args!["I like you,", "human, I like you."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 ctx.lines_as("Orc Hero", args!["...................."])?;
                 ctx.close_window()?;

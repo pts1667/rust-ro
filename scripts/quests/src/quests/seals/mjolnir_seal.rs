@@ -68,30 +68,22 @@ fn tialfi_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     } else {
                                                         if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SAGE")?) {
                                                             l_gift = Val::from(9);
+                                                        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?) {
+                                                            l_gift = Val::from(10);
+                                                        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
+                                                            l_gift = Val::from(11);
+                                                        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
+                                                        {
+                                                            l_gift = Val::from(12);
+                                                        } else if ctx
+                                                            .var("BaseJob")
+                                                            .get()?
+                                                            .loosely_equals(&ctx.constant("JOB_HUNTER")?)
+                                                        {
+                                                            l_gift = Val::from(13);
                                                         } else {
-                                                            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?) {
-                                                                l_gift = Val::from(10);
-                                                            } else {
-                                                                if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
-                                                                    l_gift = Val::from(11);
-                                                                } else {
-                                                                    if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
-                                                                    {
-                                                                        l_gift = Val::from(12);
-                                                                    } else {
-                                                                        if ctx
-                                                                            .var("BaseJob")
-                                                                            .get()?
-                                                                            .loosely_equals(&ctx.constant("JOB_HUNTER")?)
-                                                                        {
-                                                                            l_gift = Val::from(13);
-                                                                        } else {
-                                                                            l_gift = ctx
-                                                                                .call(Function::Rand, vec![Val::from(1), Val::from(13)])?;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
+                                                            l_gift = ctx
+                                                                .call(Function::Rand, vec![Val::from(1), Val::from(13)])?;
                                                         }
                                                     }
                                                 }
@@ -183,33 +175,25 @@ fn tialfi_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     } else {
                                                         if l_gift.clone() == 9 {
                                                             ctx.call(Function::GetItem, vec![Val::from(1557), Val::from(1)])?;
+                                                        } else if l_gift.clone() == 10 {
+                                                            ctx.call(Function::GetItem, vec![Val::from(1235), Val::from(1)])?;
+                                                        } else if l_gift.clone() == 11 {
+                                                            ctx.call(Function::GetItem, vec![Val::from(1227), Val::from(1)])?;
+                                                        } else if l_gift.clone() == 12 {
+                                                            ctx.call(Function::GetItem, vec![Val::from(1913), Val::from(1)])?;
+                                                        } else if l_gift.clone() == 13 {
+                                                            ctx.call(
+                                                                Function::GetItem,
+                                                                vec![Val::from(1963), Val::from(1)],
+                                                            )?;
                                                         } else {
-                                                            if l_gift.clone() == 10 {
-                                                                ctx.call(Function::GetItem, vec![Val::from(1235), Val::from(1)])?;
-                                                            } else {
-                                                                if l_gift.clone() == 11 {
-                                                                    ctx.call(Function::GetItem, vec![Val::from(1227), Val::from(1)])?;
-                                                                } else {
-                                                                    if l_gift.clone() == 12 {
-                                                                        ctx.call(Function::GetItem, vec![Val::from(1913), Val::from(1)])?;
-                                                                    } else {
-                                                                        if l_gift.clone() == 13 {
-                                                                            ctx.call(
-                                                                                Function::GetItem,
-                                                                                vec![Val::from(1963), Val::from(1)],
-                                                                            )?;
-                                                                        } else {
-                                                                            ctx.mes("Unknown error occurred.")?;
-                                                                            ctx.close_window()?;
-                                                                            ctx.call(
-                                                                                Function::Cutin,
-                                                                                vec![Val::from("god_tialpi01"), Val::from(255)],
-                                                                            )?;
-                                                                            return Err(Stop::End);
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
+                                                            ctx.mes("Unknown error occurred.")?;
+                                                            ctx.close_window()?;
+                                                            ctx.call(
+                                                                Function::Cutin,
+                                                                vec![Val::from("god_tialpi01"), Val::from(255)],
+                                                            )?;
+                                                            return Err(Stop::End);
                                                         }
                                                     }
                                                 }
@@ -249,26 +233,24 @@ fn tialfi_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 Function::Announce,
                                 vec![Val::from("The 4th seal of [Mjolnir] has appeared."), ctx.constant("BC_ALL")?],
                             )?;
-                        } else {
-                            if ctx.var("$god4").get()?.loosely_equals(&ctx.var("$@god_check2").get()?) {
-                                if (((ctx.var("$god4").get()?.loosely_equals(&ctx.var("$@god_check2").get()?)
-                                    && ctx.var("$god2").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
-                                    && ctx.var("$god3").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
-                                    && ctx.var("$god1").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
-                                {
-                                    ctx.call(
-                                        Function::Announce,
-                                        vec![
-                                            Val::from("Four seals have been released at the same time with the seal of [Mjolnir]."),
-                                            ctx.constant("BC_ALL")?,
-                                        ],
-                                    )?;
-                                } else {
-                                    ctx.call(
-                                        Function::Announce,
-                                        vec![Val::from("The 4th seal of [Mjolnir] has been released."), ctx.constant("BC_ALL")?],
-                                    )?;
-                                }
+                        } else if ctx.var("$god4").get()?.loosely_equals(&ctx.var("$@god_check2").get()?) {
+                            if (((ctx.var("$god4").get()?.loosely_equals(&ctx.var("$@god_check2").get()?)
+                                && ctx.var("$god2").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
+                                && ctx.var("$god3").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
+                                && ctx.var("$god1").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
+                            {
+                                ctx.call(
+                                    Function::Announce,
+                                    vec![
+                                        Val::from("Four seals have been released at the same time with the seal of [Mjolnir]."),
+                                        ctx.constant("BC_ALL")?,
+                                    ],
+                                )?;
+                            } else {
+                                ctx.call(
+                                    Function::Announce,
+                                    vec![Val::from("The 4th seal of [Mjolnir] has been released."), ctx.constant("BC_ALL")?],
+                                )?;
                             }
                         }
                         ctx.var("god_mjo_0").set(Val::from(10))?;
@@ -325,146 +307,140 @@ fn tialfi_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             "By this time, they've probably forgotten the insult. But make sure you speak to my sister for advice first."
                         ],
                     )?;
-                } else {
-                    if (ctx.var("god_mjo_0").get()? == 2 || ctx.var("god_mjo_0").get()? == 1) {
+                } else if (ctx.var("god_mjo_0").get()? == 2 || ctx.var("god_mjo_0").get()? == 1) {
+                    ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
+                    ctx.lines_as(
+                        "Tialfi",
+                        args![
+                            "Sorry for the trouble.",
+                            "I wish you good luck",
+                            "in finding the Dwarves!",
+                            "Just... Don't insult them!"
+                        ],
+                    )?;
+                } else if ctx.var("god_mjo_0").get()? == 0 {
+                    if runtime::op(&ctx.var("$god4").get()?, ">=", &ctx.var("$@god_check2").get()?)?.is_true() {
                         ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
                         ctx.lines_as(
                             "Tialfi",
+                            args!["I sense a strange energy growing more powerful somewhere on this continent..."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Tialfi", args!["Can you feel it?", "Something must be going on!"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Tialfi", args!["I think we'd better wait and see what's happening. Someone will deliver the news to us. Though, I am unsure of whether or not it will be good news or bad..."])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? < 70 {
+                        ctx.call(Function::Cutin, vec![Val::from("god_tialpi02"), Val::from(2)])?;
+                        ctx.lines_as(
+                            "Tialfi",
                             args![
-                                "Sorry for the trouble.",
-                                "I wish you good luck",
-                                "in finding the Dwarves!",
-                                "Just... Don't insult them!"
+                                "One of my ancestors supposedly was a servant of Thor. Still, I find it difficult to believe."
                             ],
                         )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Tialfi",
+                            args!["If the gods have all these powers, how could a mere human be of any real assistance?"],
+                        )?;
                     } else {
-                        if ctx.var("god_mjo_0").get()? == 0 {
-                            if runtime::op(&ctx.var("$god4").get()?, ">=", &ctx.var("$@god_check2").get()?)?.is_true() {
-                                ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
+                        ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
+                        ctx.lines_as(
+                            "Tialfi",
+                            args!["Last night, I had the most amazing dream where I was the servant of Thor, god of thunder."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Tialfi", args!["In this dream, I traveled", "with Thor to Jotunnheim, land of giants. During our journey, he told me many interesting stories about gods and heroes."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Tialfi",
+                            args!["Of course, I can't remember everything clearly, but it was truly fantastic."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Tialfi", args!["For some reason, I can vividly recall what Thor told me about his weapon, Mjolnir. Mjolnir is a Dwarven masterpiece."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Tialfi",
+                            args![
+                                "Thor told me that Dwarves are extremely talented artisans, and their works are supreme. So as",
+                                "I was thinking about my dream,",
+                                "I remembered..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Tialfi",
+                            args![
+                                "There is a mountain that",
+                                "has the same name as Thor's",
+                                "weapon. Surely, the two have",
+                                "some relation to each other."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Tialfi",
+                            args![
+                                "I've also recently heard a rumor that Dwarven Blacksmiths also reside on Mount Mjolnir.",
+                                "I understand the mountain is dangerous, and that I'm in no position to ask such a thing..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Tialfi", args!["I can't help wanting to know for myself whether or not there is truth to my dream. Is it possible for Mjolnir to resurface?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Tialfi", args!["If you don't mind, I'd like to ask you to explore this mountain and search for these Dwarven Blacksmiths."])?;
+                        ctx.next()?;
+                        'b2: {
+                            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Okay.")])?);
+                            let mut matched2 = false;
+                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                                matched2 = true;
+                            }
+                            if matched2 {
+                                ctx.call(Function::Cutin, vec![Val::from("god_tialpi02"), Val::from(2)])?;
                                 ctx.lines_as(
                                     "Tialfi",
-                                    args!["I sense a strange energy growing more powerful somewhere on this continent..."],
+                                    args![
+                                        "I see. But I still appreciate that you took the time to listen to me.",
+                                        "Hopefully someday I'll learn the truth about my dreams and about Mjolnir itself."
+                                    ],
+                                )?;
+                                break 'b2;
+                            }
+                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                                matched2 = true;
+                            }
+                            if matched2 {
+                                ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
+                                ctx.lines_as("Tialfi", args!["Thank you,", "thank you so much!", "Even though it won't be easy, I have faith that if the Dwarven Blacksmiths do exist, you'll be able to find them."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Tialfi", args!["Oh, and please speak to my sister Roskva first. She is outside the North Entrance of Prontera."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Tialfi",
+                                    args![
+                                        "I'm sure that she can",
+                                        "give you useful information if you're fortunate enough to encounter the Dwarves."
+                                    ],
                                 )?;
                                 ctx.next()?;
-                                ctx.lines_as("Tialfi", args!["Can you feel it?", "Something must be going on!"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Tialfi", args!["I think we'd better wait and see what's happening. Someone will deliver the news to us. Though, I am unsure of whether or not it will be good news or bad..."])?;
-                                ctx.close_window()?;
-                                ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("BaseLevel").get()?.number()? < 70 {
-                                    ctx.call(Function::Cutin, vec![Val::from("god_tialpi02"), Val::from(2)])?;
-                                    ctx.lines_as(
-                                        "Tialfi",
-                                        args![
-                                            "One of my ancestors supposedly was a servant of Thor. Still, I find it difficult to believe."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Tialfi",
-                                        args!["If the gods have all these powers, how could a mere human be of any real assistance?"],
-                                    )?;
-                                } else {
-                                    ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
-                                    ctx.lines_as(
-                                        "Tialfi",
-                                        args!["Last night, I had the most amazing dream where I was the servant of Thor, god of thunder."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Tialfi", args!["In this dream, I traveled", "with Thor to Jotunnheim, land of giants. During our journey, he told me many interesting stories about gods and heroes."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Tialfi",
-                                        args!["Of course, I can't remember everything clearly, but it was truly fantastic."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Tialfi", args!["For some reason, I can vividly recall what Thor told me about his weapon, Mjolnir. Mjolnir is a Dwarven masterpiece."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Tialfi",
-                                        args![
-                                            "Thor told me that Dwarves are extremely talented artisans, and their works are supreme. So as",
-                                            "I was thinking about my dream,",
-                                            "I remembered..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Tialfi",
-                                        args![
-                                            "There is a mountain that",
-                                            "has the same name as Thor's",
-                                            "weapon. Surely, the two have",
-                                            "some relation to each other."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Tialfi",
-                                        args![
-                                            "I've also recently heard a rumor that Dwarven Blacksmiths also reside on Mount Mjolnir.",
-                                            "I understand the mountain is dangerous, and that I'm in no position to ask such a thing..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Tialfi", args!["I can't help wanting to know for myself whether or not there is truth to my dream. Is it possible for Mjolnir to resurface?"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Tialfi", args!["If you don't mind, I'd like to ask you to explore this mountain and search for these Dwarven Blacksmiths."])?;
-                                    ctx.next()?;
-                                    'b2: {
-                                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Okay.")])?);
-                                        let mut matched2 = false;
-                                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
-                                            ctx.call(Function::Cutin, vec![Val::from("god_tialpi02"), Val::from(2)])?;
-                                            ctx.lines_as(
-                                                "Tialfi",
-                                                args![
-                                                    "I see. But I still appreciate that you took the time to listen to me.",
-                                                    "Hopefully someday I'll learn the truth about my dreams and about Mjolnir itself."
-                                                ],
-                                            )?;
-                                            break 'b2;
-                                        }
-                                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
-                                            ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
-                                            ctx.lines_as("Tialfi", args!["Thank you,", "thank you so much!", "Even though it won't be easy, I have faith that if the Dwarven Blacksmiths do exist, you'll be able to find them."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Tialfi", args!["Oh, and please speak to my sister Roskva first. She is outside the North Entrance of Prontera."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Tialfi",
-                                                args![
-                                                    "I'm sure that she can",
-                                                    "give you useful information if you're fortunate enough to encounter the Dwarves."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.var("god_mjo_0")
-                                                .set(ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])?)?;
-                                            ctx.lines_as(
-                                                "Tialfi",
-                                                args![
-                                                    "I'm truly lucky to meet such an adventurer like yourself. I wish you the best of luck."
-                                                ],
-                                            )?;
-                                        }
-                                    }
-                                }
+                                ctx.var("god_mjo_0")
+                                    .set(ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])?)?;
+                                ctx.lines_as(
+                                    "Tialfi",
+                                    args![
+                                        "I'm truly lucky to meet such an adventurer like yourself. I wish you the best of luck."
+                                    ],
+                                )?;
                             }
-                        } else {
-                            ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
-                            ctx.lines_as("Tialfi", args!["I believe in you.", "Just be courageous!"])?;
                         }
                     }
+                } else {
+                    ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
+                    ctx.lines_as("Tialfi", args!["I believe in you.", "Just be courageous!"])?;
                 }
             }
         }
@@ -505,47 +481,45 @@ fn roskva_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("god_mjo_0").get()? == 2 {
+        ctx.lines_as(
+            "Roskva",
+            args![
+                "You should know that Dwarven Blacksmiths are extremely offended if you do not speak to them with the utmost respect."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Roskva",
+            args![
+                "So it's really",
+                "important that you",
+                "speak to the Dwarves",
+                "as courteously as you can.",
+                "The first Dwarf you must visit",
+                "can be found to the North."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Roskva", args!["Travel in a counter clock wise direction around Midgard and seek out the other Dwarves in order. Your final destination will be to the East."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Roskva",
+            args!["If you happen to speak to them in the wrong order, please go talk to my brother Tialfi again."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("god_mjo_0").get()? == 2 {
-            ctx.lines_as(
-                "Roskva",
-                args![
-                    "You should know that Dwarven Blacksmiths are extremely offended if you do not speak to them with the utmost respect."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Roskva",
-                args![
-                    "So it's really",
-                    "important that you",
-                    "speak to the Dwarves",
-                    "as courteously as you can.",
-                    "The first Dwarf you must visit",
-                    "can be found to the North."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Roskva", args!["Travel in a counter clock wise direction around Midgard and seek out the other Dwarves in order. Your final destination will be to the East."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Roskva",
-                args!["If you happen to speak to them in the wrong order, please go talk to my brother Tialfi again."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as("Roskva", args!["A long time ago, many people used to frequent this area. Friends and families would live here, sharing happiness and sadness."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Roskva",
-                args!["But they're all gone now. My parents and my friends have all gone to a place whose name I don't even know."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Roskva", args!["I can't help", "but feel lonesome..."])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as("Roskva", args!["A long time ago, many people used to frequent this area. Friends and families would live here, sharing happiness and sadness."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Roskva",
+            args!["But they're all gone now. My parents and my friends have all gone to a place whose name I don't even know."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Roskva", args!["I can't help", "but feel lonesome..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -793,117 +767,109 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                         break 'b8;
                                                                                     }
                                                                                 }
-                                                                            } else {
-                                                                                if l_talk_to.clone() == 5 {
-                                                                                    ctx.lines_as("Austri", args!["The reason this mountain is called Mount Mjolnir is because it was actually created by the hammer."])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as("Austri", args!["In a battle against demons a thousand years ago, Thor struck the earth with Mjolnir. The impact caused the ground to rise, creating this mountain."])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as("Austri", args!["You can imagine just", "how powerful Mjolnir is.", "However, humans can never hope to see or even wield Mjolnir. Only a god can handle that kind of force."])?;
-                                                                                    ctx.next()?;
-                                                                                    'b9: {
-                                                                                        let subject9 = Val::from(runtime::select_values(
-                                                                                            ctx,
-                                                                                            &[Val::from(
-                                                                                                "...:Wah wah wah~!:Ah, I understand sir!",
-                                                                                            )],
-                                                                                        )?);
-                                                                                        let mut matched9 = false;
-                                                                                        let no_case9 =
-                                                                                            !subject9.loosely_equals(&Val::from(3));
-                                                                                        if !matched9 && no_case9 {
-                                                                                            matched9 = true;
-                                                                                        }
-                                                                                        if matched9 {
-                                                                                            l_talk_not = Val::from(1);
-                                                                                            break 'b9;
-                                                                                        }
-                                                                                        if !matched9
-                                                                                            && subject9.loosely_equals(&Val::from(3))
-                                                                                        {
-                                                                                            matched9 = true;
-                                                                                        }
-                                                                                        if matched9 {
-                                                                                            break 'b9;
-                                                                                        }
+                                                                            } else if l_talk_to.clone() == 5 {
+                                                                                ctx.lines_as("Austri", args!["The reason this mountain is called Mount Mjolnir is because it was actually created by the hammer."])?;
+                                                                                ctx.next()?;
+                                                                                ctx.lines_as("Austri", args!["In a battle against demons a thousand years ago, Thor struck the earth with Mjolnir. The impact caused the ground to rise, creating this mountain."])?;
+                                                                                ctx.next()?;
+                                                                                ctx.lines_as("Austri", args!["You can imagine just", "how powerful Mjolnir is.", "However, humans can never hope to see or even wield Mjolnir. Only a god can handle that kind of force."])?;
+                                                                                ctx.next()?;
+                                                                                'b9: {
+                                                                                    let subject9 = Val::from(runtime::select_values(
+                                                                                        ctx,
+                                                                                        &[Val::from(
+                                                                                            "...:Wah wah wah~!:Ah, I understand sir!",
+                                                                                        )],
+                                                                                    )?);
+                                                                                    let mut matched9 = false;
+                                                                                    let no_case9 =
+                                                                                        !subject9.loosely_equals(&Val::from(3));
+                                                                                    if !matched9 && no_case9 {
+                                                                                        matched9 = true;
                                                                                     }
-                                                                                } else {
-                                                                                    if l_talk_to.clone() == 6 {
-                                                                                        ctx.lines_as("Austri", args!["Hmm... But perhaps an ambitious dwarf can forge something similar to Mjolnir so that it can actually be used by humans. It would have less power, but it'd be perfectly crafted."])?;
-                                                                                        ctx.next()?;
-                                                                                        ctx.lines_as("Austri", args!["Yes, it's possible to create", "a Mjolnir suited to humans. Still, it wouldn't be very easy."])?;
-                                                                                        ctx.next()?;
-                                                                                        'b10: {
-                                                                                            let subject10 =
-                                                                                                Val::from(runtime::select_values(
-                                                                                                    ctx,
-                                                                                                    &[Val::from(
-                                                                                                        "...:Yes, sir!:Yeah, whatever.",
-                                                                                                    )],
-                                                                                                )?);
-                                                                                            let mut matched10 = false;
-                                                                                            let no_case10 =
-                                                                                                !subject10.loosely_equals(&Val::from(2));
-                                                                                            if !matched10 && no_case10 {
-                                                                                                matched10 = true;
-                                                                                            }
-                                                                                            if matched10 {
-                                                                                                l_talk_not = Val::from(1);
-                                                                                                break 'b10;
-                                                                                            }
-                                                                                            if !matched10
-                                                                                                && subject10.loosely_equals(&Val::from(2))
-                                                                                            {
-                                                                                                matched10 = true;
-                                                                                            }
-                                                                                            if matched10 {
-                                                                                                break 'b10;
-                                                                                            }
-                                                                                        }
-                                                                                    } else {
-                                                                                        if l_talk_to.clone() == 7 {
-                                                                                            ctx.lines_as("Austri", args!["Well, I happened to speak much longer than I intended. But I hope you learned what you wished to", "know about Mjolnir."])?;
-                                                                                            ctx.next()?;
-                                                                                            ctx.lines_as("Austri", args!["I feel that a great change is coming. I do not know what kind", "of effect it will have on our world, but something important will happen..."])?;
-                                                                                            ctx.next()?;
-                                                                                            ctx.lines_as("Austri", args!["Perhaps only the gods can be", "sure as to what the future will bring. In any case, we must prepare ourselves for what will happen."])?;
-                                                                                            ctx.next()?;
-                                                                                            'b11: {
-                                                                                                let subject11 =
-                                                                                                    Val::from(runtime::select_values(
-                                                                                                        ctx,
-                                                                                                        &[Val::from("...:Yes?:Yes, sir!")],
-                                                                                                    )?);
-                                                                                                let mut matched11 = false;
-                                                                                                let no_case11 = !subject11
-                                                                                                    .loosely_equals(&Val::from(3));
-                                                                                                if !matched11 && no_case11 {
-                                                                                                    matched11 = true;
-                                                                                                }
-                                                                                                if matched11 {
-                                                                                                    l_talk_not = Val::from(1);
-                                                                                                    break 'b11;
-                                                                                                }
-                                                                                                if !matched11
-                                                                                                    && subject11
-                                                                                                        .loosely_equals(&Val::from(3))
-                                                                                                {
-                                                                                                    matched11 = true;
-                                                                                                }
-                                                                                                if matched11 {
-                                                                                                    break 'b11;
-                                                                                                }
-                                                                                            }
-                                                                                        } else {
-                                                                                            if l_talk_to.clone() == 8 {
-                                                                                                ctx.var("god_mjo_1").set(Val::from(2))?;
-                                                                                                ctx.lines_as("Austri", args!["Alright then...", "If you wish to learn more, you should speak to my brothers.", "Take care, human."])?;
-                                                                                                ctx.close_window()?;
-                                                                                                return Err(Stop::End);
-                                                                                            }
-                                                                                        }
+                                                                                    if matched9 {
+                                                                                        l_talk_not = Val::from(1);
+                                                                                        break 'b9;
+                                                                                    }
+                                                                                    if !matched9
+                                                                                        && subject9.loosely_equals(&Val::from(3))
+                                                                                    {
+                                                                                        matched9 = true;
+                                                                                    }
+                                                                                    if matched9 {
+                                                                                        break 'b9;
                                                                                     }
                                                                                 }
+                                                                            } else if l_talk_to.clone() == 6 {
+                                                                                ctx.lines_as("Austri", args!["Hmm... But perhaps an ambitious dwarf can forge something similar to Mjolnir so that it can actually be used by humans. It would have less power, but it'd be perfectly crafted."])?;
+                                                                                ctx.next()?;
+                                                                                ctx.lines_as("Austri", args!["Yes, it's possible to create", "a Mjolnir suited to humans. Still, it wouldn't be very easy."])?;
+                                                                                ctx.next()?;
+                                                                                'b10: {
+                                                                                    let subject10 =
+                                                                                        Val::from(runtime::select_values(
+                                                                                            ctx,
+                                                                                            &[Val::from(
+                                                                                                "...:Yes, sir!:Yeah, whatever.",
+                                                                                            )],
+                                                                                        )?);
+                                                                                    let mut matched10 = false;
+                                                                                    let no_case10 =
+                                                                                        !subject10.loosely_equals(&Val::from(2));
+                                                                                    if !matched10 && no_case10 {
+                                                                                        matched10 = true;
+                                                                                    }
+                                                                                    if matched10 {
+                                                                                        l_talk_not = Val::from(1);
+                                                                                        break 'b10;
+                                                                                    }
+                                                                                    if !matched10
+                                                                                        && subject10.loosely_equals(&Val::from(2))
+                                                                                    {
+                                                                                        matched10 = true;
+                                                                                    }
+                                                                                    if matched10 {
+                                                                                        break 'b10;
+                                                                                    }
+                                                                                }
+                                                                            } else if l_talk_to.clone() == 7 {
+                                                                                ctx.lines_as("Austri", args!["Well, I happened to speak much longer than I intended. But I hope you learned what you wished to", "know about Mjolnir."])?;
+                                                                                ctx.next()?;
+                                                                                ctx.lines_as("Austri", args!["I feel that a great change is coming. I do not know what kind", "of effect it will have on our world, but something important will happen..."])?;
+                                                                                ctx.next()?;
+                                                                                ctx.lines_as("Austri", args!["Perhaps only the gods can be", "sure as to what the future will bring. In any case, we must prepare ourselves for what will happen."])?;
+                                                                                ctx.next()?;
+                                                                                'b11: {
+                                                                                    let subject11 =
+                                                                                        Val::from(runtime::select_values(
+                                                                                            ctx,
+                                                                                            &[Val::from("...:Yes?:Yes, sir!")],
+                                                                                        )?);
+                                                                                    let mut matched11 = false;
+                                                                                    let no_case11 = !subject11
+                                                                                        .loosely_equals(&Val::from(3));
+                                                                                    if !matched11 && no_case11 {
+                                                                                        matched11 = true;
+                                                                                    }
+                                                                                    if matched11 {
+                                                                                        l_talk_not = Val::from(1);
+                                                                                        break 'b11;
+                                                                                    }
+                                                                                    if !matched11
+                                                                                        && subject11
+                                                                                            .loosely_equals(&Val::from(3))
+                                                                                    {
+                                                                                        matched11 = true;
+                                                                                    }
+                                                                                    if matched11 {
+                                                                                        break 'b11;
+                                                                                    }
+                                                                                }
+                                                                            } else if l_talk_to.clone() == 8 {
+                                                                                ctx.var("god_mjo_1").set(Val::from(2))?;
+                                                                                ctx.lines_as("Austri", args!["Alright then...", "If you wish to learn more, you should speak to my brothers.", "Take care, human."])?;
+                                                                                ctx.close_window()?;
+                                                                                return Err(Stop::End);
                                                                             }
                                                                         }
                                                                     }
@@ -934,48 +900,46 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 }
                                             }
                                         }
-                                    } else {
-                                        if ctx.var("god_mjo_1").get()? == 0 {
-                                            ctx.lines_as("Austri", args!["What has made", "you come to me?"])?;
-                                            ctx.next()?;
-                                            'b12: {
-                                                let subject12 =
-                                                    Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                                let mut matched12 = false;
-                                                let no_case12 =
-                                                    !subject12.loosely_equals(&Val::from(1)) && !subject12.loosely_equals(&Val::from(2));
-                                                if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                                                    matched12 = true;
-                                                }
-                                                if matched12 {
-                                                    ctx.lines_as("Austri", args!["..."])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                                                    matched12 = true;
-                                                }
-                                                if matched12 {
-                                                    ctx.lines_as("Austri", args!["A respectable blacksmith cherishes his tools and crafts with diligence and care."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Austri", args!["When it comes to humans, I believe the ones who can appreciate my line of work are the only ones worth talking to."])?;
-                                                    ctx.next()?;
-                                                    ctx.var("god_mjo_1").set(Val::from(1))?;
-                                                    ctx.lines_as("Austri", args!["Every good blacksmith knows the value of a good hammer. If you can understand that, I shall consider speaking with you."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Austri",
-                                                        args!["Now go, human.", "I wish you safety", "in your travels."],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
+                                    } else if ctx.var("god_mjo_1").get()? == 0 {
+                                        ctx.lines_as("Austri", args!["What has made", "you come to me?"])?;
+                                        ctx.next()?;
+                                        'b12: {
+                                            let subject12 =
+                                                Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
+                                            let mut matched12 = false;
+                                            let no_case12 =
+                                                !subject12.loosely_equals(&Val::from(1)) && !subject12.loosely_equals(&Val::from(2));
+                                            if !matched12 && subject12.loosely_equals(&Val::from(1)) {
+                                                matched12 = true;
                                             }
-                                        } else {
-                                            ctx.lines_as("Austri", args!["Zzzz Zzzz..."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
+                                            if matched12 {
+                                                ctx.lines_as("Austri", args!["..."])?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                            if !matched12 && subject12.loosely_equals(&Val::from(2)) {
+                                                matched12 = true;
+                                            }
+                                            if matched12 {
+                                                ctx.lines_as("Austri", args!["A respectable blacksmith cherishes his tools and crafts with diligence and care."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Austri", args!["When it comes to humans, I believe the ones who can appreciate my line of work are the only ones worth talking to."])?;
+                                                ctx.next()?;
+                                                ctx.var("god_mjo_1").set(Val::from(1))?;
+                                                ctx.lines_as("Austri", args!["Every good blacksmith knows the value of a good hammer. If you can understand that, I shall consider speaking with you."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Austri",
+                                                    args!["Now go, human.", "I wish you safety", "in your travels."],
+                                                )?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
                                         }
+                                    } else {
+                                        ctx.lines_as("Austri", args!["Zzzz Zzzz..."])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
                                 }
                             }
@@ -1221,130 +1185,122 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                             break 'b20;
                                                                                         }
                                                                                     }
-                                                                                } else {
-                                                                                    if l_talk_to.clone() == 5 {
-                                                                                        ctx.lines_as("Austri", args!["The reason this mountain is called Mount Mjolnir is because it was actually created by the hammer."])?;
-                                                                                        ctx.next()?;
-                                                                                        ctx.lines_as("Austri", args!["In a battle against demons a thousand years ago, Thor struck the earth with Mjolnir. The impact caused the ground to rise, creating this mountain."])?;
-                                                                                        ctx.next()?;
-                                                                                        ctx.lines_as("Austri", args!["You can imagine just", "how powerful Mjolnir is.", "However, humans can never hope to see or even wield Mjolnir. Only a god can handle that kind of force."])?;
-                                                                                        ctx.next()?;
-                                                                                        'b21: {
-                                                                                            let subject21 = Val::from(
-                                                                                                runtime::select_values(
-                                                                                                    ctx,
-                                                                                                    &[Val::from(
-                                                                                                        "...:Wah wah wah~!:Ah, I understand sir!",
-                                                                                                    )],
-                                                                                                )?,
-                                                                                            );
-                                                                                            let mut matched21 = false;
-                                                                                            let no_case21 =
-                                                                                                !subject21.loosely_equals(&Val::from(3));
-                                                                                            if !matched21 && no_case21 {
-                                                                                                matched21 = true;
-                                                                                            }
-                                                                                            if matched21 {
-                                                                                                l_talk_not = Val::from(1);
-                                                                                                break 'b21;
-                                                                                            }
-                                                                                            if !matched21
-                                                                                                && subject21.loosely_equals(&Val::from(3))
-                                                                                            {
-                                                                                                matched21 = true;
-                                                                                            }
-                                                                                            if matched21 {
-                                                                                                break 'b21;
-                                                                                            }
+                                                                                } else if l_talk_to.clone() == 5 {
+                                                                                    ctx.lines_as("Austri", args!["The reason this mountain is called Mount Mjolnir is because it was actually created by the hammer."])?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.lines_as("Austri", args!["In a battle against demons a thousand years ago, Thor struck the earth with Mjolnir. The impact caused the ground to rise, creating this mountain."])?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.lines_as("Austri", args!["You can imagine just", "how powerful Mjolnir is.", "However, humans can never hope to see or even wield Mjolnir. Only a god can handle that kind of force."])?;
+                                                                                    ctx.next()?;
+                                                                                    'b21: {
+                                                                                        let subject21 = Val::from(
+                                                                                            runtime::select_values(
+                                                                                                ctx,
+                                                                                                &[Val::from(
+                                                                                                    "...:Wah wah wah~!:Ah, I understand sir!",
+                                                                                                )],
+                                                                                            )?,
+                                                                                        );
+                                                                                        let mut matched21 = false;
+                                                                                        let no_case21 =
+                                                                                            !subject21.loosely_equals(&Val::from(3));
+                                                                                        if !matched21 && no_case21 {
+                                                                                            matched21 = true;
                                                                                         }
-                                                                                    } else {
-                                                                                        if l_talk_to.clone() == 6 {
-                                                                                            ctx.lines_as("Austri", args!["Hmm... But perhaps an ambitious dwarf can forge something similar to Mjolnir so that it can actually be used by humans. It would have less power, but it'd be perfectly crafted."])?;
-                                                                                            ctx.next()?;
-                                                                                            ctx.lines_as("Austri", args!["Yes, it's possible to create", "a Mjolnir suited to humans. Still, it wouldn't be very easy."])?;
-                                                                                            ctx.next()?;
-                                                                                            'b22: {
-                                                                                                let subject22 =
-                                                                                                    Val::from(runtime::select_values(
-                                                                                                        ctx,
-                                                                                                        &[Val::from(
-                                                                                                            "...:Yes, sir!:Yeah, whatever.",
-                                                                                                        )],
-                                                                                                    )?);
-                                                                                                let mut matched22 = false;
-                                                                                                let no_case22 = !subject22
-                                                                                                    .loosely_equals(&Val::from(2));
-                                                                                                if !matched22 && no_case22 {
-                                                                                                    matched22 = true;
-                                                                                                }
-                                                                                                if matched22 {
-                                                                                                    l_talk_not = Val::from(1);
-                                                                                                    break 'b22;
-                                                                                                }
-                                                                                                if !matched22
-                                                                                                    && subject22
-                                                                                                        .loosely_equals(&Val::from(2))
-                                                                                                {
-                                                                                                    matched22 = true;
-                                                                                                }
-                                                                                                if matched22 {
-                                                                                                    break 'b22;
-                                                                                                }
-                                                                                            }
-                                                                                        } else {
-                                                                                            if l_talk_to.clone() == 7 {
-                                                                                                ctx.lines_as("Austri", args!["Well, I happened to speak much longer than I intended. But I hope you learned what you wished to", "know about Mjolnir."])?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.lines_as("Austri", args!["I feel that a great change is coming. I do not know what kind", "of effect it will have on our world, but something important will happen..."])?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.lines_as("Austri", args!["Perhaps only the gods can be", "sure as to what the future will bring. In any case, we must prepare ourselves for what will happen."])?;
-                                                                                                ctx.next()?;
-                                                                                                'b23: {
-                                                                                                    let subject23 =
-                                                                                                        Val::from(runtime::select_values(
-                                                                                                            ctx,
-                                                                                                            &[Val::from(
-                                                                                                                "...:Yes?:Yes, sir!",
-                                                                                                            )],
-                                                                                                        )?);
-                                                                                                    let mut matched23 = false;
-                                                                                                    let no_case23 = !subject23
-                                                                                                        .loosely_equals(&Val::from(3));
-                                                                                                    if !matched23 && no_case23 {
-                                                                                                        matched23 = true;
-                                                                                                    }
-                                                                                                    if matched23 {
-                                                                                                        l_talk_not = Val::from(1);
-                                                                                                        break 'b23;
-                                                                                                    }
-                                                                                                    if !matched23
-                                                                                                        && subject23
-                                                                                                            .loosely_equals(&Val::from(3))
-                                                                                                    {
-                                                                                                        matched23 = true;
-                                                                                                    }
-                                                                                                    if matched23 {
-                                                                                                        break 'b23;
-                                                                                                    }
-                                                                                                }
-                                                                                            } else {
-                                                                                                if l_talk_to.clone() == 8 {
-                                                                                                    ctx.var("god_mjo_4")
-                                                                                                        .set(Val::from(2))?;
-                                                                                                    ctx.lines_as(
-                                                                                                        "Austri",
-                                                                                                        args![
-                                                                                                            "Alright then...",
-                                                                                                            "Take care of",
-                                                                                                            "yourself, human."
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.close_window()?;
-                                                                                                    return Err(Stop::End);
-                                                                                                }
-                                                                                            }
+                                                                                        if matched21 {
+                                                                                            l_talk_not = Val::from(1);
+                                                                                            break 'b21;
+                                                                                        }
+                                                                                        if !matched21
+                                                                                            && subject21.loosely_equals(&Val::from(3))
+                                                                                        {
+                                                                                            matched21 = true;
+                                                                                        }
+                                                                                        if matched21 {
+                                                                                            break 'b21;
                                                                                         }
                                                                                     }
+                                                                                } else if l_talk_to.clone() == 6 {
+                                                                                    ctx.lines_as("Austri", args!["Hmm... But perhaps an ambitious dwarf can forge something similar to Mjolnir so that it can actually be used by humans. It would have less power, but it'd be perfectly crafted."])?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.lines_as("Austri", args!["Yes, it's possible to create", "a Mjolnir suited to humans. Still, it wouldn't be very easy."])?;
+                                                                                    ctx.next()?;
+                                                                                    'b22: {
+                                                                                        let subject22 =
+                                                                                            Val::from(runtime::select_values(
+                                                                                                ctx,
+                                                                                                &[Val::from(
+                                                                                                    "...:Yes, sir!:Yeah, whatever.",
+                                                                                                )],
+                                                                                            )?);
+                                                                                        let mut matched22 = false;
+                                                                                        let no_case22 = !subject22
+                                                                                            .loosely_equals(&Val::from(2));
+                                                                                        if !matched22 && no_case22 {
+                                                                                            matched22 = true;
+                                                                                        }
+                                                                                        if matched22 {
+                                                                                            l_talk_not = Val::from(1);
+                                                                                            break 'b22;
+                                                                                        }
+                                                                                        if !matched22
+                                                                                            && subject22
+                                                                                                .loosely_equals(&Val::from(2))
+                                                                                        {
+                                                                                            matched22 = true;
+                                                                                        }
+                                                                                        if matched22 {
+                                                                                            break 'b22;
+                                                                                        }
+                                                                                    }
+                                                                                } else if l_talk_to.clone() == 7 {
+                                                                                    ctx.lines_as("Austri", args!["Well, I happened to speak much longer than I intended. But I hope you learned what you wished to", "know about Mjolnir."])?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.lines_as("Austri", args!["I feel that a great change is coming. I do not know what kind", "of effect it will have on our world, but something important will happen..."])?;
+                                                                                    ctx.next()?;
+                                                                                    ctx.lines_as("Austri", args!["Perhaps only the gods can be", "sure as to what the future will bring. In any case, we must prepare ourselves for what will happen."])?;
+                                                                                    ctx.next()?;
+                                                                                    'b23: {
+                                                                                        let subject23 =
+                                                                                            Val::from(runtime::select_values(
+                                                                                                ctx,
+                                                                                                &[Val::from(
+                                                                                                    "...:Yes?:Yes, sir!",
+                                                                                                )],
+                                                                                            )?);
+                                                                                        let mut matched23 = false;
+                                                                                        let no_case23 = !subject23
+                                                                                            .loosely_equals(&Val::from(3));
+                                                                                        if !matched23 && no_case23 {
+                                                                                            matched23 = true;
+                                                                                        }
+                                                                                        if matched23 {
+                                                                                            l_talk_not = Val::from(1);
+                                                                                            break 'b23;
+                                                                                        }
+                                                                                        if !matched23
+                                                                                            && subject23
+                                                                                                .loosely_equals(&Val::from(3))
+                                                                                        {
+                                                                                            matched23 = true;
+                                                                                        }
+                                                                                        if matched23 {
+                                                                                            break 'b23;
+                                                                                        }
+                                                                                    }
+                                                                                } else if l_talk_to.clone() == 8 {
+                                                                                    ctx.var("god_mjo_4")
+                                                                                        .set(Val::from(2))?;
+                                                                                    ctx.lines_as(
+                                                                                        "Austri",
+                                                                                        args![
+                                                                                            "Alright then...",
+                                                                                            "Take care of",
+                                                                                            "yourself, human."
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.close_window()?;
+                                                                                    return Err(Stop::End);
                                                                                 }
                                                                             }
                                                                         }
@@ -1375,48 +1331,46 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     }
                                                 }
                                             }
-                                        } else {
-                                            if ctx.var("god_mjo_4").get()? == 0 {
-                                                ctx.lines_as("Austri", args!["What made you come to me?"])?;
-                                                ctx.next()?;
-                                                'b24: {
-                                                    let subject24 =
-                                                        Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                                    let mut matched24 = false;
-                                                    let no_case24 = !subject24.loosely_equals(&Val::from(1))
-                                                        && !subject24.loosely_equals(&Val::from(2));
-                                                    if !matched24 && subject24.loosely_equals(&Val::from(1)) {
-                                                        matched24 = true;
-                                                    }
-                                                    if matched24 {
-                                                        ctx.lines_as("Austri", args!["..."])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                    if !matched24 && subject24.loosely_equals(&Val::from(2)) {
-                                                        matched24 = true;
-                                                    }
-                                                    if matched24 {
-                                                        ctx.lines_as("Austri", args!["A respectable blacksmith cherishes his tools and crafts with diligence and care."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Austri", args!["When it comes to humans, I believe the ones who can appreciate my line of work are the only ones worth talking to."])?;
-                                                        ctx.next()?;
-                                                        ctx.var("god_mjo_4").set(Val::from(1))?;
-                                                        ctx.lines_as("Austri", args!["Every good blacksmith knows the value of a good hammer. If you can understand that, I shall consider speaking with you."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Austri",
-                                                            args!["Now go, human.", "I wish you safety", "in your travels."],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
+                                        } else if ctx.var("god_mjo_4").get()? == 0 {
+                                            ctx.lines_as("Austri", args!["What made you come to me?"])?;
+                                            ctx.next()?;
+                                            'b24: {
+                                                let subject24 =
+                                                    Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
+                                                let mut matched24 = false;
+                                                let no_case24 = !subject24.loosely_equals(&Val::from(1))
+                                                    && !subject24.loosely_equals(&Val::from(2));
+                                                if !matched24 && subject24.loosely_equals(&Val::from(1)) {
+                                                    matched24 = true;
                                                 }
-                                            } else {
-                                                ctx.lines_as("Austri", args!["Zzzz Zzzz..."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
+                                                if matched24 {
+                                                    ctx.lines_as("Austri", args!["..."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
+                                                if !matched24 && subject24.loosely_equals(&Val::from(2)) {
+                                                    matched24 = true;
+                                                }
+                                                if matched24 {
+                                                    ctx.lines_as("Austri", args!["A respectable blacksmith cherishes his tools and crafts with diligence and care."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Austri", args!["When it comes to humans, I believe the ones who can appreciate my line of work are the only ones worth talking to."])?;
+                                                    ctx.next()?;
+                                                    ctx.var("god_mjo_4").set(Val::from(1))?;
+                                                    ctx.lines_as("Austri", args!["Every good blacksmith knows the value of a good hammer. If you can understand that, I shall consider speaking with you."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Austri",
+                                                        args!["Now go, human.", "I wish you safety", "in your travels."],
+                                                    )?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
                                             }
+                                        } else {
+                                            ctx.lines_as("Austri", args!["Zzzz Zzzz..."])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         }
                                     }
                                 }
@@ -1625,38 +1579,32 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             + Val::from("")),
                                                         "attacks Sudri's head!"
                                                     ])?;
+                                                } else if l_p_atk.clone() == 2 {
+                                                    ctx.lines(args![
+                                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                            + Val::from("")),
+                                                        "strikes Sudri's chest!"
+                                                    ])?;
+                                                } else if l_p_atk.clone() == 3 {
+                                                    ctx.lines(args![
+                                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                            + Val::from("")),
+                                                        "aims for Sudri's legs!"
+                                                    ])?;
+                                                } else if l_p_atk.clone() == 4 {
+                                                    ctx.lines(args![
+                                                        ((Val::from("")
+                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                            + Val::from("")),
+                                                        "requests a break!"
+                                                    ])?;
                                                 } else {
-                                                    if l_p_atk.clone() == 2 {
-                                                        ctx.lines(args![
-                                                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                + Val::from("")),
-                                                            "strikes Sudri's chest!"
-                                                        ])?;
-                                                    } else {
-                                                        if l_p_atk.clone() == 3 {
-                                                            ctx.lines(args![
-                                                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                    + Val::from("")),
-                                                                "aims for Sudri's legs!"
-                                                            ])?;
-                                                        } else {
-                                                            if l_p_atk.clone() == 4 {
-                                                                ctx.lines(args![
-                                                                    ((Val::from("")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from("")),
-                                                                    "requests a break!"
-                                                                ])?;
-                                                            } else {
-                                                                ctx.lines(args![
-                                                                    ((Val::from("")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from("'s")),
-                                                                    "weak point revealed!"
-                                                                ])?;
-                                                            }
-                                                        }
-                                                    }
+                                                    ctx.lines(args![
+                                                        ((Val::from("")
+                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                            + Val::from("'s")),
+                                                        "weak point revealed!"
+                                                    ])?;
                                                 }
                                                 if l_p_atk.clone().loosely_equals(&l_n_def.clone()) {
                                                     ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_GUARD")?])?;
@@ -1670,31 +1618,27 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
                                                                 + Val::from(" misses!"))
                                                         ])?;
-                                                    } else {
-                                                        if l_n_def.clone() == 2 {
-                                                            ctx.lines(args![
-                                                                "--------------------",
-                                                                "Sudri blocks your",
-                                                                "attack by crossing",
-                                                                "his stout arms.",
-                                                                "--------------------",
-                                                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                    + Val::from("'s attack is blocked!"))
-                                                            ])?;
-                                                        } else {
-                                                            if l_n_def.clone() == 3 {
-                                                                ctx.lines(args![
-                                                                    "--------------------",
-                                                                    "Sudri dodges your",
-                                                                    "attack with a graceful",
-                                                                    "leap to the heavens.",
-                                                                    "--------------------",
-                                                                    ((Val::from("")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from(" misses!"))
-                                                                ])?;
-                                                            }
-                                                        }
+                                                    } else if l_n_def.clone() == 2 {
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "Sudri blocks your",
+                                                            "attack by crossing",
+                                                            "his stout arms.",
+                                                            "--------------------",
+                                                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("'s attack is blocked!"))
+                                                        ])?;
+                                                    } else if l_n_def.clone() == 3 {
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "Sudri dodges your",
+                                                            "attack with a graceful",
+                                                            "leap to the heavens.",
+                                                            "--------------------",
+                                                            ((Val::from("")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from(" misses!"))
+                                                        ])?;
                                                     }
                                                 } else {
                                                     if l_p_atk.clone() == 4 {
@@ -1706,71 +1650,63 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                 + Val::from("")),
                                                             "has gained 10 HP!"
                                                         ])?;
-                                                    } else {
-                                                        if l_p_atk.clone() == 1 {
-                                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
-                                                            l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
-                                                            ctx.lines(args![
-                                                                "--------------------",
-                                                                "You successfully hit",
-                                                                "Sudri on the head!",
-                                                                "--------------------",
-                                                                ((Val::from("Sudri has lost ") + l_damage.clone()) + Val::from(" HP!"))
-                                                            ])?;
-                                                        } else {
-                                                            if l_p_atk.clone() == 2 {
-                                                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT2")?])?;
-                                                                l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
-                                                                ctx.lines(args![
-                                                                    "--------------------",
-                                                                    "You successfully hit",
-                                                                    "Sudri on the chest!",
-                                                                    "--------------------",
-                                                                    "Sudri has",
-                                                                    ((Val::from("lost ") + l_damage.clone()) + Val::from(" HP!"))
-                                                                ])?;
-                                                            } else {
-                                                                if l_p_atk.clone() == 3 {
-                                                                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT4")?])?;
-                                                                    l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
-                                                                    ctx.lines(args![
-                                                                        "--------------------",
-                                                                        "You successfully hit",
-                                                                        "Sudri on the legs!",
-                                                                        "--------------------",
-                                                                        "Sudri has",
-                                                                        ((Val::from("lost ") + l_damage.clone()) + Val::from(" HP!"))
-                                                                    ])?;
-                                                                } else {
-                                                                    if l_p_atk.clone() == 0 {
-                                                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
-                                                                        l_p_vit = (l_p_vit.clone().try_sub(Val::from(10))?);
-                                                                        ctx.lines(args![
-                                                                            "--------------------",
-                                                                            "You were hit by",
-                                                                            "Sudri's counter attack!",
-                                                                            "--------------------",
-                                                                            ((Val::from("")
-                                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                                + Val::from(" has lost 10 HP!"))
-                                                                        ])?;
-                                                                        if l_p_vit.clone().number()? < 1 {
-                                                                            ctx.mes("Defeated...")?;
-                                                                            ctx.next()?;
-                                                                            break 'l2;
-                                                                        }
-                                                                    } else {
-                                                                        ctx.lines(args![
-                                                                            "--------------------",
-                                                                            "Something happened",
-                                                                            "and the fight has stopped!"
-                                                                        ])?;
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    }
-                                                                }
-                                                            }
+                                                    } else if l_p_atk.clone() == 1 {
+                                                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
+                                                        l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "You successfully hit",
+                                                            "Sudri on the head!",
+                                                            "--------------------",
+                                                            ((Val::from("Sudri has lost ") + l_damage.clone()) + Val::from(" HP!"))
+                                                        ])?;
+                                                    } else if l_p_atk.clone() == 2 {
+                                                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT2")?])?;
+                                                        l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "You successfully hit",
+                                                            "Sudri on the chest!",
+                                                            "--------------------",
+                                                            "Sudri has",
+                                                            ((Val::from("lost ") + l_damage.clone()) + Val::from(" HP!"))
+                                                        ])?;
+                                                    } else if l_p_atk.clone() == 3 {
+                                                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT4")?])?;
+                                                        l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "You successfully hit",
+                                                            "Sudri on the legs!",
+                                                            "--------------------",
+                                                            "Sudri has",
+                                                            ((Val::from("lost ") + l_damage.clone()) + Val::from(" HP!"))
+                                                        ])?;
+                                                    } else if l_p_atk.clone() == 0 {
+                                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
+                                                        l_p_vit = (l_p_vit.clone().try_sub(Val::from(10))?);
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "You were hit by",
+                                                            "Sudri's counter attack!",
+                                                            "--------------------",
+                                                            ((Val::from("")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from(" has lost 10 HP!"))
+                                                        ])?;
+                                                        if l_p_vit.clone().number()? < 1 {
+                                                            ctx.mes("Defeated...")?;
+                                                            ctx.next()?;
+                                                            break 'l2;
                                                         }
+                                                    } else {
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "Something happened",
+                                                            "and the fight has stopped!"
+                                                        ])?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
                                                     }
                                                 }
                                                 if l_n_vit.clone().number()? < 1 {
@@ -1843,12 +1779,10 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 l_damage = ctx.call(Function::Rand, vec![Val::from(20), Val::from(25)])?;
                                                 if l_n_atk.clone() == 1 {
                                                     ctx.mes("Sudri aims for the head!")?;
+                                                } else if l_n_atk.clone() == 2 {
+                                                    ctx.mes("Sudri strikes the chest!")?;
                                                 } else {
-                                                    if l_n_atk.clone() == 2 {
-                                                        ctx.mes("Sudri strikes the chest!")?;
-                                                    } else {
-                                                        ctx.mes("Sudri attacks the legs!")?;
-                                                    }
+                                                    ctx.mes("Sudri attacks the legs!")?;
                                                 }
                                                 if l_n_atk.clone().loosely_equals(&l_p_def.clone()) {
                                                     ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_GUARD")?])?;
@@ -1863,30 +1797,26 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             "--------------------",
                                                             "Sudri has failed to attack."
                                                         ])?;
-                                                    } else {
-                                                        if l_p_def.clone() == 2 {
-                                                            ctx.lines(args![
-                                                                "--------------------",
-                                                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                    + Val::from("")),
-                                                                "barely blocked",
-                                                                "Sudri's attack.",
-                                                                "--------------------",
-                                                                "Sudri has failed to attack."
-                                                            ])?;
-                                                        } else {
-                                                            if l_p_def.clone() == 3 {
-                                                                ctx.lines(args![
-                                                                    "--------------------",
-                                                                    ((Val::from("")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from(" jumped,")),
-                                                                    "dodged Sudri's attack at ease.",
-                                                                    "--------------------",
-                                                                    "Sudri has failed to attack."
-                                                                ])?;
-                                                            }
-                                                        }
+                                                    } else if l_p_def.clone() == 2 {
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("")),
+                                                            "barely blocked",
+                                                            "Sudri's attack.",
+                                                            "--------------------",
+                                                            "Sudri has failed to attack."
+                                                        ])?;
+                                                    } else if l_p_def.clone() == 3 {
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            ((Val::from("")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from(" jumped,")),
+                                                            "dodged Sudri's attack at ease.",
+                                                            "--------------------",
+                                                            "Sudri has failed to attack."
+                                                        ])?;
                                                     }
                                                 } else {
                                                     if l_p_def.clone() == 4 {
@@ -1928,92 +1858,84 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                     + Val::from(" has lost 30 HP!"))
                                                             ])?;
                                                         }
+                                                    } else if l_n_atk.clone() == 1 {
+                                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
+                                                        l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "Sudri successfully",
+                                                            ((Val::from("hit ")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("")),
+                                                            "on the head!",
+                                                            "--------------------",
+                                                            ((((Val::from("")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from(" has lost "))
+                                                                + l_damage.clone())
+                                                                + Val::from(" HP!"))
+                                                        ])?;
+                                                    } else if l_n_atk.clone() == 2 {
+                                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT2")?])?;
+                                                        l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "Sudri successfully",
+                                                            ((Val::from("hit ")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("")),
+                                                            "on the chest!",
+                                                            "--------------------",
+                                                            ((((Val::from("")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from(" has lost "))
+                                                                + l_damage.clone())
+                                                                + Val::from(" HP!"))
+                                                        ])?;
+                                                    } else if l_n_atk.clone() == 3 {
+                                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT4")?])?;
+                                                        l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "Sudri successfully",
+                                                            ((Val::from("hit ")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("")),
+                                                            "on the legs!",
+                                                            "--------------------",
+                                                            ((((Val::from("")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from(" has lost "))
+                                                                + l_damage.clone())
+                                                                + Val::from(" HP!"))
+                                                        ])?;
+                                                    } else if l_n_atk.clone() == 0 {
+                                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
+                                                        l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "Sudri successfully",
+                                                            ((Val::from("hits ")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("")),
+                                                            "during a moment of",
+                                                            "absent-mindedness!",
+                                                            "--------------------",
+                                                            ((((Val::from("")
+                                                                + ctx
+                                                                    .call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from(" has lost "))
+                                                                + l_damage.clone())
+                                                                + Val::from(" HP!"))
+                                                        ])?;
                                                     } else {
-                                                        if l_n_atk.clone() == 1 {
-                                                            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
-                                                            l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
-                                                            ctx.lines(args![
-                                                                "--------------------",
-                                                                "Sudri successfully",
-                                                                ((Val::from("hit ")
-                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                    + Val::from("")),
-                                                                "on the head!",
-                                                                "--------------------",
-                                                                ((((Val::from("")
-                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                    + Val::from(" has lost "))
-                                                                    + l_damage.clone())
-                                                                    + Val::from(" HP!"))
-                                                            ])?;
-                                                        } else {
-                                                            if l_n_atk.clone() == 2 {
-                                                                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT2")?])?;
-                                                                l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
-                                                                ctx.lines(args![
-                                                                    "--------------------",
-                                                                    "Sudri successfully",
-                                                                    ((Val::from("hit ")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from("")),
-                                                                    "on the chest!",
-                                                                    "--------------------",
-                                                                    ((((Val::from("")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from(" has lost "))
-                                                                        + l_damage.clone())
-                                                                        + Val::from(" HP!"))
-                                                                ])?;
-                                                            } else {
-                                                                if l_n_atk.clone() == 3 {
-                                                                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT4")?])?;
-                                                                    l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
-                                                                    ctx.lines(args![
-                                                                        "--------------------",
-                                                                        "Sudri successfully",
-                                                                        ((Val::from("hit ")
-                                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                            + Val::from("")),
-                                                                        "on the legs!",
-                                                                        "--------------------",
-                                                                        ((((Val::from("")
-                                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                            + Val::from(" has lost "))
-                                                                            + l_damage.clone())
-                                                                            + Val::from(" HP!"))
-                                                                    ])?;
-                                                                } else {
-                                                                    if l_n_atk.clone() == 0 {
-                                                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
-                                                                        l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
-                                                                        ctx.lines(args![
-                                                                            "--------------------",
-                                                                            "Sudri successfully",
-                                                                            ((Val::from("hits ")
-                                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                                + Val::from("")),
-                                                                            "during a moment of",
-                                                                            "absent-mindedness!",
-                                                                            "--------------------",
-                                                                            ((((Val::from("")
-                                                                                + ctx
-                                                                                    .call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                                + Val::from(" has lost "))
-                                                                                + l_damage.clone())
-                                                                                + Val::from(" HP!"))
-                                                                        ])?;
-                                                                    } else {
-                                                                        ctx.lines(args![
-                                                                            "--------------------",
-                                                                            "Something happened",
-                                                                            "and the fight has stopped!"
-                                                                        ])?;
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
+                                                        ctx.lines(args![
+                                                            "--------------------",
+                                                            "Something happened",
+                                                            "and the fight has stopped!"
+                                                        ])?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
                                                     }
                                                 }
                                                 if l_p_vit.clone().number()? < 1 {
@@ -2040,123 +1962,119 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             )?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
-                                        } else {
-                                            if runtime::op(&l_n_vit.clone(), "<", &ctx.var("p_vit").get()?)?.is_true() {
-                                                ctx.var("god_mjo_2").set(Val::from(2))?;
-                                                ctx.lines_as(
-                                                    "Sudri",
-                                                    args!["You're stronger than me. I never thought I'd meet a human as strong as you."],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Sudri", args!["I'm impressed! Alright, I'll tell my friends good things about you. Hopefully, my brothers will give you the help you're looking for."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Sudri", args!["Okay then,", "be safe on", "your travels!"])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
-                                    } else {
-                                        if ctx.var("god_mjo_2").get()? == 0 {
-                                            ctx.lines_as("Sudri", args!["So...", "What brings", "you here, human?"])?;
+                                        } else if runtime::op(&l_n_vit.clone(), "<", &ctx.var("p_vit").get()?)?.is_true() {
+                                            ctx.var("god_mjo_2").set(Val::from(2))?;
+                                            ctx.lines_as(
+                                                "Sudri",
+                                                args!["You're stronger than me. I never thought I'd meet a human as strong as you."],
+                                            )?;
                                             ctx.next()?;
-                                            'b5: {
-                                                let subject5 =
-                                                    Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                                let mut matched5 = false;
-                                                let no_case5 =
-                                                    !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                                                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                                    matched5 = true;
-                                                }
-                                                if matched5 {
-                                                    ctx.lines_as("Sudri", args!["You have too much time on your hands. Why don't you log out and hang out with your buddies for a while?"])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                                    matched5 = true;
-                                                }
-                                                if matched5 {
-                                                    ctx.lines_as("Sudri", args!["Huh. You're different than other humans. But still, trusting you because you know how to speak respectfully isn't very wise."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Sudri",
-                                                        args![
-                                                            "If there's anything I love,",
-                                                            "it's bare knuckle brawling,",
-                                                            "old school style."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Sudri",
-                                                        args![
-                                                            "Words can be deceptive,",
-                                                            "but if you can beat me in",
-                                                            "a fight, I think I might",
-                                                            "just talk to you.",
-                                                            "How about it?"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    'b6: {
-                                                        let subject6 = Val::from(runtime::select_values(
-                                                            ctx,
-                                                            &[Val::from("...:Yes, I accept your challenge.:No, I'm scared!")],
-                                                        )?);
-                                                        let mut matched6 = false;
-                                                        let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                                                            && !subject6.loosely_equals(&Val::from(2))
-                                                            && !subject6.loosely_equals(&Val::from(3));
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            ctx.var("god_mjo_2").set(Val::from(3))?;
-                                                            ctx.lines_as(
-                                                                "Sudri",
-                                                                args!["You didn't", "even answer me!", "Fine! Whatever!"],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            ctx.var("god_mjo_2").set(Val::from(1))?;
-                                                            ctx.lines_as("Sudri", args!["Ah, I like you already, human! Now why don't you go do some warm ups, and we'll fight when you're ready."])?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            ctx.var("god_mjo_2").set(Val::from(1))?;
-                                                            ctx.lines_as(
-                                                                "Sudri",
-                                                                args![
-                                                                    "Eh...?",
-                                                                    "Why are you being",
-                                                                    "such a coward?",
-                                                                    "Are you afraid of",
-                                                                    "this old and tiny Dwarf?"
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Sudri", args!["Come on, I'll even let you have the first hit. Just come to me when you're ready to fight!"])?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            ctx.lines_as("Sudri", args!["Zzzz Zzzz..."])?;
+                                            ctx.lines_as("Sudri", args!["I'm impressed! Alright, I'll tell my friends good things about you. Hopefully, my brothers will give you the help you're looking for."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Sudri", args!["Okay then,", "be safe on", "your travels!"])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                    } else if ctx.var("god_mjo_2").get()? == 0 {
+                                        ctx.lines_as("Sudri", args!["So...", "What brings", "you here, human?"])?;
+                                        ctx.next()?;
+                                        'b5: {
+                                            let subject5 =
+                                                Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
+                                            let mut matched5 = false;
+                                            let no_case5 =
+                                                !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
+                                            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                                                matched5 = true;
+                                            }
+                                            if matched5 {
+                                                ctx.lines_as("Sudri", args!["You have too much time on your hands. Why don't you log out and hang out with your buddies for a while?"])?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                                                matched5 = true;
+                                            }
+                                            if matched5 {
+                                                ctx.lines_as("Sudri", args!["Huh. You're different than other humans. But still, trusting you because you know how to speak respectfully isn't very wise."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Sudri",
+                                                    args![
+                                                        "If there's anything I love,",
+                                                        "it's bare knuckle brawling,",
+                                                        "old school style."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Sudri",
+                                                    args![
+                                                        "Words can be deceptive,",
+                                                        "but if you can beat me in",
+                                                        "a fight, I think I might",
+                                                        "just talk to you.",
+                                                        "How about it?"
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                'b6: {
+                                                    let subject6 = Val::from(runtime::select_values(
+                                                        ctx,
+                                                        &[Val::from("...:Yes, I accept your challenge.:No, I'm scared!")],
+                                                    )?);
+                                                    let mut matched6 = false;
+                                                    let no_case6 = !subject6.loosely_equals(&Val::from(1))
+                                                        && !subject6.loosely_equals(&Val::from(2))
+                                                        && !subject6.loosely_equals(&Val::from(3));
+                                                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                                                        matched6 = true;
+                                                    }
+                                                    if matched6 {
+                                                        ctx.var("god_mjo_2").set(Val::from(3))?;
+                                                        ctx.lines_as(
+                                                            "Sudri",
+                                                            args!["You didn't", "even answer me!", "Fine! Whatever!"],
+                                                        )?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
+                                                    }
+                                                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                                                        matched6 = true;
+                                                    }
+                                                    if matched6 {
+                                                        ctx.var("god_mjo_2").set(Val::from(1))?;
+                                                        ctx.lines_as("Sudri", args!["Ah, I like you already, human! Now why don't you go do some warm ups, and we'll fight when you're ready."])?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
+                                                    }
+                                                    if !matched6 && subject6.loosely_equals(&Val::from(3)) {
+                                                        matched6 = true;
+                                                    }
+                                                    if matched6 {
+                                                        ctx.var("god_mjo_2").set(Val::from(1))?;
+                                                        ctx.lines_as(
+                                                            "Sudri",
+                                                            args![
+                                                                "Eh...?",
+                                                                "Why are you being",
+                                                                "such a coward?",
+                                                                "Are you afraid of",
+                                                                "this old and tiny Dwarf?"
+                                                            ],
+                                                        )?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Sudri", args!["Come on, I'll even let you have the first hit. Just come to me when you're ready to fight!"])?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        ctx.lines_as("Sudri", args!["Zzzz Zzzz..."])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
                                 }
                             }
@@ -2311,39 +2229,33 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                 + Val::from("")),
                                                             "attacks Sudri's head!"
                                                         ])?;
+                                                    } else if l_p_atk.clone() == 2 {
+                                                        ctx.lines(args![
+                                                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("")),
+                                                            "strikes Sudri's chest!"
+                                                        ])?;
+                                                    } else if l_p_atk.clone() == 3 {
+                                                        ctx.lines(args![
+                                                            ((Val::from("")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("")),
+                                                            "aims for Sudri's legs!"
+                                                        ])?;
+                                                    } else if l_p_atk.clone() == 4 {
+                                                        ctx.lines(args![
+                                                            ((Val::from("")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("")),
+                                                            "requests a break!"
+                                                        ])?;
                                                     } else {
-                                                        if l_p_atk.clone() == 2 {
-                                                            ctx.lines(args![
-                                                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                    + Val::from("")),
-                                                                "strikes Sudri's chest!"
-                                                            ])?;
-                                                        } else {
-                                                            if l_p_atk.clone() == 3 {
-                                                                ctx.lines(args![
-                                                                    ((Val::from("")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from("")),
-                                                                    "aims for Sudri's legs!"
-                                                                ])?;
-                                                            } else {
-                                                                if l_p_atk.clone() == 4 {
-                                                                    ctx.lines(args![
-                                                                        ((Val::from("")
-                                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                            + Val::from("")),
-                                                                        "requests a break!"
-                                                                    ])?;
-                                                                } else {
-                                                                    ctx.lines(args![
-                                                                        ((Val::from("")
-                                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                            + Val::from("'s")),
-                                                                        "weak point revealed!"
-                                                                    ])?;
-                                                                }
-                                                            }
-                                                        }
+                                                        ctx.lines(args![
+                                                            ((Val::from("")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("'s")),
+                                                            "weak point revealed!"
+                                                        ])?;
                                                     }
                                                     if l_p_atk.clone().loosely_equals(&l_n_def.clone()) {
                                                         ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_GUARD")?])?;
@@ -2357,32 +2269,28 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                 ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
                                                                     + Val::from(" misses!"))
                                                             ])?;
-                                                        } else {
-                                                            if l_n_def.clone() == 2 {
-                                                                ctx.lines(args![
-                                                                    "--------------------",
-                                                                    "Sudri blocks your",
-                                                                    "attack by crossing",
-                                                                    "his stout arms.",
-                                                                    "--------------------",
-                                                                    ((Val::from("")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from("'s attack is blocked!"))
-                                                                ])?;
-                                                            } else {
-                                                                if l_n_def.clone() == 3 {
-                                                                    ctx.lines(args![
-                                                                        "--------------------",
-                                                                        "Sudri dodges your",
-                                                                        "attack with a graceful",
-                                                                        "leap to the heavens.",
-                                                                        "--------------------",
-                                                                        ((Val::from("")
-                                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                            + Val::from(" misses!"))
-                                                                    ])?;
-                                                                }
-                                                            }
+                                                        } else if l_n_def.clone() == 2 {
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "Sudri blocks your",
+                                                                "attack by crossing",
+                                                                "his stout arms.",
+                                                                "--------------------",
+                                                                ((Val::from("")
+                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from("'s attack is blocked!"))
+                                                            ])?;
+                                                        } else if l_n_def.clone() == 3 {
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "Sudri dodges your",
+                                                                "attack with a graceful",
+                                                                "leap to the heavens.",
+                                                                "--------------------",
+                                                                ((Val::from("")
+                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from(" misses!"))
+                                                            ])?;
                                                         }
                                                     } else {
                                                         if l_p_atk.clone() == 4 {
@@ -2394,80 +2302,72 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                     + Val::from("")),
                                                                 "has gained 10 HP!"
                                                             ])?;
-                                                        } else {
-                                                            if l_p_atk.clone() == 1 {
-                                                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
-                                                                l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
-                                                                ctx.lines(args![
-                                                                    "--------------------",
-                                                                    "You successfully hit",
-                                                                    "Sudri on the head!",
-                                                                    "--------------------",
-                                                                    ((Val::from("Sudri has lost ") + l_damage.clone()) + Val::from(" HP!"))
-                                                                ])?;
-                                                            } else {
-                                                                if l_p_atk.clone() == 2 {
-                                                                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT2")?])?;
-                                                                    l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
-                                                                    ctx.lines(args![
-                                                                        "--------------------",
-                                                                        "You successfully hit",
-                                                                        "Sudri on the chest!",
-                                                                        "--------------------",
-                                                                        "Sudri has",
-                                                                        ((Val::from("lost ") + l_damage.clone()) + Val::from(" HP!"))
-                                                                    ])?;
-                                                                } else {
-                                                                    if l_p_atk.clone() == 3 {
-                                                                        ctx.call(
-                                                                            Function::NpcSpecialEffect,
-                                                                            vec![ctx.constant("EF_HIT4")?],
-                                                                        )?;
-                                                                        l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
-                                                                        ctx.lines(args![
-                                                                            "--------------------",
-                                                                            "You successfully hit",
-                                                                            "Sudri on the legs!",
-                                                                            "--------------------",
-                                                                            "Sudri has",
-                                                                            ((Val::from("lost ") + l_damage.clone()) + Val::from(" HP!"))
-                                                                        ])?;
-                                                                    } else {
-                                                                        if l_p_atk.clone() == 0 {
-                                                                            ctx.call(
-                                                                                Function::SpecialEffect,
-                                                                                vec![ctx.constant("EF_HIT5")?],
-                                                                            )?;
-                                                                            l_p_vit = (l_p_vit.clone().try_sub(Val::from(10))?);
-                                                                            ctx.lines(args![
-                                                                                "--------------------",
-                                                                                "You were hit by",
-                                                                                "Sudri's counter attack!",
-                                                                                "--------------------",
-                                                                                ((Val::from("")
-                                                                                    + ctx.call(
-                                                                                        Function::StrCharInfo,
-                                                                                        vec![Val::from(0)]
-                                                                                    )?)
-                                                                                    + Val::from(" has lost 10 HP!"))
-                                                                            ])?;
-                                                                            if l_p_vit.clone().number()? < 1 {
-                                                                                ctx.mes("Defeated...")?;
-                                                                                ctx.next()?;
-                                                                                break 'l8;
-                                                                            }
-                                                                        } else {
-                                                                            ctx.lines(args![
-                                                                                "--------------------",
-                                                                                "Something happened",
-                                                                                "and the fight has stopped!"
-                                                                            ])?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        }
-                                                                    }
-                                                                }
+                                                        } else if l_p_atk.clone() == 1 {
+                                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
+                                                            l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "You successfully hit",
+                                                                "Sudri on the head!",
+                                                                "--------------------",
+                                                                ((Val::from("Sudri has lost ") + l_damage.clone()) + Val::from(" HP!"))
+                                                            ])?;
+                                                        } else if l_p_atk.clone() == 2 {
+                                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HIT2")?])?;
+                                                            l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "You successfully hit",
+                                                                "Sudri on the chest!",
+                                                                "--------------------",
+                                                                "Sudri has",
+                                                                ((Val::from("lost ") + l_damage.clone()) + Val::from(" HP!"))
+                                                            ])?;
+                                                        } else if l_p_atk.clone() == 3 {
+                                                            ctx.call(
+                                                                Function::NpcSpecialEffect,
+                                                                vec![ctx.constant("EF_HIT4")?],
+                                                            )?;
+                                                            l_n_vit = (l_n_vit.clone().try_sub(l_damage.clone())?);
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "You successfully hit",
+                                                                "Sudri on the legs!",
+                                                                "--------------------",
+                                                                "Sudri has",
+                                                                ((Val::from("lost ") + l_damage.clone()) + Val::from(" HP!"))
+                                                            ])?;
+                                                        } else if l_p_atk.clone() == 0 {
+                                                            ctx.call(
+                                                                Function::SpecialEffect,
+                                                                vec![ctx.constant("EF_HIT5")?],
+                                                            )?;
+                                                            l_p_vit = (l_p_vit.clone().try_sub(Val::from(10))?);
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "You were hit by",
+                                                                "Sudri's counter attack!",
+                                                                "--------------------",
+                                                                ((Val::from("")
+                                                                    + ctx.call(
+                                                                        Function::StrCharInfo,
+                                                                        vec![Val::from(0)]
+                                                                    )?)
+                                                                    + Val::from(" has lost 10 HP!"))
+                                                            ])?;
+                                                            if l_p_vit.clone().number()? < 1 {
+                                                                ctx.mes("Defeated...")?;
+                                                                ctx.next()?;
+                                                                break 'l8;
                                                             }
+                                                        } else {
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "Something happened",
+                                                                "and the fight has stopped!"
+                                                            ])?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
                                                         }
                                                     }
                                                     if l_n_vit.clone().number()? < 1 {
@@ -2540,12 +2440,10 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     l_damage = ctx.call(Function::Rand, vec![Val::from(20), Val::from(25)])?;
                                                     if l_n_atk.clone() == 1 {
                                                         ctx.mes("Sudri aims for the head!")?;
+                                                    } else if l_n_atk.clone() == 2 {
+                                                        ctx.mes("Sudri strikes the chest!")?;
                                                     } else {
-                                                        if l_n_atk.clone() == 2 {
-                                                            ctx.mes("Sudri strikes the chest!")?;
-                                                        } else {
-                                                            ctx.mes("Sudri attacks the legs!")?;
-                                                        }
+                                                        ctx.mes("Sudri attacks the legs!")?;
                                                     }
                                                     if l_n_atk.clone().loosely_equals(&l_p_def.clone()) {
                                                         ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_GUARD")?])?;
@@ -2559,31 +2457,27 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                 "--------------------",
                                                                 "Sudri has failed to attack."
                                                             ])?;
-                                                        } else {
-                                                            if l_p_def.clone() == 2 {
-                                                                ctx.lines(args![
-                                                                    "--------------------",
-                                                                    ((Val::from("")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from("")),
-                                                                    "barely blocked",
-                                                                    "Sudri's attack.",
-                                                                    "--------------------",
-                                                                    "Sudri has failed to attack."
-                                                                ])?;
-                                                            } else {
-                                                                if l_p_def.clone() == 3 {
-                                                                    ctx.lines(args![
-                                                                        "--------------------",
-                                                                        ((Val::from("")
-                                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                            + Val::from(" jumped,")),
-                                                                        "dodged Sudri's attack at ease.",
-                                                                        "--------------------",
-                                                                        "Sudri has failed to attack."
-                                                                    ])?;
-                                                                }
-                                                            }
+                                                        } else if l_p_def.clone() == 2 {
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                ((Val::from("")
+                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from("")),
+                                                                "barely blocked",
+                                                                "Sudri's attack.",
+                                                                "--------------------",
+                                                                "Sudri has failed to attack."
+                                                            ])?;
+                                                        } else if l_p_def.clone() == 3 {
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                ((Val::from("")
+                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from(" jumped,")),
+                                                                "dodged Sudri's attack at ease.",
+                                                                "--------------------",
+                                                                "Sudri has failed to attack."
+                                                            ])?;
                                                         }
                                                     } else {
                                                         if l_p_def.clone() == 4 {
@@ -2629,101 +2523,93 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                         + Val::from(" has lost 30 HP!"))
                                                                 ])?;
                                                             }
+                                                        } else if l_n_atk.clone() == 1 {
+                                                            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
+                                                            l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "Sudri successfully",
+                                                                ((Val::from("hit ")
+                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from("")),
+                                                                "on the head!",
+                                                                "--------------------",
+                                                                ((((Val::from("")
+                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from(" has lost "))
+                                                                    + l_damage.clone())
+                                                                    + Val::from(" HP!"))
+                                                            ])?;
+                                                        } else if l_n_atk.clone() == 2 {
+                                                            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT2")?])?;
+                                                            l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "Sudri successfully",
+                                                                ((Val::from("hit ")
+                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from("")),
+                                                                "on the chest!",
+                                                                "--------------------",
+                                                                ((((Val::from("")
+                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from(" has lost "))
+                                                                    + l_damage.clone())
+                                                                    + Val::from(" HP!"))
+                                                            ])?;
+                                                        } else if l_n_atk.clone() == 3 {
+                                                            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT4")?])?;
+                                                            l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "Sudri successfully",
+                                                                ((Val::from("hit ")
+                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from("")),
+                                                                "on the legs!",
+                                                                "--------------------",
+                                                                ((((Val::from("")
+                                                                    + ctx
+                                                                        .call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                    + Val::from(" has lost "))
+                                                                    + l_damage.clone())
+                                                                    + Val::from(" HP!"))
+                                                            ])?;
+                                                        } else if l_n_atk.clone() == 0 {
+                                                            ctx.call(
+                                                                Function::SpecialEffect,
+                                                                vec![ctx.constant("EF_HIT5")?],
+                                                            )?;
+                                                            l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "Sudri successfully",
+                                                                ((Val::from("hits ")
+                                                                    + ctx.call(
+                                                                        Function::StrCharInfo,
+                                                                        vec![Val::from(0)]
+                                                                    )?)
+                                                                    + Val::from("")),
+                                                                "during a moment of",
+                                                                "absent-mindedness!",
+                                                                "--------------------",
+                                                                ((((Val::from("")
+                                                                    + ctx.call(
+                                                                        Function::StrCharInfo,
+                                                                        vec![Val::from(0)]
+                                                                    )?)
+                                                                    + Val::from(" has lost "))
+                                                                    + l_damage.clone())
+                                                                    + Val::from(" HP!"))
+                                                            ])?;
                                                         } else {
-                                                            if l_n_atk.clone() == 1 {
-                                                                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT5")?])?;
-                                                                l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
-                                                                ctx.lines(args![
-                                                                    "--------------------",
-                                                                    "Sudri successfully",
-                                                                    ((Val::from("hit ")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from("")),
-                                                                    "on the head!",
-                                                                    "--------------------",
-                                                                    ((((Val::from("")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from(" has lost "))
-                                                                        + l_damage.clone())
-                                                                        + Val::from(" HP!"))
-                                                                ])?;
-                                                            } else {
-                                                                if l_n_atk.clone() == 2 {
-                                                                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT2")?])?;
-                                                                    l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
-                                                                    ctx.lines(args![
-                                                                        "--------------------",
-                                                                        "Sudri successfully",
-                                                                        ((Val::from("hit ")
-                                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                            + Val::from("")),
-                                                                        "on the chest!",
-                                                                        "--------------------",
-                                                                        ((((Val::from("")
-                                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                            + Val::from(" has lost "))
-                                                                            + l_damage.clone())
-                                                                            + Val::from(" HP!"))
-                                                                    ])?;
-                                                                } else {
-                                                                    if l_n_atk.clone() == 3 {
-                                                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HIT4")?])?;
-                                                                        l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
-                                                                        ctx.lines(args![
-                                                                            "--------------------",
-                                                                            "Sudri successfully",
-                                                                            ((Val::from("hit ")
-                                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                                + Val::from("")),
-                                                                            "on the legs!",
-                                                                            "--------------------",
-                                                                            ((((Val::from("")
-                                                                                + ctx
-                                                                                    .call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                                + Val::from(" has lost "))
-                                                                                + l_damage.clone())
-                                                                                + Val::from(" HP!"))
-                                                                        ])?;
-                                                                    } else {
-                                                                        if l_n_atk.clone() == 0 {
-                                                                            ctx.call(
-                                                                                Function::SpecialEffect,
-                                                                                vec![ctx.constant("EF_HIT5")?],
-                                                                            )?;
-                                                                            l_p_vit = (l_p_vit.clone().try_sub(l_damage.clone())?);
-                                                                            ctx.lines(args![
-                                                                                "--------------------",
-                                                                                "Sudri successfully",
-                                                                                ((Val::from("hits ")
-                                                                                    + ctx.call(
-                                                                                        Function::StrCharInfo,
-                                                                                        vec![Val::from(0)]
-                                                                                    )?)
-                                                                                    + Val::from("")),
-                                                                                "during a moment of",
-                                                                                "absent-mindedness!",
-                                                                                "--------------------",
-                                                                                ((((Val::from("")
-                                                                                    + ctx.call(
-                                                                                        Function::StrCharInfo,
-                                                                                        vec![Val::from(0)]
-                                                                                    )?)
-                                                                                    + Val::from(" has lost "))
-                                                                                    + l_damage.clone())
-                                                                                    + Val::from(" HP!"))
-                                                                            ])?;
-                                                                        } else {
-                                                                            ctx.lines(args![
-                                                                                "--------------------",
-                                                                                "Something happened",
-                                                                                "and the fight has stopped!"
-                                                                            ])?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
+                                                            ctx.lines(args![
+                                                                "--------------------",
+                                                                "Something happened",
+                                                                "and the fight has stopped!"
+                                                            ])?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
                                                         }
                                                     }
                                                     if l_p_vit.clone().number()? < 1 {
@@ -2750,131 +2636,127 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 )?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
-                                            } else {
-                                                if runtime::op(&l_n_vit.clone(), "<", &l_p_vit.clone())?.is_true() {
-                                                    ctx.var("god_mjo_3").set(Val::from(2))?;
-                                                    ctx.lines_as(
-                                                        "Sudri",
-                                                        args![
-                                                            "You're stronger than me. I never thought I'd meet a human as strong as you."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Sudri", args!["I'm impressed! Alright, I'll tell my friends good things about you. Hopefully, my brothers will give you the help you're looking for."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Sudri", args!["Okay then,", "be safe on", "your travels!"])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        } else {
-                                            if ctx.var("god_mjo_3").get()? == 0 {
-                                                ctx.lines_as("Sudri", args!["What made you come to me?"])?;
+                                            } else if runtime::op(&l_n_vit.clone(), "<", &l_p_vit.clone())?.is_true() {
+                                                ctx.var("god_mjo_3").set(Val::from(2))?;
+                                                ctx.lines_as(
+                                                    "Sudri",
+                                                    args![
+                                                        "You're stronger than me. I never thought I'd meet a human as strong as you."
+                                                    ],
+                                                )?;
                                                 ctx.next()?;
-                                                'b11: {
-                                                    let subject11 =
-                                                        Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                                    let mut matched11 = false;
-                                                    let no_case11 = !subject11.loosely_equals(&Val::from(1))
-                                                        && !subject11.loosely_equals(&Val::from(2));
-                                                    if !matched11 && subject11.loosely_equals(&Val::from(1)) {
-                                                        matched11 = true;
-                                                    }
-                                                    if matched11 {
-                                                        ctx.lines_as(
-                                                            "Sudri",
-                                                            args![
-                                                                "You have too much",
-                                                                "time on your hands.",
-                                                                "Why don't you log out and go out with your friends instead?"
-                                                            ],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                    }
-                                                    if !matched11 && subject11.loosely_equals(&Val::from(2)) {
-                                                        matched11 = true;
-                                                    }
-                                                    if matched11 {
-                                                        ctx.lines_as("Sudri", args!["Huh. You're different than other humans. But still, trusting you because you know how to speak respectfully isn't very wise."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sudri",
-                                                            args![
-                                                                "If there's anything I love,",
-                                                                "it's bare knuckle brawling,",
-                                                                "old school style."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sudri",
-                                                            args![
-                                                                "Words can be deceptive,",
-                                                                "but if you can beat me in",
-                                                                "a fight, I think I might",
-                                                                "just talk to you.",
-                                                                "How about it?"
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        'b12: {
-                                                            let subject12 = Val::from(runtime::select_values(
-                                                                ctx,
-                                                                &[Val::from("...:Yes, I accept your challenge.:No, I'm scared!")],
-                                                            )?);
-                                                            let mut matched12 = false;
-                                                            let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                                                                && !subject12.loosely_equals(&Val::from(2))
-                                                                && !subject12.loosely_equals(&Val::from(3));
-                                                            if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                                                                matched12 = true;
-                                                            }
-                                                            if matched12 {
-                                                                ctx.var("god_mjo_3").set(Val::from(3))?;
-                                                                ctx.lines_as(
-                                                                    "Sudri",
-                                                                    args!["You didn't", "even answer me!", "Fine! Whatever!"],
-                                                                )?;
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            }
-                                                            if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                                                                matched12 = true;
-                                                            }
-                                                            if matched12 {
-                                                                ctx.var("god_mjo_3").set(Val::from(1))?;
-                                                                ctx.lines_as("Sudri", args!["Ah, I like you already, human! Now why don't you go do some warm ups, and we'll fight when you're ready."])?;
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            }
-                                                            if !matched12 && subject12.loosely_equals(&Val::from(3)) {
-                                                                matched12 = true;
-                                                            }
-                                                            if matched12 {
-                                                                ctx.var("god_mjo_3").set(Val::from(1))?;
-                                                                ctx.lines_as(
-                                                                    "Sudri",
-                                                                    args![
-                                                                        "Eh...?",
-                                                                        "Why are you being",
-                                                                        "such a coward?",
-                                                                        "Are you afraid of",
-                                                                        "this old and tiny Dwarf?"
-                                                                    ],
-                                                                )?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Sudri", args!["Come on, I'll even let you have the first hit. Just come to me when you're ready to fight!"])?;
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            } else {
-                                                ctx.lines_as("Sudri", args!["Zzzz Zzzz..."])?;
+                                                ctx.lines_as("Sudri", args!["I'm impressed! Alright, I'll tell my friends good things about you. Hopefully, my brothers will give you the help you're looking for."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Sudri", args!["Okay then,", "be safe on", "your travels!"])?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
+                                        } else if ctx.var("god_mjo_3").get()? == 0 {
+                                            ctx.lines_as("Sudri", args!["What made you come to me?"])?;
+                                            ctx.next()?;
+                                            'b11: {
+                                                let subject11 =
+                                                    Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
+                                                let mut matched11 = false;
+                                                let no_case11 = !subject11.loosely_equals(&Val::from(1))
+                                                    && !subject11.loosely_equals(&Val::from(2));
+                                                if !matched11 && subject11.loosely_equals(&Val::from(1)) {
+                                                    matched11 = true;
+                                                }
+                                                if matched11 {
+                                                    ctx.lines_as(
+                                                        "Sudri",
+                                                        args![
+                                                            "You have too much",
+                                                            "time on your hands.",
+                                                            "Why don't you log out and go out with your friends instead?"
+                                                        ],
+                                                    )?;
+                                                    ctx.close_window()?;
+                                                }
+                                                if !matched11 && subject11.loosely_equals(&Val::from(2)) {
+                                                    matched11 = true;
+                                                }
+                                                if matched11 {
+                                                    ctx.lines_as("Sudri", args!["Huh. You're different than other humans. But still, trusting you because you know how to speak respectfully isn't very wise."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Sudri",
+                                                        args![
+                                                            "If there's anything I love,",
+                                                            "it's bare knuckle brawling,",
+                                                            "old school style."
+                                                        ],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Sudri",
+                                                        args![
+                                                            "Words can be deceptive,",
+                                                            "but if you can beat me in",
+                                                            "a fight, I think I might",
+                                                            "just talk to you.",
+                                                            "How about it?"
+                                                        ],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    'b12: {
+                                                        let subject12 = Val::from(runtime::select_values(
+                                                            ctx,
+                                                            &[Val::from("...:Yes, I accept your challenge.:No, I'm scared!")],
+                                                        )?);
+                                                        let mut matched12 = false;
+                                                        let no_case12 = !subject12.loosely_equals(&Val::from(1))
+                                                            && !subject12.loosely_equals(&Val::from(2))
+                                                            && !subject12.loosely_equals(&Val::from(3));
+                                                        if !matched12 && subject12.loosely_equals(&Val::from(1)) {
+                                                            matched12 = true;
+                                                        }
+                                                        if matched12 {
+                                                            ctx.var("god_mjo_3").set(Val::from(3))?;
+                                                            ctx.lines_as(
+                                                                "Sudri",
+                                                                args!["You didn't", "even answer me!", "Fine! Whatever!"],
+                                                            )?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        }
+                                                        if !matched12 && subject12.loosely_equals(&Val::from(2)) {
+                                                            matched12 = true;
+                                                        }
+                                                        if matched12 {
+                                                            ctx.var("god_mjo_3").set(Val::from(1))?;
+                                                            ctx.lines_as("Sudri", args!["Ah, I like you already, human! Now why don't you go do some warm ups, and we'll fight when you're ready."])?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        }
+                                                        if !matched12 && subject12.loosely_equals(&Val::from(3)) {
+                                                            matched12 = true;
+                                                        }
+                                                        if matched12 {
+                                                            ctx.var("god_mjo_3").set(Val::from(1))?;
+                                                            ctx.lines_as(
+                                                                "Sudri",
+                                                                args![
+                                                                    "Eh...?",
+                                                                    "Why are you being",
+                                                                    "such a coward?",
+                                                                    "Are you afraid of",
+                                                                    "this old and tiny Dwarf?"
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Sudri", args!["Come on, I'll even let you have the first hit. Just come to me when you're ready to fight!"])?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            ctx.lines_as("Sudri", args!["Zzzz Zzzz..."])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         }
                                     }
                                 }
@@ -2981,8 +2863,376 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
+                        } else if ctx.var("god_mjo_3").get()? == 2 {
+                            ctx.lines_as("Vestri", args!["Perfect preparation does not always result in success. There's a point when you've got to just go out and do it."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Vestri",
+                                args![
+                                    "I don't know how",
+                                    "big your goals are,",
+                                    "but put your heart into",
+                                    "whatever it is that you",
+                                    "plan to accomplish in life."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ((((ctx.var("god_mjo_1").get()? == 0 || ctx.var("god_mjo_1").get()? == 1)
+                            || ctx.var("god_mjo_2").get()? == 0)
+                            || ctx.var("god_mjo_2").get()? == 1)
+                            || ctx.var("god_mjo_4").get()? != 0)
+                        {
+                            ctx.lines_as("Vestri", args!["What do you want?"])?;
+                            ctx.next()?;
+                            'b1: {
+                                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
+                                let mut matched1 = false;
+                                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                                    matched1 = true;
+                                }
+                                if matched1 {
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args!["If you want something, you should earn it through your own efforts."],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Vestri", args!["No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results."])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                                    matched1 = true;
+                                }
+                                if matched1 {
+                                    ctx.var("god_mjo_3").set(Val::from(3))?;
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args!["You didn't answer the question! Now, you've probably got the wrong Dwarf here..."],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args!["Get out of here, and go to your human Blacksmiths if you want equipment upgrades!"],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                        } else if ctx.var("god_mjo_3").get()? == 1 {
+                            ctx.lines_as(
+                                "Vestri",
+                                args![
+                                    "Great...!",
+                                    "Which one should I upgrade first, huh? My heart is pounding with anticipation..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            let base = Val::from(1).number()?;
+                            runtime::local_set(&mut l_indices, &Val::from(base + 0), ctx.constant("EQI_HEAD_TOP")?, false);
+                            runtime::local_set(&mut l_indices, &Val::from(base + 1), ctx.constant("EQI_ARMOR")?, false);
+                            runtime::local_set(&mut l_indices, &Val::from(base + 2), ctx.constant("EQI_HAND_L")?, false);
+                            runtime::local_set(&mut l_indices, &Val::from(base + 3), ctx.constant("EQI_HAND_R")?, false);
+                            runtime::local_set(&mut l_indices, &Val::from(base + 4), ctx.constant("EQI_GARMENT")?, false);
+                            runtime::local_set(&mut l_indices, &Val::from(base + 5), ctx.constant("EQI_SHOES")?, false);
+                            runtime::local_set(&mut l_indices, &Val::from(base + 6), ctx.constant("EQI_ACC_L")?, false);
+                            runtime::local_set(&mut l_indices, &Val::from(base + 7), ctx.constant("EQI_ACC_R")?, false);
+                            runtime::local_set(&mut l_indices, &Val::from(base + 8), ctx.constant("EQI_HEAD_MID")?, false);
+                            runtime::local_set(&mut l_indices, &Val::from(base + 9), ctx.constant("EQI_HEAD_LOW")?, false);
+                            l_i = Val::from(1);
+                            'l2: loop {
+                                if !(l_i.clone().number()? <= 10) {
+                                    break 'l2;
+                                }
+                                'b2: {
+                                    if ctx
+                                        .call(
+                                            Function::GetEquipIsEquipped,
+                                            vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
+                                        )?
+                                        .is_true()
+                                    {
+                                        l_menu_s = ((((l_menu_s.clone()
+                                            + shared::other_global_functions::f_getpositionname(
+                                                ctx,
+                                                vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
+                                            )?)
+                                            + Val::from("-["))
+                                            + ctx.call(
+                                                Function::GetEquipName,
+                                                vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
+                                            )?)
+                                            + Val::from("]"));
+                                    }
+                                    l_menu_s = (l_menu_s.clone() + Val::from(":"));
+                                }
+                                l_i = (l_i.clone() + Val::from(1));
+                            }
+                            l_part = runtime::local_get(
+                                &l_indices,
+                                &Val::from(runtime::select_values(ctx, &[l_menu_s.clone()])?),
+                                false,
+                            );
+                            if ctx.call(Function::GetEquipIsEquipped, vec![l_part.clone()])? == 0 {
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if ctx.call(Function::GetEquipIsEnableRefine, vec![l_part.clone()])? == 0 {
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args![
+                                        "What...?!",
+                                        "This isn't upgradable!",
+                                        "What the hell do you want",
+                                        "me to do with this?"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            l_equip_id = ctx.call(Function::GetEquipId, vec![l_part.clone()])?;
+                            l_itemtype =
+                                ctx.call(Function::GetItemInfo, vec![l_equip_id.clone(), ctx.constant("ITEMINFO_TYPE")?])?;
+                            l_equip_refine = ctx.call(Function::GetEquipRefineryCnt, vec![l_part.clone()])?;
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(
+                                &mut l_card,
+                                &Val::from(base + 0),
+                                ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(0)])?,
+                                false,
+                            );
+                            runtime::local_set(
+                                &mut l_card,
+                                &Val::from(base + 1),
+                                ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(1)])?,
+                                false,
+                            );
+                            runtime::local_set(
+                                &mut l_card,
+                                &Val::from(base + 2),
+                                ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(2)])?,
+                                false,
+                            );
+                            runtime::local_set(
+                                &mut l_card,
+                                &Val::from(base + 3),
+                                ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(3)])?,
+                                false,
+                            );
+                            if l_equip_refine.clone().number()? >= 10 {
+                                ctx.lines_as("Vestri", args!["Oh, this is excellent! This piece here has been perfectly refined! But this isn't what I want. I can't do any work on this at all."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])? == 100 {
+                                ctx.lines_as("Vestri", args!["This item isn't even a challenge to upgrade. You can get humans to do this kind of beginner's stuff. Get them to refine it first."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args!["Come on...", "Bring me something", "that presents an", "element of risk!"],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !l_itemtype.clone().loosely_equals(&ctx.constant("IT_WEAPON")?) {
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args!["Armor?!", "Didn't I tell", "you that I only work", "on Level 4 weapons?"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Vestri", args!["You can have a human", "Blacksmith work on that kind of stuff! Now, a Dwarf like me needs something that's more of a challenge!"])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if ctx.call(Function::GetEquipWeaponLevel, vec![l_part.clone()])? != 4 {
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args![
+                                        "Hey...",
+                                        "Don't insult me by expecting me to work on anything less than a Level 4 weapon."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args!["Bring me a Level 4 weapon for me to work on next time, got it?"],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            ctx.lines_as("Vestri", args!["Okay, let me give you the mandatory warning. If your weapon happens to be destroyed by chance during the upgrade, you'll never see the weapon again."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Vestri", args!["That also means that if the weapon is destroyed, any ^FF0000Cards^000000 inserted into the weapon will also be gone."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Vestri", args!["If you understand,", "then let's get on with it!"])?;
+                            ctx.next()?;
+                            if Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Sure, let's do it!:N-no, I changed my mind!")],
+                            )?) == 2
+                            {
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args!["Bah...!", "How do you survive", "in this world with that", "kind of cowardice?!"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args![
+                                        "Oh, forget it.",
+                                        "I know you're just being careful. Damn, I was just so eager to get",
+                                        "to work!"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if ctx.call(Function::CountItem, vec![Val::from(984)])?.number()? > 0 {
+                                ctx.call(Function::DelItem, vec![Val::from(984), Val::from(1)])?;
+                            } else {
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args!["Huh...", "You forgot to", "bring an Oridecon.", "Hurry up and get one."],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if ((shared::other_global_functions::f_isequipidhack(
+                                ctx,
+                                vec![l_part.clone(), l_equip_id.clone()],
+                            )?
+                            .is_true()
+                                || shared::other_global_functions::f_isequipcardhack(
+                                    ctx,
+                                    vec![
+                                        l_part.clone(),
+                                        runtime::local_get(&l_card, &Val::from(0), false),
+                                        runtime::local_get(&l_card, &Val::from(1), false),
+                                        runtime::local_get(&l_card, &Val::from(2), false),
+                                        runtime::local_get(&l_card, &Val::from(3), false),
+                                    ],
+                                )?
+                                .is_true())
+                                || shared::other_global_functions::f_isequiprefinehack(
+                                    ctx,
+                                    vec![l_part.clone(), l_equip_refine.clone()],
+                                )?
+                                .is_true())
+                            {
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if runtime::op(
+                                &ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])?,
+                                ">",
+                                &ctx.call(Function::Rand, vec![Val::from(100)])?,
+                            )?
+                            .is_true()
+                            {
+                                ctx.mes("^3355FF*Clang Clang!*^000000")?;
+                                ctx.call(Function::SuccessRefineItem, vec![l_part.clone()])?;
+                                ctx.next()?;
+                                ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args![
+                                        "Mwahahaha~",
+                                        "I've still got it!",
+                                        "So aren't you happy",
+                                        "with an even more",
+                                        "powerful weapon?"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                            } else {
+                                ctx.lines_as("Vestri", args!["^3355FF*Clang Clang!*^000000"])?;
+                                ctx.call(Function::FailedRefineItem, vec![l_part.clone()])?;
+                                ctx.next()?;
+                                ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
+                                ctx.lines_as("Vestri", args!["Waaahhhhh!", "Dear God, no!"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args![
+                                        "I-It's alright!",
+                                        "Bad things happen",
+                                        "sometimes. Let's just",
+                                        "think of it as both us",
+                                        "of us having a bad day.",
+                                        "Yeah, no regrets!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                            }
+                            ctx.var("god_mjo_3").set(Val::from(2))?;
+                            ctx.lines_as(
+                                "Vestri",
+                                args![
+                                    "Well, my friend,",
+                                    "if you ever visit my brothers, please give them my regards.",
+                                    "Take care."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("god_mjo_3").get()? == 0 {
+                            ctx.lines_as("Vestri", args!["What do you want?"])?;
+                            ctx.next()?;
+                            'b3: {
+                                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
+                                let mut matched3 = false;
+                                let no_case3 =
+                                    !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args!["If you want something, you should earn it through your own efforts."],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Vestri", args!["No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results."])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.lines_as("Vestri", args!["Huh...", "I don't know how I can be much help to an adventurer like you. Aside from being a Blacksmith..."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Vestri", args!["There's nothing I enjoy more than upgrading high level weapons that are on the verge of breaking."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Vestri", args!["Don't you like the idea of challenging the limit? To me, upgrading feels like climbing unconquered mountains!"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Vestri", args!["Alright. Perhaps I'm meant to help you out, so I'll upgrade a weapon for you. All you need to do is bring me the weapon and material."])?;
+                                    ctx.next()?;
+                                    ctx.var("god_mjo_3").set(Val::from(1))?;
+                                    ctx.lines_as("Vestri", args!["Here's the condition: You've got to bring me a Level 4 Weapon that's been upgraded to the point where it might break. Oh, and bring an Oridecon!"])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                            }
                         } else {
-                            if ctx.var("god_mjo_3").get()? == 2 {
+                            ctx.lines_as("Vestri", args!["Zzzz Zzzz Zzzz..."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    } else {
+                        if ctx.var("god_mjo_0").get()? == 2 {
+                            if (((ctx.var("god_mjo_1").get()? == 3 || ctx.var("god_mjo_2").get()? == 3)
+                                || ctx.var("god_mjo_3").get()? == 3)
+                                || ctx.var("god_mjo_4").get()? == 3)
+                            {
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args!["I really hope I meet a decent human being next time. So far, I haven't met one useful human."],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("god_mjo_2").get()? == 2 {
                                 ctx.lines_as("Vestri", args!["Perfect preparation does not always result in success. There's a point when you've got to just go out and do it."])?;
                                 ctx.next()?;
                                 ctx.lines_as(
@@ -2997,739 +3247,355 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if ((((ctx.var("god_mjo_1").get()? == 0 || ctx.var("god_mjo_1").get()? == 1)
-                                    || ctx.var("god_mjo_2").get()? == 0)
-                                    || ctx.var("god_mjo_2").get()? == 1)
-                                    || ctx.var("god_mjo_4").get()? != 0)
-                                {
-                                    ctx.lines_as("Vestri", args!["What do you want?"])?;
-                                    ctx.next()?;
-                                    'b1: {
-                                        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                        let mut matched1 = false;
-                                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args!["If you want something, you should earn it through your own efforts."],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Vestri", args!["No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
-                                            ctx.var("god_mjo_3").set(Val::from(3))?;
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args!["You didn't answer the question! Now, you've probably got the wrong Dwarf here..."],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args!["Get out of here, and go to your human Blacksmiths if you want equipment upgrades!"],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
+                            } else if (((ctx.var("god_mjo_1").get()? == 0 || ctx.var("god_mjo_1").get()? == 1)
+                                || ctx.var("god_mjo_3").get()? != 0)
+                                || ctx.var("god_mjo_4").get()? != 0)
+                            {
+                                ctx.lines_as("Vestri", args!["What do you want?"])?;
+                                ctx.next()?;
+                                'b4: {
+                                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
+                                    let mut matched4 = false;
+                                    let no_case4 =
+                                        !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                        matched4 = true;
                                     }
-                                } else {
-                                    if ctx.var("god_mjo_3").get()? == 1 {
+                                    if matched4 {
+                                        ctx.lines_as(
+                                            "Vestri",
+                                            args!["If you want something, you should earn it through your own efforts."],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Vestri", args!["No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results."])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                        matched4 = true;
+                                    }
+                                    if matched4 {
+                                        ctx.var("god_mjo_2").set(Val::from(3))?;
                                         ctx.lines_as(
                                             "Vestri",
                                             args![
-                                                "Great...!",
-                                                "Which one should I upgrade first, huh? My heart is pounding with anticipation..."
+                                                "You didn't answer the question! Now, you've probably got the wrong Dwarf here..."
                                             ],
                                         )?;
                                         ctx.next()?;
-                                        let base = Val::from(1).number()?;
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 0), ctx.constant("EQI_HEAD_TOP")?, false);
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 1), ctx.constant("EQI_ARMOR")?, false);
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 2), ctx.constant("EQI_HAND_L")?, false);
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 3), ctx.constant("EQI_HAND_R")?, false);
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 4), ctx.constant("EQI_GARMENT")?, false);
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 5), ctx.constant("EQI_SHOES")?, false);
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 6), ctx.constant("EQI_ACC_L")?, false);
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 7), ctx.constant("EQI_ACC_R")?, false);
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 8), ctx.constant("EQI_HEAD_MID")?, false);
-                                        runtime::local_set(&mut l_indices, &Val::from(base + 9), ctx.constant("EQI_HEAD_LOW")?, false);
-                                        l_i = Val::from(1);
-                                        'l2: loop {
-                                            if !(l_i.clone().number()? <= 10) {
-                                                break 'l2;
-                                            }
-                                            'b2: {
-                                                if ctx
-                                                    .call(
-                                                        Function::GetEquipIsEquipped,
-                                                        vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
-                                                    )?
-                                                    .is_true()
-                                                {
-                                                    l_menu_s = ((((l_menu_s.clone()
-                                                        + shared::other_global_functions::f_getpositionname(
-                                                            ctx,
-                                                            vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
-                                                        )?)
-                                                        + Val::from("-["))
-                                                        + ctx.call(
-                                                            Function::GetEquipName,
-                                                            vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
-                                                        )?)
-                                                        + Val::from("]"));
-                                                }
-                                                l_menu_s = (l_menu_s.clone() + Val::from(":"));
-                                            }
-                                            l_i = (l_i.clone() + Val::from(1));
-                                        }
-                                        l_part = runtime::local_get(
-                                            &l_indices,
-                                            &Val::from(runtime::select_values(ctx, &[l_menu_s.clone()])?),
-                                            false,
-                                        );
-                                        if ctx.call(Function::GetEquipIsEquipped, vec![l_part.clone()])? == 0 {
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if ctx.call(Function::GetEquipIsEnableRefine, vec![l_part.clone()])? == 0 {
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args![
-                                                    "What...?!",
-                                                    "This isn't upgradable!",
-                                                    "What the hell do you want",
-                                                    "me to do with this?"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        l_equip_id = ctx.call(Function::GetEquipId, vec![l_part.clone()])?;
-                                        l_itemtype =
-                                            ctx.call(Function::GetItemInfo, vec![l_equip_id.clone(), ctx.constant("ITEMINFO_TYPE")?])?;
-                                        l_equip_refine = ctx.call(Function::GetEquipRefineryCnt, vec![l_part.clone()])?;
-                                        let base = Val::from(0).number()?;
-                                        runtime::local_set(
-                                            &mut l_card,
-                                            &Val::from(base + 0),
-                                            ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(0)])?,
-                                            false,
-                                        );
-                                        runtime::local_set(
-                                            &mut l_card,
-                                            &Val::from(base + 1),
-                                            ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(1)])?,
-                                            false,
-                                        );
-                                        runtime::local_set(
-                                            &mut l_card,
-                                            &Val::from(base + 2),
-                                            ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(2)])?,
-                                            false,
-                                        );
-                                        runtime::local_set(
-                                            &mut l_card,
-                                            &Val::from(base + 3),
-                                            ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(3)])?,
-                                            false,
-                                        );
-                                        if l_equip_refine.clone().number()? >= 10 {
-                                            ctx.lines_as("Vestri", args!["Oh, this is excellent! This piece here has been perfectly refined! But this isn't what I want. I can't do any work on this at all."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])? == 100 {
-                                            ctx.lines_as("Vestri", args!["This item isn't even a challenge to upgrade. You can get humans to do this kind of beginner's stuff. Get them to refine it first."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args!["Come on...", "Bring me something", "that presents an", "element of risk!"],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !l_itemtype.clone().loosely_equals(&ctx.constant("IT_WEAPON")?) {
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args!["Armor?!", "Didn't I tell", "you that I only work", "on Level 4 weapons?"],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Vestri", args!["You can have a human", "Blacksmith work on that kind of stuff! Now, a Dwarf like me needs something that's more of a challenge!"])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if ctx.call(Function::GetEquipWeaponLevel, vec![l_part.clone()])? != 4 {
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args![
-                                                    "Hey...",
-                                                    "Don't insult me by expecting me to work on anything less than a Level 4 weapon."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args!["Bring me a Level 4 weapon for me to work on next time, got it?"],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        ctx.lines_as("Vestri", args!["Okay, let me give you the mandatory warning. If your weapon happens to be destroyed by chance during the upgrade, you'll never see the weapon again."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Vestri", args!["That also means that if the weapon is destroyed, any ^FF0000Cards^000000 inserted into the weapon will also be gone."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Vestri", args!["If you understand,", "then let's get on with it!"])?;
-                                        ctx.next()?;
-                                        if Val::from(runtime::select_values(
-                                            ctx,
-                                            &[Val::from("Sure, let's do it!:N-no, I changed my mind!")],
-                                        )?) == 2
-                                        {
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args!["Bah...!", "How do you survive", "in this world with that", "kind of cowardice?!"],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args![
-                                                    "Oh, forget it.",
-                                                    "I know you're just being careful. Damn, I was just so eager to get",
-                                                    "to work!"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if ctx.call(Function::CountItem, vec![Val::from(984)])?.number()? > 0 {
-                                            ctx.call(Function::DelItem, vec![Val::from(984), Val::from(1)])?;
-                                        } else {
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args!["Huh...", "You forgot to", "bring an Oridecon.", "Hurry up and get one."],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if ((shared::other_global_functions::f_isequipidhack(
-                                            ctx,
-                                            vec![l_part.clone(), l_equip_id.clone()],
-                                        )?
-                                        .is_true()
-                                            || shared::other_global_functions::f_isequipcardhack(
-                                                ctx,
-                                                vec![
-                                                    l_part.clone(),
-                                                    runtime::local_get(&l_card, &Val::from(0), false),
-                                                    runtime::local_get(&l_card, &Val::from(1), false),
-                                                    runtime::local_get(&l_card, &Val::from(2), false),
-                                                    runtime::local_get(&l_card, &Val::from(3), false),
-                                                ],
-                                            )?
-                                            .is_true())
-                                            || shared::other_global_functions::f_isequiprefinehack(
-                                                ctx,
-                                                vec![l_part.clone(), l_equip_refine.clone()],
-                                            )?
-                                            .is_true())
-                                        {
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if runtime::op(
-                                            &ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])?,
-                                            ">",
-                                            &ctx.call(Function::Rand, vec![Val::from(100)])?,
-                                        )?
-                                        .is_true()
-                                        {
-                                            ctx.mes("^3355FF*Clang Clang!*^000000")?;
-                                            ctx.call(Function::SuccessRefineItem, vec![l_part.clone()])?;
-                                            ctx.next()?;
-                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args![
-                                                    "Mwahahaha~",
-                                                    "I've still got it!",
-                                                    "So aren't you happy",
-                                                    "with an even more",
-                                                    "powerful weapon?"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                        } else {
-                                            ctx.lines_as("Vestri", args!["^3355FF*Clang Clang!*^000000"])?;
-                                            ctx.call(Function::FailedRefineItem, vec![l_part.clone()])?;
-                                            ctx.next()?;
-                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
-                                            ctx.lines_as("Vestri", args!["Waaahhhhh!", "Dear God, no!"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args![
-                                                    "I-It's alright!",
-                                                    "Bad things happen",
-                                                    "sometimes. Let's just",
-                                                    "think of it as both us",
-                                                    "of us having a bad day.",
-                                                    "Yeah, no regrets!"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                        }
-                                        ctx.var("god_mjo_3").set(Val::from(2))?;
                                         ctx.lines_as(
                                             "Vestri",
                                             args![
-                                                "Well, my friend,",
-                                                "if you ever visit my brothers, please give them my regards.",
-                                                "Take care."
+                                                "Get out of here, and go to your human Blacksmiths if you want equipment upgrades!"
                                             ],
                                         )?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("god_mjo_3").get()? == 0 {
-                                            ctx.lines_as("Vestri", args!["What do you want?"])?;
-                                            ctx.next()?;
-                                            'b3: {
-                                                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                                let mut matched3 = false;
-                                                let no_case3 =
-                                                    !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                                    matched3 = true;
-                                                }
-                                                if matched3 {
-                                                    ctx.lines_as(
-                                                        "Vestri",
-                                                        args!["If you want something, you should earn it through your own efforts."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Vestri", args!["No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results."])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                                    matched3 = true;
-                                                }
-                                                if matched3 {
-                                                    ctx.lines_as("Vestri", args!["Huh...", "I don't know how I can be much help to an adventurer like you. Aside from being a Blacksmith..."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Vestri", args!["There's nothing I enjoy more than upgrading high level weapons that are on the verge of breaking."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Vestri", args!["Don't you like the idea of challenging the limit? To me, upgrading feels like climbing unconquered mountains!"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Vestri", args!["Alright. Perhaps I'm meant to help you out, so I'll upgrade a weapon for you. All you need to do is bring me the weapon and material."])?;
-                                                    ctx.next()?;
-                                                    ctx.var("god_mjo_3").set(Val::from(1))?;
-                                                    ctx.lines_as("Vestri", args!["Here's the condition: You've got to bring me a Level 4 Weapon that's been upgraded to the point where it might break. Oh, and bring an Oridecon!"])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        } else {
-                                            ctx.lines_as("Vestri", args!["Zzzz Zzzz Zzzz..."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
                                     }
                                 }
-                            }
-                        }
-                    } else {
-                        if ctx.var("god_mjo_0").get()? == 2 {
-                            if (((ctx.var("god_mjo_1").get()? == 3 || ctx.var("god_mjo_2").get()? == 3)
-                                || ctx.var("god_mjo_3").get()? == 3)
-                                || ctx.var("god_mjo_4").get()? == 3)
-                            {
+                            } else if ctx.var("god_mjo_2").get()? == 1 {
                                 ctx.lines_as(
                                     "Vestri",
-                                    args!["I really hope I meet a decent human being next time. So far, I haven't met one useful human."],
+                                    args![
+                                        "Great...!",
+                                        "Which one should I upgrade first, huh? My heart is pounding with anticipation..."
+                                    ],
                                 )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("god_mjo_2").get()? == 2 {
-                                    ctx.lines_as("Vestri", args!["Perfect preparation does not always result in success. There's a point when you've got to just go out and do it."])?;
-                                    ctx.next()?;
+                                ctx.next()?;
+                                let base = Val::from(1).number()?;
+                                runtime::local_set(&mut l_indices, &Val::from(base + 0), ctx.constant("EQI_HEAD_TOP")?, false);
+                                runtime::local_set(&mut l_indices, &Val::from(base + 1), ctx.constant("EQI_ARMOR")?, false);
+                                runtime::local_set(&mut l_indices, &Val::from(base + 2), ctx.constant("EQI_HAND_L")?, false);
+                                runtime::local_set(&mut l_indices, &Val::from(base + 3), ctx.constant("EQI_HAND_R")?, false);
+                                runtime::local_set(&mut l_indices, &Val::from(base + 4), ctx.constant("EQI_GARMENT")?, false);
+                                runtime::local_set(&mut l_indices, &Val::from(base + 5), ctx.constant("EQI_SHOES")?, false);
+                                runtime::local_set(&mut l_indices, &Val::from(base + 6), ctx.constant("EQI_ACC_L")?, false);
+                                runtime::local_set(&mut l_indices, &Val::from(base + 7), ctx.constant("EQI_ACC_R")?, false);
+                                runtime::local_set(&mut l_indices, &Val::from(base + 8), ctx.constant("EQI_HEAD_MID")?, false);
+                                runtime::local_set(&mut l_indices, &Val::from(base + 9), ctx.constant("EQI_HEAD_LOW")?, false);
+                                l_i = Val::from(1);
+                                'l5: loop {
+                                    if !(l_i.clone().number()? <= 10) {
+                                        break 'l5;
+                                    }
+                                    'b5: {
+                                        if ctx
+                                            .call(
+                                                Function::GetEquipIsEquipped,
+                                                vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
+                                            )?
+                                            .is_true()
+                                        {
+                                            l_menu_s = ((((l_menu_s.clone()
+                                                + shared::other_global_functions::f_getpositionname(
+                                                    ctx,
+                                                    vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
+                                                )?)
+                                                + Val::from("-["))
+                                                + ctx.call(
+                                                    Function::GetEquipName,
+                                                    vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
+                                                )?)
+                                                + Val::from("]"));
+                                        }
+                                        l_menu_s = (l_menu_s.clone() + Val::from(":"));
+                                    }
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                l_part = runtime::local_get(
+                                    &l_indices,
+                                    &Val::from(runtime::select_values(ctx, &[l_menu_s.clone()])?),
+                                    false,
+                                );
+                                if ctx.call(Function::GetEquipIsEquipped, vec![l_part.clone()])? == 0 {
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if ctx.call(Function::GetEquipIsEnableRefine, vec![l_part.clone()])? == 0 {
                                     ctx.lines_as(
                                         "Vestri",
                                         args![
-                                            "I don't know how",
-                                            "big your goals are,",
-                                            "but put your heart into",
-                                            "whatever it is that you",
-                                            "plan to accomplish in life."
+                                            "What...?!",
+                                            "This isn't upgradable!",
+                                            "What the hell do you want",
+                                            "me to do with this?"
                                         ],
                                     )?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
+                                }
+                                l_equip_id = ctx.call(Function::GetEquipId, vec![l_part.clone()])?;
+                                l_itemtype =
+                                    ctx.call(Function::GetItemInfo, vec![l_equip_id.clone(), ctx.constant("ITEMINFO_TYPE")?])?;
+                                l_equip_refine = ctx.call(Function::GetEquipRefineryCnt, vec![l_part.clone()])?;
+                                let base = Val::from(0).number()?;
+                                runtime::local_set(
+                                    &mut l_card,
+                                    &Val::from(base + 0),
+                                    ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(0)])?,
+                                    false,
+                                );
+                                runtime::local_set(
+                                    &mut l_card,
+                                    &Val::from(base + 1),
+                                    ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(1)])?,
+                                    false,
+                                );
+                                runtime::local_set(
+                                    &mut l_card,
+                                    &Val::from(base + 2),
+                                    ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(2)])?,
+                                    false,
+                                );
+                                runtime::local_set(
+                                    &mut l_card,
+                                    &Val::from(base + 3),
+                                    ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(3)])?,
+                                    false,
+                                );
+                                if l_equip_refine.clone().number()? >= 10 {
+                                    ctx.lines_as("Vestri", args!["Oh, this is excellent! This piece here has been perfectly refined! But this isn't what I want. I can't do any work on this at all."])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])? == 100 {
+                                    ctx.lines_as("Vestri", args!["This item isn't even a challenge to upgrade. You can get humans to do this kind of beginner's stuff. Get them to refine it first."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args!["Come on...", "Bring me something", "that presents an", "element of risk!"],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !l_itemtype.clone().loosely_equals(&ctx.constant("IT_WEAPON")?) {
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args!["Armor?!", "Didn't I tell", "you that I only work", "on Level 4 weapons?"],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if ctx.call(Function::GetEquipWeaponLevel, vec![l_part.clone()])? != 4 {
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args![
+                                            "Hey...",
+                                            "Don't insult me by expecting me to work on anything less than a Level 4 weapon."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args!["Bring me a Level 4 weapon for me to work on next time, got it?"],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                ctx.lines_as("Vestri", args!["Okay, let me give you the mandatory warning. If your weapon happens to be destroyed by chance during the upgrade, you'll never see the weapon again."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Vestri", args!["That also means that if the weapon is destroyed, any ^FF0000Cards^000000 inserted into the weapon will also be gone."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Vestri", args!["If you understand,", "then let's get on with it!"])?;
+                                ctx.next()?;
+                                if Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("Sure, let's do it!:...no, I am out.")],
+                                )?) == 2
+                                {
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args![
+                                            "Bah...!",
+                                            "How do you survive",
+                                            "in this world with that",
+                                            "kind of cowardice?!"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args![
+                                            "Oh, forget it.",
+                                            "I know you're just being careful. Damn, I was just so eager to get",
+                                            "to work!"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if ctx.call(Function::CountItem, vec![Val::from(984)])?.number()? > 0 {
+                                    ctx.call(Function::DelItem, vec![Val::from(984), Val::from(1)])?;
                                 } else {
-                                    if (((ctx.var("god_mjo_1").get()? == 0 || ctx.var("god_mjo_1").get()? == 1)
-                                        || ctx.var("god_mjo_3").get()? != 0)
-                                        || ctx.var("god_mjo_4").get()? != 0)
-                                    {
-                                        ctx.lines_as("Vestri", args!["What do you want?"])?;
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args!["Huh...", "You forgot to", "bring an Oridecon.", "Hurry up and get one."],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if ((shared::other_global_functions::f_isequipidhack(
+                                    ctx,
+                                    vec![l_part.clone(), l_equip_id.clone()],
+                                )?
+                                .is_true()
+                                    || shared::other_global_functions::f_isequipcardhack(
+                                        ctx,
+                                        vec![
+                                            l_part.clone(),
+                                            runtime::local_get(&l_card, &Val::from(0), false),
+                                            runtime::local_get(&l_card, &Val::from(1), false),
+                                            runtime::local_get(&l_card, &Val::from(2), false),
+                                            runtime::local_get(&l_card, &Val::from(3), false),
+                                        ],
+                                    )?
+                                    .is_true())
+                                    || shared::other_global_functions::f_isequiprefinehack(
+                                        ctx,
+                                        vec![l_part.clone(), l_equip_refine.clone()],
+                                    )?
+                                    .is_true())
+                                {
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if runtime::op(
+                                    &ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])?,
+                                    ">",
+                                    &ctx.call(Function::Rand, vec![Val::from(100)])?,
+                                )?
+                                .is_true()
+                                {
+                                    ctx.mes("^3355FF*Clang Clang!*^000000")?;
+                                    ctx.call(Function::SuccessRefineItem, vec![l_part.clone()])?;
+                                    ctx.next()?;
+                                    ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args![
+                                            "Mwahahaha~",
+                                            "I've still got it!",
+                                            "So aren't you happy",
+                                            "with an even more",
+                                            "powerful weapon?"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                } else {
+                                    ctx.lines_as("Vestri", args!["^3355FF*Clang Clang!*^000000"])?;
+                                    ctx.call(Function::FailedRefineItem, vec![l_part.clone()])?;
+                                    ctx.next()?;
+                                    ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
+                                    ctx.lines_as("Vestri", args!["Waaahhhhh!", "Dear God, no!"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Vestri",
+                                        args![
+                                            "I-It's alright!",
+                                            "Bad things happen",
+                                            "sometimes. Let's just",
+                                            "think of it as both us",
+                                            "of us having a bad day.",
+                                            "Yeah, no regrets!"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                }
+                                ctx.var("god_mjo_2").set(Val::from(2))?;
+                                ctx.lines_as(
+                                    "Vestri",
+                                    args![
+                                        "Well, my friend,",
+                                        "if you ever visit my brothers, please give them my regards.",
+                                        "Take care."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("god_mjo_2").get()? == 0 {
+                                ctx.lines_as("Vestri", args!["What do you want?"])?;
+                                ctx.next()?;
+                                'b6: {
+                                    let subject6 =
+                                        Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
+                                    let mut matched6 = false;
+                                    let no_case6 =
+                                        !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
+                                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                                        matched6 = true;
+                                    }
+                                    if matched6 {
+                                        ctx.lines_as(
+                                            "Vestri",
+                                            args!["If you want something, you should earn it through your own efforts."],
+                                        )?;
                                         ctx.next()?;
-                                        'b4: {
-                                            let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                            let mut matched4 = false;
-                                            let no_case4 =
-                                                !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args!["If you want something, you should earn it through your own efforts."],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Vestri", args!["No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
-                                                ctx.var("god_mjo_2").set(Val::from(3))?;
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args![
-                                                        "You didn't answer the question! Now, you've probably got the wrong Dwarf here..."
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args![
-                                                        "Get out of here, and go to your human Blacksmiths if you want equipment upgrades!"
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
-                                    } else {
-                                        if ctx.var("god_mjo_2").get()? == 1 {
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args![
-                                                    "Great...!",
-                                                    "Which one should I upgrade first, huh? My heart is pounding with anticipation..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            let base = Val::from(1).number()?;
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 0), ctx.constant("EQI_HEAD_TOP")?, false);
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 1), ctx.constant("EQI_ARMOR")?, false);
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 2), ctx.constant("EQI_HAND_L")?, false);
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 3), ctx.constant("EQI_HAND_R")?, false);
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 4), ctx.constant("EQI_GARMENT")?, false);
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 5), ctx.constant("EQI_SHOES")?, false);
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 6), ctx.constant("EQI_ACC_L")?, false);
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 7), ctx.constant("EQI_ACC_R")?, false);
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 8), ctx.constant("EQI_HEAD_MID")?, false);
-                                            runtime::local_set(&mut l_indices, &Val::from(base + 9), ctx.constant("EQI_HEAD_LOW")?, false);
-                                            l_i = Val::from(1);
-                                            'l5: loop {
-                                                if !(l_i.clone().number()? <= 10) {
-                                                    break 'l5;
-                                                }
-                                                'b5: {
-                                                    if ctx
-                                                        .call(
-                                                            Function::GetEquipIsEquipped,
-                                                            vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
-                                                        )?
-                                                        .is_true()
-                                                    {
-                                                        l_menu_s = ((((l_menu_s.clone()
-                                                            + shared::other_global_functions::f_getpositionname(
-                                                                ctx,
-                                                                vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
-                                                            )?)
-                                                            + Val::from("-["))
-                                                            + ctx.call(
-                                                                Function::GetEquipName,
-                                                                vec![runtime::local_get(&l_indices, &l_i.clone(), false)],
-                                                            )?)
-                                                            + Val::from("]"));
-                                                    }
-                                                    l_menu_s = (l_menu_s.clone() + Val::from(":"));
-                                                }
-                                                l_i = (l_i.clone() + Val::from(1));
-                                            }
-                                            l_part = runtime::local_get(
-                                                &l_indices,
-                                                &Val::from(runtime::select_values(ctx, &[l_menu_s.clone()])?),
-                                                false,
-                                            );
-                                            if ctx.call(Function::GetEquipIsEquipped, vec![l_part.clone()])? == 0 {
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if ctx.call(Function::GetEquipIsEnableRefine, vec![l_part.clone()])? == 0 {
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args![
-                                                        "What...?!",
-                                                        "This isn't upgradable!",
-                                                        "What the hell do you want",
-                                                        "me to do with this?"
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            l_equip_id = ctx.call(Function::GetEquipId, vec![l_part.clone()])?;
-                                            l_itemtype =
-                                                ctx.call(Function::GetItemInfo, vec![l_equip_id.clone(), ctx.constant("ITEMINFO_TYPE")?])?;
-                                            l_equip_refine = ctx.call(Function::GetEquipRefineryCnt, vec![l_part.clone()])?;
-                                            let base = Val::from(0).number()?;
-                                            runtime::local_set(
-                                                &mut l_card,
-                                                &Val::from(base + 0),
-                                                ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(0)])?,
-                                                false,
-                                            );
-                                            runtime::local_set(
-                                                &mut l_card,
-                                                &Val::from(base + 1),
-                                                ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(1)])?,
-                                                false,
-                                            );
-                                            runtime::local_set(
-                                                &mut l_card,
-                                                &Val::from(base + 2),
-                                                ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(2)])?,
-                                                false,
-                                            );
-                                            runtime::local_set(
-                                                &mut l_card,
-                                                &Val::from(base + 3),
-                                                ctx.call(Function::GetEquipCardId, vec![l_part.clone(), Val::from(3)])?,
-                                                false,
-                                            );
-                                            if l_equip_refine.clone().number()? >= 10 {
-                                                ctx.lines_as("Vestri", args!["Oh, this is excellent! This piece here has been perfectly refined! But this isn't what I want. I can't do any work on this at all."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])? == 100 {
-                                                ctx.lines_as("Vestri", args!["This item isn't even a challenge to upgrade. You can get humans to do this kind of beginner's stuff. Get them to refine it first."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args!["Come on...", "Bring me something", "that presents an", "element of risk!"],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if !l_itemtype.clone().loosely_equals(&ctx.constant("IT_WEAPON")?) {
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args!["Armor?!", "Didn't I tell", "you that I only work", "on Level 4 weapons?"],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if ctx.call(Function::GetEquipWeaponLevel, vec![l_part.clone()])? != 4 {
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args![
-                                                        "Hey...",
-                                                        "Don't insult me by expecting me to work on anything less than a Level 4 weapon."
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args!["Bring me a Level 4 weapon for me to work on next time, got it?"],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            ctx.lines_as("Vestri", args!["Okay, let me give you the mandatory warning. If your weapon happens to be destroyed by chance during the upgrade, you'll never see the weapon again."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Vestri", args!["That also means that if the weapon is destroyed, any ^FF0000Cards^000000 inserted into the weapon will also be gone."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Vestri", args!["If you understand,", "then let's get on with it!"])?;
-                                            ctx.next()?;
-                                            if Val::from(runtime::select_values(
-                                                ctx,
-                                                &[Val::from("Sure, let's do it!:...no, I am out.")],
-                                            )?) == 2
-                                            {
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args![
-                                                        "Bah...!",
-                                                        "How do you survive",
-                                                        "in this world with that",
-                                                        "kind of cowardice?!"
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args![
-                                                        "Oh, forget it.",
-                                                        "I know you're just being careful. Damn, I was just so eager to get",
-                                                        "to work!"
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if ctx.call(Function::CountItem, vec![Val::from(984)])?.number()? > 0 {
-                                                ctx.call(Function::DelItem, vec![Val::from(984), Val::from(1)])?;
-                                            } else {
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args!["Huh...", "You forgot to", "bring an Oridecon.", "Hurry up and get one."],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if ((shared::other_global_functions::f_isequipidhack(
-                                                ctx,
-                                                vec![l_part.clone(), l_equip_id.clone()],
-                                            )?
-                                            .is_true()
-                                                || shared::other_global_functions::f_isequipcardhack(
-                                                    ctx,
-                                                    vec![
-                                                        l_part.clone(),
-                                                        runtime::local_get(&l_card, &Val::from(0), false),
-                                                        runtime::local_get(&l_card, &Val::from(1), false),
-                                                        runtime::local_get(&l_card, &Val::from(2), false),
-                                                        runtime::local_get(&l_card, &Val::from(3), false),
-                                                    ],
-                                                )?
-                                                .is_true())
-                                                || shared::other_global_functions::f_isequiprefinehack(
-                                                    ctx,
-                                                    vec![l_part.clone(), l_equip_refine.clone()],
-                                                )?
-                                                .is_true())
-                                            {
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if runtime::op(
-                                                &ctx.call(Function::GetEquipPercentRefinery, vec![l_part.clone()])?,
-                                                ">",
-                                                &ctx.call(Function::Rand, vec![Val::from(100)])?,
-                                            )?
-                                            .is_true()
-                                            {
-                                                ctx.mes("^3355FF*Clang Clang!*^000000")?;
-                                                ctx.call(Function::SuccessRefineItem, vec![l_part.clone()])?;
-                                                ctx.next()?;
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args![
-                                                        "Mwahahaha~",
-                                                        "I've still got it!",
-                                                        "So aren't you happy",
-                                                        "with an even more",
-                                                        "powerful weapon?"
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                            } else {
-                                                ctx.lines_as("Vestri", args!["^3355FF*Clang Clang!*^000000"])?;
-                                                ctx.call(Function::FailedRefineItem, vec![l_part.clone()])?;
-                                                ctx.next()?;
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
-                                                ctx.lines_as("Vestri", args!["Waaahhhhh!", "Dear God, no!"])?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Vestri",
-                                                    args![
-                                                        "I-It's alright!",
-                                                        "Bad things happen",
-                                                        "sometimes. Let's just",
-                                                        "think of it as both us",
-                                                        "of us having a bad day.",
-                                                        "Yeah, no regrets!"
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                            }
-                                            ctx.var("god_mjo_2").set(Val::from(2))?;
-                                            ctx.lines_as(
-                                                "Vestri",
-                                                args![
-                                                    "Well, my friend,",
-                                                    "if you ever visit my brothers, please give them my regards.",
-                                                    "Take care."
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if ctx.var("god_mjo_2").get()? == 0 {
-                                                ctx.lines_as("Vestri", args!["What do you want?"])?;
-                                                ctx.next()?;
-                                                'b6: {
-                                                    let subject6 =
-                                                        Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                                    let mut matched6 = false;
-                                                    let no_case6 =
-                                                        !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                                                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                                        matched6 = true;
-                                                    }
-                                                    if matched6 {
-                                                        ctx.lines_as(
-                                                            "Vestri",
-                                                            args!["If you want something, you should earn it through your own efforts."],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Vestri", args!["No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results."])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                                        matched6 = true;
-                                                    }
-                                                    if matched6 {
-                                                        ctx.lines_as("Vestri", args!["Huh...", "I don't know how I can be much help to an adventurer like you. Aside from being a Blacksmith..."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Vestri", args!["There's nothing I enjoy more than upgrading high level weapons that are on the verge of breaking."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Vestri", args!["Don't you like the idea of challenging the limit? To me, upgrading feels like climbing unconquered mountains!"])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Vestri", args!["Alright. Perhaps I'm meant to help you out, so I'll upgrade a weapon for you. All you need to do is bring me the weapon and material."])?;
-                                                        ctx.next()?;
-                                                        ctx.var("god_mjo_2").set(Val::from(1))?;
-                                                        ctx.lines_as("Vestri", args!["Here's the condition: You've got to bring me a Level 4 Weapon that's been upgraded to the point where it might break. Oh, and bring an Oridecon!"])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                }
-                                            } else {
-                                                ctx.lines_as("Vestri", args!["Zzzz Zzzz Zzzz..."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
+                                        ctx.lines_as("Vestri", args!["No matter what other people say, if you're confident and your will is unwavering, you'll always be satisfied with the results."])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                                        matched6 = true;
+                                    }
+                                    if matched6 {
+                                        ctx.lines_as("Vestri", args!["Huh...", "I don't know how I can be much help to an adventurer like you. Aside from being a Blacksmith..."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Vestri", args!["There's nothing I enjoy more than upgrading high level weapons that are on the verge of breaking."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Vestri", args!["Don't you like the idea of challenging the limit? To me, upgrading feels like climbing unconquered mountains!"])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Vestri", args!["Alright. Perhaps I'm meant to help you out, so I'll upgrade a weapon for you. All you need to do is bring me the weapon and material."])?;
+                                        ctx.next()?;
+                                        ctx.var("god_mjo_2").set(Val::from(1))?;
+                                        ctx.lines_as("Vestri", args!["Here's the condition: You've got to bring me a Level 4 Weapon that's been upgraded to the point where it might break. Oh, and bring an Oridecon!"])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
                                 }
+                            } else {
+                                ctx.lines_as("Vestri", args!["Zzzz Zzzz Zzzz..."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         } else {
                             if ctx.var("god_mjo_0").get()? == 0 {
@@ -3851,198 +3717,190 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             return Err(Stop::End);
                                         }
                                     }
-                                } else {
-                                    if ctx.var("god_mjo_4").get()? == 1 {
-                                        if ctx.call(Function::CountItem, vec![Val::from(501)])?.number()? > 0 {
-                                            ctx.call(Function::DelItem, vec![Val::from(501), Val::from(1)])?;
-                                            ctx.lines_as(
-                                                "Nordri",
-                                                args![
-                                                    "Ah, you've brought",
-                                                    "me a Red Potion, just",
-                                                    "like I asked. In return,",
-                                                    "I will tell you an old story.",
-                                                    "I'm sure you'll like it."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            'l2: loop {
-                                                if !(true) {
-                                                    break 'l2;
+                                } else if ctx.var("god_mjo_4").get()? == 1 {
+                                    if ctx.call(Function::CountItem, vec![Val::from(501)])?.number()? > 0 {
+                                        ctx.call(Function::DelItem, vec![Val::from(501), Val::from(1)])?;
+                                        ctx.lines_as(
+                                            "Nordri",
+                                            args![
+                                                "Ah, you've brought",
+                                                "me a Red Potion, just",
+                                                "like I asked. In return,",
+                                                "I will tell you an old story.",
+                                                "I'm sure you'll like it."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        'l2: loop {
+                                            if !(true) {
+                                                break 'l2;
+                                            }
+                                            'b2: {
+                                                if l_talk_to.clone() == 0 {
+                                                    ctx.lines_as(
+                                                        "Nordri",
+                                                        args![
+                                                            "This is a legend about one",
+                                                            "of Thor's journeys into Utgard,",
+                                                            "land of the giants."
+                                                        ],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Nordri",
+                                                        args![
+                                                            "There, he made a wager with their king in which he would challenge",
+                                                            "the giants of their land in tests of skill and strength."
+                                                        ],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["The first was an eating contest. Thor ate all of the meat on his table, but his opponent, Utgardaloki, ate his meat, the bones and even the plates."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["In truth, Thor was tricked, and the opponent that defeated him was not", "actually a giant. Illusion was used to disguise Thor's opponent, but I forget was it was. Do you know?"])?;
+                                                    ctx.next()?;
+                                                    'b3: {
+                                                        let subject3 = Val::from(runtime::select_values(
+                                                            ctx,
+                                                            &[Val::from("Greed:Sea:Blaze:Hog")],
+                                                        )?);
+                                                        let mut matched3 = false;
+                                                        let no_case3 = !subject3.loosely_equals(&Val::from(3));
+                                                        if !matched3 && no_case3 {
+                                                            matched3 = true;
+                                                        }
+                                                        if matched3 {
+                                                            l_talk_not = Val::from(1);
+                                                            break 'b3;
+                                                        }
+                                                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                                                            matched3 = true;
+                                                        }
+                                                        if matched3 {
+                                                            break 'b3;
+                                                        }
+                                                    }
+                                                } else if l_talk_to.clone() == 1 {
+                                                    ctx.lines_as("Nordri", args!["Yes, only a Blaze could have effortlessly consumed meat, bones and plates by burning. Of course!", "I remember now!"])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["The next contest was a race. In that match, Thor's servant, Tialfi competed with the king's servant, Hugi. However, no matter how many matches they had, Hugi would win every time."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["Once again, illusion magic was", "used to disguise the competitor. Do you know what Tialfi was really racing against?"])?;
+                                                    ctx.next()?;
+                                                    'b4: {
+                                                        let subject4 = Val::from(runtime::select_values(
+                                                            ctx,
+                                                            &[Val::from("Language:Thoughts:Turtle:Wolf")],
+                                                        )?);
+                                                        let mut matched4 = false;
+                                                        let no_case4 = !subject4.loosely_equals(&Val::from(2));
+                                                        if !matched4 && no_case4 {
+                                                            matched4 = true;
+                                                        }
+                                                        if matched4 {
+                                                            l_talk_not = Val::from(1);
+                                                            break 'b4;
+                                                        }
+                                                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                                            matched4 = true;
+                                                        }
+                                                        if matched4 {
+                                                            break 'b4;
+                                                        }
+                                                    }
+                                                } else if l_talk_to.clone() == 2 {
+                                                    ctx.lines_as("Nordri", args!["Yes, right! Tialfi was racing 'thoughts!' Nothing can move faster than the speed of thought, so it's no wonder Tialfi would always lose."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["For the final contest, Thor would challenge an old woman in a wrestling match. At first, Thor thought his victory was assured, but he learned that he could not defeat the old crone."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["Once again, Thor was the victim", "of illusion magic. He didn't realize he wasn't actually wrestling with an old woman. Do you know what his opponent really was?"])?;
+                                                    ctx.next()?;
+                                                    'b5: {
+                                                        let subject5 = Val::from(runtime::select_values(
+                                                            ctx,
+                                                            &[Val::from("Curse:Earth:Heart:Old Age")],
+                                                        )?);
+                                                        let mut matched5 = false;
+                                                        let no_case5 = !subject5.loosely_equals(&Val::from(4));
+                                                        if !matched5 && no_case5 {
+                                                            matched5 = true;
+                                                        }
+                                                        if matched5 {
+                                                            l_talk_not = Val::from(1);
+                                                            break 'b5;
+                                                        }
+                                                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
+                                                            matched5 = true;
+                                                        }
+                                                        if matched5 {
+                                                            break 'b5;
+                                                        }
+                                                    }
+                                                } else if l_talk_to.clone() == 3 {
+                                                    ctx.lines_as("Nordri", args!["Yes, Thor was wrestling with 'Old Age!' No matter how strong anybody is, you can't fight against aging."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["After Thor lost every match,", "the king told him the truth about the contests. Thor grew furious, but it was too late. The king and the giants all vanished by then."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["There are two lessons", "to be learned from this tale. First, don't believe everything you see. Second, never be overconfident of your own power."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["There will always be someone or something more powerful than you. It is important to always do your best and have an attitude of humility."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["Try to live as good a life as you can. Remember that you can't have everything that you want. Obssession and irrationality go hand in hand."])?;
+                                                    ctx.next()?;
+                                                    ctx.var("god_mjo_4").set(Val::from(2))?;
+                                                    ctx.lines_as("Nordri", args!["Thank you for listening to my long story. If you meet someone with a dangerous obsession, please tell this story of Thor and the illusions of the giant king."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
                                                 }
-                                                'b2: {
-                                                    if l_talk_to.clone() == 0 {
-                                                        ctx.lines_as(
-                                                            "Nordri",
-                                                            args![
-                                                                "This is a legend about one",
-                                                                "of Thor's journeys into Utgard,",
-                                                                "land of the giants."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Nordri",
-                                                            args![
-                                                                "There, he made a wager with their king in which he would challenge",
-                                                                "the giants of their land in tests of skill and strength."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Nordri", args!["The first was an eating contest. Thor ate all of the meat on his table, but his opponent, Utgardaloki, ate his meat, the bones and even the plates."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Nordri", args!["In truth, Thor was tricked, and the opponent that defeated him was not", "actually a giant. Illusion was used to disguise Thor's opponent, but I forget was it was. Do you know?"])?;
-                                                        ctx.next()?;
-                                                        'b3: {
-                                                            let subject3 = Val::from(runtime::select_values(
-                                                                ctx,
-                                                                &[Val::from("Greed:Sea:Blaze:Hog")],
-                                                            )?);
-                                                            let mut matched3 = false;
-                                                            let no_case3 = !subject3.loosely_equals(&Val::from(3));
-                                                            if !matched3 && no_case3 {
-                                                                matched3 = true;
-                                                            }
-                                                            if matched3 {
-                                                                l_talk_not = Val::from(1);
-                                                                break 'b3;
-                                                            }
-                                                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                                                matched3 = true;
-                                                            }
-                                                            if matched3 {
-                                                                break 'b3;
-                                                            }
-                                                        }
-                                                    } else {
-                                                        if l_talk_to.clone() == 1 {
-                                                            ctx.lines_as("Nordri", args!["Yes, only a Blaze could have effortlessly consumed meat, bones and plates by burning. Of course!", "I remember now!"])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Nordri", args!["The next contest was a race. In that match, Thor's servant, Tialfi competed with the king's servant, Hugi. However, no matter how many matches they had, Hugi would win every time."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Nordri", args!["Once again, illusion magic was", "used to disguise the competitor. Do you know what Tialfi was really racing against?"])?;
-                                                            ctx.next()?;
-                                                            'b4: {
-                                                                let subject4 = Val::from(runtime::select_values(
-                                                                    ctx,
-                                                                    &[Val::from("Language:Thoughts:Turtle:Wolf")],
-                                                                )?);
-                                                                let mut matched4 = false;
-                                                                let no_case4 = !subject4.loosely_equals(&Val::from(2));
-                                                                if !matched4 && no_case4 {
-                                                                    matched4 = true;
-                                                                }
-                                                                if matched4 {
-                                                                    l_talk_not = Val::from(1);
-                                                                    break 'b4;
-                                                                }
-                                                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                                    matched4 = true;
-                                                                }
-                                                                if matched4 {
-                                                                    break 'b4;
-                                                                }
-                                                            }
-                                                        } else {
-                                                            if l_talk_to.clone() == 2 {
-                                                                ctx.lines_as("Nordri", args!["Yes, right! Tialfi was racing 'thoughts!' Nothing can move faster than the speed of thought, so it's no wonder Tialfi would always lose."])?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Nordri", args!["For the final contest, Thor would challenge an old woman in a wrestling match. At first, Thor thought his victory was assured, but he learned that he could not defeat the old crone."])?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Nordri", args!["Once again, Thor was the victim", "of illusion magic. He didn't realize he wasn't actually wrestling with an old woman. Do you know what his opponent really was?"])?;
-                                                                ctx.next()?;
-                                                                'b5: {
-                                                                    let subject5 = Val::from(runtime::select_values(
-                                                                        ctx,
-                                                                        &[Val::from("Curse:Earth:Heart:Old Age")],
-                                                                    )?);
-                                                                    let mut matched5 = false;
-                                                                    let no_case5 = !subject5.loosely_equals(&Val::from(4));
-                                                                    if !matched5 && no_case5 {
-                                                                        matched5 = true;
-                                                                    }
-                                                                    if matched5 {
-                                                                        l_talk_not = Val::from(1);
-                                                                        break 'b5;
-                                                                    }
-                                                                    if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                                                                        matched5 = true;
-                                                                    }
-                                                                    if matched5 {
-                                                                        break 'b5;
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                if l_talk_to.clone() == 3 {
-                                                                    ctx.lines_as("Nordri", args!["Yes, Thor was wrestling with 'Old Age!' No matter how strong anybody is, you can't fight against aging."])?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as("Nordri", args!["After Thor lost every match,", "the king told him the truth about the contests. Thor grew furious, but it was too late. The king and the giants all vanished by then."])?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as("Nordri", args!["There are two lessons", "to be learned from this tale. First, don't believe everything you see. Second, never be overconfident of your own power."])?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as("Nordri", args!["There will always be someone or something more powerful than you. It is important to always do your best and have an attitude of humility."])?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as("Nordri", args!["Try to live as good a life as you can. Remember that you can't have everything that you want. Obssession and irrationality go hand in hand."])?;
-                                                                    ctx.next()?;
-                                                                    ctx.var("god_mjo_4").set(Val::from(2))?;
-                                                                    ctx.lines_as("Nordri", args!["Thank you for listening to my long story. If you meet someone with a dangerous obsession, please tell this story of Thor and the illusions of the giant king."])?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    if l_talk_not.clone() == 1 {
-                                                        ctx.lines_as("Nordri", args!["Huh...?", "I don't think that's right. Let me think, maybe I can remember it. Hopefully, it'll come to me sooner or later..."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Nordri", args!["Shall we talk more of this once again after enjoying another Red Potion? Hahahahaha~"])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    } else {
-                                                        l_talk_to = (l_talk_to.clone() + Val::from(1));
-                                                    }
+                                                if l_talk_not.clone() == 1 {
+                                                    ctx.lines_as("Nordri", args!["Huh...?", "I don't think that's right. Let me think, maybe I can remember it. Hopefully, it'll come to me sooner or later..."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Nordri", args!["Shall we talk more of this once again after enjoying another Red Potion? Hahahahaha~"])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                } else {
+                                                    l_talk_to = (l_talk_to.clone() + Val::from(1));
                                                 }
                                             }
-                                        } else {
-                                            ctx.lines_as("Nordri", args!["Oooh...", "I'm sooo thirsty!"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Nordri", args!["Hm, didn't I ask you to bring a Red Potion? There's no way I can tell any stories with such a dry throat~"])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
                                         }
                                     } else {
-                                        if ctx.var("god_mjo_4").get()? == 0 {
-                                            ctx.lines_as("Nordri", args!["What business", "do you have with", "me, human?"])?;
-                                            ctx.next()?;
-                                            'b6: {
-                                                let subject6 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                                let mut matched6 = false;
-                                                let no_case6 =
-                                                    !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                                                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                                    matched6 = true;
-                                                }
-                                                if matched6 {
-                                                    ctx.lines_as("Nordri", args!["Huh.", "If that's the case,", "then leave me alone."])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                                    matched6 = true;
-                                                }
-                                                if matched6 {
-                                                    ctx.lines_as("Nordri", args!["Odd. Recently, too many humans have been interested in meeting with me and my brothers. Still, I cannot say their visits have been unpleasant."])?;
-                                                    ctx.next()?;
-                                                    ctx.var("god_mjo_4").set(Val::from(1))?;
-                                                    ctx.lines_as("Nordri", args!["I'm a little thirsty. Would you bring me a Red Potion. If you do that for me, I will tell you an important story. Heh heh heh~"])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
+                                        ctx.lines_as("Nordri", args!["Oooh...", "I'm sooo thirsty!"])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Nordri", args!["Hm, didn't I ask you to bring a Red Potion? There's no way I can tell any stories with such a dry throat~"])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                } else {
+                                    if ctx.var("god_mjo_4").get()? == 0 {
+                                        ctx.lines_as("Nordri", args!["What business", "do you have with", "me, human?"])?;
+                                        ctx.next()?;
+                                        'b6: {
+                                            let subject6 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
+                                            let mut matched6 = false;
+                                            let no_case6 =
+                                                !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
+                                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                                                matched6 = true;
                                             }
-                                        } else {
-                                            ctx.lines_as("Nordri", args!["Zzzz Zzzz..."])?;
-                                            ctx.close_window()?;
+                                            if matched6 {
+                                                ctx.lines_as("Nordri", args!["Huh.", "If that's the case,", "then leave me alone."])?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                                                matched6 = true;
+                                            }
+                                            if matched6 {
+                                                ctx.lines_as("Nordri", args!["Odd. Recently, too many humans have been interested in meeting with me and my brothers. Still, I cannot say their visits have been unpleasant."])?;
+                                                ctx.next()?;
+                                                ctx.var("god_mjo_4").set(Val::from(1))?;
+                                                ctx.lines_as("Nordri", args!["I'm a little thirsty. Would you bring me a Red Potion. If you do that for me, I will tell you an important story. Heh heh heh~"])?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
                                         }
+                                    } else {
+                                        ctx.lines_as("Nordri", args!["Zzzz Zzzz..."])?;
+                                        ctx.close_window()?;
                                     }
                                 }
                             }
@@ -4098,190 +3956,182 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 return Err(Stop::End);
                                             }
                                         }
-                                    } else {
-                                        if ctx.var("god_mjo_1").get()? == 1 {
-                                            if ctx.call(Function::CountItem, vec![Val::from(501)])?.number()? > 0 {
-                                                ctx.call(Function::DelItem, vec![Val::from(501), Val::from(1)])?;
-                                                ctx.lines_as(
-                                                    "Nordri",
-                                                    args![
-                                                        "Ah, you've brought",
-                                                        "me a Red Potion...?",
-                                                        "In return, I will",
-                                                        "tell you an old story.",
-                                                        "I'm sure you'll like it."
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                'l8: loop {
-                                                    if !(true) {
-                                                        break 'l8;
+                                    } else if ctx.var("god_mjo_1").get()? == 1 {
+                                        if ctx.call(Function::CountItem, vec![Val::from(501)])?.number()? > 0 {
+                                            ctx.call(Function::DelItem, vec![Val::from(501), Val::from(1)])?;
+                                            ctx.lines_as(
+                                                "Nordri",
+                                                args![
+                                                    "Ah, you've brought",
+                                                    "me a Red Potion...?",
+                                                    "In return, I will",
+                                                    "tell you an old story.",
+                                                    "I'm sure you'll like it."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            'l8: loop {
+                                                if !(true) {
+                                                    break 'l8;
+                                                }
+                                                'b8: {
+                                                    if l_talk_to.clone() == 0 {
+                                                        ctx.lines_as("Nordri", args!["There is a story of a Dwarf named Alvis who contained more knowledge than a library and was braver than Siegfried the warrior."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as(
+                                                            "Nordri",
+                                                            args![
+                                                                "Unfortunately...",
+                                                                "He was too ambitious.",
+                                                                "He fell in love with Thrud, Thor's first daughter, at first sight."
+                                                            ],
+                                                        )?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Nordri", args!["He asked Thor for permission to marry Thrud, but as was expected, Thor refused. Alvis should have given up there, but he didn't."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Nordri", args!["So Thor decided to test his knowledge by asking him some questions. The first question was, 'What is the name of the ground in human terms?' Do you know the answer?"])?;
+                                                        ctx.next()?;
+                                                        'b9: {
+                                                            let subject9 = Val::from(runtime::select_values(
+                                                                ctx,
+                                                                &[Val::from("Ymir's body:Earth:Lane:Universe")],
+                                                            )?);
+                                                            let mut matched9 = false;
+                                                            let no_case9 = !subject9.loosely_equals(&Val::from(2));
+                                                            if !matched9 && no_case9 {
+                                                                matched9 = true;
+                                                            }
+                                                            if matched9 {
+                                                                l_talk_not = Val::from(1);
+                                                                break 'b9;
+                                                            }
+                                                            if !matched9 && subject9.loosely_equals(&Val::from(2)) {
+                                                                matched9 = true;
+                                                            }
+                                                            if matched9 {
+                                                                break 'b9;
+                                                            }
+                                                        }
+                                                    } else if l_talk_to.clone() == 1 {
+                                                        ctx.lines_as("Nordri", args!["Yes, that's right, 'Earth.' Alvis was able to also answer Thor's question correctly."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Nordri", args!["Thor then gave Alvis another question. What is the giant's term for the round shell that covers the earth?"])?;
+                                                        ctx.next()?;
+                                                        'b10: {
+                                                            let subject10 = Val::from(runtime::select_values(
+                                                                ctx,
+                                                                &[Val::from("Ymir's Head:Sky:Cloud Factory:High House")],
+                                                            )?);
+                                                            let mut matched10 = false;
+                                                            let no_case10 = !subject10.loosely_equals(&Val::from(4));
+                                                            if !matched10 && no_case10 {
+                                                                matched10 = true;
+                                                            }
+                                                            if matched10 {
+                                                                l_talk_not = Val::from(1);
+                                                                break 'b10;
+                                                            }
+                                                            if !matched10 && subject10.loosely_equals(&Val::from(4)) {
+                                                                matched10 = true;
+                                                            }
+                                                            if matched10 {
+                                                                break 'b10;
+                                                            }
+                                                        }
+                                                    } else if l_talk_to.clone() == 2 {
+                                                        ctx.lines_as("Nordri", args!["That's it, 'High House.' Since the giants are so huge, it might have looked that way to them."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Nordri", args!["So Thor gave him another question. What is the term for the ball that rises in the sky at night, as used by the gods?"])?;
+                                                        ctx.next()?;
+                                                        'b11: {
+                                                            let subject11 = Val::from(runtime::select_values(
+                                                                ctx,
+                                                                &[Val::from("Circling Wheel:Moon:False Sun:Fast Stranger")],
+                                                            )?);
+                                                            let mut matched11 = false;
+                                                            let no_case11 = !subject11.loosely_equals(&Val::from(3));
+                                                            if !matched11 && no_case11 {
+                                                                matched11 = true;
+                                                            }
+                                                            if matched11 {
+                                                                l_talk_not = Val::from(1);
+                                                                break 'b11;
+                                                            }
+                                                            if !matched11 && subject11.loosely_equals(&Val::from(3)) {
+                                                                matched11 = true;
+                                                            }
+                                                            if matched11 {
+                                                                break 'b11;
+                                                            }
+                                                        }
+                                                    } else if l_talk_to.clone() == 3 {
+                                                        ctx.lines_as("Nordri", args!["Yes! Gods refer to the", "moon as the 'false sun.'", "Although Alvis answered all of Thor's questions, he didn't notice the sun was rising."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Nordri", args!["Yes...", "Thor prolonged his test so that Alvis would be turned to stone", "once the sun rose."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Nordri", args!["There are two", "things we can learn", "from this story. First, do not covet something to the point of challenging fate or the gods."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Nordri", args!["Secondly, do not have too much pride in yourself. No matter how much ability or talent you may have, you cannot get everything", "you want."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Nordri", args!["It's most", "important to live a", "good and virtuous life. It's great to achieve your desires, but be aware that some desires are not meant to be fulfilled."])?;
+                                                        ctx.next()?;
+                                                        ctx.var("god_mjo_1").set(Val::from(2))?;
+                                                        ctx.lines_as("Nordri", args!["Thank you for listening to my long story. If you meet anyone afflicted with an insatiable desire, please tell him this story of Thor and Alvis, a brave yet very defiant Dwarf."])?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
                                                     }
-                                                    'b8: {
-                                                        if l_talk_to.clone() == 0 {
-                                                            ctx.lines_as("Nordri", args!["There is a story of a Dwarf named Alvis who contained more knowledge than a library and was braver than Siegfried the warrior."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Nordri",
-                                                                args![
-                                                                    "Unfortunately...",
-                                                                    "He was too ambitious.",
-                                                                    "He fell in love with Thrud, Thor's first daughter, at first sight."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Nordri", args!["He asked Thor for permission to marry Thrud, but as was expected, Thor refused. Alvis should have given up there, but he didn't."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Nordri", args!["So Thor decided to test his knowledge by asking him some questions. The first question was, 'What is the name of the ground in human terms?' Do you know the answer?"])?;
-                                                            ctx.next()?;
-                                                            'b9: {
-                                                                let subject9 = Val::from(runtime::select_values(
-                                                                    ctx,
-                                                                    &[Val::from("Ymir's body:Earth:Lane:Universe")],
-                                                                )?);
-                                                                let mut matched9 = false;
-                                                                let no_case9 = !subject9.loosely_equals(&Val::from(2));
-                                                                if !matched9 && no_case9 {
-                                                                    matched9 = true;
-                                                                }
-                                                                if matched9 {
-                                                                    l_talk_not = Val::from(1);
-                                                                    break 'b9;
-                                                                }
-                                                                if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                                                                    matched9 = true;
-                                                                }
-                                                                if matched9 {
-                                                                    break 'b9;
-                                                                }
-                                                            }
-                                                        } else {
-                                                            if l_talk_to.clone() == 1 {
-                                                                ctx.lines_as("Nordri", args!["Yes, that's right, 'Earth.' Alvis was able to also answer Thor's question correctly."])?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Nordri", args!["Thor then gave Alvis another question. What is the giant's term for the round shell that covers the earth?"])?;
-                                                                ctx.next()?;
-                                                                'b10: {
-                                                                    let subject10 = Val::from(runtime::select_values(
-                                                                        ctx,
-                                                                        &[Val::from("Ymir's Head:Sky:Cloud Factory:High House")],
-                                                                    )?);
-                                                                    let mut matched10 = false;
-                                                                    let no_case10 = !subject10.loosely_equals(&Val::from(4));
-                                                                    if !matched10 && no_case10 {
-                                                                        matched10 = true;
-                                                                    }
-                                                                    if matched10 {
-                                                                        l_talk_not = Val::from(1);
-                                                                        break 'b10;
-                                                                    }
-                                                                    if !matched10 && subject10.loosely_equals(&Val::from(4)) {
-                                                                        matched10 = true;
-                                                                    }
-                                                                    if matched10 {
-                                                                        break 'b10;
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                if l_talk_to.clone() == 2 {
-                                                                    ctx.lines_as("Nordri", args!["That's it, 'High House.' Since the giants are so huge, it might have looked that way to them."])?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as("Nordri", args!["So Thor gave him another question. What is the term for the ball that rises in the sky at night, as used by the gods?"])?;
-                                                                    ctx.next()?;
-                                                                    'b11: {
-                                                                        let subject11 = Val::from(runtime::select_values(
-                                                                            ctx,
-                                                                            &[Val::from("Circling Wheel:Moon:False Sun:Fast Stranger")],
-                                                                        )?);
-                                                                        let mut matched11 = false;
-                                                                        let no_case11 = !subject11.loosely_equals(&Val::from(3));
-                                                                        if !matched11 && no_case11 {
-                                                                            matched11 = true;
-                                                                        }
-                                                                        if matched11 {
-                                                                            l_talk_not = Val::from(1);
-                                                                            break 'b11;
-                                                                        }
-                                                                        if !matched11 && subject11.loosely_equals(&Val::from(3)) {
-                                                                            matched11 = true;
-                                                                        }
-                                                                        if matched11 {
-                                                                            break 'b11;
-                                                                        }
-                                                                    }
-                                                                } else {
-                                                                    if l_talk_to.clone() == 3 {
-                                                                        ctx.lines_as("Nordri", args!["Yes! Gods refer to the", "moon as the 'false sun.'", "Although Alvis answered all of Thor's questions, he didn't notice the sun was rising."])?;
-                                                                        ctx.next()?;
-                                                                        ctx.lines_as("Nordri", args!["Yes...", "Thor prolonged his test so that Alvis would be turned to stone", "once the sun rose."])?;
-                                                                        ctx.next()?;
-                                                                        ctx.lines_as("Nordri", args!["There are two", "things we can learn", "from this story. First, do not covet something to the point of challenging fate or the gods."])?;
-                                                                        ctx.next()?;
-                                                                        ctx.lines_as("Nordri", args!["Secondly, do not have too much pride in yourself. No matter how much ability or talent you may have, you cannot get everything", "you want."])?;
-                                                                        ctx.next()?;
-                                                                        ctx.lines_as("Nordri", args!["It's most", "important to live a", "good and virtuous life. It's great to achieve your desires, but be aware that some desires are not meant to be fulfilled."])?;
-                                                                        ctx.next()?;
-                                                                        ctx.var("god_mjo_1").set(Val::from(2))?;
-                                                                        ctx.lines_as("Nordri", args!["Thank you for listening to my long story. If you meet anyone afflicted with an insatiable desire, please tell him this story of Thor and Alvis, a brave yet very defiant Dwarf."])?;
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                        if l_talk_not.clone() == 1 {
-                                                            ctx.lines_as("Nordri", args!["Huh...?", "I don't think that's right. Let me think, maybe I can remember it. Hopefully, it'll come to me sooner or later..."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Nordri", args!["Shall we talk more of this once again after enjoying another Red Potion? Hahahahaha~"])?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        } else {
-                                                            l_talk_to = (l_talk_to.clone() + Val::from(1));
-                                                        }
+                                                    if l_talk_not.clone() == 1 {
+                                                        ctx.lines_as("Nordri", args!["Huh...?", "I don't think that's right. Let me think, maybe I can remember it. Hopefully, it'll come to me sooner or later..."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Nordri", args!["Shall we talk more of this once again after enjoying another Red Potion? Hahahahaha~"])?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
+                                                    } else {
+                                                        l_talk_to = (l_talk_to.clone() + Val::from(1));
                                                     }
                                                 }
-                                            } else {
-                                                ctx.lines_as("Nordri", args!["Oooh...", "I'm sooo thirsty!"])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Nordri", args!["Hm, didn't I ask you to bring a Red Potion? There's no way I can tell any stories with such a dry throat~"])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
                                             }
                                         } else {
-                                            if ctx.var("god_mjo_1").get()? == 0 {
-                                                ctx.lines_as("Nordri", args!["What business", "do you have with", "me, human?"])?;
-                                                ctx.next()?;
-                                                'b12: {
-                                                    let subject12 =
-                                                        Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                                    let mut matched12 = false;
-                                                    let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                                                        && !subject12.loosely_equals(&Val::from(2));
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        ctx.lines_as("Nordri", args!["You're funny, leave me alone."])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        ctx.lines_as("Nordri", args!["Odd. Recently, too many humans have been interested in meeting with me and my brothers. Still, I cannot say their visits have been unpleasant."])?;
-                                                        ctx.next()?;
-                                                        ctx.var("god_mjo_1").set(Val::from(1))?;
-                                                        ctx.lines_as("Nordri", args!["I'm a little thirsty. Would you bring me a Red Potion. If you do that for me, I will tell you an important story. Heh heh heh~"])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
+                                            ctx.lines_as("Nordri", args!["Oooh...", "I'm sooo thirsty!"])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Nordri", args!["Hm, didn't I ask you to bring a Red Potion? There's no way I can tell any stories with such a dry throat~"])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                    } else {
+                                        if ctx.var("god_mjo_1").get()? == 0 {
+                                            ctx.lines_as("Nordri", args!["What business", "do you have with", "me, human?"])?;
+                                            ctx.next()?;
+                                            'b12: {
+                                                let subject12 =
+                                                    Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
+                                                let mut matched12 = false;
+                                                let no_case12 = !subject12.loosely_equals(&Val::from(1))
+                                                    && !subject12.loosely_equals(&Val::from(2));
+                                                if !matched12 && subject12.loosely_equals(&Val::from(1)) {
+                                                    matched12 = true;
                                                 }
-                                            } else {
-                                                ctx.lines_as("Nordri", args!["Zzzz Zzzz Zzzz..."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
+                                                if matched12 {
+                                                    ctx.lines_as("Nordri", args!["You're funny, leave me alone."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
+                                                if !matched12 && subject12.loosely_equals(&Val::from(2)) {
+                                                    matched12 = true;
+                                                }
+                                                if matched12 {
+                                                    ctx.lines_as("Nordri", args!["Odd. Recently, too many humans have been interested in meeting with me and my brothers. Still, I cannot say their visits have been unpleasant."])?;
+                                                    ctx.next()?;
+                                                    ctx.var("god_mjo_1").set(Val::from(1))?;
+                                                    ctx.lines_as("Nordri", args!["I'm a little thirsty. Would you bring me a Red Potion. If you do that for me, I will tell you an important story. Heh heh heh~"])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
                                             }
+                                        } else {
+                                            ctx.lines_as("Nordri", args!["Zzzz Zzzz Zzzz..."])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         }
                                     }
                                 }

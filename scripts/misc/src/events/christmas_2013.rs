@@ -58,11 +58,9 @@ pub fn union_commander_cliff(ctx: &Ctx) -> Script {
     if (l_playtime == 0 || l_playtime == 1) {
         ctx.mes("- You can repeat this quest after 24 hours.")?;
         return ctx.close();
-    } else {
-        if ctx.call(Function::CheckQuest, args![15059, constants::PLAYTIME])?.number()? > 1 {
-            ctx.quests().erase(15059)?;
-            ctx.var("xmas2013_01").set(Val::from(0))?;
-        }
+    } else if ctx.call(Function::CheckQuest, args![15059, constants::PLAYTIME])?.number()? > 1 {
+        ctx.quests().erase(15059)?;
+        ctx.var("xmas2013_01").set(Val::from(0))?;
     }
     let l_que_allmem = ((((ctx.call(Function::IsBeginQuest, args![15060])? + ctx.call(Function::IsBeginQuest, args![15061])?)
         + ctx.call(Function::IsBeginQuest, args![15062])?)
@@ -301,38 +299,36 @@ pub fn lonely_kwami_xmas(ctx: &Ctx) -> Script {
             args!["Haa.....breaking up right before Christmas....I'm alone...a single! ...AM I??!!"],
         )?;
         return ctx.close();
+    } else if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15060])? == 0) {
+        ctx.lines_as(
+            "Kwami",
+            args!["Haa.....breaking up right before Christmas....I'm alone...a single! ...AM I??!!"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Kwami", args!["Who are you!?", "What's your business with me?"])?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as("Kwami", args!["err? Singles Union Army? What is that?"])?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("- Explain about the club -")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as("Kwami", args!["...yeah. You're right!"])?;
+        ctx.next()?;
+        ctx.lines_as("Kwami", args!["As I'm single! I'd never let couples enjoy this Christmas!!"])?;
+        ctx.next()?;
+        ctx.lines_as("Kwami", args!["I will join to the Singles Union Army!!"])?;
+        ctx.next()?;
+        ctx.mes("- Kwami has become a member of Singles Union Army. -")?;
+        ctx.quests().start(15060)?;
+        ctx.quests().complete(15060)?;
+        return ctx.close();
     } else {
-        if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15060])? == 0) {
-            ctx.lines_as(
-                "Kwami",
-                args!["Haa.....breaking up right before Christmas....I'm alone...a single! ...AM I??!!"],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Kwami", args!["Who are you!?", "What's your business with me?"])?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as("Kwami", args!["err? Singles Union Army? What is that?"])?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("- Explain about the club -")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as("Kwami", args!["...yeah. You're right!"])?;
-            ctx.next()?;
-            ctx.lines_as("Kwami", args!["As I'm single! I'd never let couples enjoy this Christmas!!"])?;
-            ctx.next()?;
-            ctx.lines_as("Kwami", args!["I will join to the Singles Union Army!!"])?;
-            ctx.next()?;
-            ctx.mes("- Kwami has become a member of Singles Union Army. -")?;
-            ctx.quests().start(15060)?;
-            ctx.quests().complete(15060)?;
-            return ctx.close();
-        } else {
-            ctx.lines_as(
-                "Singles Union Kwami",
-                args!["First of all, I've got to have revenge on my ex...No?"],
-            )?;
-            return ctx.close();
-        }
+        ctx.lines_as(
+            "Singles Union Kwami",
+            args!["First of all, I've got to have revenge on my ex...No?"],
+        )?;
+        return ctx.close();
     }
 }
 
@@ -340,39 +336,37 @@ pub fn lonely_willer_xmas(ctx: &Ctx) -> Script {
     if ctx.call(Function::IsBeginQuest, args![15055])? == 0 {
         ctx.lines_as("Willer", args!["Hoooooo... it is so boring to play alone...."])?;
         return ctx.close();
+    } else if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15061])? == 0) {
+        ctx.lines_as("Willer", args!["Hoooooo... it is so boring to play alone...."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Willer",
+            args!["Isn't there anything exciting?", "...hey, would you play with me??"],
+        )?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as("Willer", args!["Singles Union what? Why come to me?"])?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("- Explain about the club -")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as(
+            "Willer",
+            args!["Sooo...", "Break up couples and make Christmas party only for singles?"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Willer",
+            args!["That must be fun! I don't understand exactly but I will join, I'm in!!"],
+        )?;
+        ctx.next()?;
+        ctx.mes("- Willer has become a member of Singles Union Army. -")?;
+        ctx.quests().start(15061)?;
+        ctx.quests().complete(15061)?;
+        return ctx.close();
     } else {
-        if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15061])? == 0) {
-            ctx.lines_as("Willer", args!["Hoooooo... it is so boring to play alone...."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Willer",
-                args!["Isn't there anything exciting?", "...hey, would you play with me??"],
-            )?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as("Willer", args!["Singles Union what? Why come to me?"])?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("- Explain about the club -")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as(
-                "Willer",
-                args!["Sooo...", "Break up couples and make Christmas party only for singles?"],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Willer",
-                args!["That must be fun! I don't understand exactly but I will join, I'm in!!"],
-            )?;
-            ctx.next()?;
-            ctx.mes("- Willer has become a member of Singles Union Army. -")?;
-            ctx.quests().start(15061)?;
-            ctx.quests().complete(15061)?;
-            return ctx.close();
-        } else {
-            ctx.lines_as("Singles Union Willer", args!["Break up couples...this should be fun!!"])?;
-            return ctx.close();
-        }
+        ctx.lines_as("Singles Union Willer", args!["Break up couples...this should be fun!!"])?;
+        return ctx.close();
     }
 }
 
@@ -380,52 +374,50 @@ pub fn lonely_rinka_xmas(ctx: &Ctx) -> Script {
     if ctx.call(Function::IsBeginQuest, args![15055])? == 0 {
         ctx.lines_as("Rinka", args!["Ewww! darn... what kind of friend would only boast about her boyfriend, disgusting! Does she really think that I can't have one?!?"])?;
         return ctx.close();
+    } else if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15062])? == 0) {
+        ctx.lines_as("Rinka", args!["Ewww! Darn... what kind of friend would only boast about her boyfriend, disgusting! Does she really think that I can't have one?!?"])?;
+        ctx.next()?;
+        ctx.lines_as("Rinka", args!["- sobbing -"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rinka",
+            args!["I can't... in fact, there is no one... I have no one!!!!!!!!!!!!!!"],
+        )?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as(
+            "Rinka",
+            args!["EEeepp! Wow!!", "You surprised me. What are you talking about, what is that?!"],
+        )?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("- Explain about the club -")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as(
+            "Rinka",
+            args![
+                "Hoho...there's something like that?",
+                "Breaking up couples...",
+                "Okay! Let me join!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rinka",
+            args![
+                "Is there room for another member?",
+                "...soon another member will join!",
+                "Wait for it~ my friend!! ..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.mes("- Rinka has become a member of Singles Union Army. -")?;
+        ctx.quests().start(15062)?;
+        ctx.quests().complete(15062)?;
+        return ctx.close();
     } else {
-        if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15062])? == 0) {
-            ctx.lines_as("Rinka", args!["Ewww! Darn... what kind of friend would only boast about her boyfriend, disgusting! Does she really think that I can't have one?!?"])?;
-            ctx.next()?;
-            ctx.lines_as("Rinka", args!["- sobbing -"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rinka",
-                args!["I can't... in fact, there is no one... I have no one!!!!!!!!!!!!!!"],
-            )?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as(
-                "Rinka",
-                args!["EEeepp! Wow!!", "You surprised me. What are you talking about, what is that?!"],
-            )?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("- Explain about the club -")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as(
-                "Rinka",
-                args![
-                    "Hoho...there's something like that?",
-                    "Breaking up couples...",
-                    "Okay! Let me join!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rinka",
-                args![
-                    "Is there room for another member?",
-                    "...soon another member will join!",
-                    "Wait for it~ my friend!! ..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.mes("- Rinka has become a member of Singles Union Army. -")?;
-            ctx.quests().start(15062)?;
-            ctx.quests().complete(15062)?;
-            return ctx.close();
-        } else {
-            ctx.lines_as("Singles Union Rinka", args!["Wait for it~ my friend!! You will... join soon!!"])?;
-            return ctx.close();
-        }
+        ctx.lines_as("Singles Union Rinka", args!["Wait for it~ my friend!! You will... join soon!!"])?;
+        return ctx.close();
     }
 }
 
@@ -433,39 +425,35 @@ pub fn lonely_jee_xmas(ctx: &Ctx) -> Script {
     if ctx.call(Function::IsBeginQuest, args![15055])? == 0 {
         ctx.lines_as("Jee", args!["How beautiful to be single..."])?;
         return ctx.close();
+    } else if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15063])? == 0) {
+        ctx.lines_as("Jee", args!["How beautiful to be single..."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Jee",
+            args!["There is no one to bother you. No one to take care of. No more extra work from others. More time to spend it alone."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Jee", args!["Why are people giving up this advantage and want to be couples??"])?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as(
+            "Jee",
+            args!["Yeah, I've heard of it recently. I knew that you would come to me."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Jee",
+            args!["No more words necessary. I will spread the advantage of being single!"],
+        )?;
+        ctx.next()?;
+        ctx.mes("- Jee has become a member of Singles Union Army. -")?;
+        ctx.quests().start(15063)?;
+        ctx.quests().complete(15063)?;
+        return ctx.close();
     } else {
-        if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15063])? == 0) {
-            ctx.lines_as("Jee", args!["How beautiful to be single..."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Jee",
-                args![
-                    "There is no one to bother you. No one to take care of. No more extra work from others. More time to spend it alone."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Jee", args!["Why are people giving up this advantage and want to be couples??"])?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as(
-                "Jee",
-                args!["Yeah, I've heard of it recently. I knew that you would come to me."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Jee",
-                args!["No more words necessary. I will spread the advantage of being single!"],
-            )?;
-            ctx.next()?;
-            ctx.mes("- Jee has become a member of Singles Union Army. -")?;
-            ctx.quests().start(15063)?;
-            ctx.quests().complete(15063)?;
-            return ctx.close();
-        } else {
-            ctx.lines_as("Singles Union Jee", args!["I will spread the advantage of being single!"])?;
-            return ctx.close();
-        }
+        ctx.lines_as("Singles Union Jee", args!["I will spread the advantage of being single!"])?;
+        return ctx.close();
     }
 }
 
@@ -473,28 +461,26 @@ pub fn lonely_marty_xmas(ctx: &Ctx) -> Script {
     if ctx.call(Function::IsBeginQuest, args![15055])? == 0 {
         ctx.lines_as("Marty", args!["umm... Zzz ... nyam-nyam..."])?;
         return ctx.close();
+    } else if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15064])? == 0) {
+        ctx.lines_as("Marty", args!["umm... Zzz ... nyamnyam..."])?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as("Marty", args!["nyam.... nyamnyam... Grrr... Zzz"])?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("- Explain about the club -")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as("Marty", args!["Huum... nyaaa.... Zzz"])?;
+        ctx.next()?;
+        ctx.mes("- ...you may consider him to agree to join. -")?;
+        ctx.next()?;
+        ctx.mes("- Marty has become a member of Singles Union Army. -")?;
+        ctx.quests().start(15064)?;
+        ctx.quests().complete(15064)?;
+        return ctx.close();
     } else {
-        if (ctx.call(Function::IsBeginQuest, args![15055])? == 1 && ctx.call(Function::IsBeginQuest, args![15064])? == 0) {
-            ctx.lines_as("Marty", args!["umm... Zzz ... nyamnyam..."])?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("- Singles Union Army has come to you. -")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as("Marty", args!["nyam.... nyamnyam... Grrr... Zzz"])?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("- Explain about the club -")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as("Marty", args!["Huum... nyaaa.... Zzz"])?;
-            ctx.next()?;
-            ctx.mes("- ...you may consider him to agree to join. -")?;
-            ctx.next()?;
-            ctx.mes("- Marty has become a member of Singles Union Army. -")?;
-            ctx.quests().start(15064)?;
-            ctx.quests().complete(15064)?;
-            return ctx.close();
-        } else {
-            ctx.lines_as("Singles Union Marty", args!["nyam.... nyamnyam... Grrrr... Zzz"])?;
-            return ctx.close();
-        }
+        ctx.lines_as("Singles Union Marty", args!["nyam.... nyamnyam... Grrrr... Zzz"])?;
+        return ctx.close();
     }
 }
 

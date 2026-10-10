@@ -31,45 +31,39 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 Val::from(1),
             ],
         )?;
-    } else {
-        if l_name_s.clone() == "Jody" {
-            l_name2_s = Val::from("Ron Haware");
-            l_name3_s = Val::from("Vers");
-            l_name4_s = Val::from("Gen Garish");
-            l_gid = ctx.call(
-                Function::GetCastleData,
-                vec![
-                    (Val::from("gefg_cas") + ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?),
-                    Val::from(1),
-                ],
-            )?;
-        } else {
-            if l_name_s.clone() == "Chungye" {
-                l_name2_s = Val::from("Dosuhlji");
-                l_name3_s = Val::from("Yayula");
-                l_name4_s = Val::from("Ashin");
-                l_gid = ctx.call(
-                    Function::GetCastleData,
-                    vec![
-                        (Val::from("payg_cas") + ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?),
-                        Val::from(1),
-                    ],
-                )?;
-            } else {
-                if l_name_s.clone() == "Hermod" {
-                    l_name2_s = Val::from("Atila");
-                    l_name3_s = Val::from("Cecil");
-                    l_name4_s = Val::from("Diligo");
-                    l_gid = ctx.call(
-                        Function::GetCastleData,
-                        vec![
-                            (Val::from("prtg_cas") + ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?),
-                            Val::from(1),
-                        ],
-                    )?;
-                }
-            }
-        }
+    } else if l_name_s.clone() == "Jody" {
+        l_name2_s = Val::from("Ron Haware");
+        l_name3_s = Val::from("Vers");
+        l_name4_s = Val::from("Gen Garish");
+        l_gid = ctx.call(
+            Function::GetCastleData,
+            vec![
+                (Val::from("gefg_cas") + ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?),
+                Val::from(1),
+            ],
+        )?;
+    } else if l_name_s.clone() == "Chungye" {
+        l_name2_s = Val::from("Dosuhlji");
+        l_name3_s = Val::from("Yayula");
+        l_name4_s = Val::from("Ashin");
+        l_gid = ctx.call(
+            Function::GetCastleData,
+            vec![
+                (Val::from("payg_cas") + ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?),
+                Val::from(1),
+            ],
+        )?;
+    } else if l_name_s.clone() == "Hermod" {
+        l_name2_s = Val::from("Atila");
+        l_name3_s = Val::from("Cecil");
+        l_name4_s = Val::from("Diligo");
+        l_gid = ctx.call(
+            Function::GetCastleData,
+            vec![
+                (Val::from("prtg_cas") + ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?),
+                Val::from(1),
+            ],
+        )?;
     }
     if ctx.call(Function::CheckWeight, vec![Val::from(908), Val::from(630)])? == 0 {
         ctx.lines(args![
@@ -616,71 +610,63 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     )?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
-                                } else {
-                                    if ctx.call(Function::CountItem, vec![Val::from(7239)])?.number()? > 0 {
-                                        ctx.lines_as(
-                                            l_name_s.clone(),
-                                            args![
-                                                "Ah, is this the Spirit",
-                                                "of Advance? This must mean",
-                                                "that you completed the first",
-                                                "test. Keep up the good work.",
-                                                "Hand me the spirit, and allow",
-                                                "me to give you your guild's reward."
-                                            ],
-                                        )?;
-                                        ctx.call(Function::DelItem, vec![Val::from(7239), Val::from(1)])?;
-                                        ctx.var("guildtime").set(l_time.clone())?;
-                                        ctx.var("guildrelay_q").set(Val::from(100))?;
-                                        l_incen_item = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
-                                        if (l_incen_item.clone().number()? > 0 && l_incen_item.clone().number()? < 25) {
-                                            ctx.call(Function::GetItem, vec![Val::from(608), Val::from(20)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(678), Val::from(2)])?;
-                                        } else {
-                                            if (l_incen_item.clone().number()? > 24 && l_incen_item.clone().number()? < 50) {
-                                                ctx.call(Function::GetItem, vec![Val::from(607), Val::from(10)])?;
-                                                ctx.call(Function::GetItem, vec![Val::from(678), Val::from(2)])?;
-                                            } else {
-                                                if (l_incen_item.clone().number()? > 50 && l_incen_item.clone().number()? < 75) {
-                                                    ctx.call(Function::GetItem, vec![Val::from(644), Val::from(5)])?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(678), Val::from(2)])?;
-                                                } else {
-                                                    if (l_incen_item.clone().number()? > 74 && l_incen_item.clone().number()? < 101) {
-                                                        ctx.call(Function::GetItem, vec![Val::from(603), Val::from(3)])?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(678), Val::from(2)])?;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            l_name_s.clone(),
-                                            args![
-                                                "You've done well, but",
-                                                "there are more trials",
-                                                "ahead of you. For now,",
-                                                "you should rest before",
-                                                "undertaking the second test.",
-                                                "Please come when you are ready."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as(
-                                            l_name_s.clone(),
-                                            args![
-                                                "If you're not busy, then",
-                                                "why don't you spend your",
-                                                "time increasing morale",
-                                                "among your guild members?",
-                                                "Perhaps some team building",
-                                                "exercise can be of help."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
+                                } else if ctx.call(Function::CountItem, vec![Val::from(7239)])?.number()? > 0 {
+                                    ctx.lines_as(
+                                        l_name_s.clone(),
+                                        args![
+                                            "Ah, is this the Spirit",
+                                            "of Advance? This must mean",
+                                            "that you completed the first",
+                                            "test. Keep up the good work.",
+                                            "Hand me the spirit, and allow",
+                                            "me to give you your guild's reward."
+                                        ],
+                                    )?;
+                                    ctx.call(Function::DelItem, vec![Val::from(7239), Val::from(1)])?;
+                                    ctx.var("guildtime").set(l_time.clone())?;
+                                    ctx.var("guildrelay_q").set(Val::from(100))?;
+                                    l_incen_item = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
+                                    if (l_incen_item.clone().number()? > 0 && l_incen_item.clone().number()? < 25) {
+                                        ctx.call(Function::GetItem, vec![Val::from(608), Val::from(20)])?;
+                                        ctx.call(Function::GetItem, vec![Val::from(678), Val::from(2)])?;
+                                    } else if (l_incen_item.clone().number()? > 24 && l_incen_item.clone().number()? < 50) {
+                                        ctx.call(Function::GetItem, vec![Val::from(607), Val::from(10)])?;
+                                        ctx.call(Function::GetItem, vec![Val::from(678), Val::from(2)])?;
+                                    } else if (l_incen_item.clone().number()? > 50 && l_incen_item.clone().number()? < 75) {
+                                        ctx.call(Function::GetItem, vec![Val::from(644), Val::from(5)])?;
+                                        ctx.call(Function::GetItem, vec![Val::from(678), Val::from(2)])?;
+                                    } else if (l_incen_item.clone().number()? > 74 && l_incen_item.clone().number()? < 101) {
+                                        ctx.call(Function::GetItem, vec![Val::from(603), Val::from(3)])?;
+                                        ctx.call(Function::GetItem, vec![Val::from(678), Val::from(2)])?;
                                     }
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        l_name_s.clone(),
+                                        args![
+                                            "You've done well, but",
+                                            "there are more trials",
+                                            "ahead of you. For now,",
+                                            "you should rest before",
+                                            "undertaking the second test.",
+                                            "Please come when you are ready."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else {
+                                    ctx.lines_as(
+                                        l_name_s.clone(),
+                                        args![
+                                            "If you're not busy, then",
+                                            "why don't you spend your",
+                                            "time increasing morale",
+                                            "among your guild members?",
+                                            "Perhaps some team building",
+                                            "exercise can be of help."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             } else {
                                 if ctx.var("guildrelay_q").get()? == 8 {
@@ -743,36 +729,28 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         ctx.call(Function::GetItem, vec![Val::from(607), Val::from(10)])?;
                                                         ctx.call(Function::GetItem, vec![Val::from(617), Val::from(3)])?;
                                                         ctx.call(Function::GetItem, vec![Val::from(678), Val::from(3)])?;
-                                                    } else {
-                                                        if (l_incen_item.clone().number()? > 44 && l_incen_item.clone().number()? < 61) {
-                                                            ctx.call(Function::GetItem, vec![Val::from(644), Val::from(4)])?;
-                                                            ctx.call(Function::GetItem, vec![Val::from(603), Val::from(2)])?;
-                                                            ctx.call(Function::GetItem, vec![Val::from(678), Val::from(3)])?;
-                                                        } else {
-                                                            if (l_incen_item.clone().number()? > 59 && l_incen_item.clone().number()? < 76)
-                                                            {
-                                                                ctx.call(Function::GetItem, vec![Val::from(644), Val::from(3)])?;
-                                                                ctx.call(Function::GetItem, vec![Val::from(617), Val::from(2)])?;
-                                                                ctx.call(Function::GetItem, vec![Val::from(678), Val::from(3)])?;
-                                                            } else {
-                                                                if (l_incen_item.clone().number()? > 74
-                                                                    && l_incen_item.clone().number()? < 91)
-                                                                {
-                                                                    ctx.call(Function::GetItem, vec![Val::from(603), Val::from(2)])?;
-                                                                    ctx.call(Function::GetItem, vec![Val::from(617), Val::from(2)])?;
-                                                                    ctx.call(Function::GetItem, vec![Val::from(678), Val::from(3)])?;
-                                                                } else {
-                                                                    if (l_incen_item.clone().number()? > 89
-                                                                        && l_incen_item.clone().number()? < 101)
-                                                                    {
-                                                                        ctx.call(Function::GetItem, vec![Val::from(607), Val::from(10)])?;
-                                                                        ctx.call(Function::GetItem, vec![Val::from(644), Val::from(3)])?;
-                                                                        ctx.call(Function::GetItem, vec![Val::from(603), Val::from(2)])?;
-                                                                        ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
+                                                    } else if (l_incen_item.clone().number()? > 44 && l_incen_item.clone().number()? < 61) {
+                                                        ctx.call(Function::GetItem, vec![Val::from(644), Val::from(4)])?;
+                                                        ctx.call(Function::GetItem, vec![Val::from(603), Val::from(2)])?;
+                                                        ctx.call(Function::GetItem, vec![Val::from(678), Val::from(3)])?;
+                                                    } else if (l_incen_item.clone().number()? > 59 && l_incen_item.clone().number()? < 76)
+                                                    {
+                                                        ctx.call(Function::GetItem, vec![Val::from(644), Val::from(3)])?;
+                                                        ctx.call(Function::GetItem, vec![Val::from(617), Val::from(2)])?;
+                                                        ctx.call(Function::GetItem, vec![Val::from(678), Val::from(3)])?;
+                                                    } else if (l_incen_item.clone().number()? > 74
+                                                        && l_incen_item.clone().number()? < 91)
+                                                    {
+                                                        ctx.call(Function::GetItem, vec![Val::from(603), Val::from(2)])?;
+                                                        ctx.call(Function::GetItem, vec![Val::from(617), Val::from(2)])?;
+                                                        ctx.call(Function::GetItem, vec![Val::from(678), Val::from(3)])?;
+                                                    } else if (l_incen_item.clone().number()? > 89
+                                                        && l_incen_item.clone().number()? < 101)
+                                                    {
+                                                        ctx.call(Function::GetItem, vec![Val::from(607), Val::from(10)])?;
+                                                        ctx.call(Function::GetItem, vec![Val::from(644), Val::from(3)])?;
+                                                        ctx.call(Function::GetItem, vec![Val::from(603), Val::from(2)])?;
+                                                        ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
                                                     }
                                                 }
                                             }
@@ -866,32 +844,24 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     ctx.call(Function::GetItem, vec![Val::from(608), Val::from(10)])?;
                                                     ctx.call(Function::GetItem, vec![Val::from(607), Val::from(5)])?;
                                                     ctx.call(Function::GetItem, vec![Val::from(644), Val::from(4)])?;
-                                                } else {
-                                                    if (l_incen_item.clone().number()? > 25 && l_incen_item.clone().number()? < 51) {
-                                                        ctx.call(Function::GetItem, vec![Val::from(608), Val::from(10)])?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(607), Val::from(5)])?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(603), Val::from(3)])?;
-                                                    } else {
-                                                        if (l_incen_item.clone().number()? > 50 && l_incen_item.clone().number()? < 76) {
-                                                            ctx.call(Function::GetItem, vec![Val::from(608), Val::from(10)])?;
-                                                            ctx.call(Function::GetItem, vec![Val::from(617), Val::from(2)])?;
-                                                            ctx.call(Function::GetItem, vec![Val::from(607), Val::from(5)])?;
-                                                        } else {
-                                                            if (l_incen_item.clone().number()? > 75 && l_incen_item.clone().number()? < 91)
-                                                            {
-                                                                ctx.call(Function::GetItem, vec![Val::from(608), Val::from(10)])?;
-                                                                ctx.call(Function::GetItem, vec![Val::from(644), Val::from(4)])?;
-                                                                ctx.call(Function::GetItem, vec![Val::from(603), Val::from(2)])?;
-                                                                ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
-                                                            } else {
-                                                                if (l_incen_item.clone().number()? > 90
-                                                                    && l_incen_item.clone().number()? < 101)
-                                                                {
-                                                                    ctx.call(Function::GetItem, vec![Val::from(5074), Val::from(1)])?;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
+                                                } else if (l_incen_item.clone().number()? > 25 && l_incen_item.clone().number()? < 51) {
+                                                    ctx.call(Function::GetItem, vec![Val::from(608), Val::from(10)])?;
+                                                    ctx.call(Function::GetItem, vec![Val::from(607), Val::from(5)])?;
+                                                    ctx.call(Function::GetItem, vec![Val::from(603), Val::from(3)])?;
+                                                } else if (l_incen_item.clone().number()? > 50 && l_incen_item.clone().number()? < 76) {
+                                                    ctx.call(Function::GetItem, vec![Val::from(608), Val::from(10)])?;
+                                                    ctx.call(Function::GetItem, vec![Val::from(617), Val::from(2)])?;
+                                                    ctx.call(Function::GetItem, vec![Val::from(607), Val::from(5)])?;
+                                                } else if (l_incen_item.clone().number()? > 75 && l_incen_item.clone().number()? < 91)
+                                                {
+                                                    ctx.call(Function::GetItem, vec![Val::from(608), Val::from(10)])?;
+                                                    ctx.call(Function::GetItem, vec![Val::from(644), Val::from(4)])?;
+                                                    ctx.call(Function::GetItem, vec![Val::from(603), Val::from(2)])?;
+                                                    ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
+                                                } else if (l_incen_item.clone().number()? > 90
+                                                    && l_incen_item.clone().number()? < 101)
+                                                {
+                                                    ctx.call(Function::GetItem, vec![Val::from(5074), Val::from(1)])?;
                                                 }
                                                 ctx.next()?;
                                                 ctx.lines_as(
@@ -1071,18 +1041,71 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     }
                 }
             }
+        } else if ctx.call(Function::CountItem, vec![Val::from(7234)])?.number()? > 0 {
+            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?) {
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args![
+                        ((Val::from("Hello,") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(".")),
+                        "So you were the one chosen",
+                        "by your guild master? I see.",
+                        "You should deliver that Spirit",
+                        ((Val::from("of Guild over to ") + l_name2_s.clone()) + Val::from(".")),
+                        "He'll instruct you further."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args![
+                        "The Spirit of Guild is",
+                        "useless unless it is in the",
+                        "hands of a Knight or Lord",
+                        "Knight. You should speak",
+                        ((Val::from("to ") + l_name2_s.clone()) + Val::from(" to learn more."))
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         } else {
-            if ctx.call(Function::CountItem, vec![Val::from(7234)])?.number()? > 0 {
-                if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?) {
+            if ctx.call(Function::CountItem, vec![Val::from(7235)])?.number()? > 0 {
+                if (ctx.var("guildrelay_q").get()? == 88 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)) {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            ((Val::from("Ah,") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("")),
+                            "Congratulations. It looks",
+                            "like you did a good job.",
+                            "Please give the Spirit of",
+                            "Charge to the next person",
+                            "to continue the testing."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            ((Val::from("") + l_name2_s.clone()) + Val::from(" should have")),
+                            "explained everything, but",
+                            "if you forgot, then please",
+                            "go and ask him again."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?) {
                     ctx.lines_as(
                         l_name_s.clone(),
                         args![
                             ((Val::from("Hello,") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(".")),
-                            "So you were the one chosen",
-                            "by your guild master? I see.",
-                            "You should deliver that Spirit",
-                            ((Val::from("of Guild over to ") + l_name2_s.clone()) + Val::from(".")),
-                            "He'll instruct you further."
+                            "Ah, I see that you have",
+                            "the Spirit of Charge.",
+                            "Heh heh, it's always exciting",
+                            "to charge into battle, isn't",
+                            "it? Well then, do your best."
                         ],
                     )?;
                     ctx.close_window()?;
@@ -1091,28 +1114,30 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.lines_as(
                         l_name_s.clone(),
                         args![
-                            "The Spirit of Guild is",
-                            "useless unless it is in the",
-                            "hands of a Knight or Lord",
-                            "Knight. You should speak",
-                            ((Val::from("to ") + l_name2_s.clone()) + Val::from(" to learn more."))
+                            "That spirit won't be very",
+                            "useful if it's not in the",
+                            "hands of the right person.",
+                            ((Val::from("") + l_name2_s.clone()) + Val::from(" knows more about the")),
+                            "Spirit of Charge, so you should",
+                            "ask him more about that spirit."
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             } else {
-                if ctx.call(Function::CountItem, vec![Val::from(7235)])?.number()? > 0 {
-                    if (ctx.var("guildrelay_q").get()? == 88 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?)) {
+                if ctx.call(Function::CountItem, vec![Val::from(7237)])?.number()? > 0 {
+                    if (ctx.var("guildrelay_q").get()? == 87
+                        && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?))
+                    {
                         ctx.lines_as(
                             l_name_s.clone(),
                             args![
-                                ((Val::from("Ah,") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("")),
-                                "Congratulations. It looks",
-                                "like you did a good job.",
-                                "Please give the Spirit of",
-                                "Charge to the next person",
-                                "to continue the testing."
+                                ((Val::from("Hello,") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(".")),
+                                "I commend you on your work.",
+                                "Please give that spirit to",
+                                "the next person so that the",
+                                "testing can continue."
                             ],
                         )?;
                         ctx.next()?;
@@ -1127,41 +1152,37 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
+                    } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?) {
+                        ctx.lines_as(
+                            l_name_s.clone(),
+                            args![
+                                ((Val::from("Hello, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(".")),
+                                "I see that you posess",
+                                "the Spirit of Association.",
+                                "Good luck with your test."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     } else {
-                        if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?) {
-                            ctx.lines_as(
-                                l_name_s.clone(),
-                                args![
-                                    ((Val::from("Hello,") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(".")),
-                                    "Ah, I see that you have",
-                                    "the Spirit of Charge.",
-                                    "Heh heh, it's always exciting",
-                                    "to charge into battle, isn't",
-                                    "it? Well then, do your best."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                l_name_s.clone(),
-                                args![
-                                    "That spirit won't be very",
-                                    "useful if it's not in the",
-                                    "hands of the right person.",
-                                    ((Val::from("") + l_name2_s.clone()) + Val::from(" knows more about the")),
-                                    "Spirit of Charge, so you should",
-                                    "ask him more about that spirit."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                        ctx.lines_as(
+                            l_name_s.clone(),
+                            args![
+                                "That spirit won't be very",
+                                "useful if it's not in the",
+                                "hands of the right person.",
+                                ((Val::from("Talk to ") + l_name2_s.clone()) + Val::from(" if you want")),
+                                "to know more about the",
+                                "Spirit of Association."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 } else {
-                    if ctx.call(Function::CountItem, vec![Val::from(7237)])?.number()? > 0 {
-                        if (ctx.var("guildrelay_q").get()? == 87
-                            && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?))
+                    if ctx.call(Function::CountItem, vec![Val::from(7238)])?.number()? > 0 {
+                        if (ctx.var("guildrelay_q").get()? == 86
+                            && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?))
                         {
                             ctx.lines_as(
                                 l_name_s.clone(),
@@ -1185,15 +1206,48 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
+                        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?) {
+                            ctx.lines_as(
+                                l_name_s.clone(),
+                                args![
+                                    ((Val::from("Hello, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from(".")),
+                                    "I see that you posess",
+                                    "the Spirit of Coordination.",
+                                    "Good luck on your test."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?) {
+                            ctx.lines_as(
+                                l_name_s.clone(),
+                                args![
+                                    "That spirit won't be very",
+                                    "useful if it's not in the",
+                                    "hands of the right person.",
+                                    ((Val::from("") + l_name2_s.clone()) + Val::from(" will know more about")),
+                                    "the Spirit of Coordination",
+                                    "so you should consult him."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    } else {
+                        if ctx.call(Function::CountItem, vec![Val::from(7239)])?.number()? > 0 {
+                            if (ctx.var("guildrelay_q").get()? == 85
+                                && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?))
+                            {
                                 ctx.lines_as(
                                     l_name_s.clone(),
                                     args![
-                                        ((Val::from("Hello, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(".")),
-                                        "I see that you posess",
-                                        "the Spirit of Association.",
-                                        "Good luck with your test."
+                                        ((Val::from("Hello, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from(".")),
+                                        "Congratulations, it looks",
+                                        "like you finished the test.",
+                                        "You may now give the Spirit of",
+                                        "Advance to your guild master."
                                     ],
                                 )?;
                                 ctx.close_window()?;
@@ -1205,52 +1259,27 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         "That spirit won't be very",
                                         "useful if it's not in the",
                                         "hands of the right person.",
-                                        ((Val::from("Talk to ") + l_name2_s.clone()) + Val::from(" if you want")),
-                                        "to know more about the",
-                                        "Spirit of Association."
+                                        ((Val::from("") + l_name2_s.clone()) + Val::from(" will know more about")),
+                                        "the Spirit of Advance so",
+                                        "you should consult him."
                                     ],
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                        }
-                    } else {
-                        if ctx.call(Function::CountItem, vec![Val::from(7238)])?.number()? > 0 {
-                            if (ctx.var("guildrelay_q").get()? == 86
-                                && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ALCHEMIST")?))
-                            {
-                                ctx.lines_as(
-                                    l_name_s.clone(),
-                                    args![
-                                        ((Val::from("Hello,") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(".")),
-                                        "I commend you on your work.",
-                                        "Please give that spirit to",
-                                        "the next person so that the",
-                                        "testing can continue."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    l_name_s.clone(),
-                                    args![
-                                        ((Val::from("") + l_name2_s.clone()) + Val::from(" should have")),
-                                        "explained everything, but",
-                                        "if you forgot, then please",
-                                        "go and ask him again."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?) {
+                        } else {
+                            if ctx.call(Function::CountItem, vec![Val::from(7240)])?.number()? > 0 {
+                                if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SAGE")?) {
                                     ctx.lines_as(
                                         l_name_s.clone(),
                                         args![
                                             ((Val::from("Hello, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
                                                 + Val::from(".")),
-                                            "I see that you posess",
-                                            "the Spirit of Coordination.",
-                                            "Good luck on your test."
+                                            "I see that you possess",
+                                            "the Spirit of Trust.",
+                                            "Good luck, and do not",
+                                            "fail the trust placed in",
+                                            "you by your guild."
                                         ],
                                     )?;
                                     ctx.close_window()?;
@@ -1262,61 +1291,56 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             "That spirit won't be very",
                                             "useful if it's not in the",
                                             "hands of the right person.",
-                                            ((Val::from("") + l_name2_s.clone()) + Val::from(" will know more about")),
-                                            "the Spirit of Coordination",
+                                            ((Val::from("") + l_name3_s.clone()) + Val::from(" will know more")),
+                                            "about the Spirit of Trust",
                                             "so you should consult him."
                                         ],
                                     )?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                            }
-                        } else {
-                            if ctx.call(Function::CountItem, vec![Val::from(7239)])?.number()? > 0 {
-                                if (ctx.var("guildrelay_q").get()? == 85
-                                    && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_HUNTER")?))
-                                {
-                                    ctx.lines_as(
-                                        l_name_s.clone(),
-                                        args![
-                                            ((Val::from("Hello, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from(".")),
-                                            "Congratulations, it looks",
-                                            "like you finished the test.",
-                                            "You may now give the Spirit of",
-                                            "Advance to your guild master."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines_as(
-                                        l_name_s.clone(),
-                                        args![
-                                            "That spirit won't be very",
-                                            "useful if it's not in the",
-                                            "hands of the right person.",
-                                            ((Val::from("") + l_name2_s.clone()) + Val::from(" will know more about")),
-                                            "the Spirit of Advance so",
-                                            "you should consult him."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
                             } else {
-                                if ctx.call(Function::CountItem, vec![Val::from(7240)])?.number()? > 0 {
-                                    if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SAGE")?) {
+                                if ctx.call(Function::CountItem, vec![Val::from(7241)])?.number()? > 0 {
+                                    if (ctx.var("guildrelay_q").get()? == 71
+                                        && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SAGE")?))
+                                    {
                                         ctx.lines_as(
                                             l_name_s.clone(),
                                             args![
-                                                ((Val::from("Hello, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                ((Val::from("Hello,") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
                                                     + Val::from(".")),
-                                                "I see that you possess",
-                                                "the Spirit of Trust.",
-                                                "Good luck, and do not",
-                                                "fail the trust placed in",
-                                                "you by your guild."
+                                                "I commend you on your work.",
+                                                "Please give that spirit to",
+                                                "the next person so that the",
+                                                "testing can continue."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            l_name_s.clone(),
+                                            args![
+                                                "If you don't remember",
+                                                ((Val::from("") + l_name3_s.clone()) + Val::from("'s explanation,")),
+                                                "then you might want to",
+                                                "go back to him and ask",
+                                                "him to tell you again."
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
+                                        || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?))
+                                    {
+                                        ctx.lines_as(
+                                            l_name_s.clone(),
+                                            args![
+                                                ((Val::from("Ah, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                    + Val::from(",")),
+                                                "I see that you have the",
+                                                "Spirit of Union. Always keep",
+                                                "in mind that the strength of",
+                                                "your guild is directly",
+                                                "related to its unity."
                                             ],
                                         )?;
                                         ctx.close_window()?;
@@ -1329,7 +1353,7 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 "useful if it's not in the",
                                                 "hands of the right person.",
                                                 ((Val::from("") + l_name3_s.clone()) + Val::from(" will know more")),
-                                                "about the Spirit of Trust",
+                                                "about the Spirit of Union",
                                                 "so you should consult him."
                                             ],
                                         )?;
@@ -1337,9 +1361,10 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         return Err(Stop::End);
                                     }
                                 } else {
-                                    if ctx.call(Function::CountItem, vec![Val::from(7241)])?.number()? > 0 {
-                                        if (ctx.var("guildrelay_q").get()? == 71
-                                            && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SAGE")?))
+                                    if ctx.call(Function::CountItem, vec![Val::from(7242)])?.number()? > 0 {
+                                        if (ctx.var("guildrelay_q").get()? == 72
+                                            && (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
+                                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)))
                                         {
                                             ctx.lines_as(
                                                 l_name_s.clone(),
@@ -1365,55 +1390,51 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             )?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
+                                        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?) {
+                                            ctx.lines_as(
+                                                l_name_s.clone(),
+                                                args![
+                                                    ((Val::from("Ah, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                        + Val::from(",")),
+                                                    "I see that you have the Spirit",
+                                                    "of Combination. Remember that",
+                                                    "working in tandem, combining",
+                                                    "your guild's skills and talents,",
+                                                    "will realize your true potential."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         } else {
-                                            if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
-                                                || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?))
-                                            {
-                                                ctx.lines_as(
-                                                    l_name_s.clone(),
-                                                    args![
-                                                        ((Val::from("Ah, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                            + Val::from(",")),
-                                                        "I see that you have the",
-                                                        "Spirit of Union. Always keep",
-                                                        "in mind that the strength of",
-                                                        "your guild is directly",
-                                                        "related to its unity."
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                ctx.lines_as(
-                                                    l_name_s.clone(),
-                                                    args![
-                                                        "That spirit won't be very",
-                                                        "useful if it's not in the",
-                                                        "hands of the right person.",
-                                                        ((Val::from("") + l_name3_s.clone()) + Val::from(" will know more")),
-                                                        "about the Spirit of Union",
-                                                        "so you should consult him."
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
+                                            ctx.lines_as(
+                                                l_name_s.clone(),
+                                                args![
+                                                    "That spirit won't be very",
+                                                    "useful if it's not in the",
+                                                    "hands of the right person.",
+                                                    ((Val::from("") + l_name3_s.clone()) + Val::from(" will know more about")),
+                                                    "the Spirit of Combination so",
+                                                    "you should consult him."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         }
                                     } else {
-                                        if ctx.call(Function::CountItem, vec![Val::from(7242)])?.number()? > 0 {
-                                            if (ctx.var("guildrelay_q").get()? == 72
-                                                && (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BARD")?)
-                                                    || ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?)))
+                                        if ctx.call(Function::CountItem, vec![Val::from(7244)])?.number()? > 0 {
+                                            if (ctx.var("guildrelay_q").get()? == 74
+                                                && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?))
                                             {
                                                 ctx.lines_as(
                                                     l_name_s.clone(),
                                                     args![
-                                                        ((Val::from("Hello,") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                            + Val::from(".")),
-                                                        "I commend you on your work.",
-                                                        "Please give that spirit to",
-                                                        "the next person so that the",
-                                                        "testing can continue."
+                                                        ((Val::from("Greetings, ")
+                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                            + Val::from(",")),
+                                                        "did you rest well? Please",
+                                                        "give that spirit to the next",
+                                                        "person so that the testing",
+                                                        "of your guild may continue."
                                                     ],
                                                 )?;
                                                 ctx.next()?;
@@ -1429,18 +1450,53 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 )?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
+                                            } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?) {
+                                                ctx.lines_as(
+                                                    l_name_s.clone(),
+                                                    args![
+                                                        ((Val::from("Hello, ")
+                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                            + Val::from(",")),
+                                                        "I see that you've been",
+                                                        "entrusted with the Spirit",
+                                                        "of Solidarity. Do your best",
+                                                        "on this test for the sake",
+                                                        "of your guild, alright?"
+                                                    ],
+                                                )?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
                                             } else {
-                                                if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?) {
+                                                ctx.lines_as(
+                                                    l_name_s.clone(),
+                                                    args![
+                                                        "That spirit won't be very",
+                                                        "useful if it's not in the",
+                                                        "hands of the right person.",
+                                                        ((Val::from("") + l_name3_s.clone()) + Val::from(" will know more")),
+                                                        "about the Spirit of Solidarity",
+                                                        "so you should consult him."
+                                                    ],
+                                                )?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                        } else {
+                                            if ctx.call(Function::CountItem, vec![Val::from(7245)])?.number()? > 0 {
+                                                if (ctx.var("guildrelay_q").get()? == 75
+                                                    && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?))
+                                                {
                                                     ctx.lines_as(
                                                         l_name_s.clone(),
                                                         args![
-                                                            ((Val::from("Ah, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                            ((Val::from("Ah, ")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
                                                                 + Val::from(",")),
-                                                            "I see that you have the Spirit",
-                                                            "of Combination. Remember that",
-                                                            "working in tandem, combining",
-                                                            "your guild's skills and talents,",
-                                                            "will realize your true potential."
+                                                            "congratulations on a job",
+                                                            "well done. Please give the",
+                                                            "Spirit of Friendship to your",
+                                                            "guild master to continue",
+                                                            "the guild testing."
                                                         ],
                                                     )?;
                                                     ctx.close_window()?;
@@ -1452,94 +1508,28 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             "That spirit won't be very",
                                                             "useful if it's not in the",
                                                             "hands of the right person.",
-                                                            ((Val::from("") + l_name3_s.clone()) + Val::from(" will know more about")),
-                                                            "the Spirit of Combination so",
-                                                            "you should consult him."
+                                                            ((Val::from("") + l_name3_s.clone()) + Val::from(" will know more")),
+                                                            "about the Spirit of Friendship",
+                                                            "so you should consult him."
                                                         ],
                                                     )?;
                                                     ctx.close_window()?;
                                                     return Err(Stop::End);
-                                                }
-                                            }
-                                        } else {
-                                            if ctx.call(Function::CountItem, vec![Val::from(7244)])?.number()? > 0 {
-                                                if (ctx.var("guildrelay_q").get()? == 74
-                                                    && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?))
-                                                {
-                                                    ctx.lines_as(
-                                                        l_name_s.clone(),
-                                                        args![
-                                                            ((Val::from("Greetings, ")
-                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                + Val::from(",")),
-                                                            "did you rest well? Please",
-                                                            "give that spirit to the next",
-                                                            "person so that the testing",
-                                                            "of your guild may continue."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        l_name_s.clone(),
-                                                        args![
-                                                            "If you don't remember",
-                                                            ((Val::from("") + l_name3_s.clone()) + Val::from("'s explanation,")),
-                                                            "then you might want to",
-                                                            "go back to him and ask",
-                                                            "him to tell you again."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?) {
-                                                        ctx.lines_as(
-                                                            l_name_s.clone(),
-                                                            args![
-                                                                ((Val::from("Hello, ")
-                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                    + Val::from(",")),
-                                                                "I see that you've been",
-                                                                "entrusted with the Spirit",
-                                                                "of Solidarity. Do your best",
-                                                                "on this test for the sake",
-                                                                "of your guild, alright?"
-                                                            ],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    } else {
-                                                        ctx.lines_as(
-                                                            l_name_s.clone(),
-                                                            args![
-                                                                "That spirit won't be very",
-                                                                "useful if it's not in the",
-                                                                "hands of the right person.",
-                                                                ((Val::from("") + l_name3_s.clone()) + Val::from(" will know more")),
-                                                                "about the Spirit of Solidarity",
-                                                                "so you should consult him."
-                                                            ],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
                                                 }
                                             } else {
-                                                if ctx.call(Function::CountItem, vec![Val::from(7245)])?.number()? > 0 {
-                                                    if (ctx.var("guildrelay_q").get()? == 75
-                                                        && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?))
-                                                    {
+                                                if ctx.call(Function::CountItem, vec![Val::from(7246)])?.number()? > 0 {
+                                                    if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
                                                         ctx.lines_as(
                                                             l_name_s.clone(),
                                                             args![
                                                                 ((Val::from("Ah, ")
                                                                     + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
                                                                     + Val::from(",")),
-                                                                "congratulations on a job",
-                                                                "well done. Please give the",
-                                                                "Spirit of Friendship to your",
-                                                                "guild master to continue",
-                                                                "the guild testing."
+                                                                "I see that you have the",
+                                                                "Spirit of Peace. Please",
+                                                                "do your best for the sake",
+                                                                "of the guild, though I do not",
+                                                                "doubt you'll pass this test."
                                                             ],
                                                         )?;
                                                         ctx.close_window()?;
@@ -1551,8 +1541,8 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                 "That spirit won't be very",
                                                                 "useful if it's not in the",
                                                                 "hands of the right person.",
-                                                                ((Val::from("") + l_name3_s.clone()) + Val::from(" will know more")),
-                                                                "about the Spirit of Friendship",
+                                                                ((Val::from("") + l_name4_s.clone()) + Val::from(" will know more")),
+                                                                "about the Spirit of Peace",
                                                                 "so you should consult him."
                                                             ],
                                                         )?;
@@ -1560,19 +1550,45 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         return Err(Stop::End);
                                                     }
                                                 } else {
-                                                    if ctx.call(Function::CountItem, vec![Val::from(7246)])?.number()? > 0 {
-                                                        if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
+                                                    if ctx.call(Function::CountItem, vec![Val::from(7247)])?.number()? > 0 {
+                                                        if (ctx.var("guildrelay_q").get()? == 95
+                                                            && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_PRIEST")?))
+                                                        {
+                                                            ctx.lines_as(
+                                                                l_name_s.clone(),
+                                                                args![
+                                                                    ((Val::from("Hello,")
+                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                        + Val::from(".")),
+                                                                    "I commend you on your work.",
+                                                                    "Please give that spirit to",
+                                                                    "the next person so that the",
+                                                                    "testing can continue."
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                l_name_s.clone(),
+                                                                args![
+                                                                    "If you don't remember",
+                                                                    ((Val::from("") + l_name4_s.clone())
+                                                                        + Val::from("'s explanation,")),
+                                                                    "then you might want to",
+                                                                    "go back to him and ask",
+                                                                    "him to tell you again."
+                                                                ],
+                                                            )?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_PRIEST")?) {
                                                             ctx.lines_as(
                                                                 l_name_s.clone(),
                                                                 args![
                                                                     ((Val::from("Ah, ")
                                                                         + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
                                                                         + Val::from(",")),
-                                                                    "I see that you have the",
-                                                                    "Spirit of Peace. Please",
-                                                                    "do your best for the sake",
-                                                                    "of the guild, though I do not",
-                                                                    "doubt you'll pass this test."
+                                                                    "please take good care of",
+                                                                    "that Spirit of Determination."
                                                                 ],
                                                             )?;
                                                             ctx.close_window()?;
@@ -1584,8 +1600,9 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                     "That spirit won't be very",
                                                                     "useful if it's not in the",
                                                                     "hands of the right person.",
-                                                                    ((Val::from("") + l_name4_s.clone()) + Val::from(" will know more")),
-                                                                    "about the Spirit of Peace",
+                                                                    ((Val::from("") + l_name4_s.clone())
+                                                                        + Val::from(" will know more about")),
+                                                                    "the Spirit of Determination",
                                                                     "so you should consult him."
                                                                 ],
                                                             )?;
@@ -1593,9 +1610,12 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             return Err(Stop::End);
                                                         }
                                                     } else {
-                                                        if ctx.call(Function::CountItem, vec![Val::from(7247)])?.number()? > 0 {
-                                                            if (ctx.var("guildrelay_q").get()? == 95
-                                                                && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_PRIEST")?))
+                                                        if ctx.call(Function::CountItem, vec![Val::from(7249)])?.number()? > 0 {
+                                                            if (ctx.var("guildrelay_q").get()? == 98
+                                                                && ctx
+                                                                    .var("BaseJob")
+                                                                    .get()?
+                                                                    .loosely_equals(&ctx.constant("JOB_PRIEST")?))
                                                             {
                                                                 ctx.lines_as(
                                                                     l_name_s.clone(),
@@ -1623,50 +1643,58 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                 )?;
                                                                 ctx.close_window()?;
                                                                 return Err(Stop::End);
+                                                            } else if ctx
+                                                                .var("BaseJob")
+                                                                .get()?
+                                                                .loosely_equals(&ctx.constant("JOB_CRUSADER")?)
+                                                            {
+                                                                ctx.lines_as(
+                                                                    l_name_s.clone(),
+                                                                    args![
+                                                                        ((Val::from("Ah, ")
+                                                                            + ctx.call(
+                                                                                Function::StrCharInfo,
+                                                                                vec![Val::from(0)]
+                                                                            )?)
+                                                                            + Val::from(",")),
+                                                                        "please take good care",
+                                                                        "of that Spirit of Service."
+                                                                    ],
+                                                                )?;
+                                                                ctx.close_window()?;
+                                                                return Err(Stop::End);
                                                             } else {
-                                                                if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_PRIEST")?) {
-                                                                    ctx.lines_as(
-                                                                        l_name_s.clone(),
-                                                                        args![
-                                                                            ((Val::from("Ah, ")
-                                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                                + Val::from(",")),
-                                                                            "please take good care of",
-                                                                            "that Spirit of Determination."
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                } else {
-                                                                    ctx.lines_as(
-                                                                        l_name_s.clone(),
-                                                                        args![
-                                                                            "That spirit won't be very",
-                                                                            "useful if it's not in the",
-                                                                            "hands of the right person.",
-                                                                            ((Val::from("") + l_name4_s.clone())
-                                                                                + Val::from(" will know more about")),
-                                                                            "the Spirit of Determination",
-                                                                            "so you should consult him."
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                }
+                                                                ctx.lines_as(
+                                                                    l_name_s.clone(),
+                                                                    args![
+                                                                        "That spirit won't be very",
+                                                                        "useful if it's not in the",
+                                                                        "hands of the right person.",
+                                                                        ((Val::from("") + l_name4_s.clone())
+                                                                            + Val::from(" will know more about")),
+                                                                        "the Spirit of Service so",
+                                                                        "you should consult him."
+                                                                    ],
+                                                                )?;
+                                                                ctx.close_window()?;
+                                                                return Err(Stop::End);
                                                             }
                                                         } else {
-                                                            if ctx.call(Function::CountItem, vec![Val::from(7249)])?.number()? > 0 {
-                                                                if (ctx.var("guildrelay_q").get()? == 98
+                                                            if ctx.call(Function::CountItem, vec![Val::from(7250)])?.number()? > 0 {
+                                                                if (ctx.var("guildrelay_q").get()? == 96
                                                                     && ctx
                                                                         .var("BaseJob")
                                                                         .get()?
-                                                                        .loosely_equals(&ctx.constant("JOB_PRIEST")?))
+                                                                        .loosely_equals(&ctx.constant("JOB_CRUSADER")?))
                                                                 {
                                                                     ctx.lines_as(
                                                                         l_name_s.clone(),
                                                                         args![
                                                                             ((Val::from("Hello,")
-                                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                                + ctx.call(
+                                                                                    Function::StrCharInfo,
+                                                                                    vec![Val::from(0)]
+                                                                                )?)
                                                                                 + Val::from(".")),
                                                                             "I commend you on your work.",
                                                                             "Please give that spirit to",
@@ -1688,11 +1716,49 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                     )?;
                                                                     ctx.close_window()?;
                                                                     return Err(Stop::End);
+                                                                } else if ctx
+                                                                    .var("BaseJob")
+                                                                    .get()?
+                                                                    .loosely_equals(&ctx.constant("JOB_MONK")?)
+                                                                {
+                                                                    ctx.lines_as(
+                                                                        l_name_s.clone(),
+                                                                        args![
+                                                                            ((Val::from("Ah, ")
+                                                                                + ctx.call(
+                                                                                    Function::StrCharInfo,
+                                                                                    vec![Val::from(0)]
+                                                                                )?)
+                                                                                + Val::from(",")),
+                                                                            "please take good care",
+                                                                            "of that Spirit of Glory."
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
                                                                 } else {
-                                                                    if ctx
-                                                                        .var("BaseJob")
-                                                                        .get()?
-                                                                        .loosely_equals(&ctx.constant("JOB_CRUSADER")?)
+                                                                    ctx.lines_as(
+                                                                        l_name_s.clone(),
+                                                                        args![
+                                                                            "That spirit won't be very",
+                                                                            "useful if it's not in the",
+                                                                            "hands of the right person.",
+                                                                            ((Val::from("") + l_name4_s.clone())
+                                                                                + Val::from(" will know more about")),
+                                                                            "the Spirit of Glory so you",
+                                                                            "should consult him."
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                }
+                                                            } else {
+                                                                if ctx.call(Function::CountItem, vec![Val::from(7251)])?.number()? > 0 {
+                                                                    if (ctx.var("guildrelay_q").get()? == 97
+                                                                        && ctx
+                                                                            .var("Class")
+                                                                            .get()?
+                                                                            .loosely_equals(&ctx.constant("JOB_MONK")?))
                                                                     {
                                                                         ctx.lines_as(
                                                                             l_name_s.clone(),
@@ -1703,8 +1769,11 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                         vec![Val::from(0)]
                                                                                     )?)
                                                                                     + Val::from(",")),
-                                                                                "please take good care",
-                                                                                "of that Spirit of Service."
+                                                                                "congratulations on a job",
+                                                                                "well done. Please give",
+                                                                                "the Spirit of Victory to your",
+                                                                                "guild master. That's it for now.",
+                                                                                "Good luck to you in the future."
                                                                             ],
                                                                         )?;
                                                                         ctx.close_window()?;
@@ -1718,144 +1787,25 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                 "hands of the right person.",
                                                                                 ((Val::from("") + l_name4_s.clone())
                                                                                     + Val::from(" will know more about")),
-                                                                                "the Spirit of Service so",
-                                                                                "you should consult him."
+                                                                                "the Spirit of Victory so you",
+                                                                                "should consult him."
                                                                             ],
                                                                         )?;
                                                                         ctx.close_window()?;
                                                                         return Err(Stop::End);
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                if ctx.call(Function::CountItem, vec![Val::from(7250)])?.number()? > 0 {
-                                                                    if (ctx.var("guildrelay_q").get()? == 96
-                                                                        && ctx
-                                                                            .var("BaseJob")
-                                                                            .get()?
-                                                                            .loosely_equals(&ctx.constant("JOB_CRUSADER")?))
-                                                                    {
-                                                                        ctx.lines_as(
-                                                                            l_name_s.clone(),
-                                                                            args![
-                                                                                ((Val::from("Hello,")
-                                                                                    + ctx.call(
-                                                                                        Function::StrCharInfo,
-                                                                                        vec![Val::from(0)]
-                                                                                    )?)
-                                                                                    + Val::from(".")),
-                                                                                "I commend you on your work.",
-                                                                                "Please give that spirit to",
-                                                                                "the next person so that the",
-                                                                                "testing can continue."
-                                                                            ],
-                                                                        )?;
-                                                                        ctx.next()?;
-                                                                        ctx.lines_as(
-                                                                            l_name_s.clone(),
-                                                                            args![
-                                                                                "If you don't remember",
-                                                                                ((Val::from("") + l_name4_s.clone())
-                                                                                    + Val::from("'s explanation,")),
-                                                                                "then you might want to",
-                                                                                "go back to him and ask",
-                                                                                "him to tell you again."
-                                                                            ],
-                                                                        )?;
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    } else {
-                                                                        if ctx
-                                                                            .var("BaseJob")
-                                                                            .get()?
-                                                                            .loosely_equals(&ctx.constant("JOB_MONK")?)
-                                                                        {
-                                                                            ctx.lines_as(
-                                                                                l_name_s.clone(),
-                                                                                args![
-                                                                                    ((Val::from("Ah, ")
-                                                                                        + ctx.call(
-                                                                                            Function::StrCharInfo,
-                                                                                            vec![Val::from(0)]
-                                                                                        )?)
-                                                                                        + Val::from(",")),
-                                                                                    "please take good care",
-                                                                                    "of that Spirit of Glory."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        } else {
-                                                                            ctx.lines_as(
-                                                                                l_name_s.clone(),
-                                                                                args![
-                                                                                    "That spirit won't be very",
-                                                                                    "useful if it's not in the",
-                                                                                    "hands of the right person.",
-                                                                                    ((Val::from("") + l_name4_s.clone())
-                                                                                        + Val::from(" will know more about")),
-                                                                                    "the Spirit of Glory so you",
-                                                                                    "should consult him."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        }
                                                                     }
                                                                 } else {
-                                                                    if ctx.call(Function::CountItem, vec![Val::from(7251)])?.number()? > 0 {
-                                                                        if (ctx.var("guildrelay_q").get()? == 97
-                                                                            && ctx
-                                                                                .var("Class")
-                                                                                .get()?
-                                                                                .loosely_equals(&ctx.constant("JOB_MONK")?))
-                                                                        {
-                                                                            ctx.lines_as(
-                                                                                l_name_s.clone(),
-                                                                                args![
-                                                                                    ((Val::from("Ah, ")
-                                                                                        + ctx.call(
-                                                                                            Function::StrCharInfo,
-                                                                                            vec![Val::from(0)]
-                                                                                        )?)
-                                                                                        + Val::from(",")),
-                                                                                    "congratulations on a job",
-                                                                                    "well done. Please give",
-                                                                                    "the Spirit of Victory to your",
-                                                                                    "guild master. That's it for now.",
-                                                                                    "Good luck to you in the future."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        } else {
-                                                                            ctx.lines_as(
-                                                                                l_name_s.clone(),
-                                                                                args![
-                                                                                    "That spirit won't be very",
-                                                                                    "useful if it's not in the",
-                                                                                    "hands of the right person.",
-                                                                                    ((Val::from("") + l_name4_s.clone())
-                                                                                        + Val::from(" will know more about")),
-                                                                                    "the Spirit of Victory so you",
-                                                                                    "should consult him."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        }
-                                                                    } else {
-                                                                        ctx.lines_as(
-                                                                            l_name_s.clone(),
-                                                                            args![
-                                                                                "I'm sorry, but I'm too",
-                                                                                "busy with my work to offer",
-                                                                                "you any help right now.",
-                                                                                "You'll have to forgive me."
-                                                                            ],
-                                                                        )?;
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    }
+                                                                    ctx.lines_as(
+                                                                        l_name_s.clone(),
+                                                                        args![
+                                                                            "I'm sorry, but I'm too",
+                                                                            "busy with my work to offer",
+                                                                            "you any help right now.",
+                                                                            "You'll have to forgive me."
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
                                                                 }
                                                             }
                                                         }
@@ -2281,8 +2231,7 @@ fn relaydummy2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             l_time = runtime::atoi(&ctx.call(Function::GetTimeStr, vec![Val::from("%H%M"), Val::from(5)])?);
             if ((ctx.var("guildtime").get()?.number()? > 2259 && ctx.var("guildrelay_q").get()? == 4)
                 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?))
-            {
-                if (l_time.clone().number()? > 129 && runtime::op(&l_time.clone(), "<", &ctx.var("guildtime").get()?)?.is_true()) {
+                && (l_time.clone().number()? > 129 && runtime::op(&l_time.clone(), "<", &ctx.var("guildtime").get()?)?.is_true()) {
                     ctx.lines_as(
                         l_name_s.clone(),
                         args![
@@ -2299,11 +2248,9 @@ fn relaydummy2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-            }
             if ((ctx.var("guildtime").get()?.number()? > 2159 && ctx.var("guildrelay_q").get()? == 4)
                 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?))
-            {
-                if (l_time.clone().number()? > 65 && runtime::op(&l_time.clone(), "<", &ctx.var("guildtime").get()?)?.is_true()) {
+                && (l_time.clone().number()? > 65 && runtime::op(&l_time.clone(), "<", &ctx.var("guildtime").get()?)?.is_true()) {
                     ctx.lines_as(
                         l_name_s.clone(),
                         args![
@@ -2320,11 +2267,9 @@ fn relaydummy2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-            }
             if ((ctx.var("guildtime").get()?.number()? > 2059 && ctx.var("guildrelay_q").get()? == 4)
                 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?))
-            {
-                if (l_time.clone().number()? > 1 && runtime::op(&l_time.clone(), "<", &ctx.var("guildtime").get()?)?.is_true()) {
+                && (l_time.clone().number()? > 1 && runtime::op(&l_time.clone(), "<", &ctx.var("guildtime").get()?)?.is_true()) {
                     ctx.lines_as(
                         l_name_s.clone(),
                         args![
@@ -2341,7 +2286,6 @@ fn relaydummy2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-            }
             if (((l_time.clone().try_sub(ctx.var("guildtime").get()?)?).number()? > 192 && ctx.var("guildrelay_q").get()? == 4)
                 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?))
             {
@@ -3064,23 +3008,21 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.call(Function::GetItem, vec![Val::from(7241), Val::from(1)])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SAGE")?) && ctx.var("guildrelay_q").get()? == 9)
-                            {
-                                ctx.lines_as(
-                                    l_name_s.clone(),
-                                    args![
-                                        "Hm? Back so soon?",
-                                        "That hasn't been enough",
-                                        "time for you to really bond",
-                                        "with your guild members.",
-                                        "Go back, ask them about their",
-                                        "dreams, passions, and goals!"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                        } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SAGE")?) && ctx.var("guildrelay_q").get()? == 9)
+                        {
+                            ctx.lines_as(
+                                l_name_s.clone(),
+                                args![
+                                    "Hm? Back so soon?",
+                                    "That hasn't been enough",
+                                    "time for you to really bond",
+                                    "with your guild members.",
+                                    "Go back, ask them about their",
+                                    "dreams, passions, and goals!"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -3245,116 +3187,108 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.call(Function::GetItem, vec![Val::from(7242), Val::from(1)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if (((ctx.call(Function::CountItem, vec![Val::from(7106)])?.number()? > 29
-                        && ctx.call(Function::CountItem, vec![Val::from(7121)])?.number()? > 29)
-                        && ctx.call(Function::CountItem, vec![Val::from(1027)])?.number()? > 29)
-                        && ctx.var("guildrelay_q").get()? == 80)
-                    {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "Oh, perfect! You brought",
-                                "all the items. Well then,",
-                                "I guess you're ready to",
-                                "take this spirit now. Please",
-                                "give it to an ^42426FAssassin^000000 or an",
-                                "^42426FAssassin Cross^000000. Thank you."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7106), Val::from(30)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(7121), Val::from(30)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(1027), Val::from(30)])?;
-                        if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?) {
-                            ctx.var("guildrelay_q").set(Val::from(72))?;
-                        } else {
-                            ctx.var("guildrelay_q").set(Val::from(72))?;
-                        }
-                        ctx.call(Function::GetItem, vec![Val::from(7242), Val::from(1)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
+                } else if (((ctx.call(Function::CountItem, vec![Val::from(7106)])?.number()? > 29
+                    && ctx.call(Function::CountItem, vec![Val::from(7121)])?.number()? > 29)
+                    && ctx.call(Function::CountItem, vec![Val::from(1027)])?.number()? > 29)
+                    && ctx.var("guildrelay_q").get()? == 80)
+                {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "Oh, perfect! You brought",
+                            "all the items. Well then,",
+                            "I guess you're ready to",
+                            "take this spirit now. Please",
+                            "give it to an ^42426FAssassin^000000 or an",
+                            "^42426FAssassin Cross^000000. Thank you."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7106), Val::from(30)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(7121), Val::from(30)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(1027), Val::from(30)])?;
+                    if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_DANCER")?) {
+                        ctx.var("guildrelay_q").set(Val::from(72))?;
                     } else {
-                        if ctx.var("guildrelay_q").get()? == 10 {
-                            ctx.lines_as(
-                                l_name_s.clone(),
-                                args![
-                                    "Hm? You still haven't",
-                                    "gathered all the items",
-                                    "with your guild yet?",
-                                    "Let me remind you what",
-                                    "you need to bring me."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                l_name_s.clone(),
-                                args![
-                                    "^8C171730 Burning Hearts^000000,",
-                                    "^8C171730 Wolf Claws^000000, and",
-                                    "^8C171730 Leopard Claws^000000.",
-                                    "You might want to write",
-                                    "these down so you don't",
-                                    "forget. Good luck to you."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("guildrelay_q").get()? == 11 {
-                                ctx.lines_as(
-                                    l_name_s.clone(),
-                                    args![
-                                        "Hm? You still haven't",
-                                        "gathered all the items",
-                                        "with your guild yet?",
-                                        "Let me remind you what",
-                                        "you need to bring me."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    l_name_s.clone(),
-                                    args![
-                                        "^8C171730 Soft Blades of Grass^000000,",
-                                        "^8C171730 Wooden Hearts^000000, and",
-                                        "^8C171730 Poisonous Toad Skins^000000.",
-                                        "You might want to write",
-                                        "these down so you don't",
-                                        "forget. Good luck to you."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("guildrelay_q").get()? == 80 {
-                                    ctx.lines_as(
-                                        l_name_s.clone(),
-                                        args![
-                                            "Hm? You still haven't",
-                                            "gathered all the items",
-                                            "with your guild yet?",
-                                            "Let me remind you what",
-                                            "you need to bring me."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        l_name_s.clone(),
-                                        args![
-                                            "^8C171730 Antelope Horns^000000,",
-                                            "^8C171730 Honey Pots^000000, and",
-                                            "^8C171730 Porcupine Quills^000000.",
-                                            "You might want to write",
-                                            "these down so you don't",
-                                            "forget. Good luck to you."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
+                        ctx.var("guildrelay_q").set(Val::from(72))?;
                     }
+                    ctx.call(Function::GetItem, vec![Val::from(7242), Val::from(1)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("guildrelay_q").get()? == 10 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "Hm? You still haven't",
+                            "gathered all the items",
+                            "with your guild yet?",
+                            "Let me remind you what",
+                            "you need to bring me."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "^8C171730 Burning Hearts^000000,",
+                            "^8C171730 Wolf Claws^000000, and",
+                            "^8C171730 Leopard Claws^000000.",
+                            "You might want to write",
+                            "these down so you don't",
+                            "forget. Good luck to you."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("guildrelay_q").get()? == 11 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "Hm? You still haven't",
+                            "gathered all the items",
+                            "with your guild yet?",
+                            "Let me remind you what",
+                            "you need to bring me."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "^8C171730 Soft Blades of Grass^000000,",
+                            "^8C171730 Wooden Hearts^000000, and",
+                            "^8C171730 Poisonous Toad Skins^000000.",
+                            "You might want to write",
+                            "these down so you don't",
+                            "forget. Good luck to you."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("guildrelay_q").get()? == 80 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "Hm? You still haven't",
+                            "gathered all the items",
+                            "with your guild yet?",
+                            "Let me remind you what",
+                            "you need to bring me."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "^8C171730 Antelope Horns^000000,",
+                            "^8C171730 Honey Pots^000000, and",
+                            "^8C171730 Porcupine Quills^000000.",
+                            "You might want to write",
+                            "these down so you don't",
+                            "forget. Good luck to you."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
@@ -3419,83 +3353,77 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.var("guildrelay_q").set(Val::from(12))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if (ctx.var("BaseLevel").get()?.number()? > 60 && ctx.var("BaseLevel").get()?.number()? < 76) {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "You will be ready",
-                                "for your task after you",
-                                "gain ^FF00002 Base Levels^000000.",
-                                "Don't despair: I know",
-                                "you'll be able to reach",
-                                "this goal. Good luck to you."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7244), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(13))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if (ctx.var("BaseLevel").get()?.number()? > 75 && ctx.var("BaseLevel").get()?.number()? < 97) {
-                            ctx.lines_as(
-                                l_name_s.clone(),
-                                args![
-                                    "You will be ready",
-                                    "for your task after you",
-                                    "gain ^FF00001 Base Level^000000.",
-                                    "Don't despair: I know",
-                                    "you'll be able to reach",
-                                    "this goal. Good luck to you."
-                                ],
-                            )?;
-                            ctx.call(Function::DelItem, vec![Val::from(7244), Val::from(1)])?;
-                            ctx.var("guildrelay_q").set(Val::from(14))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("BaseLevel").get()?.number()? > 96 {
-                                ctx.lines_as(
-                                    l_name_s.clone(),
-                                    args![
-                                        "Hm. You're much stronger",
-                                        "that I expected. There's no",
-                                        "need for me to encourage",
-                                        "you to develop your strength.",
-                                        "I admit that you are strong."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    l_name_s.clone(),
-                                    args![
-                                        "Acknowledge the extent and",
-                                        "limits of your strength, but",
-                                        "never allow conceit to pollute",
-                                        "your heart. Pride will always",
-                                        "shackle your power if you",
-                                        "let it. Remember humility."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    l_name_s.clone(),
-                                    args![
-                                        "You qualified enough",
-                                        "for me to trust you.",
-                                        "Please give this spirit",
-                                        "to your ^FF0000Guild Master^000000.",
-                                        "You're done for now."
-                                    ],
-                                )?;
-                                ctx.call(Function::DelItem, vec![Val::from(7244), Val::from(1)])?;
-                                ctx.var("guildrelay_q").set(Val::from(75))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7245), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
+                } else if (ctx.var("BaseLevel").get()?.number()? > 60 && ctx.var("BaseLevel").get()?.number()? < 76) {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "You will be ready",
+                            "for your task after you",
+                            "gain ^FF00002 Base Levels^000000.",
+                            "Don't despair: I know",
+                            "you'll be able to reach",
+                            "this goal. Good luck to you."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7244), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(13))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if (ctx.var("BaseLevel").get()?.number()? > 75 && ctx.var("BaseLevel").get()?.number()? < 97) {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "You will be ready",
+                            "for your task after you",
+                            "gain ^FF00001 Base Level^000000.",
+                            "Don't despair: I know",
+                            "you'll be able to reach",
+                            "this goal. Good luck to you."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7244), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(14))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 96 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "Hm. You're much stronger",
+                            "that I expected. There's no",
+                            "need for me to encourage",
+                            "you to develop your strength.",
+                            "I admit that you are strong."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "Acknowledge the extent and",
+                            "limits of your strength, but",
+                            "never allow conceit to pollute",
+                            "your heart. Pride will always",
+                            "shackle your power if you",
+                            "let it. Remember humility."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "You qualified enough",
+                            "for me to trust you.",
+                            "Please give this spirit",
+                            "to your ^FF0000Guild Master^000000.",
+                            "You're done for now."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7244), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(75))?;
+                    ctx.call(Function::GetItem, vec![Val::from(7245), Val::from(1)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if (runtime::op(&(ctx.var("BaseLevel").get()? + Val::from(2)), "<", &ctx.var("BaseLevel").get()?)?.is_true()
@@ -3526,66 +3454,62 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::GetItem, vec![Val::from(7245), Val::from(1)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if (runtime::op(&(ctx.var("BaseLevel").get()? + Val::from(1)), "<", &ctx.var("BaseLevel").get()?)?.is_true()
-                    && ctx.var("guildrelay_q").get()? == 13)
-                {
-                    ctx.lines_as(
-                        l_name_s.clone(),
-                        args![
-                            "I see that you've",
-                            "completed the task",
-                            "I have given you. It may",
-                            "have been difficult, but",
-                            "you'll see that I had your",
-                            "guild's best interests in mind."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        l_name_s.clone(),
-                        args![
-                            "You've earned my trust.",
-                            "Please give this spirit",
-                            "to your ^FF0000Guild Master^000000.",
-                            "You've done well."
-                        ],
-                    )?;
-                    ctx.var("guildrelay_q").set(Val::from(75))?;
-                    ctx.call(Function::GetItem, vec![Val::from(7245), Val::from(1)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if (runtime::op(&ctx.var("BaseLevel").get()?, "<", &ctx.var("BaseLevel").get()?)?.is_true()
-                        && ctx.var("guildrelay_q").get()? == 14)
-                    {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "I see that you've",
-                                "completed the task",
-                                "I have given you. It may",
-                                "have been difficult, but",
-                                "you'll see that I had your",
-                                "guild's best interests in mind."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "You've earned my trust.",
-                                "Please give this spirit",
-                                "to your ^FF0000Guild Master^000000.",
-                                "You've done well."
-                            ],
-                        )?;
-                        ctx.var("guildrelay_q").set(Val::from(75))?;
-                        ctx.call(Function::GetItem, vec![Val::from(7245), Val::from(1)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+            } else if (runtime::op(&(ctx.var("BaseLevel").get()? + Val::from(1)), "<", &ctx.var("BaseLevel").get()?)?.is_true()
+                && ctx.var("guildrelay_q").get()? == 13)
+            {
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args![
+                        "I see that you've",
+                        "completed the task",
+                        "I have given you. It may",
+                        "have been difficult, but",
+                        "you'll see that I had your",
+                        "guild's best interests in mind."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args![
+                        "You've earned my trust.",
+                        "Please give this spirit",
+                        "to your ^FF0000Guild Master^000000.",
+                        "You've done well."
+                    ],
+                )?;
+                ctx.var("guildrelay_q").set(Val::from(75))?;
+                ctx.call(Function::GetItem, vec![Val::from(7245), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if (runtime::op(&ctx.var("BaseLevel").get()?, "<", &ctx.var("BaseLevel").get()?)?.is_true()
+                && ctx.var("guildrelay_q").get()? == 14)
+            {
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args![
+                        "I see that you've",
+                        "completed the task",
+                        "I have given you. It may",
+                        "have been difficult, but",
+                        "you'll see that I had your",
+                        "guild's best interests in mind."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args![
+                        "You've earned my trust.",
+                        "Please give this spirit",
+                        "to your ^FF0000Guild Master^000000.",
+                        "You've done well."
+                    ],
+                )?;
+                ctx.var("guildrelay_q").set(Val::from(75))?;
+                ctx.call(Function::GetItem, vec![Val::from(7245), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
             if (ctx.var("guildrelay_q").get()? == 12 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?)) {
                 ctx.lines_as(
@@ -3599,33 +3523,29 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if (ctx.var("guildrelay_q").get()? == 13 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?)) {
-                    ctx.lines_as(
-                        l_name_s.clone(),
-                        args![
-                            "You're not strong enough",
-                            "yet for your guild to fully",
-                            "rely on you in a crisis.",
-                            "You must level up!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if (ctx.var("guildrelay_q").get()? == 14 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?)) {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "Hmm... I don't think you've",
-                                "spent enough time leveling",
-                                "up yet. Keep working on it."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+            } else if (ctx.var("guildrelay_q").get()? == 13 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?)) {
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args![
+                        "You're not strong enough",
+                        "yet for your guild to fully",
+                        "rely on you in a crisis.",
+                        "You must level up!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if (ctx.var("guildrelay_q").get()? == 14 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?)) {
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args![
+                        "Hmm... I don't think you've",
+                        "spent enough time leveling",
+                        "up yet. Keep working on it."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     } else {
@@ -3671,32 +3591,30 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("guildrelay_q").get()? == 71 {
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "When you improve yourself,",
-                    "you'll also be strengthening",
-                    "your guild. Always devote some",
-                    "time for yourself and for your",
-                    "team. You cannot have one",
-                    "without the other."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "I suppose you really",
-                    "don't have much use",
-                    "for me anymore... But I'll",
-                    "always offer my support."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("guildrelay_q").get()? == 71 {
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "When you improve yourself,",
+                "you'll also be strengthening",
+                "your guild. Always devote some",
+                "time for yourself and for your",
+                "team. You cannot have one",
+                "without the other."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "I suppose you really",
+                "don't have much use",
+                "for me anymore... But I'll",
+                "always offer my support."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if (ctx.var("guildrelay_q").get()? == 72 && ctx.call(Function::CountItem, vec![Val::from(7242)])?.number()? > 0) {
         ctx.lines_as(
@@ -3711,32 +3629,30 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("guildrelay_q").get()? == 72 {
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "Your songs bolster your",
-                    "guild's morale, and will",
-                    "help them stand and fight,",
-                    "no matter how desperate",
-                    "the situation may seem.",
-                    "Your voice can make miracles."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "I suppose you really",
-                    "don't have much use",
-                    "for me anymore... But I'll",
-                    "always offer my support."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("guildrelay_q").get()? == 72 {
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "Your songs bolster your",
+                "guild's morale, and will",
+                "help them stand and fight,",
+                "no matter how desperate",
+                "the situation may seem.",
+                "Your voice can make miracles."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "I suppose you really",
+                "don't have much use",
+                "for me anymore... But I'll",
+                "always offer my support."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if (ctx.var("guildrelay_q").get()? == 73 && ctx.call(Function::CountItem, vec![Val::from(7242)])?.number()? > 0) {
         ctx.lines_as(
@@ -3751,32 +3667,30 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("guildrelay_q").get()? == 73 {
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "Your dances bolster your",
-                    "guild's morale, and will",
-                    "help them stand and fight,",
-                    "no matter how desperate",
-                    "the situation may seem.",
-                    "Your voice can make miracles."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "I suppose you really",
-                    "don't have much use",
-                    "for me anymore... But I'll",
-                    "always offer my support."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("guildrelay_q").get()? == 73 {
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "Your dances bolster your",
+                "guild's morale, and will",
+                "help them stand and fight,",
+                "no matter how desperate",
+                "the situation may seem.",
+                "Your voice can make miracles."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "I suppose you really",
+                "don't have much use",
+                "for me anymore... But I'll",
+                "always offer my support."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if (ctx.var("guildrelay_q").get()? == 74 && ctx.call(Function::CountItem, vec![Val::from(7244)])?.number()? > 0) {
         ctx.lines_as(
@@ -3791,31 +3705,29 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("guildrelay_q").get()? == 74 {
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "I suppose you really",
-                    "don't have much use",
-                    "for me anymore... But I'll",
-                    "always offer my support."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "Know who your enemies are.",
-                    "If anybody opposes your guild,",
-                    "you must crush them without",
-                    "any hesitation. Your justice",
-                    "must be meted swiftly!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("guildrelay_q").get()? == 74 {
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "I suppose you really",
+                "don't have much use",
+                "for me anymore... But I'll",
+                "always offer my support."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "Know who your enemies are.",
+                "If anybody opposes your guild,",
+                "you must crush them without",
+                "any hesitation. Your justice",
+                "must be meted swiftly!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if (ctx.var("guildrelay_q").get()? == 75 && ctx.call(Function::CountItem, vec![Val::from(7245)])?.number()? > 0) {
         ctx.lines_as(
@@ -3829,32 +3741,30 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("guildrelay_q").get()? == 75 {
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "I can tell that you're",
-                    "always trying to help all",
-                    "the members of your guild.",
-                    "Your loyalty will bring them",
-                    "to your side in times of",
-                    "joy and of tribulation."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "I suppose you really",
-                    "don't have much use",
-                    "for me anymore... But I'll",
-                    "always offer my support."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("guildrelay_q").get()? == 75 {
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "I can tell that you're",
+                "always trying to help all",
+                "the members of your guild.",
+                "Your loyalty will bring them",
+                "to your side in times of",
+                "joy and of tribulation."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "I suppose you really",
+                "don't have much use",
+                "for me anymore... But I'll",
+                "always offer my support."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.lines_as(
         l_name_s.clone(),

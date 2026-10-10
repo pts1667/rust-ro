@@ -314,231 +314,225 @@ fn shion_nv1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(99), Val::from(99)])?;
         return Err(Stop::End);
+    } else if ctx.var("nov_1st_cos").get()?.number()? > 2 {
+        ctx.lines_as(
+            "Shion",
+            args![
+                "The Training Grounds",
+                "are located just past",
+                "the bridge located",
+                "to the right."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Shion",
+            args![
+                "Although you'll",
+                "be sitting through",
+                "some classes, you",
+                "won't regret it.",
+                "Now, go for it!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("nov_1st_cos").get()? == 2 {
+        ctx.lines_as("Shion", args!["Hey...", "You little rascal!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Shion",
+            args![
+                "Wait...",
+                "Calm down Shion.",
+                "You're a professional",
+                "trainer! Don't get all",
+                "upset at a Novice!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Shion", args!["Go and cross the bridge to the right, right now! ^666666*Ahem*^000000 You'll see and castle, and inside you can meet all sorts of tutors."])?;
+        ctx.next()?;
+        ctx.lines_as("Shion", args!["If you can't see the entrance, just change your in-game camera angle by holding down the ^3355FFright Mouse button^000000 and dragging your mouse. Easy, right?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Shion",
+            args![
+                "To reset your camera angle,",
+                "just double-click the right Mouse button. Okay then, take care!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Shion",
+            args![
+                "Oh, and before you leave,",
+                "learn how to treat a lady nice, okay? Then they might give you gifts like this!"
+            ],
+        )?;
+        ctx.var("nov_1st_cos").set(Val::from(3))?;
+        ctx.call(Function::GetExperience, vec![Val::from(9), Val::from(0)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("nov_1st_cos").get()? == 1 {
+        ctx.lines_as(
+            "Shion",
+            args!["Huh...?", "Why are you", "still here?", "^666666*Sigh...*^000000"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Shion", args!["Hey, when you enter the Training Grounds, you'll learn all sorts of things that will help you play the game. You'll even have the chance to get zeny and other rewards."])?;
+        ctx.next()?;
+        ctx.lines_as("Shion", args!["You can even gain", "experience like this!"])?;
+        ctx.var("nov_1st_cos").set(Val::from(3))?;
+        ctx.call(Function::GetExperience, vec![Val::from(9), Val::from(0)])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Shion",
+            args![
+                "Everything you'll learn here in the Training Grounds will benefit your gameplay. So just think positive, okay?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("nov_1st_cos").get()?.number()? > 2 {
-            ctx.lines_as(
-                "Shion",
-                args![
-                    "The Training Grounds",
-                    "are located just past",
-                    "the bridge located",
-                    "to the right."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Shion",
-                args![
-                    "Although you'll",
-                    "be sitting through",
-                    "some classes, you",
-                    "won't regret it.",
-                    "Now, go for it!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("nov_1st_cos").get()? == 2 {
-                ctx.lines_as("Shion", args!["Hey...", "You little rascal!"])?;
+        ctx.lines_as("Shion", args!["Hello there~", "Welcome to the", "Training Grounds!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Shion",
+            args![
+                "Let's see.",
+                "Your name is...",
+                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Shion",
+            args!["My name is Shion.", "Yes, this is the first time we've met, of course. Hahahaha~!"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Shion",
+            args![
+                "Now that we've met, is there anything I can help you with?",
+                "I'm here for your questions~"
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Where should I go?:About Basic Interfaces.:Who the crap are you?")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Shion",
+                    args![
+                        "Do you see the bridge to your",
+                        "right side? Just cross the bridge and you'll arrive at a castle. All you have to do is walk inside!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shion", args!["The entrance of the castle", "is a ^4D4DFFspinning white light^000000. These portals are what allow you to move from one zone to another."])?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Shion",
                     args![
-                        "Wait...",
-                        "Calm down Shion.",
-                        "You're a professional",
-                        "trainer! Don't get all",
-                        "upset at a Novice!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Shion", args!["Go and cross the bridge to the right, right now! ^666666*Ahem*^000000 You'll see and castle, and inside you can meet all sorts of tutors."])?;
-                ctx.next()?;
-                ctx.lines_as("Shion", args!["If you can't see the entrance, just change your in-game camera angle by holding down the ^3355FFright Mouse button^000000 and dragging your mouse. Easy, right?"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Shion",
-                    args![
-                        "To reset your camera angle,",
-                        "just double-click the right Mouse button. Okay then, take care!"
+                        "Do you know how to move?",
+                        "Left click on a spot, and you'll walk over to that spot. Piece of cake, huh?"
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Shion",
                     args![
-                        "Oh, and before you leave,",
-                        "learn how to treat a lady nice, okay? Then they might give you gifts like this!"
+                        "So go for it!",
+                        "Basically, you must enter the castle in order to start your adventures."
                     ],
                 )?;
-                ctx.var("nov_1st_cos").set(Val::from(3))?;
-                ctx.call(Function::GetExperience, vec![Val::from(9), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shion",
+                    args![
+                        "There are soldiers",
+                        "at the entrance, so don't",
+                        "worry about getting lost.",
+                        "Take care now~!"
+                    ],
+                )?;
+                ctx.var("nov_1st_cos").set(Val::from(1))?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("nov_1st_cos").get()? == 1 {
-                    ctx.lines_as(
-                        "Shion",
-                        args!["Huh...?", "Why are you", "still here?", "^666666*Sigh...*^000000"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Shion", args!["Hey, when you enter the Training Grounds, you'll learn all sorts of things that will help you play the game. You'll even have the chance to get zeny and other rewards."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Shion", args!["You can even gain", "experience like this!"])?;
-                    ctx.var("nov_1st_cos").set(Val::from(3))?;
-                    ctx.call(Function::GetExperience, vec![Val::from(9), Val::from(0)])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shion",
-                        args![
-                            "Everything you'll learn here in the Training Grounds will benefit your gameplay. So just think positive, okay?"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as("Shion", args!["Hello there~", "Welcome to the", "Training Grounds!"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shion",
-                        args![
-                            "Let's see.",
-                            "Your name is...",
-                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shion",
-                        args!["My name is Shion.", "Yes, this is the first time we've met, of course. Hahahaha~!"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shion",
-                        args![
-                            "Now that we've met, is there anything I can help you with?",
-                            "I'm here for your questions~"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Where should I go?:About Basic Interfaces.:Who the crap are you?")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                "Shion",
-                                args![
-                                    "Do you see the bridge to your",
-                                    "right side? Just cross the bridge and you'll arrive at a castle. All you have to do is walk inside!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Shion", args!["The entrance of the castle", "is a ^4D4DFFspinning white light^000000. These portals are what allow you to move from one zone to another."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Shion",
-                                args![
-                                    "Do you know how to move?",
-                                    "Left click on a spot, and you'll walk over to that spot. Piece of cake, huh?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Shion",
-                                args![
-                                    "So go for it!",
-                                    "Basically, you must enter the castle in order to start your adventures."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Shion",
-                                args![
-                                    "There are soldiers",
-                                    "at the entrance, so don't",
-                                    "worry about getting lost.",
-                                    "Take care now~!"
-                                ],
-                            )?;
-                            ctx.var("nov_1st_cos").set(Val::from(1))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                "Shion",
-                                args!["Basic Interfaces...", "Do you know what Click, Double-click and Drag mean?"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Shion",
-                                args![
-                                    "When you press the",
-                                    "left Mouse button once,",
-                                    "that is a click. When you press the mouse button twice in a row, that's a double-click."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Shion",
-                                args![
-                                    "Dragging is when you move your Mouse while holding down the",
-                                    "Mouse button after clicking on something."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Shion",
-                                args![
-                                    "Before we start talking about",
-                                    "the Basic Interfaces, you should remember these terms, just because we'll be using them frequently."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Shion", args!["Inside the castle, there is a Basic Interfaces Tutor who can teach you the basics more clearly, okay? Enter the castle to start your training."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Shion",
-                                args!["The entrance", "of the castle is", "a ^4D4DFFspinning white light^000000."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Shion",
-                                args![
-                                    "There are soldiers",
-                                    "at the entrance, so don't",
-                                    "worry about getting lost.",
-                                    "Take care now~!"
-                                ],
-                            )?;
-                            ctx.var("nov_1st_cos").set(Val::from(1))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as("Shion", args!["Me? I'm Shion!", "But that's a rude way of asking! I'm volunteering my time and effort here, so you've got to show me a little bit of respect at least!"])?;
-                            ctx.var("nov_1st_cos").set(Val::from(2))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Shion",
+                    args!["Basic Interfaces...", "Do you know what Click, Double-click and Drag mean?"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shion",
+                    args![
+                        "When you press the",
+                        "left Mouse button once,",
+                        "that is a click. When you press the mouse button twice in a row, that's a double-click."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shion",
+                    args![
+                        "Dragging is when you move your Mouse while holding down the",
+                        "Mouse button after clicking on something."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shion",
+                    args![
+                        "Before we start talking about",
+                        "the Basic Interfaces, you should remember these terms, just because we'll be using them frequently."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shion", args!["Inside the castle, there is a Basic Interfaces Tutor who can teach you the basics more clearly, okay? Enter the castle to start your training."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shion",
+                    args!["The entrance", "of the castle is", "a ^4D4DFFspinning white light^000000."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shion",
+                    args![
+                        "There are soldiers",
+                        "at the entrance, so don't",
+                        "worry about getting lost.",
+                        "Take care now~!"
+                    ],
+                )?;
+                ctx.var("nov_1st_cos").set(Val::from(1))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Shion", args!["Me? I'm Shion!", "But that's a rude way of asking! I'm volunteering my time and effort here, so you've got to show me a little bit of respect at least!"])?;
+                ctx.var("nov_1st_cos").set(Val::from(2))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -599,417 +593,411 @@ fn interfaces_tutor_nv1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("nov_get_item02").get()?.number()? < 10 {
-            ctx.lines_as("Kris", args!["Hello, may I see your", "proof of registration?"])?;
+    } else if ctx.var("nov_get_item02").get()?.number()? < 10 {
+        ctx.lines_as("Kris", args!["Hello, may I see your", "proof of registration?"])?;
+        ctx.next()?;
+        if ctx.var("new_mes_flag0").get()?.is_true() {
+            ctx.lines_as("Kris", args![((Val::from("Ah, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(", you've applied for an old training course that we no longer provide for our trainees. Let me issue a new proof of registration for you."))])?;
+            ctx.var("new_mes_flag0").set(Val::from(0))?;
+            ctx.var("new_mes_flag1").set(Val::from(0))?;
+            ctx.var("new_mes_flag2").set(Val::from(0))?;
+            ctx.var("new_mes_flag3").set(Val::from(0))?;
+            ctx.var("new_mes_flag4").set(Val::from(0))?;
+            ctx.var("new_mes_flag5").set(Val::from(0))?;
+            ctx.var("new_lvup0").set(Val::from(0))?;
+            ctx.var("new_lvup1").set(Val::from(0))?;
+            ctx.var("new_joblvup").set(Val::from(0))?;
             ctx.next()?;
-            if ctx.var("new_mes_flag0").get()?.is_true() {
-                ctx.lines_as("Kris", args![((Val::from("Ah, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(", you've applied for an old training course that we no longer provide for our trainees. Let me issue a new proof of registration for you."))])?;
-                ctx.var("new_mes_flag0").set(Val::from(0))?;
-                ctx.var("new_mes_flag1").set(Val::from(0))?;
-                ctx.var("new_mes_flag2").set(Val::from(0))?;
-                ctx.var("new_mes_flag3").set(Val::from(0))?;
-                ctx.var("new_mes_flag4").set(Val::from(0))?;
-                ctx.var("new_mes_flag5").set(Val::from(0))?;
-                ctx.var("new_lvup0").set(Val::from(0))?;
-                ctx.var("new_lvup1").set(Val::from(0))?;
-                ctx.var("new_joblvup").set(Val::from(0))?;
-                ctx.next()?;
+        }
+        ctx.lines_as(
+            "Kris",
+            args![
+                "Okay, now",
+                "you're ready to go.",
+                "In my class, I teach the",
+                "use of the most basic",
+                "interfaces."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kris",
+            args![
+                (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from(".")),
+                "would you like to learn",
+                "more about interface",
+                "fundamentals?"
+            ],
+        )?;
+        ctx.next()?;
+        'b2: {
+            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes.:Nah, I'm a pro~:Cancel.")])?);
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                && !subject2.loosely_equals(&Val::from(2))
+                && !subject2.loosely_equals(&Val::from(3));
+            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                matched2 = true;
             }
-            ctx.lines_as(
-                "Kris",
-                args![
-                    "Okay, now",
-                    "you're ready to go.",
-                    "In my class, I teach the",
-                    "use of the most basic",
-                    "interfaces."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kris",
-                args![
-                    (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from(".")),
-                    "would you like to learn",
-                    "more about interface",
-                    "fundamentals?"
-                ],
-            )?;
-            ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes.:Nah, I'm a pro~:Cancel.")])?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
+            if matched2 {
+                ctx.lines_as("Kris", args!["First, it's possible to move every interface window on your screen by dragging the window. Just click on the window, hold down the mouse button and move your mouse."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kris",
+                    args!["Now, let me explain each interface window according to their default positions on your screen."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["At the upper left side of your screen, you will see a window with your character name and level. This is the ^3355FFBasic Information Window^000000."])?;
+                ctx.next()?;
+                ctx.mes("[Kris]")?;
+                if ctx.var("BaseLevel").get()?.number()? < 8 {
+                    ctx.lines(args![
+                        "Let me give you",
+                        "some experience points.",
+                        "Keep an eye on your Basic Info Window and observe the change in your Base Level experience gauge."
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Kris",
+                        args![
+                            "Did you see...?",
+                            "As you gain experience,",
+                            "the experience gauge fills up.",
+                            "Once it is 100 % full, you gain an experience level, and the gauge is reset to 0."
+                        ],
+                    )?;
+                    ctx.var("nov_get_item02").set(Val::from(10))?;
+                    'b3: {
+                        let subject3 = ctx.var("BaseLevel").get()?;
+                        let mut matched3 = false;
+                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                            && !subject3.loosely_equals(&Val::from(2))
+                            && !subject3.loosely_equals(&Val::from(3))
+                            && !subject3.loosely_equals(&Val::from(4))
+                            && !subject3.loosely_equals(&Val::from(5))
+                            && !subject3.loosely_equals(&Val::from(6))
+                            && !subject3.loosely_equals(&Val::from(7));
+                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.call(Function::GetExperience, vec![Val::from(10), Val::from(0)])?;
+                            break 'b3;
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.call(Function::GetExperience, vec![Val::from(17), Val::from(0)])?;
+                            break 'b3;
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.call(Function::GetExperience, vec![Val::from(26), Val::from(0)])?;
+                            break 'b3;
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(4)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.call(Function::GetExperience, vec![Val::from(37), Val::from(0)])?;
+                            break 'b3;
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(5)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.call(Function::GetExperience, vec![Val::from(78), Val::from(0)])?;
+                            break 'b3;
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(6)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.call(Function::GetExperience, vec![Val::from(115), Val::from(0)])?;
+                            break 'b3;
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(7)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.call(Function::GetExperience, vec![Val::from(155), Val::from(0)])?;
+                            break 'b3;
+                        }
+                    }
+                } else {
+                    ctx.lines(args![
+                        "But...",
+                        "I guess you're already familiar with the Base Level experience gauge."
+                    ])?;
                 }
-                if matched2 {
-                    ctx.lines_as("Kris", args!["First, it's possible to move every interface window on your screen by dragging the window. Just click on the window, hold down the mouse button and move your mouse."])?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["At the bottom of the Basic Info Window, you will see two different experience gauge bars. The top bar is for your current Base Level, and the bottom one displays experience for your current Job Level."])?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["When the Job Level", "Experience bar is filled, you will earn a Job Level, and a ^3355FFSkill Point^000000. Skill Points are spent to learn skills for your character."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kris",
+                    args![
+                        "On the right side",
+                        "of the Basic Info window,",
+                        "you will see various",
+                        "Menu buttons."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kris",
+                    args![
+                        "Clicking these Menu buttons will open other Interface Windows, such as the Inventory Window",
+                        "or Party Window."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kris",
+                    args![
+                        "Now...",
+                        "The ^3355FFChat Window^000000 is",
+                        "located at the bottom",
+                        "of your screen."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["At the bottom right of the Chat Window, you should see 2 blue buttons. The left button allows you to change your chatting options."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kris",
+                    args![
+                        "The '^3355FFSend to All^000000' option",
+                        "allows you to chat with",
+                        "everyone on your screen."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["The '^3355FFSend to Party^000000' and '^3355FFSend to Guild^000000' options allows you to send messages to only members of your party or guild, regardless of how far they are."])?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["You can drag the Scroll Bar", "on the right side of the Chat Window to review a conversation. Since the Chat Window is always active, you won't have any problem communicating with other players."])?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["Now, one of the most important interfaces is the ^3355FFMini-Map^000000, located at the upper-right of your screen."])?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["The red dots on the Mini-Map indicate locations of ^3355FFWarp Portals^000000 which connect to different zones."])?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["If you've joined a party or a guild, the Mini-Map will also show you the location of your party or guild members if they are on the same map."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Kris",
+                    args![
+                        "Please click the Menu buttons",
+                        "on the right side of your Basic Info window and familiarize yourself with the other interfaces."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["Well, that was my brief overview on in-game interfaces. It might seem like a lot of information now, but it will soon become second nature."])?;
+                if ctx.var("JobLevel").get()?.number()? < 7 {
                     ctx.next()?;
-                    ctx.lines_as(
-                        "Kris",
-                        args!["Now, let me explain each interface window according to their default positions on your screen."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["At the upper left side of your screen, you will see a window with your character name and level. This is the ^3355FFBasic Information Window^000000."])?;
-                    ctx.next()?;
-                    ctx.mes("[Kris]")?;
-                    if ctx.var("BaseLevel").get()?.number()? < 8 {
-                        ctx.lines(args![
-                            "Let me give you",
-                            "some experience points.",
-                            "Keep an eye on your Basic Info Window and observe the change in your Base Level experience gauge."
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Kris",
-                            args![
-                                "Did you see...?",
-                                "As you gain experience,",
-                                "the experience gauge fills up.",
-                                "Once it is 100 % full, you gain an experience level, and the gauge is reset to 0."
-                            ],
-                        )?;
-                        ctx.var("nov_get_item02").set(Val::from(10))?;
-                        'b3: {
-                            let subject3 = ctx.var("BaseLevel").get()?;
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3))
-                                && !subject3.loosely_equals(&Val::from(4))
-                                && !subject3.loosely_equals(&Val::from(5))
-                                && !subject3.loosely_equals(&Val::from(6))
-                                && !subject3.loosely_equals(&Val::from(7));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(Function::GetExperience, vec![Val::from(10), Val::from(0)])?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(Function::GetExperience, vec![Val::from(17), Val::from(0)])?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(Function::GetExperience, vec![Val::from(26), Val::from(0)])?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(Function::GetExperience, vec![Val::from(37), Val::from(0)])?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(Function::GetExperience, vec![Val::from(78), Val::from(0)])?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(6)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(Function::GetExperience, vec![Val::from(115), Val::from(0)])?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(7)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(Function::GetExperience, vec![Val::from(155), Val::from(0)])?;
-                                break 'b3;
-                            }
+                    ctx.lines_as("Kris", args!["Let me give you a little bit of Job experience points. Open your Skill Window and distribute your Skill Points into ^3355FFBasic Skills^000000."])?;
+                    ctx.var("nov_get_item02").set(Val::from(11))?;
+                    'b4: {
+                        let subject4 = ctx.var("JobLevel").get()?;
+                        let mut matched4 = false;
+                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                            && !subject4.loosely_equals(&Val::from(2))
+                            && !subject4.loosely_equals(&Val::from(3))
+                            && !subject4.loosely_equals(&Val::from(4))
+                            && !subject4.loosely_equals(&Val::from(5))
+                            && !subject4.loosely_equals(&Val::from(6));
+                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                            matched4 = true;
                         }
-                    } else {
-                        ctx.lines(args![
-                            "But...",
-                            "I guess you're already familiar with the Base Level experience gauge."
-                        ])?;
-                    }
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["At the bottom of the Basic Info Window, you will see two different experience gauge bars. The top bar is for your current Base Level, and the bottom one displays experience for your current Job Level."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["When the Job Level", "Experience bar is filled, you will earn a Job Level, and a ^3355FFSkill Point^000000. Skill Points are spent to learn skills for your character."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Kris",
-                        args![
-                            "On the right side",
-                            "of the Basic Info window,",
-                            "you will see various",
-                            "Menu buttons."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Kris",
-                        args![
-                            "Clicking these Menu buttons will open other Interface Windows, such as the Inventory Window",
-                            "or Party Window."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Kris",
-                        args![
-                            "Now...",
-                            "The ^3355FFChat Window^000000 is",
-                            "located at the bottom",
-                            "of your screen."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["At the bottom right of the Chat Window, you should see 2 blue buttons. The left button allows you to change your chatting options."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Kris",
-                        args![
-                            "The '^3355FFSend to All^000000' option",
-                            "allows you to chat with",
-                            "everyone on your screen."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["The '^3355FFSend to Party^000000' and '^3355FFSend to Guild^000000' options allows you to send messages to only members of your party or guild, regardless of how far they are."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["You can drag the Scroll Bar", "on the right side of the Chat Window to review a conversation. Since the Chat Window is always active, you won't have any problem communicating with other players."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["Now, one of the most important interfaces is the ^3355FFMini-Map^000000, located at the upper-right of your screen."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["The red dots on the Mini-Map indicate locations of ^3355FFWarp Portals^000000 which connect to different zones."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["If you've joined a party or a guild, the Mini-Map will also show you the location of your party or guild members if they are on the same map."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Kris",
-                        args![
-                            "Please click the Menu buttons",
-                            "on the right side of your Basic Info window and familiarize yourself with the other interfaces."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["Well, that was my brief overview on in-game interfaces. It might seem like a lot of information now, but it will soon become second nature."])?;
-                    if ctx.var("JobLevel").get()?.number()? < 7 {
-                        ctx.next()?;
-                        ctx.lines_as("Kris", args!["Let me give you a little bit of Job experience points. Open your Skill Window and distribute your Skill Points into ^3355FFBasic Skills^000000."])?;
-                        ctx.var("nov_get_item02").set(Val::from(11))?;
-                        'b4: {
-                            let subject4 = ctx.var("JobLevel").get()?;
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                && !subject4.loosely_equals(&Val::from(2))
-                                && !subject4.loosely_equals(&Val::from(3))
-                                && !subject4.loosely_equals(&Val::from(4))
-                                && !subject4.loosely_equals(&Val::from(5))
-                                && !subject4.loosely_equals(&Val::from(6));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10)])?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(18)])?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(28)])?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(40)])?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(91)])?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(151)])?;
-                                break 'b4;
-                            }
+                        if matched4 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10)])?;
+                            break 'b4;
                         }
-                    } else {
-                        ctx.lines_as(
-                            "Kris",
-                            args!["Your Job Level is much higher than I had expected. You must already know the basic information by now."],
-                        )?;
+                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(18)])?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(28)])?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(4)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(40)])?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(5)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(91)])?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(6)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(151)])?;
+                            break 'b4;
+                        }
                     }
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["Now, why don't you speak to Edwin? He will teach you more regarding the basic use of Skills. Ah, and let me give you a small present: a Tattered Novice Ninja Suit!"])?;
-                    ctx.var("nov_get_item02").set(Val::from(12))?;
-                    ctx.call(Function::GetItem, vec![Val::from(2352), Val::from(1)])?;
+                } else {
+                    ctx.lines_as(
+                        "Kris",
+                        args!["Your Job Level is much higher than I had expected. You must already know the basic information by now."],
+                    )?;
+                }
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["Now, why don't you speak to Edwin? He will teach you more regarding the basic use of Skills. Ah, and let me give you a small present: a Tattered Novice Ninja Suit!"])?;
+                ctx.var("nov_get_item02").set(Val::from(12))?;
+                ctx.call(Function::GetItem, vec![Val::from(2352), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as(
+                    "Kris",
+                    args![
+                        "Let me guide you",
+                        "to the Field Combat",
+                        "Training Course.",
+                        "You can come back any time if you feel that you need a review."
+                    ],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
+                return Err(Stop::End);
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_PROFUSELY_SWEAT")?])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("nov_get_item03").get()?.number()? < 10 {
+        ctx.lines_as("Kris", args!["How may I help you?", "Can I see your proof of registration?"])?;
+        ctx.next()?;
+        ctx.lines_as("Kris", args!["It seems that you haven't attended the Skill Information class yet. Please talk to a tutor to the very left of this room to attend his class."])?;
+        ctx.next()?;
+        'b5: {
+            let subject5 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Thank you!:I'm tired of classes~:Cancel")],
+            )?);
+            let mut matched5 = false;
+            let no_case5 = !subject5.loosely_equals(&Val::from(1))
+                && !subject5.loosely_equals(&Val::from(2))
+                && !subject5.loosely_equals(&Val::from(3));
+            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                matched5 = true;
+            }
+            if matched5 {
+                ctx.lines_as(
+                    "Kris",
+                    args!["When you attend the Skill Information class, you'll gain a better understanding of the use of skills."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Kris", args!["Since the use of skills is integral to survival in Midgard, I strongly suggest that you attend the class. Come, I shall guide you there."])?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(84), Val::from(107)])?;
+                return Err(Stop::End);
+            }
+            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                matched5 = true;
+            }
+            if matched5 {
+                ctx.lines_as("Kris", args!["I see. In that case, you must be ready for the Field Combat Training Course. Shall I send you there right away?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("No! W-wait!:Please do~!")])?) == 1 {
+                    ctx.lines_as(
+                        "Kris",
+                        args!["...?!", "O...kay then.", "Please come back", "when you're ready."],
+                    )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines_as(
-                        "Kris",
-                        args![
-                            "Let me guide you",
-                            "to the Field Combat",
-                            "Training Course.",
-                            "You can come back any time if you feel that you need a review."
-                        ],
-                    )?;
+                } else {
+                    ctx.lines_as("Kris", args!["Godspeed,", "young Novice."])?;
                     ctx.close_window()?;
                     ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
                     return Err(Stop::End);
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.call(Function::Emotion, vec![ctx.constant("ET_PROFUSELY_SWEAT")?])?;
+            }
+            if !matched5 && subject5.loosely_equals(&Val::from(3)) {
+                matched5 = true;
+            }
+            if matched5 {
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_PROFUSELY_SWEAT")?])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("nov_get_item04").get()?.number()? < 10 {
+        ctx.lines_as("Kris", args!["How may I help you?", "Can I see your proof of registration?"])?;
+        ctx.next()?;
+        ctx.lines_as("Kris", args!["It looks like you still haven't attended the Item Information class yet. Please speak to the tutor to the very right of this room to attend her class."])?;
+        ctx.next()?;
+        'b6: {
+            let subject6 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Thank you.:I'm tired of classes~:Cancel")],
+            )?);
+            let mut matched6 = false;
+            let no_case6 = !subject6.loosely_equals(&Val::from(1))
+                && !subject6.loosely_equals(&Val::from(2))
+                && !subject6.loosely_equals(&Val::from(3));
+            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as("Kris", args!["The Item Information class is very useful for you to learn how to use your Hot keys and Hot key bars. Come, let me guide you there."])?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(115), Val::from(107)])?;
+                return Err(Stop::End);
+            }
+            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as("Kris", args!["I see. In that case, you must be ready for the Field Combat Training Course. Shall I send you there right away?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("No! W-wait!:Please do~!")])?) == 1 {
+                    ctx.lines_as(
+                        "Kris",
+                        args!["...?!", "O...kay then.", "Please come back", "when you're ready."],
+                    )?;
                     ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as("Kris", args!["Godspeed,", "young Novice."])?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if ctx.var("nov_get_item03").get()?.number()? < 10 {
-                ctx.lines_as("Kris", args!["How may I help you?", "Can I see your proof of registration?"])?;
-                ctx.next()?;
-                ctx.lines_as("Kris", args!["It seems that you haven't attended the Skill Information class yet. Please talk to a tutor to the very left of this room to attend his class."])?;
-                ctx.next()?;
-                'b5: {
-                    let subject5 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Thank you!:I'm tired of classes~:Cancel")],
-                    )?);
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                        && !subject5.loosely_equals(&Val::from(2))
-                        && !subject5.loosely_equals(&Val::from(3));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.lines_as(
-                            "Kris",
-                            args!["When you attend the Skill Information class, you'll gain a better understanding of the use of skills."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Kris", args!["Since the use of skills is integral to survival in Midgard, I strongly suggest that you attend the class. Come, I shall guide you there."])?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(84), Val::from(107)])?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.lines_as("Kris", args!["I see. In that case, you must be ready for the Field Combat Training Course. Shall I send you there right away?"])?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("No! W-wait!:Please do~!")])?) == 1 {
-                            ctx.lines_as(
-                                "Kris",
-                                args!["...?!", "O...kay then.", "Please come back", "when you're ready."],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as("Kris", args!["Godspeed,", "young Novice."])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
-                            return Err(Stop::End);
-                        }
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.call(Function::Emotion, vec![ctx.constant("ET_PROFUSELY_SWEAT")?])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-            } else {
-                if ctx.var("nov_get_item04").get()?.number()? < 10 {
-                    ctx.lines_as("Kris", args!["How may I help you?", "Can I see your proof of registration?"])?;
-                    ctx.next()?;
-                    ctx.lines_as("Kris", args!["It looks like you still haven't attended the Item Information class yet. Please speak to the tutor to the very right of this room to attend her class."])?;
-                    ctx.next()?;
-                    'b6: {
-                        let subject6 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Thank you.:I'm tired of classes~:Cancel")],
-                        )?);
-                        let mut matched6 = false;
-                        let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                            && !subject6.loosely_equals(&Val::from(2))
-                            && !subject6.loosely_equals(&Val::from(3));
-                        if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                            matched6 = true;
-                        }
-                        if matched6 {
-                            ctx.lines_as("Kris", args!["The Item Information class is very useful for you to learn how to use your Hot keys and Hot key bars. Come, let me guide you there."])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(115), Val::from(107)])?;
-                            return Err(Stop::End);
-                        }
-                        if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                            matched6 = true;
-                        }
-                        if matched6 {
-                            ctx.lines_as("Kris", args!["I see. In that case, you must be ready for the Field Combat Training Course. Shall I send you there right away?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("No! W-wait!:Please do~!")])?) == 1 {
-                                ctx.lines_as(
-                                    "Kris",
-                                    args!["...?!", "O...kay then.", "Please come back", "when you're ready."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as("Kris", args!["Godspeed,", "young Novice."])?;
-                                ctx.close_window()?;
-                                ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
-                                return Err(Stop::End);
-                            }
-                        }
-                        if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                            matched6 = true;
-                        }
-                        if matched6 {
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_PROFUSELY_SWEAT")?])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
+            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_PROFUSELY_SWEAT")?])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -1472,110 +1460,106 @@ fn skill_tutor_nv_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("nov_get_item02").get()?.number()? < 10 {
-            ctx.lines_as(
-                "Cecil",
-                args![
-                    "So how may",
-                    "I help you?",
-                    "Whoa, you haven't attended the Basic Interface class yet? Oh well, I know that class is kinda boring~"
-                ],
-            )?;
-            ctx.next()?;
-            'b7: {
-                let subject7 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Oh, I better take that class.:Send me to Field Combat Training.:Cancel")],
-                )?);
-                let mut matched7 = false;
-                let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                    && !subject7.loosely_equals(&Val::from(2))
-                    && !subject7.loosely_equals(&Val::from(3));
-                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                    matched7 = true;
-                }
-                if matched7 {
-                    ctx.lines_as("Cecil", args!["Yeah, that's a good idea. After all, you'll gain experience and items while you take that class. Alright then, the Interfaces Tutor is in the center of this room. Go for it~"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                    matched7 = true;
-                }
-                if matched7 {
-                    ctx.lines_as(
-                        "Cecil",
-                        args![
-                            "Heh heh~!",
-                            "Alright, practice makes perfect! Let me send you to the guys at Field Combat Training. Take care!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
-                    return Err(Stop::End);
-                }
-                if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                    matched7 = true;
-                }
-                if matched7 {
-                    ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("nov_get_item02").get()?.number()? < 10 {
+        ctx.lines_as(
+            "Cecil",
+            args![
+                "So how may",
+                "I help you?",
+                "Whoa, you haven't attended the Basic Interface class yet? Oh well, I know that class is kinda boring~"
+            ],
+        )?;
+        ctx.next()?;
+        'b7: {
+            let subject7 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Oh, I better take that class.:Send me to Field Combat Training.:Cancel")],
+            )?);
+            let mut matched7 = false;
+            let no_case7 = !subject7.loosely_equals(&Val::from(1))
+                && !subject7.loosely_equals(&Val::from(2))
+                && !subject7.loosely_equals(&Val::from(3));
+            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                matched7 = true;
             }
-        } else {
-            if ctx.var("nov_get_item04").get()?.number()? < 10 {
+            if matched7 {
+                ctx.lines_as("Cecil", args!["Yeah, that's a good idea. After all, you'll gain experience and items while you take that class. Alright then, the Interfaces Tutor is in the center of this room. Go for it~"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                matched7 = true;
+            }
+            if matched7 {
                 ctx.lines_as(
                     "Cecil",
                     args![
-                        "So how may",
-                        "I help you?",
-                        "Whoa, you haven't attended the Item Information class yet? Oh well, I know that class is kinda boring~"
+                        "Heh heh~!",
+                        "Alright, practice makes perfect! Let me send you to the guys at Field Combat Training. Take care!"
                     ],
                 )?;
-                ctx.next()?;
-                'b8: {
-                    let subject8 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Oh, I better take that class.:Send me to Field Combat Training.:Cancel")],
-                    )?);
-                    let mut matched8 = false;
-                    let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                        && !subject8.loosely_equals(&Val::from(2))
-                        && !subject8.loosely_equals(&Val::from(3));
-                    if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
-                        ctx.lines_as("Cecil", args!["Yeah, that's a good idea. After all, you'll gain experience and items while you take that class. Alright then, the Item Tutor is on the far right side of this room. Go for it~"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
-                        ctx.lines_as(
-                            "Cecil",
-                            args![
-                                "Heh heh~!",
-                                "Alright, practice makes perfect! Let me send you to the guys at Field Combat Training. Take care!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
-                        return Err(Stop::End);
-                    }
-                    if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
-                        ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
+                return Err(Stop::End);
+            }
+            if !matched7 && subject7.loosely_equals(&Val::from(3)) {
+                matched7 = true;
+            }
+            if matched7 {
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("nov_get_item04").get()?.number()? < 10 {
+        ctx.lines_as(
+            "Cecil",
+            args![
+                "So how may",
+                "I help you?",
+                "Whoa, you haven't attended the Item Information class yet? Oh well, I know that class is kinda boring~"
+            ],
+        )?;
+        ctx.next()?;
+        'b8: {
+            let subject8 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Oh, I better take that class.:Send me to Field Combat Training.:Cancel")],
+            )?);
+            let mut matched8 = false;
+            let no_case8 = !subject8.loosely_equals(&Val::from(1))
+                && !subject8.loosely_equals(&Val::from(2))
+                && !subject8.loosely_equals(&Val::from(3));
+            if !matched8 && subject8.loosely_equals(&Val::from(1)) {
+                matched8 = true;
+            }
+            if matched8 {
+                ctx.lines_as("Cecil", args!["Yeah, that's a good idea. After all, you'll gain experience and items while you take that class. Alright then, the Item Tutor is on the far right side of this room. Go for it~"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched8 && subject8.loosely_equals(&Val::from(2)) {
+                matched8 = true;
+            }
+            if matched8 {
+                ctx.lines_as(
+                    "Cecil",
+                    args![
+                        "Heh heh~!",
+                        "Alright, practice makes perfect! Let me send you to the guys at Field Combat Training. Take care!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
+                return Err(Stop::End);
+            }
+            if !matched8 && subject8.loosely_equals(&Val::from(3)) {
+                matched8 = true;
+            }
+            if matched8 {
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -1666,643 +1650,637 @@ fn item_tutor_nv_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("nov_get_item04").get()?.number()? < 10 {
-            ctx.lines_as(
-                "Alice",
-                args!["^666666*Yawn~*^000000", "This is so boring.", "Oh! Hello, you're new here."],
-            )?;
-            if ctx.var("new_mes_flag0").get()?.is_true() {
-                ctx.mes("Ooh, your proof of registration was expired. But that's okay, I'll just give you a new one! There you go.")?;
-                ctx.var("new_mes_flag0").set(Val::from(0))?;
-                ctx.var("new_mes_flag1").set(Val::from(0))?;
-                ctx.var("new_mes_flag2").set(Val::from(0))?;
-                ctx.var("new_mes_flag3").set(Val::from(0))?;
-                ctx.var("new_mes_flag4").set(Val::from(0))?;
-                ctx.var("new_mes_flag5").set(Val::from(0))?;
-                ctx.var("new_lvup0").set(Val::from(0))?;
-                ctx.var("new_lvup1").set(Val::from(0))?;
-                ctx.var("new_joblvup").set(Val::from(0))?;
+    } else if ctx.var("nov_get_item04").get()?.number()? < 10 {
+        ctx.lines_as(
+            "Alice",
+            args!["^666666*Yawn~*^000000", "This is so boring.", "Oh! Hello, you're new here."],
+        )?;
+        if ctx.var("new_mes_flag0").get()?.is_true() {
+            ctx.mes("Ooh, your proof of registration was expired. But that's okay, I'll just give you a new one! There you go.")?;
+            ctx.var("new_mes_flag0").set(Val::from(0))?;
+            ctx.var("new_mes_flag1").set(Val::from(0))?;
+            ctx.var("new_mes_flag2").set(Val::from(0))?;
+            ctx.var("new_mes_flag3").set(Val::from(0))?;
+            ctx.var("new_mes_flag4").set(Val::from(0))?;
+            ctx.var("new_mes_flag5").set(Val::from(0))?;
+            ctx.var("new_lvup0").set(Val::from(0))?;
+            ctx.var("new_lvup1").set(Val::from(0))?;
+            ctx.var("new_joblvup").set(Val::from(0))?;
+        }
+        ctx.lines(args!["So, have you come to attend", "my Item Information class?"])?;
+        ctx.next()?;
+        'b3: {
+            let subject3 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Yes!:No, thanks.:How do I get to a town?")],
+            )?);
+            let mut matched3 = false;
+            let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                && !subject3.loosely_equals(&Val::from(2))
+                && !subject3.loosely_equals(&Val::from(3));
+            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                matched3 = true;
             }
-            ctx.lines(args!["So, have you come to attend", "my Item Information class?"])?;
-            ctx.next()?;
-            'b3: {
-                let subject3 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Yes!:No, thanks.:How do I get to a town?")],
-                )?);
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                    && !subject3.loosely_equals(&Val::from(2))
-                    && !subject3.loosely_equals(&Val::from(3));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines_as("Alice", args!["Don't worry, it'll be short.", "Open your Inventory Window", "through either the '^3355FFitems^000000' button in the Basic Info window, or by pressing the '^3355FFAlt^000000' and '^3355FFE^000000' keys at the same time."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Alice", args!["In the Inventory Window, you'll see 3 tabs labeled ^3355FFitem^000000, ^3355FFequip^000000 and ^3355FFetc^000000. Items that can be consumed are under the ^4A708Bitem^000000 tab."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Alice", args!["Now, would you click the ^4A708Bitem^000000 tab in the Inventory Window? I just gave you a Novice Potion. You can drink it by double-clicking it. Go ahead, try it!"])?;
-                    ctx.var("nov_get_item04").set(Val::from(10))?;
-                    ctx.call(Function::GetItem, vec![Val::from(569), Val::from(1)])?;
-                    ctx.call(Function::PercentHeal, vec![Val::from(-50), Val::from(0)])?;
-                    ctx.next()?;
-                    ctx.mes("[Alice]")?;
-                    if ctx.call(Function::CountItem, vec![Val::from(569)])?.number()? < 1 {
-                        if ctx.var("BaseLevel").get()?.number()? < 8 {
-                            ctx.lines(args!["Nice~!", "And here's", "a little reward", "just for listening."])?;
-                            ctx.var("nov_get_item04").set(Val::from(11))?;
-                            'b4: {
-                                let subject4 = ctx.var("BaseLevel").get()?;
-                                let mut matched4 = false;
-                                let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                    && !subject4.loosely_equals(&Val::from(2))
-                                    && !subject4.loosely_equals(&Val::from(3))
-                                    && !subject4.loosely_equals(&Val::from(4))
-                                    && !subject4.loosely_equals(&Val::from(5))
-                                    && !subject4.loosely_equals(&Val::from(6))
-                                    && !subject4.loosely_equals(&Val::from(7));
-                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(10), Val::from(0)])?;
-                                    break 'b4;
-                                }
-                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(17), Val::from(0)])?;
-                                    break 'b4;
-                                }
-                                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(26), Val::from(0)])?;
-                                    break 'b4;
-                                }
-                                if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(37), Val::from(0)])?;
-                                    break 'b4;
-                                }
-                                if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(78), Val::from(0)])?;
-                                    break 'b4;
-                                }
-                                if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(115), Val::from(0)])?;
-                                    break 'b4;
-                                }
-                                if !matched4 && subject4.loosely_equals(&Val::from(7)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(155), Val::from(0)])?;
-                                    break 'b4;
-                                }
+            if matched3 {
+                ctx.lines_as("Alice", args!["Don't worry, it'll be short.", "Open your Inventory Window", "through either the '^3355FFitems^000000' button in the Basic Info window, or by pressing the '^3355FFAlt^000000' and '^3355FFE^000000' keys at the same time."])?;
+                ctx.next()?;
+                ctx.lines_as("Alice", args!["In the Inventory Window, you'll see 3 tabs labeled ^3355FFitem^000000, ^3355FFequip^000000 and ^3355FFetc^000000. Items that can be consumed are under the ^4A708Bitem^000000 tab."])?;
+                ctx.next()?;
+                ctx.lines_as("Alice", args!["Now, would you click the ^4A708Bitem^000000 tab in the Inventory Window? I just gave you a Novice Potion. You can drink it by double-clicking it. Go ahead, try it!"])?;
+                ctx.var("nov_get_item04").set(Val::from(10))?;
+                ctx.call(Function::GetItem, vec![Val::from(569), Val::from(1)])?;
+                ctx.call(Function::PercentHeal, vec![Val::from(-50), Val::from(0)])?;
+                ctx.next()?;
+                ctx.mes("[Alice]")?;
+                if ctx.call(Function::CountItem, vec![Val::from(569)])?.number()? < 1 {
+                    if ctx.var("BaseLevel").get()?.number()? < 8 {
+                        ctx.lines(args!["Nice~!", "And here's", "a little reward", "just for listening."])?;
+                        ctx.var("nov_get_item04").set(Val::from(11))?;
+                        'b4: {
+                            let subject4 = ctx.var("BaseLevel").get()?;
+                            let mut matched4 = false;
+                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                                && !subject4.loosely_equals(&Val::from(2))
+                                && !subject4.loosely_equals(&Val::from(3))
+                                && !subject4.loosely_equals(&Val::from(4))
+                                && !subject4.loosely_equals(&Val::from(5))
+                                && !subject4.loosely_equals(&Val::from(6))
+                                && !subject4.loosely_equals(&Val::from(7));
+                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                matched4 = true;
                             }
-                        } else {
-                            ctx.mes("Good job! I'd reward you with some more experience if your level weren't already this high.")?;
-                        }
-                    } else {
-                        ctx.lines(args!["Um...", "Well, you can drink", "it later I guess."])?;
-                    }
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Alice",
-                        args![
-                            "Let me explain about",
-                            "items in the ^4A708Bequip^000000 tab",
-                            "of the Inventory Window."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Alice", args!["When you click on the ^4A708Bequip^000000 tab, you can view every item in your inventory that you can equip. Let me give you some equipment so that you can try them on."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Alice",
-                        args![
-                            "Got them? Good.",
-                            "Now, double-click",
-                            "on the Novice Slippers",
-                            "I just gave you to",
-                            "put them on."
-                        ],
-                    )?;
-                    ctx.var("nov_get_item04").set(Val::from(12))?;
-                    ctx.call(Function::GetItem, vec![Val::from(2510), Val::from(1)])?;
-                    ctx.call(Function::GetItem, vec![Val::from(2414), Val::from(1)])?;
-                    ctx.call(Function::GetItem, vec![Val::from(5055), Val::from(1)])?;
-                    ctx.next()?;
-                    ctx.mes("[Alice]")?;
-                    if ctx.call(Function::IsEquipped, vec![Val::from(2414)])?.is_true() {
-                        if ctx.var("BaseLevel").get()?.number()? < 8 {
-                            ctx.lines(args!["Hooray~!", "You did it!", "You deserve a reward!"])?;
-                            ctx.var("nov_get_item04").set(Val::from(13))?;
-                            'b5: {
-                                let subject5 = ctx.var("BaseLevel").get()?;
-                                let mut matched5 = false;
-                                let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                                    && !subject5.loosely_equals(&Val::from(2))
-                                    && !subject5.loosely_equals(&Val::from(3))
-                                    && !subject5.loosely_equals(&Val::from(4))
-                                    && !subject5.loosely_equals(&Val::from(5))
-                                    && !subject5.loosely_equals(&Val::from(6))
-                                    && !subject5.loosely_equals(&Val::from(7));
-                                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(10), Val::from(0)])?;
-                                    break 'b5;
-                                }
-                                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(17), Val::from(0)])?;
-                                    break 'b5;
-                                }
-                                if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(26), Val::from(0)])?;
-                                    break 'b5;
-                                }
-                                if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(37), Val::from(0)])?;
-                                    break 'b5;
-                                }
-                                if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(78), Val::from(0)])?;
-                                    break 'b5;
-                                }
-                                if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(115), Val::from(0)])?;
-                                    break 'b5;
-                                }
-                                if !matched5 && subject5.loosely_equals(&Val::from(7)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(155), Val::from(0)])?;
-                                    break 'b5;
-                                }
+                            if matched4 {
+                                ctx.call(Function::GetExperience, vec![Val::from(10), Val::from(0)])?;
+                                break 'b4;
                             }
-                        } else {
-                            ctx.mes("Good job! I'd reward you with some more experience if your level weren't already this high.")?;
-                        }
-                    } else {
-                        ctx.lines(args![
-                            "Er...",
-                            "You've got to",
-                            "double-click",
-                            "equipment to",
-                            "wear it. Just",
-                            "remember that, okay?"
-                        ])?;
-                    }
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Alice",
-                        args![
-                            "Would you",
-                            "press the '^3355FFF12^000000' key?",
-                            "This will summon your",
-                            "Hotkey bar on your screen."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Alice", args!["You can assign hotkeys to your items, skills and equipment using the Hotkey bar. Just drag skill icons from the Skill Window or items from the Inventory Window into the Hotkey bar."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Alice", args!["The Hotkeys are '^3355FFF1^000000' to '^3355FFF9^000000.'", "If you have attended the Skill Class, you must have been given the First Aid skill. Drag and drop the First Aid skill icon into the Hotkey bar."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Alice", args!["For your information, only", "active skills can be assigned to a Hotkey and dragged to the Hotkey bar. Active Skills have colored, square shaped icons that can be double-clicked and used."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Alice", args!["Passive Skills, such as the aptly named 'Basic Skill,' cannot be dragged into the Hotkey bar because Passive Skills are always in effect and don't need to be activated."])?;
-                    ctx.var("nov_get_item04").set(Val::from(14))?;
-                    if ctx.var("JobLevel").get()?.number()? < 7 {
-                        'b6: {
-                            let subject6 = ctx.var("JobLevel").get()?;
-                            let mut matched6 = false;
-                            let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                                && !subject6.loosely_equals(&Val::from(2))
-                                && !subject6.loosely_equals(&Val::from(3))
-                                && !subject6.loosely_equals(&Val::from(4))
-                                && !subject6.loosely_equals(&Val::from(5))
-                                && !subject6.loosely_equals(&Val::from(6));
-                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                matched6 = true;
+                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                matched4 = true;
                             }
-                            if matched6 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10)])?;
-                                break 'b6;
+                            if matched4 {
+                                ctx.call(Function::GetExperience, vec![Val::from(17), Val::from(0)])?;
+                                break 'b4;
                             }
-                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                matched6 = true;
+                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                                matched4 = true;
                             }
-                            if matched6 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(18)])?;
-                                break 'b6;
+                            if matched4 {
+                                ctx.call(Function::GetExperience, vec![Val::from(26), Val::from(0)])?;
+                                break 'b4;
                             }
-                            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                matched6 = true;
+                            if !matched4 && subject4.loosely_equals(&Val::from(4)) {
+                                matched4 = true;
                             }
-                            if matched6 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(28)])?;
-                                break 'b6;
+                            if matched4 {
+                                ctx.call(Function::GetExperience, vec![Val::from(37), Val::from(0)])?;
+                                break 'b4;
                             }
-                            if !matched6 && subject6.loosely_equals(&Val::from(4)) {
-                                matched6 = true;
+                            if !matched4 && subject4.loosely_equals(&Val::from(5)) {
+                                matched4 = true;
                             }
-                            if matched6 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(40)])?;
-                                break 'b6;
+                            if matched4 {
+                                ctx.call(Function::GetExperience, vec![Val::from(78), Val::from(0)])?;
+                                break 'b4;
                             }
-                            if !matched6 && subject6.loosely_equals(&Val::from(5)) {
-                                matched6 = true;
+                            if !matched4 && subject4.loosely_equals(&Val::from(6)) {
+                                matched4 = true;
                             }
-                            if matched6 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(91)])?;
-                                break 'b6;
+                            if matched4 {
+                                ctx.call(Function::GetExperience, vec![Val::from(115), Val::from(0)])?;
+                                break 'b4;
                             }
-                            if !matched6 && subject6.loosely_equals(&Val::from(6)) {
-                                matched6 = true;
+                            if !matched4 && subject4.loosely_equals(&Val::from(7)) {
+                                matched4 = true;
                             }
-                            if matched6 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(151)])?;
-                                break 'b6;
-                            }
-                        }
-                    }
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Alice",
-                        args![
-                            "Well, that's it!",
-                            "Let me supply you with some items",
-                            "that will help you during the Field Combat Training."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Alice", args!["However, ^ff0000do not use the Fly Wing or Butterfly Wing^000000 in these Training Grounds or you could be stuck here forever. Those items are for when you graduate, okay?"])?;
-                    ctx.var("nov_get_item04").set(Val::from(15))?;
-                    ctx.call(Function::GetItem, vec![Val::from(601), Val::from(10)])?;
-                    ctx.call(Function::GetItem, vec![Val::from(602), Val::from(2)])?;
-                    ctx.call(Function::GetItem, vec![Val::from(569), Val::from(50)])?;
-                    ctx.next()?;
-                    ctx.lines_as("Alice", args!["And lastly..."])?;
-                    if ctx.var("JobLevel").get()?.number()? < 7 {
-                        ctx.lines(args!["I will give", "you some Job experience!"])?;
-                        ctx.var("nov_get_item04").set(Val::from(16))?;
-                        'b7: {
-                            let subject7 = ctx.var("JobLevel").get()?;
-                            let mut matched7 = false;
-                            let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                                && !subject7.loosely_equals(&Val::from(2))
-                                && !subject7.loosely_equals(&Val::from(3))
-                                && !subject7.loosely_equals(&Val::from(4))
-                                && !subject7.loosely_equals(&Val::from(5))
-                                && !subject7.loosely_equals(&Val::from(6));
-                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10)])?;
-                                break 'b7;
-                            }
-                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(18)])?;
-                                break 'b7;
-                            }
-                            if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(28)])?;
-                                break 'b7;
-                            }
-                            if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(40)])?;
-                                break 'b7;
-                            }
-                            if !matched7 && subject7.loosely_equals(&Val::from(5)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(91)])?;
-                                break 'b7;
-                            }
-                            if !matched7 && subject7.loosely_equals(&Val::from(6)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
-                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(151)])?;
-                                break 'b7;
+                            if matched4 {
+                                ctx.call(Function::GetExperience, vec![Val::from(155), Val::from(0)])?;
+                                break 'b4;
                             }
                         }
                     } else {
-                        ctx.mes("I was gonna give you some job experience points, but I think you have enough job experience for now.")?;
+                        ctx.mes("Good job! I'd reward you with some more experience if your level weren't already this high.")?;
                     }
-                    ctx.next()?;
-                    'b8: {
-                        let subject8 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Now what?:Send me to the actual fighting class!:Cancel")],
-                        )?);
-                        let mut matched8 = false;
-                        let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                            && !subject8.loosely_equals(&Val::from(2))
-                            && !subject8.loosely_equals(&Val::from(3));
-                        if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                            matched8 = true;
-                        }
-                        if matched8 {
-                            ctx.lines_as(
-                                "Alice",
-                                args!["Why don't you walk around", "and talk to other tutors if you haven't already?"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Alice",
-                                args![
-                                    "Everyone in this training grounds is more than willing to help you.",
-                                    "Maybe you can venture around",
-                                    "this area if you're bored."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Alice", args!["The assistant tutors in the room to the right possess useful knowledge. There are also a few interesting places hidden within this area. Good luck!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                            matched8 = true;
-                        }
-                        if matched8 {
-                            ctx.lines_as("Alice", args!["What an enthusiastic Novice you are! Okay, I'll send you to the folks in charge of Field Combat Training. Make sure that you listen carefully to the trainers."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Alice",
-                                args![
-                                    "After all...",
-                                    "When you're fighting monsters, it's a matter of life and death! Alright then, take care~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
-                            return Err(Stop::End);
-                        }
-                        if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                            matched8 = true;
-                        }
-                        if matched8 {
-                            ctx.lines_as("Alice", args!["Hmpf!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
+                } else {
+                    ctx.lines(args!["Um...", "Well, you can drink", "it later I guess."])?;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines_as("Alice", args!["Are you sure you really want to go into Field Combat Training? Have you spoken to every tutor? You better do that beforehand."])?;
-                    ctx.next()?;
-                    'b9: {
-                        let subject9 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("No, no! Send me to the actual fight class!:Oh, wait!")],
-                        )?);
-                        let mut matched9 = false;
-                        let no_case9 = !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
-                        if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
-                            ctx.lines_as("Alice", args!["What an enthusiastic Novice you are! Okay, I'll send you to the folks in charge of Field Combat Training. Make sure that you listen carefully to the trainers."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Alice",
-                                args![
-                                    "After all...",
-                                    "When you're fighting monsters, it's a matter of life and death! Alright then, take care~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
-                            return Err(Stop::End);
-                        }
-                        if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
-                            ctx.lines_as("Alice", args!["Now, that's a good decision. You won't get any many chances to get free stuff and experience in the future. You better make the most of this opportunity while you can!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines_as(
-                        "Alice",
-                        args!["If you want to go to a town, ask the Kafra Employee to the right. Alright then, take care~"],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
-        } else {
-            if ctx.var("nov_get_item02").get()?.number()? < 10 {
+                ctx.next()?;
                 ctx.lines_as(
                     "Alice",
                     args![
-                        "So how may",
-                        "I help you?",
-                        "Hmm, it seems that you haven't attended the Basic Interfaces class yet. Would you like to attend that class first?"
+                        "Let me explain about",
+                        "items in the ^4A708Bequip^000000 tab",
+                        "of the Inventory Window."
                     ],
                 )?;
                 ctx.next()?;
-                'b10: {
-                    let subject10 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "I am going to attend that class.:Send me to Field Combat Training.:Cancel",
-                        )],
-                    )?);
-                    let mut matched10 = false;
-                    let no_case10 = !subject10.loosely_equals(&Val::from(1))
-                        && !subject10.loosely_equals(&Val::from(2))
-                        && !subject10.loosely_equals(&Val::from(3));
-                    if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                        matched10 = true;
-                    }
-                    if matched10 {
-                        ctx.lines_as("Cecil", args!["Excellent~", "You'll learn some essential stuff and gain experience and items as you take that class. The tutor for Basic Interfaces is in the center of this room. Now, go for it~"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                        matched10 = true;
-                    }
-                    if matched10 {
-                        ctx.lines_as("Alice", args!["Are you sure you really want to go into Field Combat Training? Have you spoken to every tutor? You better do that beforehand."])?;
-                        ctx.next()?;
-                        'b11: {
-                            let subject11 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("I want Field Combat Training~!:Oh, wait!")],
-                            )?);
-                            let mut matched11 = false;
-                            let no_case11 = !subject11.loosely_equals(&Val::from(1)) && !subject11.loosely_equals(&Val::from(2));
-                            if !matched11 && subject11.loosely_equals(&Val::from(1)) {
-                                matched11 = true;
+                ctx.lines_as("Alice", args!["When you click on the ^4A708Bequip^000000 tab, you can view every item in your inventory that you can equip. Let me give you some equipment so that you can try them on."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Alice",
+                    args![
+                        "Got them? Good.",
+                        "Now, double-click",
+                        "on the Novice Slippers",
+                        "I just gave you to",
+                        "put them on."
+                    ],
+                )?;
+                ctx.var("nov_get_item04").set(Val::from(12))?;
+                ctx.call(Function::GetItem, vec![Val::from(2510), Val::from(1)])?;
+                ctx.call(Function::GetItem, vec![Val::from(2414), Val::from(1)])?;
+                ctx.call(Function::GetItem, vec![Val::from(5055), Val::from(1)])?;
+                ctx.next()?;
+                ctx.mes("[Alice]")?;
+                if ctx.call(Function::IsEquipped, vec![Val::from(2414)])?.is_true() {
+                    if ctx.var("BaseLevel").get()?.number()? < 8 {
+                        ctx.lines(args!["Hooray~!", "You did it!", "You deserve a reward!"])?;
+                        ctx.var("nov_get_item04").set(Val::from(13))?;
+                        'b5: {
+                            let subject5 = ctx.var("BaseLevel").get()?;
+                            let mut matched5 = false;
+                            let no_case5 = !subject5.loosely_equals(&Val::from(1))
+                                && !subject5.loosely_equals(&Val::from(2))
+                                && !subject5.loosely_equals(&Val::from(3))
+                                && !subject5.loosely_equals(&Val::from(4))
+                                && !subject5.loosely_equals(&Val::from(5))
+                                && !subject5.loosely_equals(&Val::from(6))
+                                && !subject5.loosely_equals(&Val::from(7));
+                            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                                matched5 = true;
                             }
-                            if matched11 {
-                                ctx.lines_as("Alice", args!["What an enthusiastic Novice you are! Okay, I'll send you to the folks in charge of Field Combat Training. Make sure that you listen carefully to the trainers."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Alice",
-                                    args![
-                                        "After all...",
-                                        "When you're fighting monsters, it's a matter of life and death! Alright then, take care~"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
-                                return Err(Stop::End);
+                            if matched5 {
+                                ctx.call(Function::GetExperience, vec![Val::from(10), Val::from(0)])?;
+                                break 'b5;
                             }
-                            if !matched11 && subject11.loosely_equals(&Val::from(2)) {
-                                matched11 = true;
+                            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                                matched5 = true;
                             }
-                            if matched11 {
-                                ctx.lines_as("Alice", args!["Now, that's a good decision. You won't get any many chances to get free stuff and experience in the future. You better make the most of this opportunity while you can!"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
+                            if matched5 {
+                                ctx.call(Function::GetExperience, vec![Val::from(17), Val::from(0)])?;
+                                break 'b5;
+                            }
+                            if !matched5 && subject5.loosely_equals(&Val::from(3)) {
+                                matched5 = true;
+                            }
+                            if matched5 {
+                                ctx.call(Function::GetExperience, vec![Val::from(26), Val::from(0)])?;
+                                break 'b5;
+                            }
+                            if !matched5 && subject5.loosely_equals(&Val::from(4)) {
+                                matched5 = true;
+                            }
+                            if matched5 {
+                                ctx.call(Function::GetExperience, vec![Val::from(37), Val::from(0)])?;
+                                break 'b5;
+                            }
+                            if !matched5 && subject5.loosely_equals(&Val::from(5)) {
+                                matched5 = true;
+                            }
+                            if matched5 {
+                                ctx.call(Function::GetExperience, vec![Val::from(78), Val::from(0)])?;
+                                break 'b5;
+                            }
+                            if !matched5 && subject5.loosely_equals(&Val::from(6)) {
+                                matched5 = true;
+                            }
+                            if matched5 {
+                                ctx.call(Function::GetExperience, vec![Val::from(115), Val::from(0)])?;
+                                break 'b5;
+                            }
+                            if !matched5 && subject5.loosely_equals(&Val::from(7)) {
+                                matched5 = true;
+                            }
+                            if matched5 {
+                                ctx.call(Function::GetExperience, vec![Val::from(155), Val::from(0)])?;
+                                break 'b5;
                             }
                         }
+                    } else {
+                        ctx.mes("Good job! I'd reward you with some more experience if your level weren't already this high.")?;
                     }
-                    if !matched10 && subject10.loosely_equals(&Val::from(3)) {
-                        matched10 = true;
+                } else {
+                    ctx.lines(args![
+                        "Er...",
+                        "You've got to",
+                        "double-click",
+                        "equipment to",
+                        "wear it. Just",
+                        "remember that, okay?"
+                    ])?;
+                }
+                ctx.next()?;
+                ctx.lines_as(
+                    "Alice",
+                    args![
+                        "Would you",
+                        "press the '^3355FFF12^000000' key?",
+                        "This will summon your",
+                        "Hotkey bar on your screen."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Alice", args!["You can assign hotkeys to your items, skills and equipment using the Hotkey bar. Just drag skill icons from the Skill Window or items from the Inventory Window into the Hotkey bar."])?;
+                ctx.next()?;
+                ctx.lines_as("Alice", args!["The Hotkeys are '^3355FFF1^000000' to '^3355FFF9^000000.'", "If you have attended the Skill Class, you must have been given the First Aid skill. Drag and drop the First Aid skill icon into the Hotkey bar."])?;
+                ctx.next()?;
+                ctx.lines_as("Alice", args!["For your information, only", "active skills can be assigned to a Hotkey and dragged to the Hotkey bar. Active Skills have colored, square shaped icons that can be double-clicked and used."])?;
+                ctx.next()?;
+                ctx.lines_as("Alice", args!["Passive Skills, such as the aptly named 'Basic Skill,' cannot be dragged into the Hotkey bar because Passive Skills are always in effect and don't need to be activated."])?;
+                ctx.var("nov_get_item04").set(Val::from(14))?;
+                if ctx.var("JobLevel").get()?.number()? < 7 {
+                    'b6: {
+                        let subject6 = ctx.var("JobLevel").get()?;
+                        let mut matched6 = false;
+                        let no_case6 = !subject6.loosely_equals(&Val::from(1))
+                            && !subject6.loosely_equals(&Val::from(2))
+                            && !subject6.loosely_equals(&Val::from(3))
+                            && !subject6.loosely_equals(&Val::from(4))
+                            && !subject6.loosely_equals(&Val::from(5))
+                            && !subject6.loosely_equals(&Val::from(6));
+                        if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                            matched6 = true;
+                        }
+                        if matched6 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10)])?;
+                            break 'b6;
+                        }
+                        if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                            matched6 = true;
+                        }
+                        if matched6 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(18)])?;
+                            break 'b6;
+                        }
+                        if !matched6 && subject6.loosely_equals(&Val::from(3)) {
+                            matched6 = true;
+                        }
+                        if matched6 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(28)])?;
+                            break 'b6;
+                        }
+                        if !matched6 && subject6.loosely_equals(&Val::from(4)) {
+                            matched6 = true;
+                        }
+                        if matched6 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(40)])?;
+                            break 'b6;
+                        }
+                        if !matched6 && subject6.loosely_equals(&Val::from(5)) {
+                            matched6 = true;
+                        }
+                        if matched6 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(91)])?;
+                            break 'b6;
+                        }
+                        if !matched6 && subject6.loosely_equals(&Val::from(6)) {
+                            matched6 = true;
+                        }
+                        if matched6 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(151)])?;
+                            break 'b6;
+                        }
                     }
-                    if matched10 {
+                }
+                ctx.next()?;
+                ctx.lines_as(
+                    "Alice",
+                    args![
+                        "Well, that's it!",
+                        "Let me supply you with some items",
+                        "that will help you during the Field Combat Training."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Alice", args!["However, ^ff0000do not use the Fly Wing or Butterfly Wing^000000 in these Training Grounds or you could be stuck here forever. Those items are for when you graduate, okay?"])?;
+                ctx.var("nov_get_item04").set(Val::from(15))?;
+                ctx.call(Function::GetItem, vec![Val::from(601), Val::from(10)])?;
+                ctx.call(Function::GetItem, vec![Val::from(602), Val::from(2)])?;
+                ctx.call(Function::GetItem, vec![Val::from(569), Val::from(50)])?;
+                ctx.next()?;
+                ctx.lines_as("Alice", args!["And lastly..."])?;
+                if ctx.var("JobLevel").get()?.number()? < 7 {
+                    ctx.lines(args!["I will give", "you some Job experience!"])?;
+                    ctx.var("nov_get_item04").set(Val::from(16))?;
+                    'b7: {
+                        let subject7 = ctx.var("JobLevel").get()?;
+                        let mut matched7 = false;
+                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
+                            && !subject7.loosely_equals(&Val::from(2))
+                            && !subject7.loosely_equals(&Val::from(3))
+                            && !subject7.loosely_equals(&Val::from(4))
+                            && !subject7.loosely_equals(&Val::from(5))
+                            && !subject7.loosely_equals(&Val::from(6));
+                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10)])?;
+                            break 'b7;
+                        }
+                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(18)])?;
+                            break 'b7;
+                        }
+                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(28)])?;
+                            break 'b7;
+                        }
+                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(40)])?;
+                            break 'b7;
+                        }
+                        if !matched7 && subject7.loosely_equals(&Val::from(5)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(91)])?;
+                            break 'b7;
+                        }
+                        if !matched7 && subject7.loosely_equals(&Val::from(6)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(151)])?;
+                            break 'b7;
+                        }
+                    }
+                } else {
+                    ctx.mes("I was gonna give you some job experience points, but I think you have enough job experience for now.")?;
+                }
+                ctx.next()?;
+                'b8: {
+                    let subject8 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Now what?:Send me to the actual fighting class!:Cancel")],
+                    )?);
+                    let mut matched8 = false;
+                    let no_case8 = !subject8.loosely_equals(&Val::from(1))
+                        && !subject8.loosely_equals(&Val::from(2))
+                        && !subject8.loosely_equals(&Val::from(3));
+                    if !matched8 && subject8.loosely_equals(&Val::from(1)) {
+                        matched8 = true;
+                    }
+                    if matched8 {
                         ctx.lines_as(
                             "Alice",
-                            args!["If you want to go to a town, ask the Kafra Employee to the right. Alright then, take care~"],
+                            args!["Why don't you walk around", "and talk to other tutors if you haven't already?"],
                         )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Alice",
+                            args![
+                                "Everyone in this training grounds is more than willing to help you.",
+                                "Maybe you can venture around",
+                                "this area if you're bored."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Alice", args!["The assistant tutors in the room to the right possess useful knowledge. There are also a few interesting places hidden within this area. Good luck!"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched8 && subject8.loosely_equals(&Val::from(2)) {
+                        matched8 = true;
+                    }
+                    if matched8 {
+                        ctx.lines_as("Alice", args!["What an enthusiastic Novice you are! Okay, I'll send you to the folks in charge of Field Combat Training. Make sure that you listen carefully to the trainers."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Alice",
+                            args![
+                                "After all...",
+                                "When you're fighting monsters, it's a matter of life and death! Alright then, take care~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
+                        return Err(Stop::End);
+                    }
+                    if !matched8 && subject8.loosely_equals(&Val::from(3)) {
+                        matched8 = true;
+                    }
+                    if matched8 {
+                        ctx.lines_as("Alice", args!["Hmpf!"])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
                 }
-            } else {
-                if ctx.var("nov_get_item03").get()?.number()? < 10 {
-                    ctx.lines_as("Alice", args!["So how may", "I help you?", "It looks like you still haven't attended the ^4d4dffthe Skill information class^000000 yet. Would you like to attend that class first?"])?;
-                    ctx.next()?;
-                    'b12: {
-                        let subject12 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("I'll attend that class.:Send me to Field Combat Training.:Cancel")],
-                        )?);
-                        let mut matched12 = false;
-                        let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                            && !subject12.loosely_equals(&Val::from(2))
-                            && !subject12.loosely_equals(&Val::from(3));
-                        if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                            matched12 = true;
-                        }
-                        if matched12 {
-                            ctx.lines_as(
-                                "Alice",
-                                args!["Now, that's a good idea. Please talk to Cecil, the tutor at the far left side of this room, okay?"],
-                            )?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(84), Val::from(107)])?;
-                            return Err(Stop::End);
-                        }
-                        if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                            matched12 = true;
-                        }
-                        if matched12 {
-                            ctx.lines_as("Alice", args!["Are you sure you really want to go into Field Combat Training? Have you spoken to every tutor? You better do that beforehand."])?;
-                            ctx.next()?;
-                            'b13: {
-                                let subject13 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from("I want Field Combat Training~!:Oh, wait!")],
-                                )?);
-                                let mut matched13 = false;
-                                let no_case13 = !subject13.loosely_equals(&Val::from(1)) && !subject13.loosely_equals(&Val::from(2));
-                                if !matched13 && subject13.loosely_equals(&Val::from(1)) {
-                                    matched13 = true;
-                                }
-                                if matched13 {
-                                    ctx.lines_as("Alice", args!["What an enthusiastic Novice you are! Okay, I'll send you to the folks in charge of Field Combat Training. Make sure that you listen carefully to the trainers."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Alice",
-                                        args![
-                                            "After all...",
-                                            "When you're fighting monsters, it's a matter of life and death! Alright then, take care~"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched13 && subject13.loosely_equals(&Val::from(2)) {
-                                    matched13 = true;
-                                }
-                                if matched13 {
-                                    ctx.lines_as("Alice", args!["Now, that's a good decision. You won't get any many chances to get free stuff and experience in the future. You better make the most of this opportunity while you can!"])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                        if !matched12 && subject12.loosely_equals(&Val::from(3)) {
-                            matched12 = true;
-                        }
-                        if matched12 {
-                            ctx.lines_as(
-                                "Alice",
-                                args!["If you want to go to a town, ask the Kafra Employee to the right. Alright then, take care~"],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+            }
+            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as("Alice", args!["Are you sure you really want to go into Field Combat Training? Have you spoken to every tutor? You better do that beforehand."])?;
+                ctx.next()?;
+                'b9: {
+                    let subject9 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("No, no! Send me to the actual fight class!:Oh, wait!")],
+                    )?);
+                    let mut matched9 = false;
+                    let no_case9 = !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
+                    if !matched9 && subject9.loosely_equals(&Val::from(1)) {
+                        matched9 = true;
+                    }
+                    if matched9 {
+                        ctx.lines_as("Alice", args!["What an enthusiastic Novice you are! Okay, I'll send you to the folks in charge of Field Combat Training. Make sure that you listen carefully to the trainers."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Alice",
+                            args![
+                                "After all...",
+                                "When you're fighting monsters, it's a matter of life and death! Alright then, take care~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
+                        return Err(Stop::End);
+                    }
+                    if !matched9 && subject9.loosely_equals(&Val::from(2)) {
+                        matched9 = true;
+                    }
+                    if matched9 {
+                        ctx.lines_as("Alice", args!["Now, that's a good decision. You won't get any many chances to get free stuff and experience in the future. You better make the most of this opportunity while you can!"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
+            }
+            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    "Alice",
+                    args!["If you want to go to a town, ask the Kafra Employee to the right. Alright then, take care~"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("nov_get_item02").get()?.number()? < 10 {
+        ctx.lines_as(
+            "Alice",
+            args![
+                "So how may",
+                "I help you?",
+                "Hmm, it seems that you haven't attended the Basic Interfaces class yet. Would you like to attend that class first?"
+            ],
+        )?;
+        ctx.next()?;
+        'b10: {
+            let subject10 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "I am going to attend that class.:Send me to Field Combat Training.:Cancel",
+                )],
+            )?);
+            let mut matched10 = false;
+            let no_case10 = !subject10.loosely_equals(&Val::from(1))
+                && !subject10.loosely_equals(&Val::from(2))
+                && !subject10.loosely_equals(&Val::from(3));
+            if !matched10 && subject10.loosely_equals(&Val::from(1)) {
+                matched10 = true;
+            }
+            if matched10 {
+                ctx.lines_as("Cecil", args!["Excellent~", "You'll learn some essential stuff and gain experience and items as you take that class. The tutor for Basic Interfaces is in the center of this room. Now, go for it~"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched10 && subject10.loosely_equals(&Val::from(2)) {
+                matched10 = true;
+            }
+            if matched10 {
+                ctx.lines_as("Alice", args!["Are you sure you really want to go into Field Combat Training? Have you spoken to every tutor? You better do that beforehand."])?;
+                ctx.next()?;
+                'b11: {
+                    let subject11 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("I want Field Combat Training~!:Oh, wait!")],
+                    )?);
+                    let mut matched11 = false;
+                    let no_case11 = !subject11.loosely_equals(&Val::from(1)) && !subject11.loosely_equals(&Val::from(2));
+                    if !matched11 && subject11.loosely_equals(&Val::from(1)) {
+                        matched11 = true;
+                    }
+                    if matched11 {
+                        ctx.lines_as("Alice", args!["What an enthusiastic Novice you are! Okay, I'll send you to the folks in charge of Field Combat Training. Make sure that you listen carefully to the trainers."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Alice",
+                            args![
+                                "After all...",
+                                "When you're fighting monsters, it's a matter of life and death! Alright then, take care~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
+                        return Err(Stop::End);
+                    }
+                    if !matched11 && subject11.loosely_equals(&Val::from(2)) {
+                        matched11 = true;
+                    }
+                    if matched11 {
+                        ctx.lines_as("Alice", args!["Now, that's a good decision. You won't get any many chances to get free stuff and experience in the future. You better make the most of this opportunity while you can!"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+            }
+            if !matched10 && subject10.loosely_equals(&Val::from(3)) {
+                matched10 = true;
+            }
+            if matched10 {
+                ctx.lines_as(
+                    "Alice",
+                    args!["If you want to go to a town, ask the Kafra Employee to the right. Alright then, take care~"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("nov_get_item03").get()?.number()? < 10 {
+        ctx.lines_as("Alice", args!["So how may", "I help you?", "It looks like you still haven't attended the ^4d4dffthe Skill information class^000000 yet. Would you like to attend that class first?"])?;
+        ctx.next()?;
+        'b12: {
+            let subject12 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("I'll attend that class.:Send me to Field Combat Training.:Cancel")],
+            )?);
+            let mut matched12 = false;
+            let no_case12 = !subject12.loosely_equals(&Val::from(1))
+                && !subject12.loosely_equals(&Val::from(2))
+                && !subject12.loosely_equals(&Val::from(3));
+            if !matched12 && subject12.loosely_equals(&Val::from(1)) {
+                matched12 = true;
+            }
+            if matched12 {
+                ctx.lines_as(
+                    "Alice",
+                    args!["Now, that's a good idea. Please talk to Cecil, the tutor at the far left side of this room, okay?"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(84), Val::from(107)])?;
+                return Err(Stop::End);
+            }
+            if !matched12 && subject12.loosely_equals(&Val::from(2)) {
+                matched12 = true;
+            }
+            if matched12 {
+                ctx.lines_as("Alice", args!["Are you sure you really want to go into Field Combat Training? Have you spoken to every tutor? You better do that beforehand."])?;
+                ctx.next()?;
+                'b13: {
+                    let subject13 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("I want Field Combat Training~!:Oh, wait!")],
+                    )?);
+                    let mut matched13 = false;
+                    let no_case13 = !subject13.loosely_equals(&Val::from(1)) && !subject13.loosely_equals(&Val::from(2));
+                    if !matched13 && subject13.loosely_equals(&Val::from(1)) {
+                        matched13 = true;
+                    }
+                    if matched13 {
+                        ctx.lines_as("Alice", args!["What an enthusiastic Novice you are! Okay, I'll send you to the folks in charge of Field Combat Training. Make sure that you listen carefully to the trainers."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Alice",
+                            args![
+                                "After all...",
+                                "When you're fighting monsters, it's a matter of life and death! Alright then, take care~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("new_1-2"), Val::from(28), Val::from(178)])?;
+                        return Err(Stop::End);
+                    }
+                    if !matched13 && subject13.loosely_equals(&Val::from(2)) {
+                        matched13 = true;
+                    }
+                    if matched13 {
+                        ctx.lines_as("Alice", args!["Now, that's a good decision. You won't get any many chances to get free stuff and experience in the future. You better make the most of this opportunity while you can!"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+            }
+            if !matched12 && subject12.loosely_equals(&Val::from(3)) {
+                matched12 = true;
+            }
+            if matched12 {
+                ctx.lines_as(
+                    "Alice",
+                    args!["If you want to go to a town, ask the Kafra Employee to the right. Alright then, take care~"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -2757,8 +2735,8 @@ fn kafra_employee_nv1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.lines_as("Kafra Employee", args!["There are a maximum of 300 Inventory Slots in Kafra Storage, meaning you can have up to 300 different kinds of items in Storage."])?;
                         ctx.next()?;
                         ctx.lines_as("Kafra Employee", args!["Remember though, that in the case of Equipment, each item takes up one Inventory Slot. The maximum number of items that can be placed in Kafra Storage is 30,000."])?;
-                        if ctx.var("nov_3_archer").get()?.number()? < 20 {
-                            if ctx.var("JobLevel").get()?.number()? < 7 {
+                        if ctx.var("nov_3_archer").get()?.number()? < 20
+                            && ctx.var("JobLevel").get()?.number()? < 7 {
                                 ctx.var("nov_3_archer").set(Val::from(20))?;
                                 'b6: {
                                     let subject6 = ctx.var("JobLevel").get()?;
@@ -2813,7 +2791,6 @@ fn kafra_employee_nv1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     }
                                 }
                             }
-                        }
                         ctx.next()?;
                         break 'b4;
                     }
@@ -3845,26 +3822,18 @@ fn helper_nv_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             if ctx.var("BaseLevel").get()? == 3 {
                                 ctx.var("nov_2nd_cos").set(Val::from(14))?;
                                 ctx.call(Function::GetExperience, vec![Val::from(25), Val::from(0)])?;
-                            } else {
-                                if ctx.var("BaseLevel").get()? == 4 {
-                                    ctx.var("nov_2nd_cos").set(Val::from(15))?;
-                                    ctx.call(Function::GetExperience, vec![Val::from(36), Val::from(0)])?;
-                                } else {
-                                    if ctx.var("BaseLevel").get()? == 5 {
-                                        ctx.var("nov_2nd_cos").set(Val::from(16))?;
-                                        ctx.call(Function::GetExperience, vec![Val::from(77), Val::from(0)])?;
-                                    } else {
-                                        if ctx.var("BaseLevel").get()? == 6 {
-                                            ctx.var("nov_2nd_cos").set(Val::from(17))?;
-                                            ctx.call(Function::GetExperience, vec![Val::from(112), Val::from(0)])?;
-                                        } else {
-                                            if ctx.var("BaseLevel").get()?.number()? >= 7 {
-                                                ctx.var("nov_2nd_cos").set(Val::from(18))?;
-                                                ctx.call(Function::GetExperience, vec![Val::from(153), Val::from(0)])?;
-                                            }
-                                        }
-                                    }
-                                }
+                            } else if ctx.var("BaseLevel").get()? == 4 {
+                                ctx.var("nov_2nd_cos").set(Val::from(15))?;
+                                ctx.call(Function::GetExperience, vec![Val::from(36), Val::from(0)])?;
+                            } else if ctx.var("BaseLevel").get()? == 5 {
+                                ctx.var("nov_2nd_cos").set(Val::from(16))?;
+                                ctx.call(Function::GetExperience, vec![Val::from(77), Val::from(0)])?;
+                            } else if ctx.var("BaseLevel").get()? == 6 {
+                                ctx.var("nov_2nd_cos").set(Val::from(17))?;
+                                ctx.call(Function::GetExperience, vec![Val::from(112), Val::from(0)])?;
+                            } else if ctx.var("BaseLevel").get()?.number()? >= 7 {
+                                ctx.var("nov_2nd_cos").set(Val::from(18))?;
+                                ctx.call(Function::GetExperience, vec![Val::from(153), Val::from(0)])?;
                             }
                         }
                     }
@@ -4159,24 +4128,16 @@ fn entrance_guard_nv_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         } else {
                             if ctx.var("nov_2nd_cos").get()? == 14 {
                                 ctx.var("nov_2nd_cos").set(Val::from(24))?;
+                            } else if ctx.var("nov_2nd_cos").get()? == 15 {
+                                ctx.var("nov_2nd_cos").set(Val::from(25))?;
+                            } else if ctx.var("nov_2nd_cos").get()? == 16 {
+                                ctx.var("nov_2nd_cos").set(Val::from(26))?;
+                            } else if ctx.var("nov_2nd_cos").get()? == 17 {
+                                ctx.var("nov_2nd_cos").set(Val::from(27))?;
+                            } else if ctx.var("nov_2nd_cos").get()? == 18 {
+                                ctx.var("nov_2nd_cos").set(Val::from(28))?;
                             } else {
-                                if ctx.var("nov_2nd_cos").get()? == 15 {
-                                    ctx.var("nov_2nd_cos").set(Val::from(25))?;
-                                } else {
-                                    if ctx.var("nov_2nd_cos").get()? == 16 {
-                                        ctx.var("nov_2nd_cos").set(Val::from(26))?;
-                                    } else {
-                                        if ctx.var("nov_2nd_cos").get()? == 17 {
-                                            ctx.var("nov_2nd_cos").set(Val::from(27))?;
-                                        } else {
-                                            if ctx.var("nov_2nd_cos").get()? == 18 {
-                                                ctx.var("nov_2nd_cos").set(Val::from(28))?;
-                                            } else {
-                                                ctx.var("nov_2nd_cos").set(Val::from(29))?;
-                                            }
-                                        }
-                                    }
-                                }
+                                ctx.var("nov_2nd_cos").set(Val::from(29))?;
                             }
                         }
                     }
@@ -4244,26 +4205,18 @@ fn entrance_guard_nv_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     if ctx.var("nov_2nd_cos").get()? == 25 {
                                         ctx.var("nov_2nd_cos").set(Val::from(36))?;
                                         ctx.call(Function::GetExperience, vec![Val::from(77), Val::from(0)])?;
-                                    } else {
-                                        if ctx.var("nov_2nd_cos").get()? == 26 {
-                                            ctx.var("nov_2nd_cos").set(Val::from(37))?;
-                                            ctx.call(Function::GetExperience, vec![Val::from(112), Val::from(0)])?;
-                                        } else {
-                                            if ctx.var("nov_2nd_cos").get()? == 27 {
-                                                ctx.var("nov_2nd_cos").set(Val::from(38))?;
-                                                ctx.call(Function::GetExperience, vec![Val::from(153), Val::from(0)])?;
-                                            } else {
-                                                if ctx.var("nov_2nd_cos").get()? == 28 {
-                                                    ctx.var("nov_2nd_cos").set(Val::from(39))?;
-                                                    ctx.call(Function::GetExperience, vec![Val::from(200), Val::from(0)])?;
-                                                } else {
-                                                    if ctx.var("nov_2nd_cos").get()? == 29 {
-                                                        ctx.var("nov_2nd_cos").set(Val::from(40))?;
-                                                        ctx.call(Function::GetExperience, vec![Val::from(200), Val::from(0)])?;
-                                                    }
-                                                }
-                                            }
-                                        }
+                                    } else if ctx.var("nov_2nd_cos").get()? == 26 {
+                                        ctx.var("nov_2nd_cos").set(Val::from(37))?;
+                                        ctx.call(Function::GetExperience, vec![Val::from(112), Val::from(0)])?;
+                                    } else if ctx.var("nov_2nd_cos").get()? == 27 {
+                                        ctx.var("nov_2nd_cos").set(Val::from(38))?;
+                                        ctx.call(Function::GetExperience, vec![Val::from(153), Val::from(0)])?;
+                                    } else if ctx.var("nov_2nd_cos").get()? == 28 {
+                                        ctx.var("nov_2nd_cos").set(Val::from(39))?;
+                                        ctx.call(Function::GetExperience, vec![Val::from(200), Val::from(0)])?;
+                                    } else if ctx.var("nov_2nd_cos").get()? == 29 {
+                                        ctx.var("nov_2nd_cos").set(Val::from(40))?;
+                                        ctx.call(Function::GetExperience, vec![Val::from(200), Val::from(0)])?;
                                     }
                                 }
                             }
@@ -4283,42 +4236,40 @@ fn entrance_guard_nv_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-            } else {
-                if ctx.var("nov_2nd_cos").get()?.number()? > 30 {
-                    ctx.lines_as(
-                        "Muriel",
-                        args![
-                            "Oh well, I told you to be careful. Cheer up! It's not a big deal.",
-                            " ",
-                            "Failure teaches success.",
-                            "You have many chances to re-take the test."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Muriel", args!["Do you wish to try again?"])?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:Can I have more time?")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Muriel", args!["I will restore", "your HP. Please", "be careful!"])?;
-                            ctx.call(Function::PercentHeal, vec![Val::from(100), Val::from(0)])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("new_1-3"), Val::from(96), Val::from(21)])?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Muriel", args!["No problem.", "If you're not sure if you can pass the test or not, why don't you go talk to the Helper to the left one more time? Please come back when you're ready."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+            } else if ctx.var("nov_2nd_cos").get()?.number()? > 30 {
+                ctx.lines_as(
+                    "Muriel",
+                    args![
+                        "Oh well, I told you to be careful. Cheer up! It's not a big deal.",
+                        " ",
+                        "Failure teaches success.",
+                        "You have many chances to re-take the test."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Muriel", args!["Do you wish to try again?"])?;
+                ctx.next()?;
+                'b3: {
+                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:Can I have more time?")])?);
+                    let mut matched3 = false;
+                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as("Muriel", args!["I will restore", "your HP. Please", "be careful!"])?;
+                        ctx.call(Function::PercentHeal, vec![Val::from(100), Val::from(0)])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("new_1-3"), Val::from(96), Val::from(21)])?;
+                        return Err(Stop::End);
+                    }
+                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as("Muriel", args!["No problem.", "If you're not sure if you can pass the test or not, why don't you go talk to the Helper to the left one more time? Please come back when you're ready."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -5564,382 +5515,374 @@ fn hanson_nv_run(ctx: &Ctx, mut step: HansonNvStep, args: Vec<Val>) -> Result<Va
                                             return Err(Stop::End);
                                         }
                                     }
-                                } else {
-                                    if l_job_c.clone() == 3 {
-                                        ctx.lines_as("Hanson", args!["You're very willful and very well organized. You've already set a goal in life and have become very responsible for your actions."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Hanson", args!["Because of your drive and desire to succeed, ^696969Merchant^000000 is the most suitable job for you."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Hanson", args!["So, would you like to accept our recommendation or would you like to choose a job on your own?"])?;
-                                        ctx.next()?;
-                                        'b26: {
-                                            let subject26 =
-                                                Val::from(runtime::select_values(ctx, &[Val::from("Merchant!:My own choice!")])?);
-                                            let mut matched26 = false;
-                                            let no_case26 =
-                                                !subject26.loosely_equals(&Val::from(1)) && !subject26.loosely_equals(&Val::from(2));
-                                            if !matched26 && subject26.loosely_equals(&Val::from(1)) {
-                                                matched26 = true;
-                                            }
-                                            if matched26 {
-                                                ctx.lines_as(
-                                                    "Hanson",
-                                                    args![
-                                                        "That's a great choice!",
-                                                        "After you receive all the supplies, I will teleport you to the merchant town."
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines(args![
-                                                    "^660000List of Supplies^000000",
-                                                    "^0000334 Free Ticket for Kafra Storage^000000",
-                                                    "^0000334 Free Ticket for Kafra Transportation^000000",
-                                                    "^0000334 Free Ticket for the Cart Service^000000",
-                                                    "^0000331 Battle Axe^000000",
-                                                    "^0000337 Phracon^000000"
-                                                ])?;
-                                                ctx.next()?;
-                                                ctx.var("nov_3_swordman").set(Val::from(40))?;
-                                                ctx.call(Function::GetItem, vec![Val::from(7059), Val::from(4)])?;
-                                                ctx.call(Function::GetItem, vec![Val::from(7060), Val::from(4)])?;
-                                                ctx.call(Function::GetItem, vec![Val::from(7061), Val::from(4)])?;
-                                                ctx.call(Function::GetItem, vec![Val::from(1351), Val::from(1)])?;
-                                                ctx.call(Function::GetItem, vec![Val::from(1010), Val::from(7)])?;
-                                                ctx.lines_as("Hanson", args!["Please check your inventory to see if you have received all the supplies listed. Let me briefly inform you about the items you've received."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Hanson", args!["Free tickets for Kafra storage and transportation can be used for Kafra storage and teleport services."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Hanson", args!["'Zeny' is the currency of Midgard. 'Battle Axe' will come in handy once you become a Merchant."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Hanson", args!["'Phracon' is an ore which can be used to upgrade lvl 1 weapons. To strengthen your Battle Axe with this Phracon, please visit a forge in one of the towns."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Hanson", args!["The town you will be sent to is named Alberta. The Merchant Guild is located to the SouthWest within Alberta. Please remember this."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Hanson",
-                                                    args![
-                                                        "You will now",
-                                                        "be teleported.",
-                                                        "Good luck,",
-                                                        ((Val::from("^A62A2A") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                            + Val::from("^000000")),
-                                                        "and farewell."
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                ctx.var("nov_1st_cos").set(Val::from(0))?;
-                                                ctx.var("nov_2nd_cos").set(Val::from(0))?;
-                                                ctx.var("nov_3_swordman").set(Val::from(0))?;
-                                                ctx.var("nov_3_archer").set(Val::from(0))?;
-                                                ctx.var("nov_3_thief").set(Val::from(0))?;
-                                                ctx.var("nov_3_magician").set(Val::from(0))?;
-                                                ctx.var("nov_3_acolyte").set(Val::from(0))?;
-                                                ctx.var("nov_3_merchant").set(Val::from(0))?;
-                                                ctx.call(
-                                                    Function::SavePoint,
-                                                    vec![Val::from("alberta"), Val::from(30), Val::from(232), Val::from(1), Val::from(1)],
-                                                )?;
-                                                ctx.call(Function::Warp, vec![Val::from("alberta_in"), Val::from(62), Val::from(44)])?;
-                                                return Err(Stop::End);
-                                            }
-                                            if !matched26 && subject26.loosely_equals(&Val::from(2)) {
-                                                matched26 = true;
-                                            }
-                                            if matched26 {
-                                                hanson_nv_run(ctx, HansonNvStep::SUserJobchoice, vec![Val::from("Merchant")])?;
-                                                return Err(Stop::End);
-                                            }
+                                } else if l_job_c.clone() == 3 {
+                                    ctx.lines_as("Hanson", args!["You're very willful and very well organized. You've already set a goal in life and have become very responsible for your actions."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Hanson", args!["Because of your drive and desire to succeed, ^696969Merchant^000000 is the most suitable job for you."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Hanson", args!["So, would you like to accept our recommendation or would you like to choose a job on your own?"])?;
+                                    ctx.next()?;
+                                    'b26: {
+                                        let subject26 =
+                                            Val::from(runtime::select_values(ctx, &[Val::from("Merchant!:My own choice!")])?);
+                                        let mut matched26 = false;
+                                        let no_case26 =
+                                            !subject26.loosely_equals(&Val::from(1)) && !subject26.loosely_equals(&Val::from(2));
+                                        if !matched26 && subject26.loosely_equals(&Val::from(1)) {
+                                            matched26 = true;
                                         }
-                                    } else {
-                                        if l_job_c.clone() == 4 {
-                                            ctx.lines_as("Hanson", args!["Carpe diem:", "Seize the day.", "That's how you live."])?;
+                                        if matched26 {
+                                            ctx.lines_as(
+                                                "Hanson",
+                                                args![
+                                                    "That's a great choice!",
+                                                    "After you receive all the supplies, I will teleport you to the merchant town."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines(args![
+                                                "^660000List of Supplies^000000",
+                                                "^0000334 Free Ticket for Kafra Storage^000000",
+                                                "^0000334 Free Ticket for Kafra Transportation^000000",
+                                                "^0000334 Free Ticket for the Cart Service^000000",
+                                                "^0000331 Battle Axe^000000",
+                                                "^0000337 Phracon^000000"
+                                            ])?;
+                                            ctx.next()?;
+                                            ctx.var("nov_3_swordman").set(Val::from(40))?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7059), Val::from(4)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7060), Val::from(4)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7061), Val::from(4)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(1351), Val::from(1)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(1010), Val::from(7)])?;
+                                            ctx.lines_as("Hanson", args!["Please check your inventory to see if you have received all the supplies listed. Let me briefly inform you about the items you've received."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["Free tickets for Kafra storage and transportation can be used for Kafra storage and teleport services."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["'Zeny' is the currency of Midgard. 'Battle Axe' will come in handy once you become a Merchant."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["'Phracon' is an ore which can be used to upgrade lvl 1 weapons. To strengthen your Battle Axe with this Phracon, please visit a forge in one of the towns."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["The town you will be sent to is named Alberta. The Merchant Guild is located to the SouthWest within Alberta. Please remember this."])?;
                                             ctx.next()?;
                                             ctx.lines_as(
                                                 "Hanson",
                                                 args![
-                                                    "From your natural curiosity",
-                                                    "comes a happy-go-lucky sense of adventure, and a desire to explore."
+                                                    "You will now",
+                                                    "be teleported.",
+                                                    "Good luck,",
+                                                    ((Val::from("^A62A2A") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                        + Val::from("^000000")),
+                                                    "and farewell."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            ctx.var("nov_1st_cos").set(Val::from(0))?;
+                                            ctx.var("nov_2nd_cos").set(Val::from(0))?;
+                                            ctx.var("nov_3_swordman").set(Val::from(0))?;
+                                            ctx.var("nov_3_archer").set(Val::from(0))?;
+                                            ctx.var("nov_3_thief").set(Val::from(0))?;
+                                            ctx.var("nov_3_magician").set(Val::from(0))?;
+                                            ctx.var("nov_3_acolyte").set(Val::from(0))?;
+                                            ctx.var("nov_3_merchant").set(Val::from(0))?;
+                                            ctx.call(
+                                                Function::SavePoint,
+                                                vec![Val::from("alberta"), Val::from(30), Val::from(232), Val::from(1), Val::from(1)],
+                                            )?;
+                                            ctx.call(Function::Warp, vec![Val::from("alberta_in"), Val::from(62), Val::from(44)])?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched26 && subject26.loosely_equals(&Val::from(2)) {
+                                            matched26 = true;
+                                        }
+                                        if matched26 {
+                                            hanson_nv_run(ctx, HansonNvStep::SUserJobchoice, vec![Val::from("Merchant")])?;
+                                            return Err(Stop::End);
+                                        }
+                                    }
+                                } else if l_job_c.clone() == 4 {
+                                    ctx.lines_as("Hanson", args!["Carpe diem:", "Seize the day.", "That's how you live."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Hanson",
+                                        args![
+                                            "From your natural curiosity",
+                                            "comes a happy-go-lucky sense of adventure, and a desire to explore."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Hanson",
+                                        args!["For someone like you,", "^696969Thief^000000 is the most suitable job.'"],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Hanson", args!["So, would you like to accept our recommendation or would you like to choose a job on your own?"])?;
+                                    ctx.next()?;
+                                    'b27: {
+                                        let subject27 =
+                                            Val::from(runtime::select_values(ctx, &[Val::from("Thief!:My own choice!")])?);
+                                        let mut matched27 = false;
+                                        let no_case27 =
+                                            !subject27.loosely_equals(&Val::from(1)) && !subject27.loosely_equals(&Val::from(2));
+                                        if !matched27 && subject27.loosely_equals(&Val::from(1)) {
+                                            matched27 = true;
+                                        }
+                                        if matched27 {
+                                            ctx.lines_as(
+                                                "Hanson",
+                                                args![
+                                                    "That's a great choice!",
+                                                    "After you receive all the supplies, I'll teleport you to the Thief town."
                                                 ],
                                             )?;
                                             ctx.next()?;
+                                            ctx.lines(args![
+                                                "^660000List of Supplies^000000",
+                                                "^0000335 Free Ticket for Kafra Storage^000000",
+                                                "^0000335 Free Ticket for Kafra Transportation^000000",
+                                                "^0000331 Main Gauche^000000",
+                                                "^0000337 Phracon^000000"
+                                            ])?;
+                                            ctx.next()?;
+                                            ctx.var("nov_3_swordman").set(Val::from(40))?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7059), Val::from(5)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7060), Val::from(5)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(1207), Val::from(1)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(1010), Val::from(7)])?;
+                                            ctx.lines_as("Hanson", args!["Please check your inventory to see if you have received all the supplies listed. Let me briefly inform you about the items you've received."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["Free tickets for Kafra storage and transportation can be used for Kafra storage and teleport services."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["'Zeny' is the currency of Midgard. 'Main Gauche' is a weapon that will be very useful once you become a Thief."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["'Phracon' is an ore which can be used to upgrade lvl 1 weapons. To strengthen your Main Gauche with this Phracon, please visit a forge in one of the towns."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["The town you will be sent to is named Morocc. The Thief Guild is in the first underground floor of the pyramid NorthWest of Morocc. Remember this."])?;
+                                            ctx.next()?;
                                             ctx.lines_as(
                                                 "Hanson",
-                                                args!["For someone like you,", "^696969Thief^000000 is the most suitable job.'"],
+                                                args![
+                                                    "You will now",
+                                                    "be teleported.",
+                                                    "Good luck,",
+                                                    ((Val::from("^A62A2A")
+                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                        + Val::from("^000000")),
+                                                    "and farewell."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            ctx.call(
+                                                Function::SavePoint,
+                                                vec![
+                                                    Val::from("morocc"),
+                                                    Val::from(150),
+                                                    Val::from(99),
+                                                    Val::from(1),
+                                                    Val::from(1),
+                                                ],
+                                            )?;
+                                            ctx.call(Function::Warp, vec![Val::from("moc_ruins"), Val::from(155), Val::from(44)])?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched27 && subject27.loosely_equals(&Val::from(2)) {
+                                            matched27 = true;
+                                        }
+                                        if matched27 {
+                                            hanson_nv_run(ctx, HansonNvStep::SUserJobchoice, vec![Val::from("Thief")])?;
+                                            return Err(Stop::End);
+                                        }
+                                    }
+                                } else if l_job_c.clone() == 5 {
+                                    ctx.lines_as("Hanson", args!["You always try to understand other people, even though they are strange. You expect others to try to understand you."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Hanson", args!["You refuse to be a ordinary person as you persue your dream. As a person sensitive to nature, ^696969Archer^000000 is the most suitable job for you."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Hanson", args!["So, would you like to accept our recommendation or would you like to choose a job on your own?"])?;
+                                    ctx.next()?;
+                                    'b28: {
+                                        let subject28 =
+                                            Val::from(runtime::select_values(ctx, &[Val::from("Archer!:My own choice!")])?);
+                                        let mut matched28 = false;
+                                        let no_case28 = !subject28.loosely_equals(&Val::from(1))
+                                            && !subject28.loosely_equals(&Val::from(2));
+                                        if !matched28 && subject28.loosely_equals(&Val::from(1)) {
+                                            matched28 = true;
+                                        }
+                                        if matched28 {
+                                            ctx.lines_as(
+                                                "Hanson",
+                                                args![
+                                                    "That's a great choice!",
+                                                    "After you receive all the supplies, I'll teleport you to the Archer town."
+                                                ],
                                             )?;
                                             ctx.next()?;
-                                            ctx.lines_as("Hanson", args!["So, would you like to accept our recommendation or would you like to choose a job on your own?"])?;
+                                            ctx.lines(args![
+                                                "^660000List of Supplies^000000",
+                                                "^0000335 Free Ticket for Kafra Storage^000000",
+                                                "^0000335 Free Ticket for Kafra Transportation^000000",
+                                                "^0000331 Composite Bow^000000",
+                                                "^0000337 Phracon^000000"
+                                            ])?;
                                             ctx.next()?;
-                                            'b27: {
-                                                let subject27 =
-                                                    Val::from(runtime::select_values(ctx, &[Val::from("Thief!:My own choice!")])?);
-                                                let mut matched27 = false;
-                                                let no_case27 =
-                                                    !subject27.loosely_equals(&Val::from(1)) && !subject27.loosely_equals(&Val::from(2));
-                                                if !matched27 && subject27.loosely_equals(&Val::from(1)) {
-                                                    matched27 = true;
-                                                }
-                                                if matched27 {
-                                                    ctx.lines_as(
-                                                        "Hanson",
-                                                        args![
-                                                            "That's a great choice!",
-                                                            "After you receive all the supplies, I'll teleport you to the Thief town."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines(args![
-                                                        "^660000List of Supplies^000000",
-                                                        "^0000335 Free Ticket for Kafra Storage^000000",
-                                                        "^0000335 Free Ticket for Kafra Transportation^000000",
-                                                        "^0000331 Main Gauche^000000",
-                                                        "^0000337 Phracon^000000"
-                                                    ])?;
-                                                    ctx.next()?;
-                                                    ctx.var("nov_3_swordman").set(Val::from(40))?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(7059), Val::from(5)])?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(7060), Val::from(5)])?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(1207), Val::from(1)])?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(1010), Val::from(7)])?;
-                                                    ctx.lines_as("Hanson", args!["Please check your inventory to see if you have received all the supplies listed. Let me briefly inform you about the items you've received."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hanson", args!["Free tickets for Kafra storage and transportation can be used for Kafra storage and teleport services."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hanson", args!["'Zeny' is the currency of Midgard. 'Main Gauche' is a weapon that will be very useful once you become a Thief."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hanson", args!["'Phracon' is an ore which can be used to upgrade lvl 1 weapons. To strengthen your Main Gauche with this Phracon, please visit a forge in one of the towns."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hanson", args!["The town you will be sent to is named Morocc. The Thief Guild is in the first underground floor of the pyramid NorthWest of Morocc. Remember this."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Hanson",
-                                                        args![
-                                                            "You will now",
-                                                            "be teleported.",
-                                                            "Good luck,",
-                                                            ((Val::from("^A62A2A")
-                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                + Val::from("^000000")),
-                                                            "and farewell."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    ctx.call(
-                                                        Function::SavePoint,
-                                                        vec![
-                                                            Val::from("morocc"),
-                                                            Val::from(150),
-                                                            Val::from(99),
-                                                            Val::from(1),
-                                                            Val::from(1),
-                                                        ],
-                                                    )?;
-                                                    ctx.call(Function::Warp, vec![Val::from("moc_ruins"), Val::from(155), Val::from(44)])?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched27 && subject27.loosely_equals(&Val::from(2)) {
-                                                    matched27 = true;
-                                                }
-                                                if matched27 {
-                                                    hanson_nv_run(ctx, HansonNvStep::SUserJobchoice, vec![Val::from("Thief")])?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        } else {
-                                            if l_job_c.clone() == 5 {
-                                                ctx.lines_as("Hanson", args!["You always try to understand other people, even though they are strange. You expect others to try to understand you."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Hanson", args!["You refuse to be a ordinary person as you persue your dream. As a person sensitive to nature, ^696969Archer^000000 is the most suitable job for you."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Hanson", args!["So, would you like to accept our recommendation or would you like to choose a job on your own?"])?;
-                                                ctx.next()?;
-                                                'b28: {
-                                                    let subject28 =
-                                                        Val::from(runtime::select_values(ctx, &[Val::from("Archer!:My own choice!")])?);
-                                                    let mut matched28 = false;
-                                                    let no_case28 = !subject28.loosely_equals(&Val::from(1))
-                                                        && !subject28.loosely_equals(&Val::from(2));
-                                                    if !matched28 && subject28.loosely_equals(&Val::from(1)) {
-                                                        matched28 = true;
-                                                    }
-                                                    if matched28 {
-                                                        ctx.lines_as(
-                                                            "Hanson",
-                                                            args![
-                                                                "That's a great choice!",
-                                                                "After you receive all the supplies, I'll teleport you to the Archer town."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines(args![
-                                                            "^660000List of Supplies^000000",
-                                                            "^0000335 Free Ticket for Kafra Storage^000000",
-                                                            "^0000335 Free Ticket for Kafra Transportation^000000",
-                                                            "^0000331 Composite Bow^000000",
-                                                            "^0000337 Phracon^000000"
-                                                        ])?;
-                                                        ctx.next()?;
-                                                        ctx.var("nov_3_swordman").set(Val::from(40))?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(7059), Val::from(5)])?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(7060), Val::from(5)])?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(1704), Val::from(1)])?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(1010), Val::from(7)])?;
-                                                        ctx.lines_as("Hanson", args!["Please check your inventory to see if you have received all the supplies listed. Let me briefly inform you about the items you've received."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hanson", args!["Free tickets for Kafra storage and transportation can be used for Kafra storage and teleport services."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hanson", args!["'Zeny' is the currency of Midgard. 'Composite Bow' is a weapon that will be very useful once you become an Archer."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hanson", args!["'Phracon' is an ore which can be used to upgrade lvl 1 weapons. To strengthen your Composite Bow with this Phracon, please visit a forge in one of the towns."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hanson", args!["The town you will be sent to is named Payon. The Archer Guild is located to the NorthWest in town. Please remember this."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Hanson",
-                                                            args![
-                                                                "You will now",
-                                                                "be teleported.",
-                                                                "Good luck,",
-                                                                ((Val::from("^A62A2A")
-                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                    + Val::from("^000000")),
-                                                                "and farewell."
-                                                            ],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        ctx.var("nov_1st_cos").set(Val::from(0))?;
-                                                        ctx.var("nov_2nd_cos").set(Val::from(0))?;
-                                                        ctx.var("nov_3_swordman").set(Val::from(0))?;
-                                                        ctx.var("nov_3_archer").set(Val::from(0))?;
-                                                        ctx.var("nov_3_thief").set(Val::from(0))?;
-                                                        ctx.var("nov_3_magician").set(Val::from(0))?;
-                                                        ctx.var("nov_3_acolyte").set(Val::from(0))?;
-                                                        ctx.var("nov_3_merchant").set(Val::from(0))?;
-                                                        ctx.call(
-                                                            Function::SavePoint,
-                                                            vec![
-                                                                Val::from("payon"),
-                                                                Val::from(70),
-                                                                Val::from(100),
-                                                                Val::from(1),
-                                                                Val::from(1),
-                                                            ],
-                                                        )?;
-                                                        ctx.call(
-                                                            Function::Warp,
-                                                            vec![Val::from("payon_in02"), Val::from(64), Val::from(65)],
-                                                        )?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                    if !matched28 && subject28.loosely_equals(&Val::from(2)) {
-                                                        matched28 = true;
-                                                    }
-                                                    if matched28 {
-                                                        hanson_nv_run(ctx, HansonNvStep::SUserJobchoice, vec![Val::from("Archer")])?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                }
-                                            } else {
-                                                if l_job_c.clone() == 6 {
-                                                    ctx.lines_as("Hanson", args!["You are very warm hearted and considerate, and you're willing to sacrifice your well being for the sake of others."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Hanson",
-                                                        args!["You're always eager to help others, which is why you're so well liked."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Hanson",
-                                                        args![
-                                                            "For you who are kind of heart, ^696969Acolyte^000000 is the most suitable job."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hanson", args!["So, would you like to accept our recommendation or would you like to choose a job on your own?"])?;
-                                                    ctx.next()?;
-                                                    'b29: {
-                                                        let subject29 = Val::from(runtime::select_values(
-                                                            ctx,
-                                                            &[Val::from("Acolyte!:My own choice!")],
-                                                        )?);
-                                                        let mut matched29 = false;
-                                                        let no_case29 = !subject29.loosely_equals(&Val::from(1))
-                                                            && !subject29.loosely_equals(&Val::from(2));
-                                                        if !matched29 && subject29.loosely_equals(&Val::from(1)) {
-                                                            matched29 = true;
-                                                        }
-                                                        if matched29 {
-                                                            ctx.lines_as("Hanson", args!["That's a great choice!", "After you receive all the supplies, I'll teleport you behind the Sanctuary."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines(args![
-                                                                "^660000List of Supplies^000000",
-                                                                "^0000335 Free Ticket for Kafra Storage^000000",
-                                                                "^0000335 Free Ticket for Kafra Transportation^000000",
-                                                                "^0000331 Mace^000000",
-                                                                "^0000337 Phracon^000000"
-                                                            ])?;
-                                                            ctx.next()?;
-                                                            ctx.var("nov_3_swordman").set(Val::from(40))?;
-                                                            ctx.call(Function::GetItem, vec![Val::from(7059), Val::from(5)])?;
-                                                            ctx.call(Function::GetItem, vec![Val::from(7060), Val::from(5)])?;
-                                                            ctx.call(Function::GetItem, vec![Val::from(1504), Val::from(1)])?;
-                                                            ctx.call(Function::GetItem, vec![Val::from(1010), Val::from(7)])?;
-                                                            ctx.lines_as("Hanson", args!["Please check your inventory to see if you have received all the supplies listed. Let me briefly inform you about the items you've received."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hanson", args!["Free tickets for Kafra storage and transportation can be used for Kafra storage and teleport services."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hanson", args!["'Zeny' is the currency of Midgard. 'Mace' is a weapon that will be very useful once you become an Acolyte."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hanson", args!["'Phracon' is an ore which can be used to upgrade lvl 1 weapons. To strengthen your Mace with this Phracon, please visit a forge in one of the towns."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hanson", args!["You have chosen to be an Acolyte. The town you will be sent to is named Prontera. The Sanctuary is NorthEast in Prontera. Please remember this."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Hanson",
-                                                                args![
-                                                                    "You will now",
-                                                                    "be teleported.",
-                                                                    "Good luck,",
-                                                                    ((Val::from("^A62A2A")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from("^000000")),
-                                                                    "and farewell."
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            ctx.var("nov_1st_cos").set(Val::from(0))?;
-                                                            ctx.var("nov_2nd_cos").set(Val::from(0))?;
-                                                            ctx.var("nov_3_swordman").set(Val::from(0))?;
-                                                            ctx.var("nov_3_archer").set(Val::from(0))?;
-                                                            ctx.var("nov_3_thief").set(Val::from(0))?;
-                                                            ctx.var("nov_3_magician").set(Val::from(0))?;
-                                                            ctx.var("nov_3_acolyte").set(Val::from(0))?;
-                                                            ctx.var("nov_3_merchant").set(Val::from(0))?;
-                                                            ctx.call(
-                                                                Function::SavePoint,
-                                                                vec![
-                                                                    Val::from("prontera"),
-                                                                    Val::from(117),
-                                                                    Val::from(72),
-                                                                    Val::from(1),
-                                                                    Val::from(1),
-                                                                ],
-                                                            )?;
-                                                            ctx.call(
-                                                                Function::Warp,
-                                                                vec![Val::from("prt_church"), Val::from(172), Val::from(19)],
-                                                            )?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched29 && subject29.loosely_equals(&Val::from(2)) {
-                                                            matched29 = true;
-                                                        }
-                                                        if matched29 {
-                                                            hanson_nv_run(ctx, HansonNvStep::SUserJobchoice, vec![Val::from("Acolyte")])?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                            ctx.var("nov_3_swordman").set(Val::from(40))?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7059), Val::from(5)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7060), Val::from(5)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(1704), Val::from(1)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(1010), Val::from(7)])?;
+                                            ctx.lines_as("Hanson", args!["Please check your inventory to see if you have received all the supplies listed. Let me briefly inform you about the items you've received."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["Free tickets for Kafra storage and transportation can be used for Kafra storage and teleport services."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["'Zeny' is the currency of Midgard. 'Composite Bow' is a weapon that will be very useful once you become an Archer."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["'Phracon' is an ore which can be used to upgrade lvl 1 weapons. To strengthen your Composite Bow with this Phracon, please visit a forge in one of the towns."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["The town you will be sent to is named Payon. The Archer Guild is located to the NorthWest in town. Please remember this."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Hanson",
+                                                args![
+                                                    "You will now",
+                                                    "be teleported.",
+                                                    "Good luck,",
+                                                    ((Val::from("^A62A2A")
+                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                        + Val::from("^000000")),
+                                                    "and farewell."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            ctx.var("nov_1st_cos").set(Val::from(0))?;
+                                            ctx.var("nov_2nd_cos").set(Val::from(0))?;
+                                            ctx.var("nov_3_swordman").set(Val::from(0))?;
+                                            ctx.var("nov_3_archer").set(Val::from(0))?;
+                                            ctx.var("nov_3_thief").set(Val::from(0))?;
+                                            ctx.var("nov_3_magician").set(Val::from(0))?;
+                                            ctx.var("nov_3_acolyte").set(Val::from(0))?;
+                                            ctx.var("nov_3_merchant").set(Val::from(0))?;
+                                            ctx.call(
+                                                Function::SavePoint,
+                                                vec![
+                                                    Val::from("payon"),
+                                                    Val::from(70),
+                                                    Val::from(100),
+                                                    Val::from(1),
+                                                    Val::from(1),
+                                                ],
+                                            )?;
+                                            ctx.call(
+                                                Function::Warp,
+                                                vec![Val::from("payon_in02"), Val::from(64), Val::from(65)],
+                                            )?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched28 && subject28.loosely_equals(&Val::from(2)) {
+                                            matched28 = true;
+                                        }
+                                        if matched28 {
+                                            hanson_nv_run(ctx, HansonNvStep::SUserJobchoice, vec![Val::from("Archer")])?;
+                                            return Err(Stop::End);
+                                        }
+                                    }
+                                } else if l_job_c.clone() == 6 {
+                                    ctx.lines_as("Hanson", args!["You are very warm hearted and considerate, and you're willing to sacrifice your well being for the sake of others."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Hanson",
+                                        args!["You're always eager to help others, which is why you're so well liked."],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Hanson",
+                                        args![
+                                            "For you who are kind of heart, ^696969Acolyte^000000 is the most suitable job."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Hanson", args!["So, would you like to accept our recommendation or would you like to choose a job on your own?"])?;
+                                    ctx.next()?;
+                                    'b29: {
+                                        let subject29 = Val::from(runtime::select_values(
+                                            ctx,
+                                            &[Val::from("Acolyte!:My own choice!")],
+                                        )?);
+                                        let mut matched29 = false;
+                                        let no_case29 = !subject29.loosely_equals(&Val::from(1))
+                                            && !subject29.loosely_equals(&Val::from(2));
+                                        if !matched29 && subject29.loosely_equals(&Val::from(1)) {
+                                            matched29 = true;
+                                        }
+                                        if matched29 {
+                                            ctx.lines_as("Hanson", args!["That's a great choice!", "After you receive all the supplies, I'll teleport you behind the Sanctuary."])?;
+                                            ctx.next()?;
+                                            ctx.lines(args![
+                                                "^660000List of Supplies^000000",
+                                                "^0000335 Free Ticket for Kafra Storage^000000",
+                                                "^0000335 Free Ticket for Kafra Transportation^000000",
+                                                "^0000331 Mace^000000",
+                                                "^0000337 Phracon^000000"
+                                            ])?;
+                                            ctx.next()?;
+                                            ctx.var("nov_3_swordman").set(Val::from(40))?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7059), Val::from(5)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7060), Val::from(5)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(1504), Val::from(1)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(1010), Val::from(7)])?;
+                                            ctx.lines_as("Hanson", args!["Please check your inventory to see if you have received all the supplies listed. Let me briefly inform you about the items you've received."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["Free tickets for Kafra storage and transportation can be used for Kafra storage and teleport services."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["'Zeny' is the currency of Midgard. 'Mace' is a weapon that will be very useful once you become an Acolyte."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["'Phracon' is an ore which can be used to upgrade lvl 1 weapons. To strengthen your Mace with this Phracon, please visit a forge in one of the towns."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Hanson", args!["You have chosen to be an Acolyte. The town you will be sent to is named Prontera. The Sanctuary is NorthEast in Prontera. Please remember this."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Hanson",
+                                                args![
+                                                    "You will now",
+                                                    "be teleported.",
+                                                    "Good luck,",
+                                                    ((Val::from("^A62A2A")
+                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                        + Val::from("^000000")),
+                                                    "and farewell."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            ctx.var("nov_1st_cos").set(Val::from(0))?;
+                                            ctx.var("nov_2nd_cos").set(Val::from(0))?;
+                                            ctx.var("nov_3_swordman").set(Val::from(0))?;
+                                            ctx.var("nov_3_archer").set(Val::from(0))?;
+                                            ctx.var("nov_3_thief").set(Val::from(0))?;
+                                            ctx.var("nov_3_magician").set(Val::from(0))?;
+                                            ctx.var("nov_3_acolyte").set(Val::from(0))?;
+                                            ctx.var("nov_3_merchant").set(Val::from(0))?;
+                                            ctx.call(
+                                                Function::SavePoint,
+                                                vec![
+                                                    Val::from("prontera"),
+                                                    Val::from(117),
+                                                    Val::from(72),
+                                                    Val::from(1),
+                                                    Val::from(1),
+                                                ],
+                                            )?;
+                                            ctx.call(
+                                                Function::Warp,
+                                                vec![Val::from("prt_church"), Val::from(172), Val::from(19)],
+                                            )?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched29 && subject29.loosely_equals(&Val::from(2)) {
+                                            matched29 = true;
+                                        }
+                                        if matched29 {
+                                            hanson_nv_run(ctx, HansonNvStep::SUserJobchoice, vec![Val::from("Acolyte")])?;
+                                            return Err(Stop::End);
                                         }
                                     }
                                 }
@@ -5999,47 +5942,39 @@ fn hanson_nv_run(ctx: &Ctx, mut step: HansonNvStep, args: Vec<Val>) -> Result<Va
                                         vec![Val::from("geffen"), Val::from(119), Val::from(37), Val::from(1), Val::from(1)],
                                     )?;
                                     ctx.call(Function::Warp, vec![Val::from("gef_fild07"), Val::from(327), Val::from(188)])?;
-                                } else {
-                                    if (l_startmap.clone().number()? > 2 && l_startmap.clone().number()? < 4) {
-                                        ctx.call(
-                                            Function::SavePoint,
-                                            vec![Val::from("alberta"), Val::from(30), Val::from(232), Val::from(1), Val::from(1)],
-                                        )?;
-                                        ctx.call(Function::Warp, vec![Val::from("pay_fild03"), Val::from(388), Val::from(70)])?;
-                                    } else {
-                                        if (l_startmap.clone().number()? > 3 && l_startmap.clone().number()? < 5) {
-                                            ctx.call(
-                                                Function::SavePoint,
-                                                vec![Val::from("morocc"), Val::from(150), Val::from(99), Val::from(1), Val::from(1)],
-                                            )?;
-                                            ctx.call(Function::Warp, vec![Val::from("moc_fild07"), Val::from(198), Val::from(39)])?;
-                                        } else {
-                                            if (l_startmap.clone().number()? > 4 && l_startmap.clone().number()? < 6) {
-                                                ctx.call(
-                                                    Function::SavePoint,
-                                                    vec![Val::from("payon"), Val::from(256), Val::from(242), Val::from(1), Val::from(1)],
-                                                )?;
-                                                ctx.call(Function::Warp, vec![Val::from("pay_fild01"), Val::from(334), Val::from(354)])?;
-                                            } else {
-                                                if (l_startmap.clone().number()? > 5 && l_startmap.clone().number()? < 7) {
-                                                    ctx.call(
-                                                        Function::SavePoint,
-                                                        vec![
-                                                            Val::from("izlude"),
-                                                            Val::from(93),
-                                                            Val::from(104),
-                                                            Val::from(1),
-                                                            Val::from(1),
-                                                        ],
-                                                    )?;
-                                                    ctx.call(
-                                                        Function::Warp,
-                                                        vec![Val::from("prt_fild08"), Val::from(357), Val::from(212)],
-                                                    )?;
-                                                }
-                                            }
-                                        }
-                                    }
+                                } else if (l_startmap.clone().number()? > 2 && l_startmap.clone().number()? < 4) {
+                                    ctx.call(
+                                        Function::SavePoint,
+                                        vec![Val::from("alberta"), Val::from(30), Val::from(232), Val::from(1), Val::from(1)],
+                                    )?;
+                                    ctx.call(Function::Warp, vec![Val::from("pay_fild03"), Val::from(388), Val::from(70)])?;
+                                } else if (l_startmap.clone().number()? > 3 && l_startmap.clone().number()? < 5) {
+                                    ctx.call(
+                                        Function::SavePoint,
+                                        vec![Val::from("morocc"), Val::from(150), Val::from(99), Val::from(1), Val::from(1)],
+                                    )?;
+                                    ctx.call(Function::Warp, vec![Val::from("moc_fild07"), Val::from(198), Val::from(39)])?;
+                                } else if (l_startmap.clone().number()? > 4 && l_startmap.clone().number()? < 6) {
+                                    ctx.call(
+                                        Function::SavePoint,
+                                        vec![Val::from("payon"), Val::from(256), Val::from(242), Val::from(1), Val::from(1)],
+                                    )?;
+                                    ctx.call(Function::Warp, vec![Val::from("pay_fild01"), Val::from(334), Val::from(354)])?;
+                                } else if (l_startmap.clone().number()? > 5 && l_startmap.clone().number()? < 7) {
+                                    ctx.call(
+                                        Function::SavePoint,
+                                        vec![
+                                            Val::from("izlude"),
+                                            Val::from(93),
+                                            Val::from(104),
+                                            Val::from(1),
+                                            Val::from(1),
+                                        ],
+                                    )?;
+                                    ctx.call(
+                                        Function::Warp,
+                                        vec![Val::from("prt_fild08"), Val::from(357), Val::from(212)],
+                                    )?;
                                 }
                             }
                             return Err(Stop::End);
@@ -6075,38 +6010,30 @@ fn hanson_nv_run(ctx: &Ctx, mut step: HansonNvStep, args: Vec<Val>) -> Result<Va
                                     vec![Val::from("geffen"), Val::from(119), Val::from(37), Val::from(1), Val::from(1)],
                                 )?;
                                 ctx.call(Function::Warp, vec![Val::from("gef_fild07"), Val::from(327), Val::from(188)])?;
-                            } else {
-                                if (l_startmap.clone().number()? > 2 && l_startmap.clone().number()? < 4) {
-                                    ctx.call(
-                                        Function::SavePoint,
-                                        vec![Val::from("alberta"), Val::from(30), Val::from(232), Val::from(1), Val::from(1)],
-                                    )?;
-                                    ctx.call(Function::Warp, vec![Val::from("pay_fild03"), Val::from(388), Val::from(70)])?;
-                                } else {
-                                    if (l_startmap.clone().number()? > 3 && l_startmap.clone().number()? < 5) {
-                                        ctx.call(
-                                            Function::SavePoint,
-                                            vec![Val::from("morocc"), Val::from(150), Val::from(99), Val::from(1), Val::from(1)],
-                                        )?;
-                                        ctx.call(Function::Warp, vec![Val::from("moc_fild07"), Val::from(198), Val::from(39)])?;
-                                    } else {
-                                        if (l_startmap.clone().number()? > 4 && l_startmap.clone().number()? < 6) {
-                                            ctx.call(
-                                                Function::SavePoint,
-                                                vec![Val::from("payon"), Val::from(70), Val::from(100), Val::from(1), Val::from(1)],
-                                            )?;
-                                            ctx.call(Function::Warp, vec![Val::from("pay_fild01"), Val::from(334), Val::from(354)])?;
-                                        } else {
-                                            if (l_startmap.clone().number()? > 5 && l_startmap.clone().number()? < 7) {
-                                                ctx.call(
-                                                    Function::SavePoint,
-                                                    vec![Val::from("izlude"), Val::from(93), Val::from(104), Val::from(1), Val::from(1)],
-                                                )?;
-                                                ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(357), Val::from(212)])?;
-                                            }
-                                        }
-                                    }
-                                }
+                            } else if (l_startmap.clone().number()? > 2 && l_startmap.clone().number()? < 4) {
+                                ctx.call(
+                                    Function::SavePoint,
+                                    vec![Val::from("alberta"), Val::from(30), Val::from(232), Val::from(1), Val::from(1)],
+                                )?;
+                                ctx.call(Function::Warp, vec![Val::from("pay_fild03"), Val::from(388), Val::from(70)])?;
+                            } else if (l_startmap.clone().number()? > 3 && l_startmap.clone().number()? < 5) {
+                                ctx.call(
+                                    Function::SavePoint,
+                                    vec![Val::from("morocc"), Val::from(150), Val::from(99), Val::from(1), Val::from(1)],
+                                )?;
+                                ctx.call(Function::Warp, vec![Val::from("moc_fild07"), Val::from(198), Val::from(39)])?;
+                            } else if (l_startmap.clone().number()? > 4 && l_startmap.clone().number()? < 6) {
+                                ctx.call(
+                                    Function::SavePoint,
+                                    vec![Val::from("payon"), Val::from(70), Val::from(100), Val::from(1), Val::from(1)],
+                                )?;
+                                ctx.call(Function::Warp, vec![Val::from("pay_fild01"), Val::from(334), Val::from(354)])?;
+                            } else if (l_startmap.clone().number()? > 5 && l_startmap.clone().number()? < 7) {
+                                ctx.call(
+                                    Function::SavePoint,
+                                    vec![Val::from("izlude"), Val::from(93), Val::from(104), Val::from(1), Val::from(1)],
+                                )?;
+                                ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(357), Val::from(212)])?;
                             }
                         }
                         return Err(Stop::End);
@@ -6167,41 +6094,33 @@ fn hanson_nv_run(ctx: &Ctx, mut step: HansonNvStep, args: Vec<Val>) -> Result<Va
                         "Hanson",
                         args!["The Swordman Association is located to the Northwest in Izlude. Please remember this."],
                     )?;
+                } else if ctx.var("@menu").get()? == 2 {
+                    ctx.lines(args!["to become a Mage.", "You will be sent to", "the town of Geffen."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Hanson",
+                        args!["The Mage Academy is located in the NorthWest in town. Please remember this."],
+                    )?;
+                } else if ctx.var("@menu").get()? == 3 {
+                    ctx.lines(args!["to become a Merchant.", "You will be sent to", "the town of Alberta."])?;
+                } else if ctx.var("@menu").get()? == 4 {
+                    ctx.lines(args!["to become a Thief.", "You will be sent to", "the town of Morocc."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Hanson", args!["The Thief guild is in the underground 1st floor of a pyramid which is NorthWest of town. Please remember this."])?;
+                } else if ctx.var("@menu").get()? == 5 {
+                    ctx.lines(args!["to become an Archer.", "You will be sent to", "the town of Payon."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Hanson",
+                        args!["The Archer Guild is located to the NorthWest in Payon. Please remember this."],
+                    )?;
                 } else {
-                    if ctx.var("@menu").get()? == 2 {
-                        ctx.lines(args!["to become a Mage.", "You will be sent to", "the town of Geffen."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Hanson",
-                            args!["The Mage Academy is located in the NorthWest in town. Please remember this."],
-                        )?;
-                    } else {
-                        if ctx.var("@menu").get()? == 3 {
-                            ctx.lines(args!["to become a Merchant.", "You will be sent to", "the town of Alberta."])?;
-                        } else {
-                            if ctx.var("@menu").get()? == 4 {
-                                ctx.lines(args!["to become a Thief.", "You will be sent to", "the town of Morocc."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Hanson", args!["The Thief guild is in the underground 1st floor of a pyramid which is NorthWest of town. Please remember this."])?;
-                            } else {
-                                if ctx.var("@menu").get()? == 5 {
-                                    ctx.lines(args!["to become an Archer.", "You will be sent to", "the town of Payon."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Hanson",
-                                        args!["The Archer Guild is located to the NorthWest in Payon. Please remember this."],
-                                    )?;
-                                } else {
-                                    ctx.lines(args!["to become an Acolyte.", "You will be sent to", "the town of Prontera."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Hanson",
-                                        args!["The Prontera Sanctuary is located to the NorthEast in Prontera. Please remember this."],
-                                    )?;
-                                }
-                            }
-                        }
-                    }
+                    ctx.lines(args!["to become an Acolyte.", "You will be sent to", "the town of Prontera."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Hanson",
+                        args!["The Prontera Sanctuary is located to the NorthEast in Prontera. Please remember this."],
+                    )?;
                 }
                 ctx.next()?;
                 ctx.lines_as(
@@ -6272,44 +6191,36 @@ fn hanson_nv_run(ctx: &Ctx, mut step: HansonNvStep, args: Vec<Val>) -> Result<Va
                         vec![Val::from("izlude"), Val::from(93), Val::from(104), Val::from(1), Val::from(1)],
                     )?;
                     ctx.call(Function::Warp, vec![Val::from("izlude_in"), Val::from(74), Val::from(167)])?;
+                } else if ctx.var("@menu").get()? == 2 {
+                    ctx.call(
+                        Function::SavePoint,
+                        vec![Val::from("geffen"), Val::from(119), Val::from(37), Val::from(1), Val::from(1)],
+                    )?;
+                    ctx.call(Function::Warp, vec![Val::from("geffen_in"), Val::from(163), Val::from(98)])?;
+                } else if ctx.var("@menu").get()? == 3 {
+                    ctx.call(
+                        Function::SavePoint,
+                        vec![Val::from("alberta"), Val::from(30), Val::from(232), Val::from(1), Val::from(1)],
+                    )?;
+                    ctx.call(Function::Warp, vec![Val::from("alberta_in"), Val::from(62), Val::from(44)])?;
+                } else if ctx.var("@menu").get()? == 4 {
+                    ctx.call(
+                        Function::SavePoint,
+                        vec![Val::from("morocc"), Val::from(150), Val::from(99), Val::from(1), Val::from(1)],
+                    )?;
+                    ctx.call(Function::Warp, vec![Val::from("moc_ruins"), Val::from(155), Val::from(44)])?;
+                } else if ctx.var("@menu").get()? == 5 {
+                    ctx.call(
+                        Function::SavePoint,
+                        vec![Val::from("payon"), Val::from(70), Val::from(100), Val::from(1), Val::from(1)],
+                    )?;
+                    ctx.call(Function::Warp, vec![Val::from("payon_in02"), Val::from(64), Val::from(65)])?;
                 } else {
-                    if ctx.var("@menu").get()? == 2 {
-                        ctx.call(
-                            Function::SavePoint,
-                            vec![Val::from("geffen"), Val::from(119), Val::from(37), Val::from(1), Val::from(1)],
-                        )?;
-                        ctx.call(Function::Warp, vec![Val::from("geffen_in"), Val::from(163), Val::from(98)])?;
-                    } else {
-                        if ctx.var("@menu").get()? == 3 {
-                            ctx.call(
-                                Function::SavePoint,
-                                vec![Val::from("alberta"), Val::from(30), Val::from(232), Val::from(1), Val::from(1)],
-                            )?;
-                            ctx.call(Function::Warp, vec![Val::from("alberta_in"), Val::from(62), Val::from(44)])?;
-                        } else {
-                            if ctx.var("@menu").get()? == 4 {
-                                ctx.call(
-                                    Function::SavePoint,
-                                    vec![Val::from("morocc"), Val::from(150), Val::from(99), Val::from(1), Val::from(1)],
-                                )?;
-                                ctx.call(Function::Warp, vec![Val::from("moc_ruins"), Val::from(155), Val::from(44)])?;
-                            } else {
-                                if ctx.var("@menu").get()? == 5 {
-                                    ctx.call(
-                                        Function::SavePoint,
-                                        vec![Val::from("payon"), Val::from(70), Val::from(100), Val::from(1), Val::from(1)],
-                                    )?;
-                                    ctx.call(Function::Warp, vec![Val::from("payon_in02"), Val::from(64), Val::from(65)])?;
-                                } else {
-                                    ctx.call(
-                                        Function::SavePoint,
-                                        vec![Val::from("prontera"), Val::from(117), Val::from(72), Val::from(1), Val::from(1)],
-                                    )?;
-                                    ctx.call(Function::Warp, vec![Val::from("prt_church"), Val::from(172), Val::from(19)])?;
-                                }
-                            }
-                        }
-                    }
+                    ctx.call(
+                        Function::SavePoint,
+                        vec![Val::from("prontera"), Val::from(117), Val::from(72), Val::from(1), Val::from(1)],
+                    )?;
+                    ctx.call(Function::Warp, vec![Val::from("prt_church"), Val::from(172), Val::from(19)])?;
                 }
                 return Ok(Val::from(0));
             }
@@ -6475,188 +6386,186 @@ fn bruce_nv_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     }
                 }
             }
+        } else if ctx.var("nov_3_swordman").get()? == 40 {
+            ctx.lines_as("Bruce", args!["I'm sorry, but", "there's nothing", "more I can teach you."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Bruce",
+                args!["Hanson is waiting", "for you now. Good luck", "out there, young Novice."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("nov_3_swordman").get()? == 40 {
-                ctx.lines_as("Bruce", args!["I'm sorry, but", "there's nothing", "more I can teach you."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Bruce",
-                    args!["Hanson is waiting", "for you now. Good luck", "out there, young Novice."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Bruce",
-                    args![
-                        "You've gone",
-                        "through quite",
-                        "a bit of trouble",
-                        "to finish all the",
-                        "training courses."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Bruce",
-                    args![
-                        "Hello there,",
-                        ((Val::from("^A62A2A") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'^000000,")),
-                        "pleased to meet you.",
-                        "I am Bruce of the",
-                        "Rune-Midgarts Kingdom."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Bruce", args!["My duty is to assist you by teaching information about each First Job Class, so that you can decide which job you want to be."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Bruce",
-                    args![
-                        "The First Job Classes are",
-                        "^0000FFSwordman, Mage, Archer, Merchant, Thief and Acolyte^000000."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Bruce", args!["So...", "Which job did", "you have in mind?"])?;
-                ctx.next()?;
-                'l3: loop {
-                    if !(true) {
-                        break 'l3;
-                    }
-                    'b3: {
-                        'b4: {
-                            let subject4 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Swordman:Mage:Archer:Merchant:Thief:Acolyte:End conversation.")],
-                            )?);
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                && !subject4.loosely_equals(&Val::from(2))
-                                && !subject4.loosely_equals(&Val::from(3))
-                                && !subject4.loosely_equals(&Val::from(4))
-                                && !subject4.loosely_equals(&Val::from(5))
-                                && !subject4.loosely_equals(&Val::from(6))
-                                && !subject4.loosely_equals(&Val::from(7));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as("Bruce", args!["As the name implies, the", "Swordman is an expert in wielding Swords. They can also use Spear weapons, but typically you don't see Spear wielding Swordmen", "very often."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["Swordmen possess strong physical strength, allowing them to equip heavy armor and weapons. Most weapon classes, except for bows and rods, can be equipped by the Swordman class."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["The only weakness of the Swordman class is that they cannot use magic spells. However, this can be compensated by using weapons with an elemental attribute."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["One of the greatest benefits of being a Swordman is having an enormous amount of HP, meaning they can more easily withstand damage from their enemies."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Bruce",
-                                    args!["After learning some strong attack skills, the Swordman is almost unbeatable in a melee fight."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["In Ragnarok Online, Swordman generally takes the position of tanker, protecting characters of other classes from being attacked or hurt."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["A Swordman is the ideal character to take the position of party leader. When advancing to the Second Job Class, Swordmen can change their jobs to ^8E2323Knights^000000 or ^8E2323Crusaders^000000."])?;
-                                ctx.var("nov_3_swordman").set(Val::from(20))?;
-                                ctx.next()?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as("Bruce", args!["The Mage class specializes in using the forces of Fire, Water, Earth and Lightning to attack their enemies."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["However, due to their weak physical strength, they are only allowed to equip Rods and Knives as weapons, and wear light armor for defense."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["Despite their physical weakness, they are able to do massive damage with their powerful spells. This fact alone attracts many people to join this class."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["In Ragnarok Online, the Mage takes a heavily offensive role in parties and is depended upon to deal great damage to enemies."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, Mages can change their jobs to ^8E2323Wizards^000000 or ^8E2323Sages^000000."])?;
-                                ctx.var("nov_3_swordman").set(Val::from(20))?;
-                                ctx.next()?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as("Bruce", args!["The Archer class are experts in using Bow weapons, and are useful in parties for their long range attacks."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["Despite being physically weaker, Archers possess high accuracy with powerful long range bows. This allows them to attack and kill monsters from a safe distance."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["In Ragnarok Online, Archers have relatively little HP, but their long range attacks allow them to easily dispatch enemies before the enemy gets close enough to hurt them."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, every Archer may advance to the ^8E2323Hunter^000000 class. Alternatively, male Archers may advance to become ^8E2323Bards^000000, and female Archers may become ^8E2323Dancers^000000."])?;
-                                ctx.var("nov_3_swordman").set(Val::from(20))?;
-                                ctx.next()?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as("Bruce", args!["The Merchant class specializes in commerce. Due to the strong influence of the Merchant Guild, the Merchant class is attractive to those who wish to focus on earning Zeny."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["In Ragnarok Online, the Merchant class possesses various economic abilities. Merchants can learn to sell items to NPCs for higher prices, as well as receive discounts from NPCs."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["In addition, Merchants may rent", "a Cart that greatly expands their carrying capacity and allows them to open shops with their own items and prices."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, Merchants can change their jobs to ^8E2323Blacksmiths^000000 or ^8E2323Alchemists^000000."])?;
-                                ctx.var("nov_3_swordman").set(Val::from(20))?;
-                                ctx.next()?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as("Bruce", args!["Thieves are experts at using Dagger class weapons. They strike quickly and easily evade attacks from their enemies."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["Thieves can learn skills that allow them to hide from their enemies, or steal items from monsters. They are also feared for their use of poison, which slowly weakens", "their enemies."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, Thieves can change their jobs to ^8E2323Assassins^000000 or ^8E2323Rogues^000000."])?;
-                                ctx.var("nov_3_swordman").set(Val::from(20))?;
-                                ctx.next()?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as("Bruce", args!["In Ragnarok Online, Acolytes act as messengers of God in Rune-Midgarts. They possess skills that support their allies, as well as the life saving Heal ability."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["The Acolyte's support abilities make them a welcome addition to any party. In difficult situations, the Acolyte's skills will ensure the survival of the party, allowing other members to focus on offense."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, Acolytes can change their jobs to ^8E2323Priests^000000 or ^8E2323Monks^000000."])?;
-                                ctx.var("nov_3_swordman").set(Val::from(20))?;
-                                ctx.next()?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(7)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as(
-                                    "Bruce",
-                                    args![
-                                        "For more information,",
-                                        "please visit the official",
-                                        "Ragnarok Online website:",
-                                        " ",
-                                        "^0000FFiro.ragnarokonline.com^000000."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Bruce",
-                                    args!["Hanson is waiting", "for you now. Good luck", "out there, young Novice."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+            ctx.lines_as(
+                "Bruce",
+                args![
+                    "You've gone",
+                    "through quite",
+                    "a bit of trouble",
+                    "to finish all the",
+                    "training courses."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Bruce",
+                args![
+                    "Hello there,",
+                    ((Val::from("^A62A2A") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("'^000000,")),
+                    "pleased to meet you.",
+                    "I am Bruce of the",
+                    "Rune-Midgarts Kingdom."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Bruce", args!["My duty is to assist you by teaching information about each First Job Class, so that you can decide which job you want to be."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Bruce",
+                args![
+                    "The First Job Classes are",
+                    "^0000FFSwordman, Mage, Archer, Merchant, Thief and Acolyte^000000."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Bruce", args!["So...", "Which job did", "you have in mind?"])?;
+            ctx.next()?;
+            'l3: loop {
+                if !(true) {
+                    break 'l3;
+                }
+                'b3: {
+                    'b4: {
+                        let subject4 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Swordman:Mage:Archer:Merchant:Thief:Acolyte:End conversation.")],
+                        )?);
+                        let mut matched4 = false;
+                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                            && !subject4.loosely_equals(&Val::from(2))
+                            && !subject4.loosely_equals(&Val::from(3))
+                            && !subject4.loosely_equals(&Val::from(4))
+                            && !subject4.loosely_equals(&Val::from(5))
+                            && !subject4.loosely_equals(&Val::from(6))
+                            && !subject4.loosely_equals(&Val::from(7));
+                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as("Bruce", args!["As the name implies, the", "Swordman is an expert in wielding Swords. They can also use Spear weapons, but typically you don't see Spear wielding Swordmen", "very often."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["Swordmen possess strong physical strength, allowing them to equip heavy armor and weapons. Most weapon classes, except for bows and rods, can be equipped by the Swordman class."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["The only weakness of the Swordman class is that they cannot use magic spells. However, this can be compensated by using weapons with an elemental attribute."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["One of the greatest benefits of being a Swordman is having an enormous amount of HP, meaning they can more easily withstand damage from their enemies."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Bruce",
+                                args!["After learning some strong attack skills, the Swordman is almost unbeatable in a melee fight."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["In Ragnarok Online, Swordman generally takes the position of tanker, protecting characters of other classes from being attacked or hurt."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["A Swordman is the ideal character to take the position of party leader. When advancing to the Second Job Class, Swordmen can change their jobs to ^8E2323Knights^000000 or ^8E2323Crusaders^000000."])?;
+                            ctx.var("nov_3_swordman").set(Val::from(20))?;
+                            ctx.next()?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as("Bruce", args!["The Mage class specializes in using the forces of Fire, Water, Earth and Lightning to attack their enemies."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["However, due to their weak physical strength, they are only allowed to equip Rods and Knives as weapons, and wear light armor for defense."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["Despite their physical weakness, they are able to do massive damage with their powerful spells. This fact alone attracts many people to join this class."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["In Ragnarok Online, the Mage takes a heavily offensive role in parties and is depended upon to deal great damage to enemies."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, Mages can change their jobs to ^8E2323Wizards^000000 or ^8E2323Sages^000000."])?;
+                            ctx.var("nov_3_swordman").set(Val::from(20))?;
+                            ctx.next()?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as("Bruce", args!["The Archer class are experts in using Bow weapons, and are useful in parties for their long range attacks."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["Despite being physically weaker, Archers possess high accuracy with powerful long range bows. This allows them to attack and kill monsters from a safe distance."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["In Ragnarok Online, Archers have relatively little HP, but their long range attacks allow them to easily dispatch enemies before the enemy gets close enough to hurt them."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, every Archer may advance to the ^8E2323Hunter^000000 class. Alternatively, male Archers may advance to become ^8E2323Bards^000000, and female Archers may become ^8E2323Dancers^000000."])?;
+                            ctx.var("nov_3_swordman").set(Val::from(20))?;
+                            ctx.next()?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(4)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as("Bruce", args!["The Merchant class specializes in commerce. Due to the strong influence of the Merchant Guild, the Merchant class is attractive to those who wish to focus on earning Zeny."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["In Ragnarok Online, the Merchant class possesses various economic abilities. Merchants can learn to sell items to NPCs for higher prices, as well as receive discounts from NPCs."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["In addition, Merchants may rent", "a Cart that greatly expands their carrying capacity and allows them to open shops with their own items and prices."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, Merchants can change their jobs to ^8E2323Blacksmiths^000000 or ^8E2323Alchemists^000000."])?;
+                            ctx.var("nov_3_swordman").set(Val::from(20))?;
+                            ctx.next()?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(5)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as("Bruce", args!["Thieves are experts at using Dagger class weapons. They strike quickly and easily evade attacks from their enemies."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["Thieves can learn skills that allow them to hide from their enemies, or steal items from monsters. They are also feared for their use of poison, which slowly weakens", "their enemies."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, Thieves can change their jobs to ^8E2323Assassins^000000 or ^8E2323Rogues^000000."])?;
+                            ctx.var("nov_3_swordman").set(Val::from(20))?;
+                            ctx.next()?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(6)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as("Bruce", args!["In Ragnarok Online, Acolytes act as messengers of God in Rune-Midgarts. They possess skills that support their allies, as well as the life saving Heal ability."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["The Acolyte's support abilities make them a welcome addition to any party. In difficult situations, the Acolyte's skills will ensure the survival of the party, allowing other members to focus on offense."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bruce", args!["When advancing to the Second Job Class, Acolytes can change their jobs to ^8E2323Priests^000000 or ^8E2323Monks^000000."])?;
+                            ctx.var("nov_3_swordman").set(Val::from(20))?;
+                            ctx.next()?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(7)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as(
+                                "Bruce",
+                                args![
+                                    "For more information,",
+                                    "please visit the official",
+                                    "Ragnarok Online website:",
+                                    " ",
+                                    "^0000FFiro.ragnarokonline.com^000000."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Bruce",
+                                args!["Hanson is waiting", "for you now. Good luck", "out there, young Novice."],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }

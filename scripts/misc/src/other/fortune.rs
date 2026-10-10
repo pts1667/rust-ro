@@ -68,18 +68,16 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Lhimetorra", args!["Ah...?!", "You have angered the monster spirits!"])?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if runtime::op(&l_input.clone(), ">", &ctx.var("Zeny").get()?)?.is_true() {
+        ctx.lines_as(
+            "Lhimetorra",
+            args!["There's no need to overdo it. Just give with all your heart... *Tsk tsk*"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if runtime::op(&l_input.clone(), ">", &ctx.var("Zeny").get()?)?.is_true() {
-            ctx.lines_as(
-                "Lhimetorra",
-                args!["There's no need to overdo it. Just give with all your heart... *Tsk tsk*"],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as("Lhimetorra", args!["I accept your heart and your devotion with my gratitude. Thoughts are more important than the amount when paying a fortune teller."])?;
-            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(l_input.clone())?))?;
-        }
+        ctx.lines_as("Lhimetorra", args!["I accept your heart and your devotion with my gratitude. Thoughts are more important than the amount when paying a fortune teller."])?;
+        ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(l_input.clone())?))?;
     }
     ctx.next()?;
     ctx.lines_as(
@@ -145,24 +143,16 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             } else {
                                                 if l_card_1_love.clone().number()? < 55 {
                                                     ctx.call(Function::Cutin, vec![Val::from("�ƴ���ī��"), Val::from(4)])?;
+                                                } else if l_card_1_love.clone().number()? < 59 {
+                                                    ctx.call(Function::Cutin, vec![Val::from("��ũ�ε�ī��"), Val::from(4)])?;
+                                                } else if l_card_1_love.clone().number()? < 63 {
+                                                    ctx.call(Function::Cutin, vec![Val::from("��ī��"), Val::from(4)])?;
+                                                } else if l_card_1_love.clone().number()? < 67 {
+                                                    ctx.call(Function::Cutin, vec![Val::from("��Ŀī��"), Val::from(4)])?;
+                                                } else if l_card_1_love.clone().number()? < 71 {
+                                                    ctx.call(Function::Cutin, vec![Val::from("ȣ��ī��"), Val::from(4)])?;
                                                 } else {
-                                                    if l_card_1_love.clone().number()? < 59 {
-                                                        ctx.call(Function::Cutin, vec![Val::from("��ũ�ε�ī��"), Val::from(4)])?;
-                                                    } else {
-                                                        if l_card_1_love.clone().number()? < 63 {
-                                                            ctx.call(Function::Cutin, vec![Val::from("��ī��"), Val::from(4)])?;
-                                                        } else {
-                                                            if l_card_1_love.clone().number()? < 67 {
-                                                                ctx.call(Function::Cutin, vec![Val::from("��Ŀī��"), Val::from(4)])?;
-                                                            } else {
-                                                                if l_card_1_love.clone().number()? < 71 {
-                                                                    ctx.call(Function::Cutin, vec![Val::from("ȣ��ī��"), Val::from(4)])?;
-                                                                } else {
-                                                                    ctx.call(Function::Cutin, vec![Val::from("Ȳ��ī��"), Val::from(4)])?;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
+                                                    ctx.call(Function::Cutin, vec![Val::from("Ȳ��ī��"), Val::from(4)])?;
                                                 }
                                             }
                                         }
@@ -1136,33 +1126,25 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         } else {
                                                             if l_card_1_money.clone().number()? < 54 {
                                                                 ctx.call(Function::Cutin, vec![Val::from("�ƴ���ī��"), Val::from(4)])?;
+                                                            } else if l_card_1_money.clone().number()? < 58 {
+                                                                ctx.call(Function::Cutin, vec![Val::from("��ũ�ε�ī��"), Val::from(4)])?;
+                                                            } else if l_card_1_money.clone().number()? < 62 {
+                                                                ctx.call(Function::Cutin, vec![Val::from("��ī��"), Val::from(4)])?;
+                                                            } else if l_card_1_money.clone().number()? < 66 {
+                                                                ctx.call(
+                                                                    Function::Cutin,
+                                                                    vec![Val::from("��Ŀī��"), Val::from(4)],
+                                                                )?;
+                                                            } else if l_card_1_money.clone().number()? < 70 {
+                                                                ctx.call(
+                                                                    Function::Cutin,
+                                                                    vec![Val::from("ȣ��ī��"), Val::from(4)],
+                                                                )?;
                                                             } else {
-                                                                if l_card_1_money.clone().number()? < 58 {
-                                                                    ctx.call(Function::Cutin, vec![Val::from("��ũ�ε�ī��"), Val::from(4)])?;
-                                                                } else {
-                                                                    if l_card_1_money.clone().number()? < 62 {
-                                                                        ctx.call(Function::Cutin, vec![Val::from("��ī��"), Val::from(4)])?;
-                                                                    } else {
-                                                                        if l_card_1_money.clone().number()? < 66 {
-                                                                            ctx.call(
-                                                                                Function::Cutin,
-                                                                                vec![Val::from("��Ŀī��"), Val::from(4)],
-                                                                            )?;
-                                                                        } else {
-                                                                            if l_card_1_money.clone().number()? < 70 {
-                                                                                ctx.call(
-                                                                                    Function::Cutin,
-                                                                                    vec![Val::from("ȣ��ī��"), Val::from(4)],
-                                                                                )?;
-                                                                            } else {
-                                                                                ctx.call(
-                                                                                    Function::Cutin,
-                                                                                    vec![Val::from("Ȳ��ī��"), Val::from(4)],
-                                                                                )?;
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
+                                                                ctx.call(
+                                                                    Function::Cutin,
+                                                                    vec![Val::from("Ȳ��ī��"), Val::from(4)],
+                                                                )?;
                                                             }
                                                         }
                                                     }
@@ -2101,35 +2083,27 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         } else {
                                                             if l_card_1_future.clone().number()? < 48 {
                                                                 ctx.call(Function::Cutin, vec![Val::from("�ƴ���ī��"), Val::from(4)])?;
+                                                            } else if l_card_1_future.clone().number()? < 52 {
+                                                                ctx.call(Function::Cutin, vec![Val::from("��ũ�ε�ī��"), Val::from(4)])?;
+                                                            } else if l_card_1_future.clone().number()? < 57 {
+                                                                ctx.call(Function::Cutin, vec![Val::from("��ī��"), Val::from(4)])?;
+                                                            } else if l_card_1_future.clone().number()? < 61 {
+                                                                ctx.call(
+                                                                    Function::Cutin,
+                                                                    vec![Val::from("��Ŀī��"), Val::from(4)],
+                                                                )?;
+                                                            } else if (l_card_1_future.clone().number()? < 63
+                                                                || l_card_1_future.clone() == 67)
+                                                            {
+                                                                ctx.call(
+                                                                    Function::Cutin,
+                                                                    vec![Val::from("ȣ��ī��"), Val::from(4)],
+                                                                )?;
                                                             } else {
-                                                                if l_card_1_future.clone().number()? < 52 {
-                                                                    ctx.call(Function::Cutin, vec![Val::from("��ũ�ε�ī��"), Val::from(4)])?;
-                                                                } else {
-                                                                    if l_card_1_future.clone().number()? < 57 {
-                                                                        ctx.call(Function::Cutin, vec![Val::from("��ī��"), Val::from(4)])?;
-                                                                    } else {
-                                                                        if l_card_1_future.clone().number()? < 61 {
-                                                                            ctx.call(
-                                                                                Function::Cutin,
-                                                                                vec![Val::from("��Ŀī��"), Val::from(4)],
-                                                                            )?;
-                                                                        } else {
-                                                                            if (l_card_1_future.clone().number()? < 63
-                                                                                || l_card_1_future.clone() == 67)
-                                                                            {
-                                                                                ctx.call(
-                                                                                    Function::Cutin,
-                                                                                    vec![Val::from("ȣ��ī��"), Val::from(4)],
-                                                                                )?;
-                                                                            } else {
-                                                                                ctx.call(
-                                                                                    Function::Cutin,
-                                                                                    vec![Val::from("Ȳ��ī��"), Val::from(4)],
-                                                                                )?;
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
+                                                                ctx.call(
+                                                                    Function::Cutin,
+                                                                    vec![Val::from("Ȳ��ī��"), Val::from(4)],
+                                                                )?;
                                                             }
                                                         }
                                                     }
@@ -3105,33 +3079,25 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         } else {
                                                             if l_card_1_warning.clone().number()? < 52 {
                                                                 ctx.call(Function::Cutin, vec![Val::from("�ƴ���ī��"), Val::from(4)])?;
+                                                            } else if l_card_1_warning.clone().number()? < 56 {
+                                                                ctx.call(Function::Cutin, vec![Val::from("��ũ�ε�ī��"), Val::from(4)])?;
+                                                            } else if l_card_1_warning.clone().number()? < 59 {
+                                                                ctx.call(Function::Cutin, vec![Val::from("��ī��"), Val::from(4)])?;
+                                                            } else if l_card_1_warning.clone().number()? < 63 {
+                                                                ctx.call(
+                                                                    Function::Cutin,
+                                                                    vec![Val::from("��Ŀī��"), Val::from(4)],
+                                                                )?;
+                                                            } else if l_card_1_warning.clone().number()? < 68 {
+                                                                ctx.call(
+                                                                    Function::Cutin,
+                                                                    vec![Val::from("ȣ��ī��"), Val::from(4)],
+                                                                )?;
                                                             } else {
-                                                                if l_card_1_warning.clone().number()? < 56 {
-                                                                    ctx.call(Function::Cutin, vec![Val::from("��ũ�ε�ī��"), Val::from(4)])?;
-                                                                } else {
-                                                                    if l_card_1_warning.clone().number()? < 59 {
-                                                                        ctx.call(Function::Cutin, vec![Val::from("��ī��"), Val::from(4)])?;
-                                                                    } else {
-                                                                        if l_card_1_warning.clone().number()? < 63 {
-                                                                            ctx.call(
-                                                                                Function::Cutin,
-                                                                                vec![Val::from("��Ŀī��"), Val::from(4)],
-                                                                            )?;
-                                                                        } else {
-                                                                            if l_card_1_warning.clone().number()? < 68 {
-                                                                                ctx.call(
-                                                                                    Function::Cutin,
-                                                                                    vec![Val::from("ȣ��ī��"), Val::from(4)],
-                                                                                )?;
-                                                                            } else {
-                                                                                ctx.call(
-                                                                                    Function::Cutin,
-                                                                                    vec![Val::from("Ȳ��ī��"), Val::from(4)],
-                                                                                )?;
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
+                                                                ctx.call(
+                                                                    Function::Cutin,
+                                                                    vec![Val::from("Ȳ��ī��"), Val::from(4)],
+                                                                )?;
                                                             }
                                                         }
                                                     }
@@ -5644,24 +5610,16 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                                 } else {
                                     if l_arg.clone().number()? < 19 {
                                         ctx.call(Function::Cutin, vec![Val::from("����������ī��"), Val::from(4)])?;
+                                    } else if l_arg.clone().number()? < 22 {
+                                        ctx.call(Function::Cutin, vec![Val::from("���̷���ī��"), Val::from(4)])?;
+                                    } else if l_arg.clone().number()? < 25 {
+                                        ctx.call(Function::Cutin, vec![Val::from("���尡ī��"), Val::from(4)])?;
+                                    } else if l_arg.clone().number()? < 28 {
+                                        ctx.call(Function::Cutin, vec![Val::from("������ī��"), Val::from(4)])?;
+                                    } else if l_arg.clone().number()? < 31 {
+                                        ctx.call(Function::Cutin, vec![Val::from("����ī��"), Val::from(4)])?;
                                     } else {
-                                        if l_arg.clone().number()? < 22 {
-                                            ctx.call(Function::Cutin, vec![Val::from("���̷���ī��"), Val::from(4)])?;
-                                        } else {
-                                            if l_arg.clone().number()? < 25 {
-                                                ctx.call(Function::Cutin, vec![Val::from("���尡ī��"), Val::from(4)])?;
-                                            } else {
-                                                if l_arg.clone().number()? < 28 {
-                                                    ctx.call(Function::Cutin, vec![Val::from("������ī��"), Val::from(4)])?;
-                                                } else {
-                                                    if l_arg.clone().number()? < 31 {
-                                                        ctx.call(Function::Cutin, vec![Val::from("����ī��"), Val::from(4)])?;
-                                                    } else {
-                                                        ctx.call(Function::Cutin, vec![Val::from("������ī��"), Val::from(4)])?;
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        ctx.call(Function::Cutin, vec![Val::from("������ī��"), Val::from(4)])?;
                                     }
                                 }
                             }

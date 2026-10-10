@@ -132,181 +132,173 @@ fn yggdrasil_gatekeeper_run(ctx: &Ctx, mut step: YggdrasilGatekeeperStep, args: 
                                     return Err(Stop::End);
                                 }
                             }
-                        } else {
-                            if ((ctx.var("ins_nyd").get()? == 131 || ctx.var("ins_nyd").get()? == 132)
-                                || ctx.var("ins_nyd").get()?.number()? > 199)
-                            {
-                                l_party_id = ctx.call(Function::GetCharacterId, vec![Val::from(1)])?;
-                                l_md_name_s = Val::from("Nidhoggur's Nest");
-                                l_ins_nyd_check = ctx.call(Function::CheckQuest, vec![Val::from(3135), ctx.constant("PLAYTIME")?])?;
-                                l_ins_nyd_check2 = ctx.call(Function::CheckQuest, vec![Val::from(3136), ctx.constant("PLAYTIME")?])?;
-                                ctx.mes("As I put my hands on the stone gate, a voice sounded from the depth of my heart.")?;
-                                ctx.next()?;
-                                if (l_ins_nyd_check.clone() == -1 && l_ins_nyd_check2.clone() == -1) {
-                                    if !(ctx
-                                        .call(
-                                            Function::InstanceCheckParty,
-                                            vec![l_party_id.clone(), Val::from(2), Val::from(70)],
-                                        )?
-                                        .is_true())
-                                    {
-                                        ctx.lines_as("Yggdrasil Gatekeeper", args!["Where are the other servants, so you can work together? Each servant cannot be admitted here individually..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Yggdrasil Gatekeeper", args!["Come with at least 1 more servant... Only party leaders can accept admission to Nidhoggur's Nest."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Yggdrasil Gatekeeper",
-                                            args!["And only 1 representative of you needs to talk to me, so don't annoy me..."],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    if ctx
-                                        .call(Function::IsPartyLeader, vec![l_party_id.clone()])?
-                                        .loosely_equals(&Val::from(1))
-                                    {
-                                        ctx.lines_as(
-                                            "Yggdrasil Gatekeeper",
-                                            args!["The loyal servants of the Guardian... what can I do for you?"],
-                                        )?;
-                                        ctx.next()?;
-                                        'b3: {
-                                            let subject3 = Val::from(runtime::select_values(
-                                                ctx,
-                                                &[Val::from("Please allow me to enter.:I want to go in.:I want to leave.")],
-                                            )?);
-                                            let mut matched3 = false;
-                                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                                && !subject3.loosely_equals(&Val::from(2))
-                                                && !subject3.loosely_equals(&Val::from(3));
-                                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                                matched3 = true;
-                                            }
-                                            if matched3 {
-                                                if ctx.call(Function::InstanceCreate, vec![l_md_name_s.clone()])?.number()? < 0 {
-                                                    ctx.lines_as("Yggdrasil Gatekeeper", args!["The Guardian seems to wish to be alone. I will go in and check, please wait out here."])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                ctx.lines_as(
-                                                    "Yggdrasil Gatekeeper",
-                                                    args!["I've recorded your request, are you ready to go inside?"],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Yggdrasil Gatekeeper",
-                                                    args!["If you are ready, I will allow you to enter."],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                                matched3 = true;
-                                            }
-                                            if matched3 {
-                                                step = YggdrasilGatekeeperStep::LEnter;
-                                                continue 'machine;
-                                            }
-                                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                                matched3 = true;
-                                            }
-                                            if matched3 {
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
-                                    }
+                        } else if ((ctx.var("ins_nyd").get()? == 131 || ctx.var("ins_nyd").get()? == 132)
+                            || ctx.var("ins_nyd").get()?.number()? > 199)
+                        {
+                            l_party_id = ctx.call(Function::GetCharacterId, vec![Val::from(1)])?;
+                            l_md_name_s = Val::from("Nidhoggur's Nest");
+                            l_ins_nyd_check = ctx.call(Function::CheckQuest, vec![Val::from(3135), ctx.constant("PLAYTIME")?])?;
+                            l_ins_nyd_check2 = ctx.call(Function::CheckQuest, vec![Val::from(3136), ctx.constant("PLAYTIME")?])?;
+                            ctx.mes("As I put my hands on the stone gate, a voice sounded from the depth of my heart.")?;
+                            ctx.next()?;
+                            if (l_ins_nyd_check.clone() == -1 && l_ins_nyd_check2.clone() == -1) {
+                                if !(ctx
+                                    .call(
+                                        Function::InstanceCheckParty,
+                                        vec![l_party_id.clone(), Val::from(2), Val::from(70)],
+                                    )?
+                                    .is_true())
+                                {
+                                    ctx.lines_as("Yggdrasil Gatekeeper", args!["Where are the other servants, so you can work together? Each servant cannot be admitted here individually..."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Yggdrasil Gatekeeper", args!["Come with at least 1 more servant... Only party leaders can accept admission to Nidhoggur's Nest."])?;
+                                    ctx.next()?;
                                     ctx.lines_as(
                                         "Yggdrasil Gatekeeper",
-                                        args!["If you have the dungeon generated already, you can enter it."],
+                                        args!["And only 1 representative of you needs to talk to me, so don't annoy me..."],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if ctx
+                                    .call(Function::IsPartyLeader, vec![l_party_id.clone()])?
+                                    .loosely_equals(&Val::from(1))
+                                {
+                                    ctx.lines_as(
+                                        "Yggdrasil Gatekeeper",
+                                        args!["The loyal servants of the Guardian... what can I do for you?"],
                                     )?;
                                     ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("I want to go in.:I want to leave.")])?) == 2 {
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    step = YggdrasilGatekeeperStep::LEnter;
-                                    continue 'machine;
-                                } else {
-                                    if (l_ins_nyd_check.clone() == 0 || l_ins_nyd_check.clone() == 1) {
-                                        if (ctx.var("ins_nyd2").get()? == 3 || ctx.var("ins_nyd2").get()? == 4) {
-                                            ctx.lines_as("Yggdrasil Gatekeeper", args!["With the defeat of Nidhoggur's Shadow, the roots of the World Tree Yggdrasil are also affected."])?;
+                                    'b3: {
+                                        let subject3 = Val::from(runtime::select_values(
+                                            ctx,
+                                            &[Val::from("Please allow me to enter.:I want to go in.:I want to leave.")],
+                                        )?);
+                                        let mut matched3 = false;
+                                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                            && !subject3.loosely_equals(&Val::from(2))
+                                            && !subject3.loosely_equals(&Val::from(3));
+                                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                            matched3 = true;
+                                        }
+                                        if matched3 {
+                                            if ctx.call(Function::InstanceCreate, vec![l_md_name_s.clone()])?.number()? < 0 {
+                                                ctx.lines_as("Yggdrasil Gatekeeper", args!["The Guardian seems to wish to be alone. I will go in and check, please wait out here."])?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                            ctx.lines_as(
+                                                "Yggdrasil Gatekeeper",
+                                                args!["I've recorded your request, are you ready to go inside?"],
+                                            )?;
                                             ctx.next()?;
                                             ctx.lines_as(
                                                 "Yggdrasil Gatekeeper",
-                                                args!["After Nidhoggur's Shadow disappears, at least 3 days is needed for stabilizing."],
+                                                args!["If you are ready, I will allow you to enter."],
                                             )?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        ctx.lines_as(
-                                            "Yggdrasil Gatekeeper",
-                                            args!["If you have the dungeon generated already, you can enter it."],
-                                        )?;
-                                        ctx.next()?;
-                                        if Val::from(runtime::select_values(ctx, &[Val::from("I want to go in.:I want to leave.")])?) == 2 {
+                                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                            matched3 = true;
+                                        }
+                                        if matched3 {
+                                            step = YggdrasilGatekeeperStep::LEnter;
+                                            continue 'machine;
+                                        }
+                                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                                            matched3 = true;
+                                        }
+                                        if matched3 {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        step = YggdrasilGatekeeperStep::LEnter;
-                                        continue 'machine;
-                                    } else {
-                                        if l_ins_nyd_check.clone() == 2 {
-                                            if (l_ins_nyd_check2.clone() == 0 || l_ins_nyd_check2.clone() == 1) {
-                                                ctx.lines_as("Yggdrasil Gatekeeper", args!["The time limit to enter the dungeon has expired. You must wait for the World Tree to stabilize its power before trying to re-enter."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                if l_ins_nyd_check2.clone() == 2 {
-                                                    ctx.lines_as("Yggdrasil Gatekeeper", args!["The World Tree Yggdrasil has stabilized. Would you like to enter Nidhoggur's Nest again?"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Yggdrasil Gatekeeper",
-                                                        args!["If you would like to enter again, please register with me."],
-                                                    )?;
-                                                    ctx.call(Function::EraseQuest, vec![Val::from(3135)])?;
-                                                    ctx.call(Function::EraseQuest, vec![Val::from(3136)])?;
-                                                    ctx.var("ins_nyd2").set(Val::from(0))?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
                                     }
                                 }
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.mes("A great stone gate stands before you. The sculpture of a terrible dragon spreads its powerful looking wings.")?;
+                                ctx.lines_as(
+                                    "Yggdrasil Gatekeeper",
+                                    args!["If you have the dungeon generated already, you can enter it."],
+                                )?;
                                 ctx.next()?;
-                                ctx.mes("Near the bottom of the gate, Laphine tribeswomen have been turned to stone and now look like they are part of the great door.")?;
+                                if Val::from(runtime::select_values(ctx, &[Val::from("I want to go in.:I want to leave.")])?) == 2 {
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                step = YggdrasilGatekeeperStep::LEnter;
+                                continue 'machine;
+                            } else if (l_ins_nyd_check.clone() == 0 || l_ins_nyd_check.clone() == 1) {
+                                if (ctx.var("ins_nyd2").get()? == 3 || ctx.var("ins_nyd2").get()? == 4) {
+                                    ctx.lines_as("Yggdrasil Gatekeeper", args!["With the defeat of Nidhoggur's Shadow, the roots of the World Tree Yggdrasil are also affected."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Yggdrasil Gatekeeper",
+                                        args!["After Nidhoggur's Shadow disappears, at least 3 days is needed for stabilizing."],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                ctx.lines_as(
+                                    "Yggdrasil Gatekeeper",
+                                    args!["If you have the dungeon generated already, you can enter it."],
+                                )?;
                                 ctx.next()?;
-                                'b4: {
-                                    let subject4 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("Move closer to look more carefully.:Step back.")],
-                                    )?);
-                                    let mut matched4 = false;
-                                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HOLYHIT")?])?;
-                                        ctx.call(Function::PushPc, vec![Val::from(3), Val::from(3)])?;
-                                        ctx.mes("A mysterious power prevents you from getting too close. It looks like there is something strong beyond the door...")?;
-                                        ctx.next()?;
-                                        ctx.mes("Perhaps there's a great hidden secret beyond the gate, beyond expectation.")?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
+                                if Val::from(runtime::select_values(ctx, &[Val::from("I want to go in.:I want to leave.")])?) == 2 {
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                step = YggdrasilGatekeeperStep::LEnter;
+                                continue 'machine;
+                            } else if l_ins_nyd_check.clone() == 2 {
+                                if (l_ins_nyd_check2.clone() == 0 || l_ins_nyd_check2.clone() == 1) {
+                                    ctx.lines_as("Yggdrasil Gatekeeper", args!["The time limit to enter the dungeon has expired. You must wait for the World Tree to stabilize its power before trying to re-enter."])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if l_ins_nyd_check2.clone() == 2 {
+                                    ctx.lines_as("Yggdrasil Gatekeeper", args!["The World Tree Yggdrasil has stabilized. Would you like to enter Nidhoggur's Nest again?"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Yggdrasil Gatekeeper",
+                                        args!["If you would like to enter again, please register with me."],
+                                    )?;
+                                    ctx.call(Function::EraseQuest, vec![Val::from(3135)])?;
+                                    ctx.call(Function::EraseQuest, vec![Val::from(3136)])?;
+                                    ctx.var("ins_nyd2").set(Val::from(0))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.mes("A great stone gate stands before you. The sculpture of a terrible dragon spreads its powerful looking wings.")?;
+                            ctx.next()?;
+                            ctx.mes("Near the bottom of the gate, Laphine tribeswomen have been turned to stone and now look like they are part of the great door.")?;
+                            ctx.next()?;
+                            'b4: {
+                                let subject4 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("Move closer to look more carefully.:Step back.")],
+                                )?);
+                                let mut matched4 = false;
+                                let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HOLYHIT")?])?;
+                                    ctx.call(Function::PushPc, vec![Val::from(3), Val::from(3)])?;
+                                    ctx.mes("A mysterious power prevents you from getting too close. It looks like there is something strong beyond the door...")?;
+                                    ctx.next()?;
+                                    ctx.mes("Perhaps there's a great hidden secret beyond the gate, beyond expectation.")?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                         }
@@ -563,117 +555,109 @@ fn historian_magnifier_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                             return Err(Stop::End);
                         }
                     }
+                } else if ((ctx.var("ins_nyd").get()? == 5 || ctx.var("ins_nyd").get()? == 51) || ctx.var("ins_nyd").get()? == 52) {
+                    ctx.mes("Okay, let's try to contact them first, to be clear about any caves or treasures.")?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["For now, you try to contact the Sapha and Laphine tribes, and try to extract more information."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["I'll also keep searching here. If you find anything, come back and let me know."],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if (ctx.var("ins_nyd").get()? == 61 || ctx.var("ins_nyd").get()? == 62) {
+                    ctx.mes(
+                        "Ah, you've come at a proper time. I found a curious thing while looking for reports from Arunafeltz.",
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["Right now, we are standing on part of one of the roots of the World Tree Yggdrasil."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Historian Magnifier", args!["This spot is connected to World Tree by the root. I think we can expect confrontations between the Sapha and Laphine here eventually, don't you think?"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["As I expected, the cave is the entrance to go to one of Yggdrasil's roots..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["Did you find anything about the Sapha and Laphine?"],
+                    )?;
+                    ctx.next()?;
+                    ctx.mes("...")?;
+                    ctx.next()?;
+                    ctx.mes("... ...")?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["Both sides act ambiguously, so... I'm getting worried..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["The two tribes have some trouble amongst their top leaders. It's not anything official, but..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["Let's report to Commander Agip about the situation so far. Then, we wait on his decision."],
+                    )?;
+                    ctx.var("ins_nyd").set(Val::from(7))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if (ctx.var("ins_nyd").get()? == 7 || ctx.var("ins_nyd").get()? == 8) {
+                    ctx.mes("Report to Commander Hibba Agip about what we have discovered, since time is dependent on his decision.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ((((ctx.var("ins_nyd").get()? == 121 || ctx.var("ins_nyd").get()? == 122)
+                    || ctx.var("ins_nyd").get()? == 131)
+                    || ctx.var("ins_nyd").get()? == 132)
+                    || ctx.var("ins_nyd").get()? == 14)
+                {
+                    ctx.mes(
+                        "So that's how it is... we were right about some parts of it... it's called the Guardian's Nest.",
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["We have gained a large amount of knowledge today, but..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["What we have figured out... how is it going to influence mankind? It's so unpredictable..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args!["This is only the beginning...we will be quite busy from now on."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Historian Magnifier", args!["First, report to Commander Agip, then act according to the situation. Let me organize my research findings..."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if ((ctx.var("ins_nyd").get()? == 5 || ctx.var("ins_nyd").get()? == 51) || ctx.var("ins_nyd").get()? == 52) {
-                        ctx.mes("Okay, let's try to contact them first, to be clear about any caves or treasures.")?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Historian Magnifier",
-                            args!["For now, you try to contact the Sapha and Laphine tribes, and try to extract more information."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Historian Magnifier",
-                            args!["I'll also keep searching here. If you find anything, come back and let me know."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if (ctx.var("ins_nyd").get()? == 61 || ctx.var("ins_nyd").get()? == 62) {
-                            ctx.mes(
-                                "Ah, you've come at a proper time. I found a curious thing while looking for reports from Arunafeltz.",
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Magnifier",
-                                args!["Right now, we are standing on part of one of the roots of the World Tree Yggdrasil."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Historian Magnifier", args!["This spot is connected to World Tree by the root. I think we can expect confrontations between the Sapha and Laphine here eventually, don't you think?"])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Magnifier",
-                                args!["As I expected, the cave is the entrance to go to one of Yggdrasil's roots..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Magnifier",
-                                args!["Did you find anything about the Sapha and Laphine?"],
-                            )?;
-                            ctx.next()?;
-                            ctx.mes("...")?;
-                            ctx.next()?;
-                            ctx.mes("... ...")?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Magnifier",
-                                args!["Both sides act ambiguously, so... I'm getting worried..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Magnifier",
-                                args!["The two tribes have some trouble amongst their top leaders. It's not anything official, but..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Magnifier",
-                                args!["Let's report to Commander Agip about the situation so far. Then, we wait on his decision."],
-                            )?;
-                            ctx.var("ins_nyd").set(Val::from(7))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (ctx.var("ins_nyd").get()? == 7 || ctx.var("ins_nyd").get()? == 8) {
-                                ctx.mes("Report to Commander Hibba Agip about what we have discovered, since time is dependent on his decision.")?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ((((ctx.var("ins_nyd").get()? == 121 || ctx.var("ins_nyd").get()? == 122)
-                                    || ctx.var("ins_nyd").get()? == 131)
-                                    || ctx.var("ins_nyd").get()? == 132)
-                                    || ctx.var("ins_nyd").get()? == 14)
-                                {
-                                    ctx.mes(
-                                        "So that's how it is... we were right about some parts of it... it's called the Guardian's Nest.",
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Historian Magnifier",
-                                        args!["We have gained a large amount of knowledge today, but..."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Historian Magnifier",
-                                        args!["What we have figured out... how is it going to influence mankind? It's so unpredictable..."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Historian Magnifier",
-                                        args!["This is only the beginning...we will be quite busy from now on."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Historian Magnifier", args!["First, report to Commander Agip, then act according to the situation. Let me organize my research findings..."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.mes("Sure, the mainland also has lots of interesting adventures... Hello, I am Magnifier, a historian dispatched from the Prontera royal court.")?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Historian Magnifier", args!["Finding another line of work might make for a really worthy job, but only a historian gets to know the world over.."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Historian Magnifier", args!["How this world is organized... and the way of the future! With our studies of the past and present we can predict what is to come."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Historian Magnifier",
-                                        args![
-                                            "We are expecting a lot from you, expert adventurer. So, if you find anything... just tell me."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                    }
+                    ctx.mes("Sure, the mainland also has lots of interesting adventures... Hello, I am Magnifier, a historian dispatched from the Prontera royal court.")?;
+                    ctx.next()?;
+                    ctx.lines_as("Historian Magnifier", args!["Finding another line of work might make for a really worthy job, but only a historian gets to know the world over.."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Historian Magnifier", args!["How this world is organized... and the way of the future! With our studies of the past and present we can predict what is to come."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Magnifier",
+                        args![
+                            "We are expecting a lot from you, expert adventurer. So, if you find anything... just tell me."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -840,102 +824,100 @@ fn assistant_naomi_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("ins_nyd").get()? == 4 {
-            ctx.mes("Browse around, to take a look at the books.")?;
-            ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Discovery of Heterogeneity:Report of Indigenous Tribes")],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes("Satan Morocc has known that he didn't resurrect normally or by himself.")?;
-                    ctx.next()?;
-                    ctx.mes("Continuously, adventurers from Rune-Midgarts have attacked him and he is slowly losing his power. He would need more time to resurrect completely.")?;
-                    ctx.next()?;
-                    ctx.mes("Satan Morocc stopped to destroy the city of Morocc, turning it into a ruined desert, then started to rip the world apart.")?;
-                    ctx.next()?;
-                    ctx.mes(
-                        "Satan Morocc was worried about those who would give chase, so he created Morocc clones to keep watch behind him.",
-                    )?;
-                    ctx.next()?;
-                    ctx.mes("Modeled after Morocc, their appearance made it difficult to go around the time-space gap.")?;
-                    ctx.next()?;
-                    ctx.mes(
-                        "Still the adventurers gave chase. They came from all over the world, trying to approach the Dimensional Gorge.",
-                    )?;
-                    ctx.next()?;
-                    ctx.mes("The reports of these adventurers have been sent to representatives of all kingdoms, and an expedition team has been created to find out more information.")?;
-                    ctx.next()?;
-                    ctx.mes("The scientists of Schwarzwald created a combination metal, using fragments of metals found in the dimensional gorge.")?;
-                    ctx.next()?;
-                    ctx.mes("The Schwarzwald Republic requested approval to find the source of the new metal, and since Rune-Midgarts couldn't complete the test themselves, they finally accepted.")?;
-                    ctx.next()?;
-                    ctx.mes("They associated together to gather volunteers. The Assassin Guild was the first to volunteer.")?;
-                    ctx.next()?;
-                    ctx.mes("The Assassins have a terrible past with Satan Morocc, so they gathered 18 members to chase him down.")?;
-                    ctx.next()?;
-                    ctx.mes("About 3 hours later, all 18 members returned without any problem, and each man and woman shared the information that they had collected.")?;
-                    ctx.next()?;
-                    ctx.mes("They had discovered another world with a definitively different nature and environment. And indeed, people could also live there.")?;
-                    ctx.next()?;
-                    ctx.mes("The most surprising thing is the flow of time. The 18 assassins had stayed for about 2 weeks in there, yet they returned within 3 hours after departing.")?;
-                    ctx.next()?;
-                    ctx.mes("The last thing to be tested... was to send adventurers who volunteered to explore the new world.")?;
-                    ctx.next()?;
-                    ctx.mes("There was a flood of adventurer applications. Lots of volunteers disappeared over the dimensional gorge, and they brought back new data.")?;
-                    ctx.next()?;
-                    ctx.mes("The new world could support 3 completely different eco-systems dependant upon the race of people that lived there.")?;
-                    ctx.next()?;
-                    ctx.mes("The heterogenous phenomenon needed to be studied thoroughly and carefully in order to under the relationship between thair world and ours.")?;
-                    ctx.next()?;
-                    ctx.mes("Just when it was expected to be impossible to travel into a different world, the first page of a new chapter was opened.")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes("Long ago, there wasn't a sun, moon, or stars; just empty earth... and Ymir was born. Then, by making sons, Ymir grew.")?;
-                    ctx.next()?;
-                    ctx.mes("But, his sons grew as well and he was killed by Odin, Vili, and Ve; 3 brothers, Gods, that attacked from different sides.")?;
-                    ctx.next()?;
-                    ctx.mes("At that time of Ymir's fall his blood flooded the world... killing all in it's path.")?;
-                    ctx.next()?;
-                    ctx.mes("Only Hvergelmir of the Sapha tribe escaped from this flooding of blood. And he swore vengeance in Jotunheim, which is covered with foggy snow.")?;
-                    ctx.next()?;
-                    ctx.mes("Currently, one of the Sapha tribe has been discovered from beyond the Dimensional Gorge.")?;
-                    ctx.next()?;
-                    ctx.mes("Other than the Sapha tribe, there was another tribe beyond the time-space gap, known as the Laphine.")?;
-                    ctx.next()?;
-                    ctx.mes("The Laphine tribes gathered as well for an expedition to explore the time-space gap and figure out the World Tree's strange symptoms and perharps a cure method.")?;
-                    ctx.next()?;
-                    ctx.mes("The Laphine tribe was charged with the management of Yggdrasil, to establish their lands close to Asgard, and to protect the balance of Yggdrasil's magic power.")?;
-                    ctx.next()?;
-                    ctx.mes("The Laphine tribe has never contacted anyone outside of Asgard. But since they found that Yggdrasil's power if weakening...")?;
-                    ctx.next()?;
-                    ctx.mes("They have declared they will attend to the high courts for the first time in 1000 human years, since the end of the battles of Gods vs. Magicians.")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("ins_nyd").get()? == 4 {
+        ctx.mes("Browse around, to take a look at the books.")?;
+        ctx.next()?;
+        'b2: {
+            let subject2 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Discovery of Heterogeneity:Report of Indigenous Tribes")],
+            )?);
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                matched2 = true;
             }
-        } else {
-            ctx.mes("The doctor never ever tries to come back, and there're too many things to do... How can I do it all...")?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Assistant Naomi",
-                args!["Don't you see that I'm too busy? Don't dawdle, just go!"],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
+            if matched2 {
+                ctx.mes("Satan Morocc has known that he didn't resurrect normally or by himself.")?;
+                ctx.next()?;
+                ctx.mes("Continuously, adventurers from Rune-Midgarts have attacked him and he is slowly losing his power. He would need more time to resurrect completely.")?;
+                ctx.next()?;
+                ctx.mes("Satan Morocc stopped to destroy the city of Morocc, turning it into a ruined desert, then started to rip the world apart.")?;
+                ctx.next()?;
+                ctx.mes(
+                    "Satan Morocc was worried about those who would give chase, so he created Morocc clones to keep watch behind him.",
+                )?;
+                ctx.next()?;
+                ctx.mes("Modeled after Morocc, their appearance made it difficult to go around the time-space gap.")?;
+                ctx.next()?;
+                ctx.mes(
+                    "Still the adventurers gave chase. They came from all over the world, trying to approach the Dimensional Gorge.",
+                )?;
+                ctx.next()?;
+                ctx.mes("The reports of these adventurers have been sent to representatives of all kingdoms, and an expedition team has been created to find out more information.")?;
+                ctx.next()?;
+                ctx.mes("The scientists of Schwarzwald created a combination metal, using fragments of metals found in the dimensional gorge.")?;
+                ctx.next()?;
+                ctx.mes("The Schwarzwald Republic requested approval to find the source of the new metal, and since Rune-Midgarts couldn't complete the test themselves, they finally accepted.")?;
+                ctx.next()?;
+                ctx.mes("They associated together to gather volunteers. The Assassin Guild was the first to volunteer.")?;
+                ctx.next()?;
+                ctx.mes("The Assassins have a terrible past with Satan Morocc, so they gathered 18 members to chase him down.")?;
+                ctx.next()?;
+                ctx.mes("About 3 hours later, all 18 members returned without any problem, and each man and woman shared the information that they had collected.")?;
+                ctx.next()?;
+                ctx.mes("They had discovered another world with a definitively different nature and environment. And indeed, people could also live there.")?;
+                ctx.next()?;
+                ctx.mes("The most surprising thing is the flow of time. The 18 assassins had stayed for about 2 weeks in there, yet they returned within 3 hours after departing.")?;
+                ctx.next()?;
+                ctx.mes("The last thing to be tested... was to send adventurers who volunteered to explore the new world.")?;
+                ctx.next()?;
+                ctx.mes("There was a flood of adventurer applications. Lots of volunteers disappeared over the dimensional gorge, and they brought back new data.")?;
+                ctx.next()?;
+                ctx.mes("The new world could support 3 completely different eco-systems dependant upon the race of people that lived there.")?;
+                ctx.next()?;
+                ctx.mes("The heterogenous phenomenon needed to be studied thoroughly and carefully in order to under the relationship between thair world and ours.")?;
+                ctx.next()?;
+                ctx.mes("Just when it was expected to be impossible to travel into a different world, the first page of a new chapter was opened.")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.mes("Long ago, there wasn't a sun, moon, or stars; just empty earth... and Ymir was born. Then, by making sons, Ymir grew.")?;
+                ctx.next()?;
+                ctx.mes("But, his sons grew as well and he was killed by Odin, Vili, and Ve; 3 brothers, Gods, that attacked from different sides.")?;
+                ctx.next()?;
+                ctx.mes("At that time of Ymir's fall his blood flooded the world... killing all in it's path.")?;
+                ctx.next()?;
+                ctx.mes("Only Hvergelmir of the Sapha tribe escaped from this flooding of blood. And he swore vengeance in Jotunheim, which is covered with foggy snow.")?;
+                ctx.next()?;
+                ctx.mes("Currently, one of the Sapha tribe has been discovered from beyond the Dimensional Gorge.")?;
+                ctx.next()?;
+                ctx.mes("Other than the Sapha tribe, there was another tribe beyond the time-space gap, known as the Laphine.")?;
+                ctx.next()?;
+                ctx.mes("The Laphine tribes gathered as well for an expedition to explore the time-space gap and figure out the World Tree's strange symptoms and perharps a cure method.")?;
+                ctx.next()?;
+                ctx.mes("The Laphine tribe was charged with the management of Yggdrasil, to establish their lands close to Asgard, and to protect the balance of Yggdrasil's magic power.")?;
+                ctx.next()?;
+                ctx.mes("The Laphine tribe has never contacted anyone outside of Asgard. But since they found that Yggdrasil's power if weakening...")?;
+                ctx.next()?;
+                ctx.mes("They have declared they will attend to the high courts for the first time in 1000 human years, since the end of the battles of Gods vs. Magicians.")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.mes("The doctor never ever tries to come back, and there're too many things to do... How can I do it all...")?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Assistant Naomi",
+            args!["Don't you see that I'm too busy? Don't dawdle, just go!"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -1370,118 +1352,110 @@ fn commander_lebiordirr_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     ctx.var("ins_nyd").set(Val::from(91))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
+                } else if (((((ctx.var("ins_nyd").get()? == 91 || ctx.var("ins_nyd").get()? == 101) || ctx.var("ins_nyd").get()? == 111)
+                    || ctx.var("ins_nyd").get()? == 200)
+                    || ctx.var("ins_nyd").get()? == 201)
+                    || ctx.var("ins_nyd").get()? == 202)
+                {
+                    ctx.mes("Outsider. Arioss here will explain the situation with the giants, talk with him...")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ((((((ctx.var("ins_nyd").get()? == 72 || ctx.var("ins_nyd").get()? == 82) || ctx.var("ins_nyd").get()? == 92)
+                    || ctx.var("ins_nyd").get()? == 102)
+                    || ctx.var("ins_nyd").get()? == 112)
+                    || ctx.var("ins_nyd").get()? == 122)
+                    || ctx.var("ins_nyd").get()? == 132)
+                {
+                    ctx.mes("Welcome to the Laphine camp in Splendide, outsider... I am Lebiordirr. I am in charge here.")?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Commander Lebiordirr",
+                        args!["Be cautious of your actions. We already have lots of problems with the Sapha tribe as it is."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Commander Lebiordirr",
+                        args!["If you are cautious with your actions, I won't place any harm on you. Fare well."],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("ins_nyd").get()? == 203 {
+                    ctx.mes("I was waiting for you. You came back safe, that's good news. Did you find anything?")?;
+                    ctx.next()?;
+                    let choice = runtime::select_values(ctx, &[Val::from("Explain about the guardian Nidhoggur's leave.")])?;
+                    ctx.var("@menu").set(choice)?;
+                    ctx.lines_as("Commander Lebiordirr", args!["What? The Guardian is not in his nest...?"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Commander Lebiordirr", args!["And because of his disppearance, the Guardian's Shadow is currently destorying the roots of the World Tree...?"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Commander Lebiordirr", args!["That's unbelievable. You must be insulting the Guardian's and our pride. I did not provide you with our help for that."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Aide Arioss", args!["It's not like that, Commander, they speak the truth."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Commander Lebiordirr",
+                        args!["What are you saying? Arioss, do not forget your place as the Guardian's priest."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Aide Arioss", args!["Even though I have not seen it with my own eyes, this does explain why we lost communication with the great World Tree Yggdrasil."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Commander Lebiordirr",
+                        args!["Do not speak of His Highness, the World Tree Yggdrasil's name so lightly."],
+                    )?;
+                    ctx.next()?;
+                    let choice = runtime::select_values(ctx, &[Val::from("Pass along World Tree Yggdrasil's words.")])?;
+                    ctx.var("@menu").set(choice)?;
+                    ctx.lines_as(
+                        "Commander Lebiordirr",
+                        args!["His Highness, the World Tree Yggdrasil, said that?"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Commander Lebiordirr", args!["The reason behind all of this... is not because of the Sapha tribe, but because of the sudden leave of the Guardian? And the Guardian has given up on his identity?"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Commander Lebiordirr",
+                        args!["This must be reported... reported to the High Priest of Alfheim... Unbelievable."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Aide Arioss",
+                        args!["Commander... do we need to alert the rest of the tribe...?"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Commander Lebiordirr", args!["You don't need to worry about this, Arioss. As commander, I will handle it. You just pretend nothing happened..."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Commander Lebiordirr", args!["Strange one, thank you for your cooperation in such situations... Please forget what has happened today..."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Commander Lebiordirr",
+                        args!["Arioss, please compensate this strange one for the help. I need to go rest..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Aide Arioss", args!["Commander..."])?;
+                    ctx.var("ins_nyd").set(Val::from(121))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if (ctx.var("ins_nyd").get()? == 121 || ctx.var("ins_nyd").get()? == 131) {
+                    ctx.mes("Strange one, thank you for your cooperation in such situations... Please forget what has happened today...")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if (((((ctx.var("ins_nyd").get()? == 91 || ctx.var("ins_nyd").get()? == 101) || ctx.var("ins_nyd").get()? == 111)
-                        || ctx.var("ins_nyd").get()? == 200)
-                        || ctx.var("ins_nyd").get()? == 201)
-                        || ctx.var("ins_nyd").get()? == 202)
-                    {
-                        ctx.mes("Outsider. Arioss here will explain the situation with the giants, talk with him...")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ((((((ctx.var("ins_nyd").get()? == 72 || ctx.var("ins_nyd").get()? == 82) || ctx.var("ins_nyd").get()? == 92)
-                            || ctx.var("ins_nyd").get()? == 102)
-                            || ctx.var("ins_nyd").get()? == 112)
-                            || ctx.var("ins_nyd").get()? == 122)
-                            || ctx.var("ins_nyd").get()? == 132)
-                        {
-                            ctx.mes("Welcome to the Laphine camp in Splendide, outsider... I am Lebiordirr. I am in charge here.")?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Commander Lebiordirr",
-                                args!["Be cautious of your actions. We already have lots of problems with the Sapha tribe as it is."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Commander Lebiordirr",
-                                args!["If you are cautious with your actions, I won't place any harm on you. Fare well."],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("ins_nyd").get()? == 203 {
-                                ctx.mes("I was waiting for you. You came back safe, that's good news. Did you find anything?")?;
-                                ctx.next()?;
-                                let choice = runtime::select_values(ctx, &[Val::from("Explain about the guardian Nidhoggur's leave.")])?;
-                                ctx.var("@menu").set(choice)?;
-                                ctx.lines_as("Commander Lebiordirr", args!["What? The Guardian is not in his nest...?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Commander Lebiordirr", args!["And because of his disppearance, the Guardian's Shadow is currently destorying the roots of the World Tree...?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Commander Lebiordirr", args!["That's unbelievable. You must be insulting the Guardian's and our pride. I did not provide you with our help for that."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Aide Arioss", args!["It's not like that, Commander, they speak the truth."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Commander Lebiordirr",
-                                    args!["What are you saying? Arioss, do not forget your place as the Guardian's priest."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Aide Arioss", args!["Even though I have not seen it with my own eyes, this does explain why we lost communication with the great World Tree Yggdrasil."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Commander Lebiordirr",
-                                    args!["Do not speak of His Highness, the World Tree Yggdrasil's name so lightly."],
-                                )?;
-                                ctx.next()?;
-                                let choice = runtime::select_values(ctx, &[Val::from("Pass along World Tree Yggdrasil's words.")])?;
-                                ctx.var("@menu").set(choice)?;
-                                ctx.lines_as(
-                                    "Commander Lebiordirr",
-                                    args!["His Highness, the World Tree Yggdrasil, said that?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Commander Lebiordirr", args!["The reason behind all of this... is not because of the Sapha tribe, but because of the sudden leave of the Guardian? And the Guardian has given up on his identity?"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Commander Lebiordirr",
-                                    args!["This must be reported... reported to the High Priest of Alfheim... Unbelievable."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Aide Arioss",
-                                    args!["Commander... do we need to alert the rest of the tribe...?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Commander Lebiordirr", args!["You don't need to worry about this, Arioss. As commander, I will handle it. You just pretend nothing happened..."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Commander Lebiordirr", args!["Strange one, thank you for your cooperation in such situations... Please forget what has happened today..."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Commander Lebiordirr",
-                                    args!["Arioss, please compensate this strange one for the help. I need to go rest..."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Aide Arioss", args!["Commander..."])?;
-                                ctx.var("ins_nyd").set(Val::from(121))?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("ins_nyd").get()? == 121 || ctx.var("ins_nyd").get()? == 131) {
-                                    ctx.mes("Strange one, thank you for your cooperation in such situations... Please forget what has happened today...")?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.mes("Welcome to the Laphine camp in Splendide, outsider... I am Lebiordirr. I am in charge here.")?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Commander Lebiordirr",
-                                        args![
-                                            "Be cautious of your actions. We already have lots of problems with the Sapha tribe as it is."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Commander Lebiordirr",
-                                        args!["If you are cautious with your actions, I won't place any harm on you. Fare well."],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                    }
+                    ctx.mes("Welcome to the Laphine camp in Splendide, outsider... I am Lebiordirr. I am in charge here.")?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Commander Lebiordirr",
+                        args![
+                            "Be cautious of your actions. We already have lots of problems with the Sapha tribe as it is."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Commander Lebiordirr",
+                        args!["If you are cautious with your actions, I won't place any harm on you. Fare well."],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -1622,57 +1596,49 @@ fn aide_arioss_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.var("ins_nyd").set(Val::from(111))?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if ((((ctx.var("ins_nyd").get()? == 101 || ctx.var("ins_nyd").get()? == 111) || ctx.var("ins_nyd").get()? == 200)
+                || ctx.var("ins_nyd").get()? == 201)
+                || ctx.var("ins_nyd").get()? == 202)
+            {
+                ctx.mes("Please meet with the Guardian and take a wise answer from him. I will trust you.")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ((((ctx.var("ins_nyd").get()? == 72 || ctx.var("ins_nyd").get()? == 82) || ctx.var("ins_nyd").get()? == 92)
+                || ctx.var("ins_nyd").get()? == 102)
+                || ctx.var("ins_nyd").get()? == 112)
+            {
+                ctx.mes("... ...")?;
+                ctx.next()?;
+                ctx.mes("Not even caring about this a single bit? What a stupid woman...")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("ins_nyd").get()? == 121 {
+                ctx.mes("Things have actually become like this... as priests of the Guardian, it's our responsibility...")?;
+                ctx.next()?;
+                ctx.lines_as("Aide Arioss", args!["I represent the entire Laphine tribe, and show you our gratitude. This must all be very hard for our commander..."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Aide Arioss",
+                    args![
+                        "It can't compare with the effort you have put in for us... but please accept our token of friendship."
+                    ],
+                )?;
+                ctx.call(Function::GetExperience, vec![Val::from(150000), Val::from(35000)])?;
+                ctx.call(Function::GetItem, vec![Val::from(6081), Val::from(10)])?;
+                ctx.var("ins_nyd").set(Val::from(131))?;
+                ctx.lines_as("Aide Arioss", args!["If we can help you with anything in the future, we will do all we can to assist you. Once again, thank you."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("ins_nyd").get()? == 131 {
+                ctx.mes("If we can help you with anything in the future, we will do all we can to assist you. Once again, thank you.")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if ((((ctx.var("ins_nyd").get()? == 101 || ctx.var("ins_nyd").get()? == 111) || ctx.var("ins_nyd").get()? == 200)
-                    || ctx.var("ins_nyd").get()? == 201)
-                    || ctx.var("ins_nyd").get()? == 202)
-                {
-                    ctx.mes("Please meet with the Guardian and take a wise answer from him. I will trust you.")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ((((ctx.var("ins_nyd").get()? == 72 || ctx.var("ins_nyd").get()? == 82) || ctx.var("ins_nyd").get()? == 92)
-                        || ctx.var("ins_nyd").get()? == 102)
-                        || ctx.var("ins_nyd").get()? == 112)
-                    {
-                        ctx.mes("... ...")?;
-                        ctx.next()?;
-                        ctx.mes("Not even caring about this a single bit? What a stupid woman...")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("ins_nyd").get()? == 121 {
-                            ctx.mes("Things have actually become like this... as priests of the Guardian, it's our responsibility...")?;
-                            ctx.next()?;
-                            ctx.lines_as("Aide Arioss", args!["I represent the entire Laphine tribe, and show you our gratitude. This must all be very hard for our commander..."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Aide Arioss",
-                                args![
-                                    "It can't compare with the effort you have put in for us... but please accept our token of friendship."
-                                ],
-                            )?;
-                            ctx.call(Function::GetExperience, vec![Val::from(150000), Val::from(35000)])?;
-                            ctx.call(Function::GetItem, vec![Val::from(6081), Val::from(10)])?;
-                            ctx.var("ins_nyd").set(Val::from(131))?;
-                            ctx.lines_as("Aide Arioss", args!["If we can help you with anything in the future, we will do all we can to assist you. Once again, thank you."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("ins_nyd").get()? == 131 {
-                                ctx.mes("If we can help you with anything in the future, we will do all we can to assist you. Once again, thank you.")?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.mes("... ...")?;
-                                ctx.next()?;
-                                ctx.mes("Never give attention to... um... a blunt woman...")?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
-                }
+                ctx.mes("... ...")?;
+                ctx.next()?;
+                ctx.mes("Never give attention to... um... a blunt woman...")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     } else {
@@ -1948,108 +1914,100 @@ fn neat_etorr_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.var("ins_nyd").set(Val::from(92))?;
                         ctx.close_window()?;
                         return Err(Stop::End);
+                    } else if (((((ctx.var("ins_nyd").get()? == 92 || ctx.var("ins_nyd").get()? == 102) || ctx.var("ins_nyd").get()? == 112)
+                        || ctx.var("ins_nyd").get()? == 200)
+                        || ctx.var("ins_nyd").get()? == 201)
+                        || ctx.var("ins_nyd").get()? == 202)
+                    {
+                        ctx.mes(
+                            "Strange one, we hope our cooperation will be a good one. Now please go interrogate the Laphine prisoner.",
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ((((((ctx.var("ins_nyd").get()? == 71 || ctx.var("ins_nyd").get()? == 81)
+                        || ctx.var("ins_nyd").get()? == 91)
+                        || ctx.var("ins_nyd").get()? == 101)
+                        || ctx.var("ins_nyd").get()? == 111)
+                        || ctx.var("ins_nyd").get()? == 121)
+                        || ctx.var("ins_nyd").get()? == 131)
+                    {
+                        ctx.mes("Outsider. Welcome to Manuk, the village of the Sapha. I am its representative, Neat Etorr.")?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Neat Etorr",
+                            args!["We are just a small village, nothing special... but rest comfortably."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("ins_nyd").get()? == 203 {
+                        ctx.mes("I was waiting for you. It's good that you're safe. Did you find anything?")?;
+                        ctx.next()?;
+                        let choice = runtime::select_values(ctx, &[Val::from("Explain the sudden leave of the Guardian.")])?;
+                        ctx.var("@menu").set(choice)?;
+                        ctx.lines_as("Neat Etorr", args!["So... that's the nest of the Guardian of the World Tree, the sacred grounds for the Laphine tribe."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Neat Etorr", args!["But because of the angry leave of the Guardian, his shadow is wreaking havoc on the World Tree?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Neat Etorr", args!["If what you're saying is true, then there is no more reason for us to continue fighting the Laphine tribe..."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Neat Etorr",
+                            args!["What a huge discovery... So Nidhoggur is no longer the Guardian of the World Tree...?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Neat Etorr", args!["Nidhoggur's Shadow came to exist in this world, and harmed the roots of the World Tree... what a disaster."])?;
+                        ctx.next()?;
+                        let choice =
+                            runtime::select_values(ctx, &[Val::from("Pass along the World Tree Yggdrasil's message.")])?;
+                        ctx.var("@menu").set(choice)?;
+                        ctx.lines_as("Neat Etorr", args!["Is that what the priest of the Guardian said?"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Neat Etorr",
+                            args!["From now on, we need to talk about this with the Laphine tribe."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Neat Etorr",
+                            args!["But of course...we don't know if they're reasonable enough...hehe."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Neat Etorr",
+                            args![
+                                "This is all we needed from you...What is left is business between us and the Laphine tribe."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Neat Etorr",
+                            args!["Thank you for helping us with such a huge problem. You may forget about it now."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Neat Etorr",
+                            args!["It's not a lot, but please this as a token of our appreciation."],
+                        )?;
+                        ctx.call(Function::GetExperience, vec![Val::from(150000), Val::from(35000)])?;
+                        ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(10)])?;
+                        ctx.var("ins_nyd").set(Val::from(132))?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("ins_nyd").get()? == 132 {
+                        ctx.mes(
+                            "Strange one, thank you for helping us in the time of need. I will never forget your kindness.",
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     } else {
-                        if (((((ctx.var("ins_nyd").get()? == 92 || ctx.var("ins_nyd").get()? == 102) || ctx.var("ins_nyd").get()? == 112)
-                            || ctx.var("ins_nyd").get()? == 200)
-                            || ctx.var("ins_nyd").get()? == 201)
-                            || ctx.var("ins_nyd").get()? == 202)
-                        {
-                            ctx.mes(
-                                "Strange one, we hope our cooperation will be a good one. Now please go interrogate the Laphine prisoner.",
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ((((((ctx.var("ins_nyd").get()? == 71 || ctx.var("ins_nyd").get()? == 81)
-                                || ctx.var("ins_nyd").get()? == 91)
-                                || ctx.var("ins_nyd").get()? == 101)
-                                || ctx.var("ins_nyd").get()? == 111)
-                                || ctx.var("ins_nyd").get()? == 121)
-                                || ctx.var("ins_nyd").get()? == 131)
-                            {
-                                ctx.mes("Outsider. Welcome to Manuk, the village of the Sapha. I am its representative, Neat Etorr.")?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Neat Etorr",
-                                    args!["We are just a small village, nothing special... but rest comfortably."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("ins_nyd").get()? == 203 {
-                                    ctx.mes("I was waiting for you. It's good that you're safe. Did you find anything?")?;
-                                    ctx.next()?;
-                                    let choice = runtime::select_values(ctx, &[Val::from("Explain the sudden leave of the Guardian.")])?;
-                                    ctx.var("@menu").set(choice)?;
-                                    ctx.lines_as("Neat Etorr", args!["So... that's the nest of the Guardian of the World Tree, the sacred grounds for the Laphine tribe."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Neat Etorr", args!["But because of the angry leave of the Guardian, his shadow is wreaking havoc on the World Tree?"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Neat Etorr", args!["If what you're saying is true, then there is no more reason for us to continue fighting the Laphine tribe..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Neat Etorr",
-                                        args!["What a huge discovery... So Nidhoggur is no longer the Guardian of the World Tree...?"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Neat Etorr", args!["Nidhoggur's Shadow came to exist in this world, and harmed the roots of the World Tree... what a disaster."])?;
-                                    ctx.next()?;
-                                    let choice =
-                                        runtime::select_values(ctx, &[Val::from("Pass along the World Tree Yggdrasil's message.")])?;
-                                    ctx.var("@menu").set(choice)?;
-                                    ctx.lines_as("Neat Etorr", args!["Is that what the priest of the Guardian said?"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Neat Etorr",
-                                        args!["From now on, we need to talk about this with the Laphine tribe."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Neat Etorr",
-                                        args!["But of course...we don't know if they're reasonable enough...hehe."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Neat Etorr",
-                                        args![
-                                            "This is all we needed from you...What is left is business between us and the Laphine tribe."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Neat Etorr",
-                                        args!["Thank you for helping us with such a huge problem. You may forget about it now."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Neat Etorr",
-                                        args!["It's not a lot, but please this as a token of our appreciation."],
-                                    )?;
-                                    ctx.call(Function::GetExperience, vec![Val::from(150000), Val::from(35000)])?;
-                                    ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(10)])?;
-                                    ctx.var("ins_nyd").set(Val::from(132))?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("ins_nyd").get()? == 132 {
-                                        ctx.mes(
-                                            "Strange one, thank you for helping us in the time of need. I will never forget your kindness.",
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.mes("Outsider. Welcome to the Manuk village of Sapha. I am its representative, Neat Etorr.")?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Neat Etorr",
-                                            args!["We are just a small village, nothing special... but rest comfortably."],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                        }
+                        ctx.mes("Outsider. Welcome to the Manuk village of Sapha. I am its representative, Neat Etorr.")?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Neat Etorr",
+                            args!["We are just a small village, nothing special... but rest comfortably."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -2275,110 +2233,102 @@ fn laphine_prisoner_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.var("ins_nyd").set(Val::from(102))?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if ctx.var("ins_nyd").get()? == 102 {
+                ctx.mes("Ah, you said that there is a strange power blocking the entrance to the Guardian's nest, right?")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["That's because only the ones chosen by the Guardian may enter."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["We have been the Guardian's servants for generations, and have been protecting the World Tree ever since."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Laphine Prisoner", args!["Before we were captured and brought here, there were 3 servants including me. Our task was to heal the World Tree."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["One was killed in our last war with the Sapha tribe...and I have been taken captive."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["I will give you my proof. Don't worry, I'm just temporarily marking you as a guardian's servant."],
+                )?;
+                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HOLYHIT")?])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["Also, remember this spell, it's needed to open the gate of the Guardian."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Laphine Prisoner", args!["AnomarDu Ha OdesUdenVer Ie "])?;
+                ctx.next()?;
+                ctx.lines_as("Laphine Prisoner", args!["remuAlaAsh Mu ModtasAn Yu Dur"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["TalsehrDur So CyaReMush Di DielAlaWos Ie RuffserIman Ie "],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["Go find the fairy guarding the gate, and say this spell."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["he proof and the spell will confirm that you are one of the Guardian's servants."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["Please meet the Guardian, and come back with an answer to everything. And tell the answer to..."],
+                )?;
+                ctx.var("ins_nyd").set(Val::from(112))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ((((((ctx.var("ins_nyd").get()? == 71 || ctx.var("ins_nyd").get()? == 81) || ctx.var("ins_nyd").get()? == 91)
+                || ctx.var("ins_nyd").get()? == 101)
+                || ctx.var("ins_nyd").get()? == 111)
+                || ctx.var("ins_nyd").get()? == 121)
+                || ctx.var("ins_nyd").get()? == 131)
+            {
+                ctx.mes("... ...")?;
+                ctx.next()?;
+                ctx.lines_as("Manuk Guard", args!["Hey, outsider! Step away from the prisoner!"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("ins_nyd").get()? == 112 {
+                ctx.mes("Please meet the Guardian, and come back with an answer to everything. And tell the answer to...")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("ins_nyd").get()? == 132 {
+                ctx.mes("Yes...I heard your conversation with the Sapha tribe...")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["If our tribe were to really trust in the Sapha tribe...I don't know."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Laphine Prisoner",
+                    args!["Our hatred towards them has already reached an abnormal level..."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Laphine Prisoner", args!["Those giants...can they really be trusted?"])?;
+                ctx.next()?;
+                ctx.lines_as("Laphine Prisoner", args!["It's...it's better if you don't believe the one called Etorr...the minds of the Sapha tribe is unpredictable."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if ctx.var("ins_nyd").get()? == 102 {
-                    ctx.mes("Ah, you said that there is a strange power blocking the entrance to the Guardian's nest, right?")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Laphine Prisoner",
-                        args!["That's because only the ones chosen by the Guardian may enter."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Laphine Prisoner",
-                        args!["We have been the Guardian's servants for generations, and have been protecting the World Tree ever since."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Laphine Prisoner", args!["Before we were captured and brought here, there were 3 servants including me. Our task was to heal the World Tree."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Laphine Prisoner",
-                        args!["One was killed in our last war with the Sapha tribe...and I have been taken captive."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Laphine Prisoner",
-                        args!["I will give you my proof. Don't worry, I'm just temporarily marking you as a guardian's servant."],
-                    )?;
-                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HOLYHIT")?])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Laphine Prisoner",
-                        args!["Also, remember this spell, it's needed to open the gate of the Guardian."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Laphine Prisoner", args!["AnomarDu Ha OdesUdenVer Ie "])?;
-                    ctx.next()?;
-                    ctx.lines_as("Laphine Prisoner", args!["remuAlaAsh Mu ModtasAn Yu Dur"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Laphine Prisoner",
-                        args!["TalsehrDur So CyaReMush Di DielAlaWos Ie RuffserIman Ie "],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Laphine Prisoner",
-                        args!["Go find the fairy guarding the gate, and say this spell."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Laphine Prisoner",
-                        args!["he proof and the spell will confirm that you are one of the Guardian's servants."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Laphine Prisoner",
-                        args!["Please meet the Guardian, and come back with an answer to everything. And tell the answer to..."],
-                    )?;
-                    ctx.var("ins_nyd").set(Val::from(112))?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ((((((ctx.var("ins_nyd").get()? == 71 || ctx.var("ins_nyd").get()? == 81) || ctx.var("ins_nyd").get()? == 91)
-                        || ctx.var("ins_nyd").get()? == 101)
-                        || ctx.var("ins_nyd").get()? == 111)
-                        || ctx.var("ins_nyd").get()? == 121)
-                        || ctx.var("ins_nyd").get()? == 131)
-                    {
-                        ctx.mes("... ...")?;
-                        ctx.next()?;
-                        ctx.lines_as("Manuk Guard", args!["Hey, outsider! Step away from the prisoner!"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("ins_nyd").get()? == 112 {
-                            ctx.mes("Please meet the Guardian, and come back with an answer to everything. And tell the answer to...")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("ins_nyd").get()? == 132 {
-                                ctx.mes("Yes...I heard your conversation with the Sapha tribe...")?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Laphine Prisoner",
-                                    args!["If our tribe were to really trust in the Sapha tribe...I don't know."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Laphine Prisoner",
-                                    args!["Our hatred towards them has already reached an abnormal level..."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Laphine Prisoner", args!["Those giants...can they really be trusted?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Laphine Prisoner", args!["It's...it's better if you don't believe the one called Etorr...the minds of the Sapha tribe is unpredictable."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.mes("... ...")?;
-                                ctx.next()?;
-                                ctx.lines_as("Manuk Guard", args!["Hey, outsider! Step away from the prisoner!"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
-                }
+                ctx.mes("... ...")?;
+                ctx.next()?;
+                ctx.lines_as("Manuk Guard", args!["Hey, outsider! Step away from the prisoner!"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     } else {
@@ -2620,46 +2570,42 @@ fn murdered_yggdrasilid_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
             ctx.close_window()?;
             return Err(Stop::End);
         }
+    } else if ctx.var("'ins_nyd2").get()? == 1 {
+        ctx.lines_as("World Tree Yggdrasil", args!["The path to the Guardian's Nest is just past the waterfall by the large World Tree Yggdrasil to the North. The defensive mechanisms will start immediately."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "World Tree Yggdrasil",
+            args![
+                "Defeat all of Nidhoggur's guardians and go through the waterfall into the nest... and stop Nidhoggur's Shadow there."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "World Tree Yggdrasil",
+            args!["The gate will open soon. Go defeat all of the guardians."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("'ins_nyd2").get()? == 2 {
+        ctx.lines_as(
+            "World Tree Yggdrasil",
+            args!["The path to the Guardian's Nest is just past the waterfall by the large World Tree Yggdrasil to the North."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "World Tree Yggdrasil",
+            args!["Use your powers... and destroy the vile Shadow..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("World Tree Yggdrasil", args!["This is... all I can do for you..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("'ins_nyd2").get()? == 1 {
-            ctx.lines_as("World Tree Yggdrasil", args!["The path to the Guardian's Nest is just past the waterfall by the large World Tree Yggdrasil to the North. The defensive mechanisms will start immediately."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "World Tree Yggdrasil",
-                args![
-                    "Defeat all of Nidhoggur's guardians and go through the waterfall into the nest... and stop Nidhoggur's Shadow there."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "World Tree Yggdrasil",
-                args!["The gate will open soon. Go defeat all of the guardians."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("'ins_nyd2").get()? == 2 {
-                ctx.lines_as(
-                    "World Tree Yggdrasil",
-                    args!["The path to the Guardian's Nest is just past the waterfall by the large World Tree Yggdrasil to the North."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "World Tree Yggdrasil",
-                    args!["Use your powers... and destroy the vile Shadow..."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("World Tree Yggdrasil", args!["This is... all I can do for you..."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "World Tree Yggdrasil",
-                    args!["Those who want to taint the sacred Sanctuary of the Guardian... Get out."],
-                )?;
-                ctx.call(Function::Warp, vec![Val::from("mid_camp"), Val::from(100), Val::from(100)])?;
-            }
-        }
+        ctx.lines_as(
+            "World Tree Yggdrasil",
+            args!["Those who want to taint the sacred Sanctuary of the Guardian... Get out."],
+        )?;
+        ctx.call(Function::Warp, vec![Val::from("mid_camp"), Val::from(100), Val::from(100)])?;
     }
     return Err(Stop::End);
 }
@@ -4230,34 +4176,28 @@ fn nyd_2f_red_run(ctx: &Ctx, mut step: Nyd2fRedStep, args: Vec<Val>) -> Result<V
                         Function::StartStatus,
                         vec![ctx.constant("SC_BLEEDING")?, Val::from(60000), Val::from(0)],
                     )?;
-                } else {
-                    if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("white")).is_true() {
-                        ctx.call(Function::PercentHeal, vec![Val::from(-50), Val::from(0)])?;
-                        ctx.call(
-                            Function::StartStatus,
-                            vec![ctx.constant("SC_FREEZE")?, Val::from(20000), Val::from(0)],
-                        )?;
-                    } else {
-                        if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("yellow")).is_true() {
-                            ctx.call(Function::PercentHeal, vec![Val::from(0), Val::from(-50)])?;
-                            ctx.call(
-                                Function::StartStatus,
-                                vec![ctx.constant("SC_SLEEP")?, Val::from(20000), Val::from(0)],
-                            )?;
-                            ctx.call(
-                                Function::StartStatus,
-                                vec![ctx.constant("SC_CONFUSION")?, Val::from(60000), Val::from(0)],
-                            )?;
-                        } else {
-                            if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("green")).is_true() {
-                                ctx.call(Function::PercentHeal, vec![Val::from(-50), Val::from(-50)])?;
-                                ctx.call(
-                                    Function::StartStatus,
-                                    vec![ctx.constant("SC_POISON")?, Val::from(60000), Val::from(0)],
-                                )?;
-                            }
-                        }
-                    }
+                } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("white")).is_true() {
+                    ctx.call(Function::PercentHeal, vec![Val::from(-50), Val::from(0)])?;
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_FREEZE")?, Val::from(20000), Val::from(0)],
+                    )?;
+                } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("yellow")).is_true() {
+                    ctx.call(Function::PercentHeal, vec![Val::from(0), Val::from(-50)])?;
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_SLEEP")?, Val::from(20000), Val::from(0)],
+                    )?;
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_CONFUSION")?, Val::from(60000), Val::from(0)],
+                    )?;
+                } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("green")).is_true() {
+                    ctx.call(Function::PercentHeal, vec![Val::from(-50), Val::from(-50)])?;
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_POISON")?, Val::from(60000), Val::from(0)],
+                    )?;
                 }
                 return Err(Stop::End);
             }
@@ -4386,195 +4326,189 @@ fn nyd_2f_red_c_run(ctx: &Ctx, mut step: Nyd2fRedCStep, args: Vec<Val>) -> Resul
                             l_label_s.clone(),
                         ],
                     )?;
-                } else {
-                    if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("white")).is_true() {
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(120),
-                                Val::from(380),
-                                Val::from("Nidhoggur's Guardian#1"),
-                                Val::from(2020),
-                                Val::from(1),
-                                l_label_s.clone(),
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(119),
-                                Val::from(381),
-                                Val::from("Nidhoggur's Guardian#2"),
-                                Val::from(2020),
-                                Val::from(1),
-                                l_label_s.clone(),
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(120),
-                                Val::from(367),
-                                Val::from("Nidhoggur's Guardian#3"),
-                                Val::from(2020),
-                                Val::from(1),
-                                l_label_s.clone(),
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(119),
-                                Val::from(366),
-                                Val::from("Nidhoggur's Guardian#4"),
-                                Val::from(2021),
-                                Val::from(1),
-                                l_label_s.clone(),
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(118),
-                                Val::from(365),
-                                Val::from("Nidhoggur's Guardian#5"),
-                                Val::from(2021),
-                                Val::from(1),
-                                l_label_s.clone(),
-                            ],
-                        )?;
-                    } else {
-                        if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("yellow")).is_true() {
-                            ctx.call(
-                                Function::Monster,
-                                vec![
-                                    l_map_s.clone(),
-                                    Val::from(282),
-                                    Val::from(284),
-                                    Val::from("Nidhoggur's Guardian#1"),
-                                    Val::from(2020),
-                                    Val::from(1),
-                                    l_label_s.clone(),
-                                ],
-                            )?;
-                            ctx.call(
-                                Function::Monster,
-                                vec![
-                                    l_map_s.clone(),
-                                    Val::from(283),
-                                    Val::from(283),
-                                    Val::from("Nidhoggur's Guardian#2"),
-                                    Val::from(2020),
-                                    Val::from(1),
-                                    l_label_s.clone(),
-                                ],
-                            )?;
-                            ctx.call(
-                                Function::Monster,
-                                vec![
-                                    l_map_s.clone(),
-                                    Val::from(280),
-                                    Val::from(275),
-                                    Val::from("Nidhoggur's Guardian#3"),
-                                    Val::from(2020),
-                                    Val::from(1),
-                                    l_label_s.clone(),
-                                ],
-                            )?;
-                            ctx.call(
-                                Function::Monster,
-                                vec![
-                                    l_map_s.clone(),
-                                    Val::from(281),
-                                    Val::from(276),
-                                    Val::from("Nidhoggur's Guardian#4"),
-                                    Val::from(2021),
-                                    Val::from(1),
-                                    l_label_s.clone(),
-                                ],
-                            )?;
-                            ctx.call(
-                                Function::Monster,
-                                vec![
-                                    l_map_s.clone(),
-                                    Val::from(281),
-                                    Val::from(277),
-                                    Val::from("Nidhoggur's Guardian#5"),
-                                    Val::from(2021),
-                                    Val::from(1),
-                                    l_label_s.clone(),
-                                ],
-                            )?;
-                        } else {
-                            if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("green")).is_true() {
-                                ctx.call(
-                                    Function::Monster,
-                                    vec![
-                                        l_map_s.clone(),
-                                        Val::from(282),
-                                        Val::from(378),
-                                        Val::from("Nidhoggur's Guardian#1"),
-                                        Val::from(2020),
-                                        Val::from(1),
-                                        l_label_s.clone(),
-                                    ],
-                                )?;
-                                ctx.call(
-                                    Function::Monster,
-                                    vec![
-                                        l_map_s.clone(),
-                                        Val::from(283),
-                                        Val::from(377),
-                                        Val::from("Nidhoggur's Guardian#2"),
-                                        Val::from(2020),
-                                        Val::from(1),
-                                        l_label_s.clone(),
-                                    ],
-                                )?;
-                                ctx.call(
-                                    Function::Monster,
-                                    vec![
-                                        l_map_s.clone(),
-                                        Val::from(280),
-                                        Val::from(368),
-                                        Val::from("Nidhoggur's Guardian#3"),
-                                        Val::from(2020),
-                                        Val::from(1),
-                                        l_label_s.clone(),
-                                    ],
-                                )?;
-                                ctx.call(
-                                    Function::Monster,
-                                    vec![
-                                        l_map_s.clone(),
-                                        Val::from(281),
-                                        Val::from(368),
-                                        Val::from("Nidhoggur's Guardian#4"),
-                                        Val::from(2021),
-                                        Val::from(1),
-                                        l_label_s.clone(),
-                                    ],
-                                )?;
-                                ctx.call(
-                                    Function::Monster,
-                                    vec![
-                                        l_map_s.clone(),
-                                        Val::from(281),
-                                        Val::from(367),
-                                        Val::from("Nidhoggur's Guardian#5"),
-                                        Val::from(2021),
-                                        Val::from(1),
-                                        l_label_s.clone(),
-                                    ],
-                                )?;
-                            }
-                        }
-                    }
+                } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("white")).is_true() {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(120),
+                            Val::from(380),
+                            Val::from("Nidhoggur's Guardian#1"),
+                            Val::from(2020),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(119),
+                            Val::from(381),
+                            Val::from("Nidhoggur's Guardian#2"),
+                            Val::from(2020),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(120),
+                            Val::from(367),
+                            Val::from("Nidhoggur's Guardian#3"),
+                            Val::from(2020),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(119),
+                            Val::from(366),
+                            Val::from("Nidhoggur's Guardian#4"),
+                            Val::from(2021),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(118),
+                            Val::from(365),
+                            Val::from("Nidhoggur's Guardian#5"),
+                            Val::from(2021),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("yellow")).is_true() {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(282),
+                            Val::from(284),
+                            Val::from("Nidhoggur's Guardian#1"),
+                            Val::from(2020),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(283),
+                            Val::from(283),
+                            Val::from("Nidhoggur's Guardian#2"),
+                            Val::from(2020),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(280),
+                            Val::from(275),
+                            Val::from("Nidhoggur's Guardian#3"),
+                            Val::from(2020),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(281),
+                            Val::from(276),
+                            Val::from("Nidhoggur's Guardian#4"),
+                            Val::from(2021),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(281),
+                            Val::from(277),
+                            Val::from("Nidhoggur's Guardian#5"),
+                            Val::from(2021),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("green")).is_true() {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(282),
+                            Val::from(378),
+                            Val::from("Nidhoggur's Guardian#1"),
+                            Val::from(2020),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(283),
+                            Val::from(377),
+                            Val::from("Nidhoggur's Guardian#2"),
+                            Val::from(2020),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(280),
+                            Val::from(368),
+                            Val::from("Nidhoggur's Guardian#3"),
+                            Val::from(2020),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(281),
+                            Val::from(368),
+                            Val::from("Nidhoggur's Guardian#4"),
+                            Val::from(2021),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(281),
+                            Val::from(367),
+                            Val::from("Nidhoggur's Guardian#5"),
+                            Val::from(2021),
+                            Val::from(1),
+                            l_label_s.clone(),
+                        ],
+                    )?;
                 }
                 return Err(Stop::End);
             }
@@ -4732,39 +4666,33 @@ fn nyd_2f_red_warp1_run(ctx: &Ctx, mut step: Nyd2fRedWarp1Step, args: Vec<Val>) 
                             Val::from(278),
                         ],
                     )?;
-                } else {
-                    if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("white")).is_true() {
-                        ctx.call(
-                            Function::Warp,
-                            vec![
-                                ctx.call(Function::InstanceMapName, vec![Val::from("2@nyd")])?,
-                                Val::from(115),
-                                Val::from(373),
-                            ],
-                        )?;
-                    } else {
-                        if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("yellow")).is_true() {
-                            ctx.call(
-                                Function::Warp,
-                                vec![
-                                    ctx.call(Function::InstanceMapName, vec![Val::from("2@nyd")])?,
-                                    Val::from(284),
-                                    Val::from(278),
-                                ],
-                            )?;
-                        } else {
-                            if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("green")).is_true() {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![
-                                        ctx.call(Function::InstanceMapName, vec![Val::from("2@nyd")])?,
-                                        Val::from(284),
-                                        Val::from(374),
-                                    ],
-                                )?;
-                            }
-                        }
-                    }
+                } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("white")).is_true() {
+                    ctx.call(
+                        Function::Warp,
+                        vec![
+                            ctx.call(Function::InstanceMapName, vec![Val::from("2@nyd")])?,
+                            Val::from(115),
+                            Val::from(373),
+                        ],
+                    )?;
+                } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("yellow")).is_true() {
+                    ctx.call(
+                        Function::Warp,
+                        vec![
+                            ctx.call(Function::InstanceMapName, vec![Val::from("2@nyd")])?,
+                            Val::from(284),
+                            Val::from(278),
+                        ],
+                    )?;
+                } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from("green")).is_true() {
+                    ctx.call(
+                        Function::Warp,
+                        vec![
+                            ctx.call(Function::InstanceMapName, vec![Val::from("2@nyd")])?,
+                            Val::from(284),
+                            Val::from(374),
+                        ],
+                    )?;
                 }
                 return Err(Stop::End);
             }

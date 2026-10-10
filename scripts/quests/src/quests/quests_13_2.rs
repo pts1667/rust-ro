@@ -116,27 +116,25 @@ fn cat_paw_agent_spl_run(ctx: &Ctx, mut step: CatPawAgentSplStep, args: Vec<Val>
                                         )?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
+                                    } else if ctx.var("Zeny").get()?.number()? >= 60 {
+                                        ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(60))?))?;
+                                        ctx.lines_as("Cat Paw Agent", args!["Thank you.", "Your storage will be opened shortly."])?;
+                                        ctx.close_window()?;
+                                        ctx.call(Function::OpenStorage, vec![])?;
+                                        return Err(Stop::End);
                                     } else {
-                                        if ctx.var("Zeny").get()?.number()? >= 60 {
-                                            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(60))?))?;
-                                            ctx.lines_as("Cat Paw Agent", args!["Thank you.", "Your storage will be opened shortly."])?;
-                                            ctx.close_window()?;
-                                            ctx.call(Function::OpenStorage, vec![])?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            ctx.lines_as(
-                                                "Cat Paw Agent",
-                                                args![
-                                                    "I'm sorry, but you don't",
-                                                    "have enough money?",
-                                                    "Cat Trading's storage",
-                                                    "service is 60 zeny.",
-                                                    "It's cheap, isn't it?"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
+                                        ctx.lines_as(
+                                            "Cat Paw Agent",
+                                            args![
+                                                "I'm sorry, but you don't",
+                                                "have enough money?",
+                                                "Cat Trading's storage",
+                                                "service is 60 zeny.",
+                                                "It's cheap, isn't it?"
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
                                 }
                                 if !matched2 && subject2.loosely_equals(&Val::from(3)) {
@@ -196,27 +194,25 @@ fn cat_paw_agent_spl_run(ctx: &Ctx, mut step: CatPawAgentSplStep, args: Vec<Val>
                                             )?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
+                                        } else if ctx.var("Zeny").get()?.number()? >= 60 {
+                                            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(60))?))?;
+                                            ctx.lines_as("Cat Paw Agent", args!["Thank you.", "Your storage will be opened shortly."])?;
+                                            ctx.close_window()?;
+                                            ctx.call(Function::OpenStorage, vec![])?;
+                                            return Err(Stop::End);
                                         } else {
-                                            if ctx.var("Zeny").get()?.number()? >= 60 {
-                                                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(60))?))?;
-                                                ctx.lines_as("Cat Paw Agent", args!["Thank you.", "Your storage will be opened shortly."])?;
-                                                ctx.close_window()?;
-                                                ctx.call(Function::OpenStorage, vec![])?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                ctx.lines_as(
-                                                    "Cat Paw Agent",
-                                                    args![
-                                                        "I'm sorry, but you don't",
-                                                        "have enough money?",
-                                                        "Cat Trading's storage",
-                                                        "service is 60 zeny.",
-                                                        "It's cheap, isn't it?"
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
+                                            ctx.lines_as(
+                                                "Cat Paw Agent",
+                                                args![
+                                                    "I'm sorry, but you don't",
+                                                    "have enough money?",
+                                                    "Cat Trading's storage",
+                                                    "service is 60 zeny.",
+                                                    "It's cheap, isn't it?"
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         }
                                     }
                                     if !matched3 && subject3.loosely_equals(&Val::from(3)) {
@@ -350,346 +346,338 @@ fn cat_paw_agent_spl_run(ctx: &Ctx, mut step: CatPawAgentSplStep, args: Vec<Val>
                                                             return Err(Stop::End);
                                                         }
                                                     }
-                                                } else {
-                                                    if (ctx.var("ep13_yong1").get()?.number()? > 69
-                                                        && ctx.var("ep13_yong1").get()?.number()? < 80)
-                                                    {
-                                                        'b7: {
-                                                            let subject7 = Val::from(runtime::select_values(
-                                                                ctx,
-                                                                &[Val::from(
-                                                                    "Alberta -> 5025z:Prontera -> 5025z:Izlude -> 5025z:Geffen -> 5025z:Cancel",
-                                                                )],
-                                                            )?);
-                                                            let mut matched7 = false;
-                                                            let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                                                                && !subject7.loosely_equals(&Val::from(2))
-                                                                && !subject7.loosely_equals(&Val::from(3))
-                                                                && !subject7.loosely_equals(&Val::from(4))
-                                                                && !subject7.loosely_equals(&Val::from(5));
-                                                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                                                matched7 = true;
-                                                            }
-                                                            if matched7 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(5025), Val::from(1)],
-                                                                )?;
-                                                            }
-                                                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                                                matched7 = true;
-                                                            }
-                                                            if matched7 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(5025), Val::from(2)],
-                                                                )?;
-                                                            }
-                                                            if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                                                                matched7 = true;
-                                                            }
-                                                            if matched7 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(5025), Val::from(3)],
-                                                                )?;
-                                                            }
-                                                            if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                                                                matched7 = true;
-                                                            }
-                                                            if matched7 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(5025), Val::from(4)],
-                                                                )?;
-                                                            }
-                                                            if !matched7 && subject7.loosely_equals(&Val::from(5)) {
-                                                                matched7 = true;
-                                                            }
-                                                            if matched7 {
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            }
+                                                } else if (ctx.var("ep13_yong1").get()?.number()? > 69
+                                                    && ctx.var("ep13_yong1").get()?.number()? < 80)
+                                                {
+                                                    'b7: {
+                                                        let subject7 = Val::from(runtime::select_values(
+                                                            ctx,
+                                                            &[Val::from(
+                                                                "Alberta -> 5025z:Prontera -> 5025z:Izlude -> 5025z:Geffen -> 5025z:Cancel",
+                                                            )],
+                                                        )?);
+                                                        let mut matched7 = false;
+                                                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
+                                                            && !subject7.loosely_equals(&Val::from(2))
+                                                            && !subject7.loosely_equals(&Val::from(3))
+                                                            && !subject7.loosely_equals(&Val::from(4))
+                                                            && !subject7.loosely_equals(&Val::from(5));
+                                                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                                                            matched7 = true;
                                                         }
-                                                    } else {
-                                                        if (ctx.var("ep13_yong1").get()?.number()? > 79
-                                                            && ctx.var("ep13_yong1").get()?.number()? < 90)
-                                                        {
-                                                            'b8: {
-                                                                let subject8 = Val::from(runtime::select_values(
-                                                                    ctx,
-                                                                    &[Val::from(
-                                                                        "Alberta -> 4765z:Prontera -> 4765z:Izlude -> 4765z:Geffen -> 4765z:Payon -> 4765z:Cancel",
-                                                                    )],
-                                                                )?);
-                                                                let mut matched8 = false;
-                                                                let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                                                                    && !subject8.loosely_equals(&Val::from(2))
-                                                                    && !subject8.loosely_equals(&Val::from(3))
-                                                                    && !subject8.loosely_equals(&Val::from(4))
-                                                                    && !subject8.loosely_equals(&Val::from(5))
-                                                                    && !subject8.loosely_equals(&Val::from(6));
-                                                                if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                                                                    matched8 = true;
-                                                                }
-                                                                if matched8 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(4765), Val::from(1)],
-                                                                    )?;
-                                                                }
-                                                                if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                                                                    matched8 = true;
-                                                                }
-                                                                if matched8 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(4765), Val::from(2)],
-                                                                    )?;
-                                                                }
-                                                                if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                                                                    matched8 = true;
-                                                                }
-                                                                if matched8 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(4765), Val::from(3)],
-                                                                    )?;
-                                                                }
-                                                                if !matched8 && subject8.loosely_equals(&Val::from(4)) {
-                                                                    matched8 = true;
-                                                                }
-                                                                if matched8 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(4765), Val::from(4)],
-                                                                    )?;
-                                                                }
-                                                                if !matched8 && subject8.loosely_equals(&Val::from(5)) {
-                                                                    matched8 = true;
-                                                                }
-                                                                if matched8 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(4765), Val::from(5)],
-                                                                    )?;
-                                                                }
-                                                                if !matched8 && subject8.loosely_equals(&Val::from(6)) {
-                                                                    matched8 = true;
-                                                                }
-                                                                if matched8 {
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                }
-                                                            }
-                                                        } else {
-                                                            if (ctx.var("ep13_yong1").get()?.number()? > 89
-                                                                && ctx.var("ep13_yong1").get()?.number()? < 100)
-                                                            {
-                                                                'b9: {
-                                                                    let subject9 = Val::from(runtime::select_values(
-                                                                        ctx,
-                                                                        &[Val::from(
-                                                                            "Alberta -> 4765z:Prontera -> 4765z:Izlude -> 4765z:Geffen -> 4765z:Payon -> 4765z:Morocc -> 4765z:Cancel",
-                                                                        )],
-                                                                    )?);
-                                                                    let mut matched9 = false;
-                                                                    let no_case9 = !subject9.loosely_equals(&Val::from(1))
-                                                                        && !subject9.loosely_equals(&Val::from(2))
-                                                                        && !subject9.loosely_equals(&Val::from(3))
-                                                                        && !subject9.loosely_equals(&Val::from(4))
-                                                                        && !subject9.loosely_equals(&Val::from(5))
-                                                                        && !subject9.loosely_equals(&Val::from(6))
-                                                                        && !subject9.loosely_equals(&Val::from(7));
-                                                                    if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                                                                        matched9 = true;
-                                                                    }
-                                                                    if matched9 {
-                                                                        cat_paw_agent_spl_run(
-                                                                            ctx,
-                                                                            CatPawAgentSplStep::Catwarp,
-                                                                            vec![Val::from(4765), Val::from(1)],
-                                                                        )?;
-                                                                    }
-                                                                    if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                                                                        matched9 = true;
-                                                                    }
-                                                                    if matched9 {
-                                                                        cat_paw_agent_spl_run(
-                                                                            ctx,
-                                                                            CatPawAgentSplStep::Catwarp,
-                                                                            vec![Val::from(4765), Val::from(2)],
-                                                                        )?;
-                                                                    }
-                                                                    if !matched9 && subject9.loosely_equals(&Val::from(3)) {
-                                                                        matched9 = true;
-                                                                    }
-                                                                    if matched9 {
-                                                                        cat_paw_agent_spl_run(
-                                                                            ctx,
-                                                                            CatPawAgentSplStep::Catwarp,
-                                                                            vec![Val::from(4765), Val::from(3)],
-                                                                        )?;
-                                                                    }
-                                                                    if !matched9 && subject9.loosely_equals(&Val::from(4)) {
-                                                                        matched9 = true;
-                                                                    }
-                                                                    if matched9 {
-                                                                        cat_paw_agent_spl_run(
-                                                                            ctx,
-                                                                            CatPawAgentSplStep::Catwarp,
-                                                                            vec![Val::from(4765), Val::from(4)],
-                                                                        )?;
-                                                                    }
-                                                                    if !matched9 && subject9.loosely_equals(&Val::from(5)) {
-                                                                        matched9 = true;
-                                                                    }
-                                                                    if matched9 {
-                                                                        cat_paw_agent_spl_run(
-                                                                            ctx,
-                                                                            CatPawAgentSplStep::Catwarp,
-                                                                            vec![Val::from(4765), Val::from(5)],
-                                                                        )?;
-                                                                    }
-                                                                    if !matched9 && subject9.loosely_equals(&Val::from(6)) {
-                                                                        matched9 = true;
-                                                                    }
-                                                                    if matched9 {
-                                                                        cat_paw_agent_spl_run(
-                                                                            ctx,
-                                                                            CatPawAgentSplStep::Catwarp,
-                                                                            vec![Val::from(4765), Val::from(6)],
-                                                                        )?;
-                                                                    }
-                                                                    if !matched9 && subject9.loosely_equals(&Val::from(7)) {
-                                                                        matched9 = true;
-                                                                    }
-                                                                    if matched9 {
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                if ctx.var("ep13_yong1").get()?.number()? > 99 {
-                                                                    'b10: {
-                                                                        let subject10 = Val::from(runtime::select_values(
-                                                                            ctx,
-                                                                            &[Val::from(
-                                                                                "Alberta -> 4590z:Prontera -> 4590z:Izlude -> 4590z:Geffen -> 4590z:Payon -> 4590z:Morocc -> 4590z:Al De Baran -> 4590z:Cancel",
-                                                                            )],
-                                                                        )?);
-                                                                        let mut matched10 = false;
-                                                                        let no_case10 = !subject10.loosely_equals(&Val::from(1))
-                                                                            && !subject10.loosely_equals(&Val::from(2))
-                                                                            && !subject10.loosely_equals(&Val::from(3))
-                                                                            && !subject10.loosely_equals(&Val::from(4))
-                                                                            && !subject10.loosely_equals(&Val::from(5))
-                                                                            && !subject10.loosely_equals(&Val::from(6))
-                                                                            && !subject10.loosely_equals(&Val::from(7))
-                                                                            && !subject10.loosely_equals(&Val::from(8));
-                                                                        if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                                                                            matched10 = true;
-                                                                        }
-                                                                        if matched10 {
-                                                                            cat_paw_agent_spl_run(
-                                                                                ctx,
-                                                                                CatPawAgentSplStep::Catwarp,
-                                                                                vec![Val::from(4590), Val::from(1)],
-                                                                            )?;
-                                                                        }
-                                                                        if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                                                                            matched10 = true;
-                                                                        }
-                                                                        if matched10 {
-                                                                            cat_paw_agent_spl_run(
-                                                                                ctx,
-                                                                                CatPawAgentSplStep::Catwarp,
-                                                                                vec![Val::from(4590), Val::from(2)],
-                                                                            )?;
-                                                                        }
-                                                                        if !matched10 && subject10.loosely_equals(&Val::from(3)) {
-                                                                            matched10 = true;
-                                                                        }
-                                                                        if matched10 {
-                                                                            cat_paw_agent_spl_run(
-                                                                                ctx,
-                                                                                CatPawAgentSplStep::Catwarp,
-                                                                                vec![Val::from(4590), Val::from(3)],
-                                                                            )?;
-                                                                        }
-                                                                        if !matched10 && subject10.loosely_equals(&Val::from(4)) {
-                                                                            matched10 = true;
-                                                                        }
-                                                                        if matched10 {
-                                                                            cat_paw_agent_spl_run(
-                                                                                ctx,
-                                                                                CatPawAgentSplStep::Catwarp,
-                                                                                vec![Val::from(4590), Val::from(4)],
-                                                                            )?;
-                                                                        }
-                                                                        if !matched10 && subject10.loosely_equals(&Val::from(5)) {
-                                                                            matched10 = true;
-                                                                        }
-                                                                        if matched10 {
-                                                                            cat_paw_agent_spl_run(
-                                                                                ctx,
-                                                                                CatPawAgentSplStep::Catwarp,
-                                                                                vec![Val::from(4590), Val::from(5)],
-                                                                            )?;
-                                                                        }
-                                                                        if !matched10 && subject10.loosely_equals(&Val::from(6)) {
-                                                                            matched10 = true;
-                                                                        }
-                                                                        if matched10 {
-                                                                            cat_paw_agent_spl_run(
-                                                                                ctx,
-                                                                                CatPawAgentSplStep::Catwarp,
-                                                                                vec![Val::from(4590), Val::from(6)],
-                                                                            )?;
-                                                                        }
-                                                                        if !matched10 && subject10.loosely_equals(&Val::from(7)) {
-                                                                            matched10 = true;
-                                                                        }
-                                                                        if matched10 {
-                                                                            cat_paw_agent_spl_run(
-                                                                                ctx,
-                                                                                CatPawAgentSplStep::Catwarp,
-                                                                                vec![Val::from(4590), Val::from(7)],
-                                                                            )?;
-                                                                        }
-                                                                        if !matched10 && subject10.loosely_equals(&Val::from(8)) {
-                                                                            matched10 = true;
-                                                                        }
-                                                                        if matched10 {
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        }
-                                                                    }
-                                                                } else {
-                                                                    ctx.lines_as(
-                                                                        "Cat Paw Agent",
-                                                                        args![
-                                                                            "I'm sorry, but you're not",
-                                                                            "eligible to use the warp service.",
-                                                                            "Please check your points,",
-                                                                            "and then come back."
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                }
-                                                            }
+                                                        if matched7 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(5025), Val::from(1)],
+                                                            )?;
+                                                        }
+                                                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                                                            matched7 = true;
+                                                        }
+                                                        if matched7 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(5025), Val::from(2)],
+                                                            )?;
+                                                        }
+                                                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
+                                                            matched7 = true;
+                                                        }
+                                                        if matched7 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(5025), Val::from(3)],
+                                                            )?;
+                                                        }
+                                                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
+                                                            matched7 = true;
+                                                        }
+                                                        if matched7 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(5025), Val::from(4)],
+                                                            )?;
+                                                        }
+                                                        if !matched7 && subject7.loosely_equals(&Val::from(5)) {
+                                                            matched7 = true;
+                                                        }
+                                                        if matched7 {
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
                                                         }
                                                     }
+                                                } else if (ctx.var("ep13_yong1").get()?.number()? > 79
+                                                    && ctx.var("ep13_yong1").get()?.number()? < 90)
+                                                {
+                                                    'b8: {
+                                                        let subject8 = Val::from(runtime::select_values(
+                                                            ctx,
+                                                            &[Val::from(
+                                                                "Alberta -> 4765z:Prontera -> 4765z:Izlude -> 4765z:Geffen -> 4765z:Payon -> 4765z:Cancel",
+                                                            )],
+                                                        )?);
+                                                        let mut matched8 = false;
+                                                        let no_case8 = !subject8.loosely_equals(&Val::from(1))
+                                                            && !subject8.loosely_equals(&Val::from(2))
+                                                            && !subject8.loosely_equals(&Val::from(3))
+                                                            && !subject8.loosely_equals(&Val::from(4))
+                                                            && !subject8.loosely_equals(&Val::from(5))
+                                                            && !subject8.loosely_equals(&Val::from(6));
+                                                        if !matched8 && subject8.loosely_equals(&Val::from(1)) {
+                                                            matched8 = true;
+                                                        }
+                                                        if matched8 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(1)],
+                                                            )?;
+                                                        }
+                                                        if !matched8 && subject8.loosely_equals(&Val::from(2)) {
+                                                            matched8 = true;
+                                                        }
+                                                        if matched8 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(2)],
+                                                            )?;
+                                                        }
+                                                        if !matched8 && subject8.loosely_equals(&Val::from(3)) {
+                                                            matched8 = true;
+                                                        }
+                                                        if matched8 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(3)],
+                                                            )?;
+                                                        }
+                                                        if !matched8 && subject8.loosely_equals(&Val::from(4)) {
+                                                            matched8 = true;
+                                                        }
+                                                        if matched8 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(4)],
+                                                            )?;
+                                                        }
+                                                        if !matched8 && subject8.loosely_equals(&Val::from(5)) {
+                                                            matched8 = true;
+                                                        }
+                                                        if matched8 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(5)],
+                                                            )?;
+                                                        }
+                                                        if !matched8 && subject8.loosely_equals(&Val::from(6)) {
+                                                            matched8 = true;
+                                                        }
+                                                        if matched8 {
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        }
+                                                    }
+                                                } else if (ctx.var("ep13_yong1").get()?.number()? > 89
+                                                    && ctx.var("ep13_yong1").get()?.number()? < 100)
+                                                {
+                                                    'b9: {
+                                                        let subject9 = Val::from(runtime::select_values(
+                                                            ctx,
+                                                            &[Val::from(
+                                                                "Alberta -> 4765z:Prontera -> 4765z:Izlude -> 4765z:Geffen -> 4765z:Payon -> 4765z:Morocc -> 4765z:Cancel",
+                                                            )],
+                                                        )?);
+                                                        let mut matched9 = false;
+                                                        let no_case9 = !subject9.loosely_equals(&Val::from(1))
+                                                            && !subject9.loosely_equals(&Val::from(2))
+                                                            && !subject9.loosely_equals(&Val::from(3))
+                                                            && !subject9.loosely_equals(&Val::from(4))
+                                                            && !subject9.loosely_equals(&Val::from(5))
+                                                            && !subject9.loosely_equals(&Val::from(6))
+                                                            && !subject9.loosely_equals(&Val::from(7));
+                                                        if !matched9 && subject9.loosely_equals(&Val::from(1)) {
+                                                            matched9 = true;
+                                                        }
+                                                        if matched9 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(1)],
+                                                            )?;
+                                                        }
+                                                        if !matched9 && subject9.loosely_equals(&Val::from(2)) {
+                                                            matched9 = true;
+                                                        }
+                                                        if matched9 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(2)],
+                                                            )?;
+                                                        }
+                                                        if !matched9 && subject9.loosely_equals(&Val::from(3)) {
+                                                            matched9 = true;
+                                                        }
+                                                        if matched9 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(3)],
+                                                            )?;
+                                                        }
+                                                        if !matched9 && subject9.loosely_equals(&Val::from(4)) {
+                                                            matched9 = true;
+                                                        }
+                                                        if matched9 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(4)],
+                                                            )?;
+                                                        }
+                                                        if !matched9 && subject9.loosely_equals(&Val::from(5)) {
+                                                            matched9 = true;
+                                                        }
+                                                        if matched9 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(5)],
+                                                            )?;
+                                                        }
+                                                        if !matched9 && subject9.loosely_equals(&Val::from(6)) {
+                                                            matched9 = true;
+                                                        }
+                                                        if matched9 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4765), Val::from(6)],
+                                                            )?;
+                                                        }
+                                                        if !matched9 && subject9.loosely_equals(&Val::from(7)) {
+                                                            matched9 = true;
+                                                        }
+                                                        if matched9 {
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        }
+                                                    }
+                                                } else if ctx.var("ep13_yong1").get()?.number()? > 99 {
+                                                    'b10: {
+                                                        let subject10 = Val::from(runtime::select_values(
+                                                            ctx,
+                                                            &[Val::from(
+                                                                "Alberta -> 4590z:Prontera -> 4590z:Izlude -> 4590z:Geffen -> 4590z:Payon -> 4590z:Morocc -> 4590z:Al De Baran -> 4590z:Cancel",
+                                                            )],
+                                                        )?);
+                                                        let mut matched10 = false;
+                                                        let no_case10 = !subject10.loosely_equals(&Val::from(1))
+                                                            && !subject10.loosely_equals(&Val::from(2))
+                                                            && !subject10.loosely_equals(&Val::from(3))
+                                                            && !subject10.loosely_equals(&Val::from(4))
+                                                            && !subject10.loosely_equals(&Val::from(5))
+                                                            && !subject10.loosely_equals(&Val::from(6))
+                                                            && !subject10.loosely_equals(&Val::from(7))
+                                                            && !subject10.loosely_equals(&Val::from(8));
+                                                        if !matched10 && subject10.loosely_equals(&Val::from(1)) {
+                                                            matched10 = true;
+                                                        }
+                                                        if matched10 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4590), Val::from(1)],
+                                                            )?;
+                                                        }
+                                                        if !matched10 && subject10.loosely_equals(&Val::from(2)) {
+                                                            matched10 = true;
+                                                        }
+                                                        if matched10 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4590), Val::from(2)],
+                                                            )?;
+                                                        }
+                                                        if !matched10 && subject10.loosely_equals(&Val::from(3)) {
+                                                            matched10 = true;
+                                                        }
+                                                        if matched10 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4590), Val::from(3)],
+                                                            )?;
+                                                        }
+                                                        if !matched10 && subject10.loosely_equals(&Val::from(4)) {
+                                                            matched10 = true;
+                                                        }
+                                                        if matched10 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4590), Val::from(4)],
+                                                            )?;
+                                                        }
+                                                        if !matched10 && subject10.loosely_equals(&Val::from(5)) {
+                                                            matched10 = true;
+                                                        }
+                                                        if matched10 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4590), Val::from(5)],
+                                                            )?;
+                                                        }
+                                                        if !matched10 && subject10.loosely_equals(&Val::from(6)) {
+                                                            matched10 = true;
+                                                        }
+                                                        if matched10 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4590), Val::from(6)],
+                                                            )?;
+                                                        }
+                                                        if !matched10 && subject10.loosely_equals(&Val::from(7)) {
+                                                            matched10 = true;
+                                                        }
+                                                        if matched10 {
+                                                            cat_paw_agent_spl_run(
+                                                                ctx,
+                                                                CatPawAgentSplStep::Catwarp,
+                                                                vec![Val::from(4590), Val::from(7)],
+                                                            )?;
+                                                        }
+                                                        if !matched10 && subject10.loosely_equals(&Val::from(8)) {
+                                                            matched10 = true;
+                                                        }
+                                                        if matched10 {
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        }
+                                                    }
+                                                } else {
+                                                    ctx.lines_as(
+                                                        "Cat Paw Agent",
+                                                        args![
+                                                            "I'm sorry, but you're not",
+                                                            "eligible to use the warp service.",
+                                                            "Please check your points,",
+                                                            "and then come back."
+                                                        ],
+                                                    )?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
                                                 }
                                             }
                                         }
@@ -703,672 +691,662 @@ fn cat_paw_agent_spl_run(ctx: &Ctx, mut step: CatPawAgentSplStep, args: Vec<Val>
                                         return Err(Stop::End);
                                     }
                                 }
-                            } else {
-                                if ctx.var("ep13_yong1").get()?.number()? > 99 {
-                                    ctx.lines_as(
-                                        "Cat Paw Agent",
-                                        args![
-                                            "Cat Trading's available services are as followed.",
-                                            "For additional services, please consult Agent Gyaruk."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    'b11: {
-                                        let subject11 = Val::from(runtime::select_values(
-                                            ctx,
-                                            &[Val::from(
-                                                "Save your location:Use Storage:Use Cat Warp (Midgard):Use Cat Warp (Jottunheim):Cancel",
-                                            )],
-                                        )?);
-                                        let mut matched11 = false;
-                                        let no_case11 = !subject11.loosely_equals(&Val::from(1))
-                                            && !subject11.loosely_equals(&Val::from(2))
-                                            && !subject11.loosely_equals(&Val::from(3))
-                                            && !subject11.loosely_equals(&Val::from(4))
-                                            && !subject11.loosely_equals(&Val::from(5));
-                                        if !matched11 && subject11.loosely_equals(&Val::from(1)) {
-                                            matched11 = true;
-                                        }
-                                        if matched11 {
-                                            ctx.call(
-                                                Function::SavePoint,
-                                                vec![Val::from("mid_camp"), Val::from(62), Val::from(127), Val::from(1), Val::from(1)],
-                                            )?;
-                                            ctx.lines_as("Cat Paw Agent", args!["Actually, residents of this village continued to offer resistance. So I shall save your location at Midgards Allied Forces Post for your safety."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched11 && subject11.loosely_equals(&Val::from(2)) {
-                                            matched11 = true;
-                                        }
-                                        if matched11 {
-                                            if !(shared::other_global_functions::f_canopenstorage(ctx, vec![])?.is_true()) {
-                                                ctx.lines_as(
-                                                    "Cat Paw Agent",
-                                                    args![
-                                                        "I'm sorry, but you",
-                                                        "need the Novice's",
-                                                        "Basic Skill Level 6 to",
-                                                        "use the Storage Service."
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                if ctx.var("Zeny").get()?.number()? >= 60 {
-                                                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(60))?))?;
-                                                    ctx.lines_as(
-                                                        "Cat Paw Agent",
-                                                        args!["Thank you.", "Your storage will be opened shortly."],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    ctx.call(Function::OpenStorage, vec![])?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    ctx.lines_as(
-                                                        "Cat Paw Agent",
-                                                        args![
-                                                            "I'm sorry, but you don't",
-                                                            "have enough money?",
-                                                            "Cat Trading's storage",
-                                                            "service is 60 zeny.",
-                                                            "It's cheap, isn't it?"
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                        if !matched11 && subject11.loosely_equals(&Val::from(3)) {
-                                            matched11 = true;
-                                        }
-                                        if matched11 {
+                            } else if ctx.var("ep13_yong1").get()?.number()? > 99 {
+                                ctx.lines_as(
+                                    "Cat Paw Agent",
+                                    args![
+                                        "Cat Trading's available services are as followed.",
+                                        "For additional services, please consult Agent Gyaruk."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                'b11: {
+                                    let subject11 = Val::from(runtime::select_values(
+                                        ctx,
+                                        &[Val::from(
+                                            "Save your location:Use Storage:Use Cat Warp (Midgard):Use Cat Warp (Jottunheim):Cancel",
+                                        )],
+                                    )?);
+                                    let mut matched11 = false;
+                                    let no_case11 = !subject11.loosely_equals(&Val::from(1))
+                                        && !subject11.loosely_equals(&Val::from(2))
+                                        && !subject11.loosely_equals(&Val::from(3))
+                                        && !subject11.loosely_equals(&Val::from(4))
+                                        && !subject11.loosely_equals(&Val::from(5));
+                                    if !matched11 && subject11.loosely_equals(&Val::from(1)) {
+                                        matched11 = true;
+                                    }
+                                    if matched11 {
+                                        ctx.call(
+                                            Function::SavePoint,
+                                            vec![Val::from("mid_camp"), Val::from(62), Val::from(127), Val::from(1), Val::from(1)],
+                                        )?;
+                                        ctx.lines_as("Cat Paw Agent", args!["Actually, residents of this village continued to offer resistance. So I shall save your location at Midgards Allied Forces Post for your safety."])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched11 && subject11.loosely_equals(&Val::from(2)) {
+                                        matched11 = true;
+                                    }
+                                    if matched11 {
+                                        if !(shared::other_global_functions::f_canopenstorage(ctx, vec![])?.is_true()) {
                                             ctx.lines_as(
                                                 "Cat Paw Agent",
                                                 args![
-                                                    "The warp service is only",
-                                                    "available for customers with",
-                                                    (ctx.var("ep13_yong1").get()? + Val::from(" or more Cat Trading Points.")),
-                                                    "Please remember, you can't come back easily once you move to Midgard."
+                                                    "I'm sorry, but you",
+                                                    "need the Novice's",
+                                                    "Basic Skill Level 6 to",
+                                                    "use the Storage Service."
                                                 ],
                                             )?;
-                                            ctx.next()?;
-                                            if (ctx.var("ep13_yong1").get()?.number()? > 99 && ctx.var("ep13_yong1").get()?.number()? < 200)
-                                            {
-                                                'b12: {
-                                                    let subject12 = Val::from(runtime::select_values(
-                                                        ctx,
-                                                        &[Val::from(
-                                                            "Alberta -> 4590z:Prontera -> 4590z:Izlude -> 4590z:Geffen -> 4590z:Payon -> 4590z:Morocc -> 4590z:Al De Baran -> 4590z:Cancel",
-                                                        )],
-                                                    )?);
-                                                    let mut matched12 = false;
-                                                    let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                                                        && !subject12.loosely_equals(&Val::from(2))
-                                                        && !subject12.loosely_equals(&Val::from(3))
-                                                        && !subject12.loosely_equals(&Val::from(4))
-                                                        && !subject12.loosely_equals(&Val::from(5))
-                                                        && !subject12.loosely_equals(&Val::from(6))
-                                                        && !subject12.loosely_equals(&Val::from(7))
-                                                        && !subject12.loosely_equals(&Val::from(8));
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(4590), Val::from(1)],
-                                                        )?;
-                                                    }
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(4590), Val::from(2)],
-                                                        )?;
-                                                    }
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(3)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(4590), Val::from(3)],
-                                                        )?;
-                                                    }
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(4)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(4590), Val::from(4)],
-                                                        )?;
-                                                    }
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(5)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(4590), Val::from(5)],
-                                                        )?;
-                                                    }
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(6)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(4590), Val::from(6)],
-                                                        )?;
-                                                    }
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(7)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(4590), Val::from(7)],
-                                                        )?;
-                                                    }
-                                                    if !matched12 && subject12.loosely_equals(&Val::from(8)) {
-                                                        matched12 = true;
-                                                    }
-                                                    if matched12 {
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                }
-                                            } else {
-                                                if (ctx.var("ep13_yong1").get()?.number()? > 199
-                                                    && ctx.var("ep13_yong1").get()?.number()? < 250)
-                                                {
-                                                    'b13: {
-                                                        let subject13 = Val::from(runtime::select_values(
-                                                            ctx,
-                                                            &[Val::from(
-                                                                "Alberta -> 4170z:Prontera -> 4170z:Izlude -> 4170z:Geffen -> 4170z:Payon -> 4170z:Morocc -> 4170z:Al De Baran -> 4170z:Juno -> 4170z:Cancel",
-                                                            )],
-                                                        )?);
-                                                        let mut matched13 = false;
-                                                        let no_case13 = !subject13.loosely_equals(&Val::from(1))
-                                                            && !subject13.loosely_equals(&Val::from(2))
-                                                            && !subject13.loosely_equals(&Val::from(3))
-                                                            && !subject13.loosely_equals(&Val::from(4))
-                                                            && !subject13.loosely_equals(&Val::from(5))
-                                                            && !subject13.loosely_equals(&Val::from(6))
-                                                            && !subject13.loosely_equals(&Val::from(7))
-                                                            && !subject13.loosely_equals(&Val::from(8))
-                                                            && !subject13.loosely_equals(&Val::from(9));
-                                                        if !matched13 && subject13.loosely_equals(&Val::from(1)) {
-                                                            matched13 = true;
-                                                        }
-                                                        if matched13 {
-                                                            cat_paw_agent_spl_run(
-                                                                ctx,
-                                                                CatPawAgentSplStep::Catwarp,
-                                                                vec![Val::from(4170), Val::from(1)],
-                                                            )?;
-                                                        }
-                                                        if !matched13 && subject13.loosely_equals(&Val::from(2)) {
-                                                            matched13 = true;
-                                                        }
-                                                        if matched13 {
-                                                            cat_paw_agent_spl_run(
-                                                                ctx,
-                                                                CatPawAgentSplStep::Catwarp,
-                                                                vec![Val::from(4170), Val::from(2)],
-                                                            )?;
-                                                        }
-                                                        if !matched13 && subject13.loosely_equals(&Val::from(3)) {
-                                                            matched13 = true;
-                                                        }
-                                                        if matched13 {
-                                                            cat_paw_agent_spl_run(
-                                                                ctx,
-                                                                CatPawAgentSplStep::Catwarp,
-                                                                vec![Val::from(4170), Val::from(3)],
-                                                            )?;
-                                                        }
-                                                        if !matched13 && subject13.loosely_equals(&Val::from(4)) {
-                                                            matched13 = true;
-                                                        }
-                                                        if matched13 {
-                                                            cat_paw_agent_spl_run(
-                                                                ctx,
-                                                                CatPawAgentSplStep::Catwarp,
-                                                                vec![Val::from(4170), Val::from(4)],
-                                                            )?;
-                                                        }
-                                                        if !matched13 && subject13.loosely_equals(&Val::from(5)) {
-                                                            matched13 = true;
-                                                        }
-                                                        if matched13 {
-                                                            cat_paw_agent_spl_run(
-                                                                ctx,
-                                                                CatPawAgentSplStep::Catwarp,
-                                                                vec![Val::from(4170), Val::from(5)],
-                                                            )?;
-                                                        }
-                                                        if !matched13 && subject13.loosely_equals(&Val::from(6)) {
-                                                            matched13 = true;
-                                                        }
-                                                        if matched13 {
-                                                            cat_paw_agent_spl_run(
-                                                                ctx,
-                                                                CatPawAgentSplStep::Catwarp,
-                                                                vec![Val::from(4170), Val::from(6)],
-                                                            )?;
-                                                        }
-                                                        if !matched13 && subject13.loosely_equals(&Val::from(7)) {
-                                                            matched13 = true;
-                                                        }
-                                                        if matched13 {
-                                                            cat_paw_agent_spl_run(
-                                                                ctx,
-                                                                CatPawAgentSplStep::Catwarp,
-                                                                vec![Val::from(4170), Val::from(7)],
-                                                            )?;
-                                                        }
-                                                        if !matched13 && subject13.loosely_equals(&Val::from(8)) {
-                                                            matched13 = true;
-                                                        }
-                                                        if matched13 {
-                                                            cat_paw_agent_spl_run(
-                                                                ctx,
-                                                                CatPawAgentSplStep::Catwarp,
-                                                                vec![Val::from(4170), Val::from(8)],
-                                                            )?;
-                                                        }
-                                                        if !matched13 && subject13.loosely_equals(&Val::from(9)) {
-                                                            matched13 = true;
-                                                        }
-                                                        if matched13 {
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    if (ctx.var("ep13_yong1").get()?.number()? > 249
-                                                        && ctx.var("ep13_yong1").get()?.number()? < 300)
-                                                    {
-                                                        'b14: {
-                                                            let subject14 = Val::from(runtime::select_values(
-                                                                ctx,
-                                                                &[Val::from(
-                                                                    "Alberta -> 4025z:Prontera -> 4025z:Izlude -> 4025z:Geffen -> 4025z:Payon -> 4025z:Morocc -> 4025z:Al De Baran -> 4025z:Juno -> 4025z:Einbroch -> 4025z:Cancel",
-                                                                )],
-                                                            )?);
-                                                            let mut matched14 = false;
-                                                            let no_case14 = !subject14.loosely_equals(&Val::from(1))
-                                                                && !subject14.loosely_equals(&Val::from(2))
-                                                                && !subject14.loosely_equals(&Val::from(3))
-                                                                && !subject14.loosely_equals(&Val::from(4))
-                                                                && !subject14.loosely_equals(&Val::from(5))
-                                                                && !subject14.loosely_equals(&Val::from(6))
-                                                                && !subject14.loosely_equals(&Val::from(7))
-                                                                && !subject14.loosely_equals(&Val::from(8))
-                                                                && !subject14.loosely_equals(&Val::from(9))
-                                                                && !subject14.loosely_equals(&Val::from(10));
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(1)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(4025), Val::from(1)],
-                                                                )?;
-                                                            }
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(2)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(4025), Val::from(2)],
-                                                                )?;
-                                                            }
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(3)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(4025), Val::from(3)],
-                                                                )?;
-                                                            }
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(4)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(4025), Val::from(4)],
-                                                                )?;
-                                                            }
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(5)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(4025), Val::from(5)],
-                                                                )?;
-                                                            }
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(6)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(4025), Val::from(6)],
-                                                                )?;
-                                                            }
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(7)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(4025), Val::from(7)],
-                                                                )?;
-                                                            }
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(8)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(4025), Val::from(8)],
-                                                                )?;
-                                                            }
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(9)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                cat_paw_agent_spl_run(
-                                                                    ctx,
-                                                                    CatPawAgentSplStep::Catwarp,
-                                                                    vec![Val::from(4025), Val::from(9)],
-                                                                )?;
-                                                            }
-                                                            if !matched14 && subject14.loosely_equals(&Val::from(10)) {
-                                                                matched14 = true;
-                                                            }
-                                                            if matched14 {
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            }
-                                                        }
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    } else {
-                                                        if ctx.var("ep13_yong1").get()?.number()? > 299 {
-                                                            'b15: {
-                                                                let subject15 = Val::from(runtime::select_values(
-                                                                    ctx,
-                                                                    &[Val::from(
-                                                                        "Alberta -> 3970z:Prontera -> 3970z:Izlude -> 3970z:Geffen -> 3970z:Payon -> 3970z:Morocc -> 3970z:Al De Baran -> 3970z:Juno -> 3970z:Einbroch -> 3970z:Lighthalzen -> 3970z:Cancel",
-                                                                    )],
-                                                                )?);
-                                                                let mut matched15 = false;
-                                                                let no_case15 = !subject15.loosely_equals(&Val::from(1))
-                                                                    && !subject15.loosely_equals(&Val::from(2))
-                                                                    && !subject15.loosely_equals(&Val::from(3))
-                                                                    && !subject15.loosely_equals(&Val::from(4))
-                                                                    && !subject15.loosely_equals(&Val::from(5))
-                                                                    && !subject15.loosely_equals(&Val::from(6))
-                                                                    && !subject15.loosely_equals(&Val::from(7))
-                                                                    && !subject15.loosely_equals(&Val::from(8))
-                                                                    && !subject15.loosely_equals(&Val::from(9))
-                                                                    && !subject15.loosely_equals(&Val::from(10))
-                                                                    && !subject15.loosely_equals(&Val::from(11));
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(1)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(1)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(2)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(2)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(3)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(3)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(4)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(4)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(5)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(5)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(6)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(6)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(7)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(7)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(8)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(8)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(9)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(9)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(10)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    cat_paw_agent_spl_run(
-                                                                        ctx,
-                                                                        CatPawAgentSplStep::Catwarp,
-                                                                        vec![Val::from(3970), Val::from(10)],
-                                                                    )?;
-                                                                }
-                                                                if !matched15 && subject15.loosely_equals(&Val::from(11)) {
-                                                                    matched15 = true;
-                                                                }
-                                                                if matched15 {
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                }
-                                                            }
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        } else {
-                                                            ctx.lines_as(
-                                                                "Cat Paw Agent",
-                                                                args![
-                                                                    "I'm sorry, but you're not",
-                                                                    "eligible to use the warp service.",
-                                                                    "Please check your points,",
-                                                                    "and then come back."
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        if !matched11 && subject11.loosely_equals(&Val::from(4)) {
-                                            matched11 = true;
-                                        }
-                                        if matched11 {
-                                            if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "spl" {
-                                                'b16: {
-                                                    let subject16 = Val::from(runtime::select_values(
-                                                        ctx,
-                                                        &[Val::from("Alliance Forces Post -> 5500z:Manuk Camp -> 7500z:Cancel")],
-                                                    )?);
-                                                    let mut matched16 = false;
-                                                    let no_case16 = !subject16.loosely_equals(&Val::from(1))
-                                                        && !subject16.loosely_equals(&Val::from(2))
-                                                        && !subject16.loosely_equals(&Val::from(3));
-                                                    if !matched16 && subject16.loosely_equals(&Val::from(1)) {
-                                                        matched16 = true;
-                                                    }
-                                                    if matched16 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(5500), Val::from(13)],
-                                                        )?;
-                                                    }
-                                                    if !matched16 && subject16.loosely_equals(&Val::from(2)) {
-                                                        matched16 = true;
-                                                    }
-                                                    if matched16 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(5500), Val::from(12)],
-                                                        )?;
-                                                    }
-                                                    if !matched16 && subject16.loosely_equals(&Val::from(3)) {
-                                                        matched16 = true;
-                                                    }
-                                                    if matched16 {
-                                                        ctx.lines_as("Cat Paw Agent", args!["Thank you for using our service."])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                }
-                                            } else {
-                                                'b17: {
-                                                    let subject17 = Val::from(runtime::select_values(
-                                                        ctx,
-                                                        &[Val::from("Alliance Forces Post -> 5500z:Splendide Camp -> 7500z:Cancel")],
-                                                    )?);
-                                                    let mut matched17 = false;
-                                                    let no_case17 = !subject17.loosely_equals(&Val::from(1))
-                                                        && !subject17.loosely_equals(&Val::from(2))
-                                                        && !subject17.loosely_equals(&Val::from(3));
-                                                    if !matched17 && subject17.loosely_equals(&Val::from(1)) {
-                                                        matched17 = true;
-                                                    }
-                                                    if matched17 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(5500), Val::from(13)],
-                                                        )?;
-                                                    }
-                                                    if !matched17 && subject17.loosely_equals(&Val::from(2)) {
-                                                        matched17 = true;
-                                                    }
-                                                    if matched17 {
-                                                        cat_paw_agent_spl_run(
-                                                            ctx,
-                                                            CatPawAgentSplStep::Catwarp,
-                                                            vec![Val::from(5500), Val::from(11)],
-                                                        )?;
-                                                    }
-                                                    if !matched17 && subject17.loosely_equals(&Val::from(3)) {
-                                                        matched17 = true;
-                                                    }
-                                                    if matched17 {
-                                                        ctx.lines_as("Cat Paw Agent", args!["Thank you for using our service."])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        if !matched11 && subject11.loosely_equals(&Val::from(5)) {
-                                            matched11 = true;
-                                        }
-                                        if matched11 {
-                                            ctx.lines_as("Cat Paw Agent", args!["Thank you for using our service."])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        } else if ctx.var("Zeny").get()?.number()? >= 60 {
+                                            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(60))?))?;
+                                            ctx.lines_as(
+                                                "Cat Paw Agent",
+                                                args!["Thank you.", "Your storage will be opened shortly."],
+                                            )?;
+                                            ctx.close_window()?;
+                                            ctx.call(Function::OpenStorage, vec![])?;
+                                            return Err(Stop::End);
+                                        } else {
+                                            ctx.lines_as(
+                                                "Cat Paw Agent",
+                                                args![
+                                                    "I'm sorry, but you don't",
+                                                    "have enough money?",
+                                                    "Cat Trading's storage",
+                                                    "service is 60 zeny.",
+                                                    "It's cheap, isn't it?"
+                                                ],
+                                            )?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
                                     }
-                                } else {
-                                    ctx.lines_as("Cat Paw Agent", args!["... ... ... ...", "Please give me some Piece of Fish."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
+                                    if !matched11 && subject11.loosely_equals(&Val::from(3)) {
+                                        matched11 = true;
+                                    }
+                                    if matched11 {
+                                        ctx.lines_as(
+                                            "Cat Paw Agent",
+                                            args![
+                                                "The warp service is only",
+                                                "available for customers with",
+                                                (ctx.var("ep13_yong1").get()? + Val::from(" or more Cat Trading Points.")),
+                                                "Please remember, you can't come back easily once you move to Midgard."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        if (ctx.var("ep13_yong1").get()?.number()? > 99 && ctx.var("ep13_yong1").get()?.number()? < 200)
+                                        {
+                                            'b12: {
+                                                let subject12 = Val::from(runtime::select_values(
+                                                    ctx,
+                                                    &[Val::from(
+                                                        "Alberta -> 4590z:Prontera -> 4590z:Izlude -> 4590z:Geffen -> 4590z:Payon -> 4590z:Morocc -> 4590z:Al De Baran -> 4590z:Cancel",
+                                                    )],
+                                                )?);
+                                                let mut matched12 = false;
+                                                let no_case12 = !subject12.loosely_equals(&Val::from(1))
+                                                    && !subject12.loosely_equals(&Val::from(2))
+                                                    && !subject12.loosely_equals(&Val::from(3))
+                                                    && !subject12.loosely_equals(&Val::from(4))
+                                                    && !subject12.loosely_equals(&Val::from(5))
+                                                    && !subject12.loosely_equals(&Val::from(6))
+                                                    && !subject12.loosely_equals(&Val::from(7))
+                                                    && !subject12.loosely_equals(&Val::from(8));
+                                                if !matched12 && subject12.loosely_equals(&Val::from(1)) {
+                                                    matched12 = true;
+                                                }
+                                                if matched12 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4590), Val::from(1)],
+                                                    )?;
+                                                }
+                                                if !matched12 && subject12.loosely_equals(&Val::from(2)) {
+                                                    matched12 = true;
+                                                }
+                                                if matched12 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4590), Val::from(2)],
+                                                    )?;
+                                                }
+                                                if !matched12 && subject12.loosely_equals(&Val::from(3)) {
+                                                    matched12 = true;
+                                                }
+                                                if matched12 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4590), Val::from(3)],
+                                                    )?;
+                                                }
+                                                if !matched12 && subject12.loosely_equals(&Val::from(4)) {
+                                                    matched12 = true;
+                                                }
+                                                if matched12 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4590), Val::from(4)],
+                                                    )?;
+                                                }
+                                                if !matched12 && subject12.loosely_equals(&Val::from(5)) {
+                                                    matched12 = true;
+                                                }
+                                                if matched12 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4590), Val::from(5)],
+                                                    )?;
+                                                }
+                                                if !matched12 && subject12.loosely_equals(&Val::from(6)) {
+                                                    matched12 = true;
+                                                }
+                                                if matched12 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4590), Val::from(6)],
+                                                    )?;
+                                                }
+                                                if !matched12 && subject12.loosely_equals(&Val::from(7)) {
+                                                    matched12 = true;
+                                                }
+                                                if matched12 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4590), Val::from(7)],
+                                                    )?;
+                                                }
+                                                if !matched12 && subject12.loosely_equals(&Val::from(8)) {
+                                                    matched12 = true;
+                                                }
+                                                if matched12 {
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
+                                            }
+                                        } else if (ctx.var("ep13_yong1").get()?.number()? > 199
+                                            && ctx.var("ep13_yong1").get()?.number()? < 250)
+                                        {
+                                            'b13: {
+                                                let subject13 = Val::from(runtime::select_values(
+                                                    ctx,
+                                                    &[Val::from(
+                                                        "Alberta -> 4170z:Prontera -> 4170z:Izlude -> 4170z:Geffen -> 4170z:Payon -> 4170z:Morocc -> 4170z:Al De Baran -> 4170z:Juno -> 4170z:Cancel",
+                                                    )],
+                                                )?);
+                                                let mut matched13 = false;
+                                                let no_case13 = !subject13.loosely_equals(&Val::from(1))
+                                                    && !subject13.loosely_equals(&Val::from(2))
+                                                    && !subject13.loosely_equals(&Val::from(3))
+                                                    && !subject13.loosely_equals(&Val::from(4))
+                                                    && !subject13.loosely_equals(&Val::from(5))
+                                                    && !subject13.loosely_equals(&Val::from(6))
+                                                    && !subject13.loosely_equals(&Val::from(7))
+                                                    && !subject13.loosely_equals(&Val::from(8))
+                                                    && !subject13.loosely_equals(&Val::from(9));
+                                                if !matched13 && subject13.loosely_equals(&Val::from(1)) {
+                                                    matched13 = true;
+                                                }
+                                                if matched13 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4170), Val::from(1)],
+                                                    )?;
+                                                }
+                                                if !matched13 && subject13.loosely_equals(&Val::from(2)) {
+                                                    matched13 = true;
+                                                }
+                                                if matched13 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4170), Val::from(2)],
+                                                    )?;
+                                                }
+                                                if !matched13 && subject13.loosely_equals(&Val::from(3)) {
+                                                    matched13 = true;
+                                                }
+                                                if matched13 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4170), Val::from(3)],
+                                                    )?;
+                                                }
+                                                if !matched13 && subject13.loosely_equals(&Val::from(4)) {
+                                                    matched13 = true;
+                                                }
+                                                if matched13 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4170), Val::from(4)],
+                                                    )?;
+                                                }
+                                                if !matched13 && subject13.loosely_equals(&Val::from(5)) {
+                                                    matched13 = true;
+                                                }
+                                                if matched13 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4170), Val::from(5)],
+                                                    )?;
+                                                }
+                                                if !matched13 && subject13.loosely_equals(&Val::from(6)) {
+                                                    matched13 = true;
+                                                }
+                                                if matched13 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4170), Val::from(6)],
+                                                    )?;
+                                                }
+                                                if !matched13 && subject13.loosely_equals(&Val::from(7)) {
+                                                    matched13 = true;
+                                                }
+                                                if matched13 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4170), Val::from(7)],
+                                                    )?;
+                                                }
+                                                if !matched13 && subject13.loosely_equals(&Val::from(8)) {
+                                                    matched13 = true;
+                                                }
+                                                if matched13 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4170), Val::from(8)],
+                                                    )?;
+                                                }
+                                                if !matched13 && subject13.loosely_equals(&Val::from(9)) {
+                                                    matched13 = true;
+                                                }
+                                                if matched13 {
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
+                                            }
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        } else if (ctx.var("ep13_yong1").get()?.number()? > 249
+                                            && ctx.var("ep13_yong1").get()?.number()? < 300)
+                                        {
+                                            'b14: {
+                                                let subject14 = Val::from(runtime::select_values(
+                                                    ctx,
+                                                    &[Val::from(
+                                                        "Alberta -> 4025z:Prontera -> 4025z:Izlude -> 4025z:Geffen -> 4025z:Payon -> 4025z:Morocc -> 4025z:Al De Baran -> 4025z:Juno -> 4025z:Einbroch -> 4025z:Cancel",
+                                                    )],
+                                                )?);
+                                                let mut matched14 = false;
+                                                let no_case14 = !subject14.loosely_equals(&Val::from(1))
+                                                    && !subject14.loosely_equals(&Val::from(2))
+                                                    && !subject14.loosely_equals(&Val::from(3))
+                                                    && !subject14.loosely_equals(&Val::from(4))
+                                                    && !subject14.loosely_equals(&Val::from(5))
+                                                    && !subject14.loosely_equals(&Val::from(6))
+                                                    && !subject14.loosely_equals(&Val::from(7))
+                                                    && !subject14.loosely_equals(&Val::from(8))
+                                                    && !subject14.loosely_equals(&Val::from(9))
+                                                    && !subject14.loosely_equals(&Val::from(10));
+                                                if !matched14 && subject14.loosely_equals(&Val::from(1)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4025), Val::from(1)],
+                                                    )?;
+                                                }
+                                                if !matched14 && subject14.loosely_equals(&Val::from(2)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4025), Val::from(2)],
+                                                    )?;
+                                                }
+                                                if !matched14 && subject14.loosely_equals(&Val::from(3)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4025), Val::from(3)],
+                                                    )?;
+                                                }
+                                                if !matched14 && subject14.loosely_equals(&Val::from(4)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4025), Val::from(4)],
+                                                    )?;
+                                                }
+                                                if !matched14 && subject14.loosely_equals(&Val::from(5)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4025), Val::from(5)],
+                                                    )?;
+                                                }
+                                                if !matched14 && subject14.loosely_equals(&Val::from(6)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4025), Val::from(6)],
+                                                    )?;
+                                                }
+                                                if !matched14 && subject14.loosely_equals(&Val::from(7)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4025), Val::from(7)],
+                                                    )?;
+                                                }
+                                                if !matched14 && subject14.loosely_equals(&Val::from(8)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4025), Val::from(8)],
+                                                    )?;
+                                                }
+                                                if !matched14 && subject14.loosely_equals(&Val::from(9)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(4025), Val::from(9)],
+                                                    )?;
+                                                }
+                                                if !matched14 && subject14.loosely_equals(&Val::from(10)) {
+                                                    matched14 = true;
+                                                }
+                                                if matched14 {
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
+                                            }
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        } else if ctx.var("ep13_yong1").get()?.number()? > 299 {
+                                            'b15: {
+                                                let subject15 = Val::from(runtime::select_values(
+                                                    ctx,
+                                                    &[Val::from(
+                                                        "Alberta -> 3970z:Prontera -> 3970z:Izlude -> 3970z:Geffen -> 3970z:Payon -> 3970z:Morocc -> 3970z:Al De Baran -> 3970z:Juno -> 3970z:Einbroch -> 3970z:Lighthalzen -> 3970z:Cancel",
+                                                    )],
+                                                )?);
+                                                let mut matched15 = false;
+                                                let no_case15 = !subject15.loosely_equals(&Val::from(1))
+                                                    && !subject15.loosely_equals(&Val::from(2))
+                                                    && !subject15.loosely_equals(&Val::from(3))
+                                                    && !subject15.loosely_equals(&Val::from(4))
+                                                    && !subject15.loosely_equals(&Val::from(5))
+                                                    && !subject15.loosely_equals(&Val::from(6))
+                                                    && !subject15.loosely_equals(&Val::from(7))
+                                                    && !subject15.loosely_equals(&Val::from(8))
+                                                    && !subject15.loosely_equals(&Val::from(9))
+                                                    && !subject15.loosely_equals(&Val::from(10))
+                                                    && !subject15.loosely_equals(&Val::from(11));
+                                                if !matched15 && subject15.loosely_equals(&Val::from(1)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(1)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(2)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(2)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(3)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(3)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(4)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(4)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(5)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(5)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(6)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(6)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(7)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(7)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(8)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(8)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(9)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(9)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(10)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(3970), Val::from(10)],
+                                                    )?;
+                                                }
+                                                if !matched15 && subject15.loosely_equals(&Val::from(11)) {
+                                                    matched15 = true;
+                                                }
+                                                if matched15 {
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
+                                            }
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        } else {
+                                            ctx.lines_as(
+                                                "Cat Paw Agent",
+                                                args![
+                                                    "I'm sorry, but you're not",
+                                                    "eligible to use the warp service.",
+                                                    "Please check your points,",
+                                                    "and then come back."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                    }
+                                    if !matched11 && subject11.loosely_equals(&Val::from(4)) {
+                                        matched11 = true;
+                                    }
+                                    if matched11 {
+                                        if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "spl" {
+                                            'b16: {
+                                                let subject16 = Val::from(runtime::select_values(
+                                                    ctx,
+                                                    &[Val::from("Alliance Forces Post -> 5500z:Manuk Camp -> 7500z:Cancel")],
+                                                )?);
+                                                let mut matched16 = false;
+                                                let no_case16 = !subject16.loosely_equals(&Val::from(1))
+                                                    && !subject16.loosely_equals(&Val::from(2))
+                                                    && !subject16.loosely_equals(&Val::from(3));
+                                                if !matched16 && subject16.loosely_equals(&Val::from(1)) {
+                                                    matched16 = true;
+                                                }
+                                                if matched16 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(5500), Val::from(13)],
+                                                    )?;
+                                                }
+                                                if !matched16 && subject16.loosely_equals(&Val::from(2)) {
+                                                    matched16 = true;
+                                                }
+                                                if matched16 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(5500), Val::from(12)],
+                                                    )?;
+                                                }
+                                                if !matched16 && subject16.loosely_equals(&Val::from(3)) {
+                                                    matched16 = true;
+                                                }
+                                                if matched16 {
+                                                    ctx.lines_as("Cat Paw Agent", args!["Thank you for using our service."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
+                                            }
+                                        } else {
+                                            'b17: {
+                                                let subject17 = Val::from(runtime::select_values(
+                                                    ctx,
+                                                    &[Val::from("Alliance Forces Post -> 5500z:Splendide Camp -> 7500z:Cancel")],
+                                                )?);
+                                                let mut matched17 = false;
+                                                let no_case17 = !subject17.loosely_equals(&Val::from(1))
+                                                    && !subject17.loosely_equals(&Val::from(2))
+                                                    && !subject17.loosely_equals(&Val::from(3));
+                                                if !matched17 && subject17.loosely_equals(&Val::from(1)) {
+                                                    matched17 = true;
+                                                }
+                                                if matched17 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(5500), Val::from(13)],
+                                                    )?;
+                                                }
+                                                if !matched17 && subject17.loosely_equals(&Val::from(2)) {
+                                                    matched17 = true;
+                                                }
+                                                if matched17 {
+                                                    cat_paw_agent_spl_run(
+                                                        ctx,
+                                                        CatPawAgentSplStep::Catwarp,
+                                                        vec![Val::from(5500), Val::from(11)],
+                                                    )?;
+                                                }
+                                                if !matched17 && subject17.loosely_equals(&Val::from(3)) {
+                                                    matched17 = true;
+                                                }
+                                                if matched17 {
+                                                    ctx.lines_as("Cat Paw Agent", args!["Thank you for using our service."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if !matched11 && subject11.loosely_equals(&Val::from(5)) {
+                                        matched11 = true;
+                                    }
+                                    if matched11 {
+                                        ctx.lines_as("Cat Paw Agent", args!["Thank you for using our service."])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
                                 }
+                            } else {
+                                ctx.lines_as("Cat Paw Agent", args!["... ... ... ...", "Please give me some Piece of Fish."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         }
                     }
@@ -1519,24 +1497,16 @@ fn mysterious_rock_30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         } else {
             if l_rhea_ran.clone() == 13 {
                 ctx.call(Function::GetItem, vec![Val::from(990), Val::from(1)])?;
+            } else if l_rhea_ran.clone() == 14 {
+                ctx.call(Function::GetItem, vec![Val::from(991), Val::from(1)])?;
+            } else if l_rhea_ran.clone() == 15 {
+                ctx.call(Function::GetItem, vec![Val::from(992), Val::from(1)])?;
+            } else if l_rhea_ran.clone() == 16 {
+                ctx.call(Function::GetItem, vec![Val::from(993), Val::from(1)])?;
+            } else if l_rhea_ran.clone() == 17 {
+                ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(1)])?;
             } else {
-                if l_rhea_ran.clone() == 14 {
-                    ctx.call(Function::GetItem, vec![Val::from(991), Val::from(1)])?;
-                } else {
-                    if l_rhea_ran.clone() == 15 {
-                        ctx.call(Function::GetItem, vec![Val::from(992), Val::from(1)])?;
-                    } else {
-                        if l_rhea_ran.clone() == 16 {
-                            ctx.call(Function::GetItem, vec![Val::from(993), Val::from(1)])?;
-                        } else {
-                            if l_rhea_ran.clone() == 17 {
-                                ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(1)])?;
-                            } else {
-                                ctx.call(Function::GetItem, vec![Val::from(6048), Val::from(1)])?;
-                            }
-                        }
-                    }
-                }
+                ctx.call(Function::GetItem, vec![Val::from(6048), Val::from(1)])?;
             }
         }
         ctx.call(Function::InitNpcTimer, vec![])?;
@@ -1598,8 +1568,8 @@ fn school_of_fish_5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             l_fcast = (l_fcast.clone().try_sub(Val::from(4))?);
         }
         ctx.call(Function::ProgressBar, vec![Val::from("ffff00"), l_fcast.clone()])?;
-        if ctx.var("ep13_1_rhea").get()? == 13 {
-            if ctx.call(Function::Rand, vec![Val::from(1), Val::from(20)])? == 2 {
+        if ctx.var("ep13_1_rhea").get()? == 13
+            && ctx.call(Function::Rand, vec![Val::from(1), Val::from(20)])? == 2 {
                 ctx.call(Function::GetItem, vec![Val::from(6037), Val::from(1)])?;
                 ctx.var("ep13_1_rhea").set(Val::from(14))?;
                 ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_BUBBLE")?])?;
@@ -1613,7 +1583,6 @@ fn school_of_fish_5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
             }
-        }
         l_rhea_ran = ctx.call(Function::Rand, vec![Val::from(1), Val::from(70)])?;
         if l_rhea_ran.clone().number()? < 20 {
             ctx.call(Function::GetItem, vec![Val::from(6039), Val::from(1)])?;
@@ -1635,26 +1604,18 @@ fn school_of_fish_5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             } else {
                                 if l_rhea_ran.clone() == 25 {
                                     ctx.call(Function::GetItem, vec![Val::from(918), Val::from(1)])?;
+                                } else if l_rhea_ran.clone() == 26 {
+                                    ctx.call(Function::GetItem, vec![Val::from(960), Val::from(1)])?;
+                                } else if l_rhea_ran.clone() == 27 {
+                                    ctx.call(Function::GetItem, vec![Val::from(910), Val::from(1)])?;
+                                } else if l_rhea_ran.clone() == 28 {
+                                    ctx.call(Function::GetItem, vec![Val::from(6081), Val::from(1)])?;
+                                } else if (l_rhea_ran.clone().number()? > 28 && l_rhea_ran.clone().number()? < 40) {
+                                    ctx.call(Function::GetItem, vec![Val::from(7049), Val::from(1)])?;
                                 } else {
-                                    if l_rhea_ran.clone() == 26 {
-                                        ctx.call(Function::GetItem, vec![Val::from(960), Val::from(1)])?;
-                                    } else {
-                                        if l_rhea_ran.clone() == 27 {
-                                            ctx.call(Function::GetItem, vec![Val::from(910), Val::from(1)])?;
-                                        } else {
-                                            if l_rhea_ran.clone() == 28 {
-                                                ctx.call(Function::GetItem, vec![Val::from(6081), Val::from(1)])?;
-                                            } else {
-                                                if (l_rhea_ran.clone().number()? > 28 && l_rhea_ran.clone().number()? < 40) {
-                                                    ctx.call(Function::GetItem, vec![Val::from(7049), Val::from(1)])?;
-                                                } else {
-                                                    ctx.mes("Nothing was caught.")?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                    }
+                                    ctx.mes("Nothing was caught.")?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                         }
@@ -2221,60 +2182,52 @@ fn splendide_guard_ep13md01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                             ctx.lines_as("Arc", args!["As soon as you are done collecting the berries, bring them to the Sapha Village right away!!!", "Terra... please be safe."])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
+                                        } else if (ctx.var("ep13_mdrama").get()?.number()? > 17
+                                            && ctx.var("ep13_mdrama").get()?.number()? < 25)
+                                        {
+                                            ctx.lines_as("Arc", args!["...Oh where is Terra...?"])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        } else if ctx.var("ep13_mdrama").get()? == 25 {
+                                            ctx.lines_as("Arc", args![((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!!")), "Terra's back!!!", "She is back in one piece!", "...She hasn't been saying a single word since her return, I told her to rest in Yai..."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Arc", args!["Please come by if you don't mind...", "Terra's Yai.", "Which is her Private Residence... It's located at the Southeast direction from here.", "I would like to hear a detailed account of what happened."])?;
+                                            ctx.var("ep13_mdrama").set(Val::from(26))?;
+                                            ctx.call(Function::ChangeQuest, vec![Val::from(7070), Val::from(7071)])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        } else if ctx.var("ep13_mdrama").get()? == 26 {
+                                            ctx.lines_as(
+                                                "Arc",
+                                                args![
+                                                    "What happened....while she was gone?",
+                                                    "I would like to hear a detailed account fn what happened...",
+                                                    "Please go to Terra's Yai later."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        } else if ctx.var("ep13_mdrama").get()?.number()? > 26 {
+                                            ctx.lines_as(
+                                                "Arc",
+                                                args![
+                                                    "I really appreciate what you've done for us.",
+                                                    "But, I'm worried about Terra.",
+                                                    "I hope she can be her old self..."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         } else {
-                                            if (ctx.var("ep13_mdrama").get()?.number()? > 17
-                                                && ctx.var("ep13_mdrama").get()?.number()? < 25)
-                                            {
-                                                ctx.lines_as("Arc", args!["...Oh where is Terra...?"])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                if ctx.var("ep13_mdrama").get()? == 25 {
-                                                    ctx.lines_as("Arc", args![((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("!!")), "Terra's back!!!", "She is back in one piece!", "...She hasn't been saying a single word since her return, I told her to rest in Yai..."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Arc", args!["Please come by if you don't mind...", "Terra's Yai.", "Which is her Private Residence... It's located at the Southeast direction from here.", "I would like to hear a detailed account of what happened."])?;
-                                                    ctx.var("ep13_mdrama").set(Val::from(26))?;
-                                                    ctx.call(Function::ChangeQuest, vec![Val::from(7070), Val::from(7071)])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    if ctx.var("ep13_mdrama").get()? == 26 {
-                                                        ctx.lines_as(
-                                                            "Arc",
-                                                            args![
-                                                                "What happened....while she was gone?",
-                                                                "I would like to hear a detailed account fn what happened...",
-                                                                "Please go to Terra's Yai later."
-                                                            ],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    } else {
-                                                        if ctx.var("ep13_mdrama").get()?.number()? > 26 {
-                                                            ctx.lines_as(
-                                                                "Arc",
-                                                                args![
-                                                                    "I really appreciate what you've done for us.",
-                                                                    "But, I'm worried about Terra.",
-                                                                    "I hope she can be her old self..."
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        } else {
-                                                            ctx.lines_as(
-                                                                "Arc",
-                                                                args![
-                                                                    "Ah~Ah~Stop right there...",
-                                                                    "This area is off-limits to unauthorized personnel."
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                            ctx.lines_as(
+                                                "Arc",
+                                                args![
+                                                    "Ah~Ah~Stop right there...",
+                                                    "This area is off-limits to unauthorized personnel."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         }
                                     }
                                 }
@@ -2357,20 +2310,18 @@ fn ep13_mdplant01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("ep13_mdrama").set(Val::from(3))?;
         ctx.call(Function::ChangeQuest, vec![Val::from(7056), Val::from(7057)])?;
         ctx.close_window()?;
+    } else if ctx.var("ep13_mdrama").get()?.number()? > 2 {
+        ctx.lines(args![
+            "This is a marking Terra left to remember the way back home.",
+            "A knotted leaf is pointing^4d4dff South^000000."
+        ])?;
+        ctx.close_window()?;
     } else {
-        if ctx.var("ep13_mdrama").get()?.number()? > 2 {
-            ctx.lines(args![
-                "This is a marking Terra left to remember the way back home.",
-                "A knotted leaf is pointing^4d4dff South^000000."
-            ])?;
-            ctx.close_window()?;
-        } else {
-            ctx.lines(args![
-                "Weeds are easy to find around here...",
-                "There's nothing too special about it."
-            ])?;
-            ctx.close_window()?;
-        }
+        ctx.lines(args![
+            "Weeds are easy to find around here...",
+            "There's nothing too special about it."
+        ])?;
+        ctx.close_window()?;
     }
     ctx.call(Function::Cutin, vec![Val::from("ep13_plant01"), Val::from(255)])?;
     return Err(Stop::End);
@@ -2444,19 +2395,17 @@ fn ep13_mdplant04_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("ep13_mdrama").set(Val::from(4))?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("ep13_mdrama").get()?.number()? > 3 {
+        ctx.lines(args![
+            "Someone must have had a fight here.",
+            "There are footprints heading ^4d4dffNorth^000000."
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("ep13_mdrama").get()?.number()? > 3 {
-            ctx.lines(args![
-                "Someone must have had a fight here.",
-                "There are footprints heading ^4d4dffNorth^000000."
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.mes("There are footprints here that seem to be leading towards something.")?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.mes("There are footprints here that seem to be leading towards something.")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2475,16 +2424,14 @@ fn ep13_mdplant05_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("ep13_mdrama").set(Val::from(5))?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("ep13_mdrama").get()?.number()? > 4 {
+        ctx.mes("There are footprints that lead to^4d4dff the Root of a huge tree^000000.")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("ep13_mdrama").get()?.number()? > 4 {
-            ctx.mes("There are footprints that lead to^4d4dff the Root of a huge tree^000000.")?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.mes("There are footprints here that seem to be leading towards something.")?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.mes("There are footprints here that seem to be leading towards something.")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2544,41 +2491,39 @@ fn to_dun01_ep13_2_run(ctx: &Ctx, mut step: ToDun01Ep132Step, args: Vec<Val>) ->
                             return Err(Stop::End);
                         }
                     }
-                } else {
-                    if ctx.var("ep13_mdrama").get()?.number()? > 5 {
-                        ctx.mes("Between huge roots, there is a hole leads to the underground cave.")?;
-                        ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Go inside.:I'm not going in there.")])?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("Again, you slip through the muddy roots.")?;
-                                ctx.close_window()?;
-                                ctx.call(Function::PercentHeal, vec![Val::from(-30), Val::from(0)])?;
-                                ctx.call(Function::Warp, vec![Val::from("nyd_dun01"), Val::from(72), Val::from(125)])?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("You decide to come back later.")?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                } else if ctx.var("ep13_mdrama").get()?.number()? > 5 {
+                    ctx.mes("Between huge roots, there is a hole leads to the underground cave.")?;
+                    ctx.next()?;
+                    'b2: {
+                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Go inside.:I'm not going in there.")])?);
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
                         }
-                    } else {
-                        ctx.lines(args![
-                            "Strange looking stems are entangled inside an opening of huge roots.",
-                            "Surface looks unstable...I should step away before I slip on it."
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
+                        if matched2 {
+                            ctx.mes("Again, you slip through the muddy roots.")?;
+                            ctx.close_window()?;
+                            ctx.call(Function::PercentHeal, vec![Val::from(-30), Val::from(0)])?;
+                            ctx.call(Function::Warp, vec![Val::from("nyd_dun01"), Val::from(72), Val::from(125)])?;
+                            return Err(Stop::End);
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("You decide to come back later.")?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
                     }
+                } else {
+                    ctx.lines(args![
+                        "Strange looking stems are entangled inside an opening of huge roots.",
+                        "Surface looks unstable...I should step away before I slip on it."
+                    ])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 return Ok(Val::from(0));
             }
@@ -2715,262 +2660,254 @@ fn petrified_sapha_ep13md03_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if (ctx.var("ep13_mdrama").get()?.number()? > 10 && ctx.var("ep13_mdrama").get()?.number()? < 21) {
-                        ctx.lines(args![
-                            "A giant from the race called Sapha is petrified here.",
-                            "It looks like it's dead..."
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("ep13_mdrama").get()? == 21 {
+                } else if (ctx.var("ep13_mdrama").get()?.number()? > 10 && ctx.var("ep13_mdrama").get()?.number()? < 21) {
+                    ctx.lines(args![
+                        "A giant from the race called Sapha is petrified here.",
+                        "It looks like it's dead..."
+                    ])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("ep13_mdrama").get()? == 21 {
+                    ctx.lines(args![
+                        "I need to bring back some evidence of this giant in the cave.",
+                        "What should I bring with me?"
+                    ])?;
+                    ctx.next()?;
+                    'b1: {
+                        let subject1 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Hair:Muffler:Pants:Fragment of Bradium")],
+                        )?);
+                        let mut matched1 = false;
+                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                            && !subject1.loosely_equals(&Val::from(2))
+                            && !subject1.loosely_equals(&Val::from(3))
+                            && !subject1.loosely_equals(&Val::from(4));
+                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            ctx.mes("It won't come off. It's as if it is a tree rooted on a rock.")?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
                             ctx.lines(args![
-                                "I need to bring back some evidence of this giant in the cave.",
-                                "What should I bring with me?"
+                                "You carefully strip a worn muffler off of the Sapha's neck.",
+                                "We will see if this muffler belongs to Ogen or not."
                             ])?;
                             ctx.next()?;
-                            'b1: {
-                                let subject1 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from("Hair:Muffler:Pants:Fragment of Bradium")],
-                                )?);
-                                let mut matched1 = false;
-                                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                    && !subject1.loosely_equals(&Val::from(2))
-                                    && !subject1.loosely_equals(&Val::from(3))
-                                    && !subject1.loosely_equals(&Val::from(4));
-                                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                    matched1 = true;
+                            ctx.mes("And...what else should I take?")?;
+                            ctx.next()?;
+                            'b2: {
+                                let subject2 =
+                                    Val::from(runtime::select_values(ctx, &[Val::from("Hair:Pants:Fragment of Bradium")])?);
+                                let mut matched2 = false;
+                                let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                                    && !subject2.loosely_equals(&Val::from(2))
+                                    && !subject2.loosely_equals(&Val::from(3));
+                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                                    matched2 = true;
                                 }
-                                if matched1 {
+                                if matched2 {
                                     ctx.mes("It won't come off. It's as if it is a tree rooted on a rock.")?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                    matched1 = true;
+                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                                    matched2 = true;
                                 }
-                                if matched1 {
-                                    ctx.lines(args![
-                                        "You carefully strip a worn muffler off of the Sapha's neck.",
-                                        "We will see if this muffler belongs to Ogen or not."
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.mes("And...what else should I take?")?;
-                                    ctx.next()?;
-                                    'b2: {
-                                        let subject2 =
-                                            Val::from(runtime::select_values(ctx, &[Val::from("Hair:Pants:Fragment of Bradium")])?);
-                                        let mut matched2 = false;
-                                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                            && !subject2.loosely_equals(&Val::from(2))
-                                            && !subject2.loosely_equals(&Val::from(3));
-                                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
-                                            ctx.mes("It won't come off. It's as if it is a tree rooted on a rock.")?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
-                                            ctx.mes("... I don't want to take off a dead MAN's pants...")?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
-                                            ctx.lines(args![
-                                                "You pick up a fragment of Bradium scattered on the ground.",
-                                                "This should be enough."
-                                            ])?;
-                                            ctx.var("ep13_mdrama").set(Val::from(22))?;
-                                            ctx.call(Function::GetItem, vec![Val::from(6085), Val::from(1)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(6084), Val::from(1)])?;
-                                            ctx.call(Function::ChangeQuest, vec![Val::from(7066), Val::from(7067)])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
-                                }
-                                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
+                                if matched2 {
                                     ctx.mes("... I don't want to take off a dead MAN's pants...")?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                                    matched1 = true;
+                                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                                    matched2 = true;
                                 }
-                                if matched1 {
+                                if matched2 {
                                     ctx.lines(args![
                                         "You pick up a fragment of Bradium scattered on the ground.",
-                                        "This will prove Terra's effort...",
-                                        "And what else?"
+                                        "This should be enough."
                                     ])?;
-                                    ctx.next()?;
-                                    'b3: {
-                                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Hair:Muffler:Pants")])?);
-                                        let mut matched3 = false;
-                                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                            && !subject3.loosely_equals(&Val::from(2))
-                                            && !subject3.loosely_equals(&Val::from(3));
-                                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
-                                            ctx.mes("It won't come off. It's as if it is a tree rooted on a rock.")?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
-                                            ctx.lines(args![
-                                                "You carefully strip a worn muffler off of the Sapha's neck.",
-                                                "We will see if this muffler belongs to Ogen or not...",
-                                                "This should be enough."
-                                            ])?;
-                                            ctx.var("ep13_mdrama").set(Val::from(22))?;
-                                            ctx.call(Function::GetItem, vec![Val::from(6085), Val::from(1)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(6084), Val::from(1)])?;
-                                            ctx.call(Function::ChangeQuest, vec![Val::from(7066), Val::from(7067)])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
-                                            ctx.mes("... I don't want to take off a dead MAN's pants...")?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            if ctx.var("ep13_mdrama").get()? == 22 {
-                                ctx.lines(args![
-                                    "Petrified Sapha.",
-                                    "Now I have the muffler, let's go back to Luik and Snorren."
-                                ])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("ep13_mdrama").get()? == 23 {
-                                    if ctx.call(Function::IsEquipped, vec![Val::from(2782)])? == 1 {
-                                        ctx.call(Function::DoNpcEvent, vec![Val::from("Snorren#ep13md17::OnEnable")])?;
-                                        ctx.lines_as("Snorren", args!["Ogen!!!!!!", "...Ogen... Ogen...", "....Ogeeen......"])?;
-                                        ctx.next()?;
-                                        let choice = runtime::select_values(ctx, &[Val::from("You don't mean..?")])?;
-                                        ctx.var("@menu").set(choice)?;
-                                        ctx.lines_as(
-                                            "Snorren",
-                                            args![
-                                                "This.. is.. worse than I could have imagined.....",
-                                                "Ogen... this doesn't look like it can be reversed..."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Snorren",
-                                            args!["No matter how much bradium fluid we inject... Ogen can't come back alive..."],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Snorren",
-                                            args![
-                                                "Ogen... really was adament... about protecting that Laphine... to protect Terra.....",
-                                                "He did his best 'til the last..."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Snorren",
-                                            args![
-                                                ((Val::from("Look at this, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                    + Val::from("...")),
-                                                "His petrifyied body...",
-                                                "protected Terra...like this."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Snorren", args!["Ogen... made himself an unbreakable shield..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Snorren",
-                                            args![
-                                                "Ogen... you can now go back to the bosom of the Motherland...",
-                                                "This statue will be a monument to your courage..."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.mes("- - I can't begin to describe the sorrow of losing a close friend... -")?;
-                                        ctx.next()?;
-                                        ctx.mes("- All I could do was to keep tapping his shoulder... as he quietly sobbed... -")?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args!["Let's.. go back...", "Ogen wouldn't want you to be so sad and depressed."],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Snorren",
-                                            args![
-                                                "I guess you are right...",
-                                                "There's... sunlight shining here...",
-                                                "This... must be a comfort resting place for Ogen."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Snorren",
-                                            args!["I should go and tell Luik and the townspeople about this...", "I will go on ahead."],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.call(Function::DoNpcEvent, vec![Val::from("Snorren#ep13md17::OnDisable")])?;
-                                        ctx.lines(args![
-                                            "- Snorren stood up with a bitter smile...",
-                                            "...I should go back too... I'm worried about Terra. -"
-                                        ])?;
-                                        ctx.var("ep13_mdrama").set(Val::from(24))?;
-                                        ctx.call(Function::ChangeQuest, vec![Val::from(7068), Val::from(7069)])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args!["Whoa, I almost forgot the ring."],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                } else {
-                                    if ctx.var("ep13_mdrama").get()?.number()? > 23 {
-                                        ctx.lines(args![
-                                            "Ogen... was petrified as he covered Terra...",
-                                            "What was going on between them that they would see past their racial differences...?"
-                                        ])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.mes("Before you is a statue made of stone and wood. It's so life-like it's eerie.")?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
+                                    ctx.var("ep13_mdrama").set(Val::from(22))?;
+                                    ctx.call(Function::GetItem, vec![Val::from(6085), Val::from(1)])?;
+                                    ctx.call(Function::GetItem, vec![Val::from(6084), Val::from(1)])?;
+                                    ctx.call(Function::ChangeQuest, vec![Val::from(7066), Val::from(7067)])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                         }
+                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            ctx.mes("... I don't want to take off a dead MAN's pants...")?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            ctx.lines(args![
+                                "You pick up a fragment of Bradium scattered on the ground.",
+                                "This will prove Terra's effort...",
+                                "And what else?"
+                            ])?;
+                            ctx.next()?;
+                            'b3: {
+                                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Hair:Muffler:Pants")])?);
+                                let mut matched3 = false;
+                                let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                    && !subject3.loosely_equals(&Val::from(2))
+                                    && !subject3.loosely_equals(&Val::from(3));
+                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.mes("It won't come off. It's as if it is a tree rooted on a rock.")?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.lines(args![
+                                        "You carefully strip a worn muffler off of the Sapha's neck.",
+                                        "We will see if this muffler belongs to Ogen or not...",
+                                        "This should be enough."
+                                    ])?;
+                                    ctx.var("ep13_mdrama").set(Val::from(22))?;
+                                    ctx.call(Function::GetItem, vec![Val::from(6085), Val::from(1)])?;
+                                    ctx.call(Function::GetItem, vec![Val::from(6084), Val::from(1)])?;
+                                    ctx.call(Function::ChangeQuest, vec![Val::from(7066), Val::from(7067)])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.mes("... I don't want to take off a dead MAN's pants...")?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                        }
+                    }
+                } else if ctx.var("ep13_mdrama").get()? == 22 {
+                    ctx.lines(args![
+                        "Petrified Sapha.",
+                        "Now I have the muffler, let's go back to Luik and Snorren."
+                    ])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("ep13_mdrama").get()? == 23 {
+                    if ctx.call(Function::IsEquipped, vec![Val::from(2782)])? == 1 {
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Snorren#ep13md17::OnEnable")])?;
+                        ctx.lines_as("Snorren", args!["Ogen!!!!!!", "...Ogen... Ogen...", "....Ogeeen......"])?;
+                        ctx.next()?;
+                        let choice = runtime::select_values(ctx, &[Val::from("You don't mean..?")])?;
+                        ctx.var("@menu").set(choice)?;
+                        ctx.lines_as(
+                            "Snorren",
+                            args![
+                                "This.. is.. worse than I could have imagined.....",
+                                "Ogen... this doesn't look like it can be reversed..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Snorren",
+                            args!["No matter how much bradium fluid we inject... Ogen can't come back alive..."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Snorren",
+                            args![
+                                "Ogen... really was adament... about protecting that Laphine... to protect Terra.....",
+                                "He did his best 'til the last..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Snorren",
+                            args![
+                                ((Val::from("Look at this, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("...")),
+                                "His petrifyied body...",
+                                "protected Terra...like this."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Snorren", args!["Ogen... made himself an unbreakable shield..."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Snorren",
+                            args![
+                                "Ogen... you can now go back to the bosom of the Motherland...",
+                                "This statue will be a monument to your courage..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.mes("- - I can't begin to describe the sorrow of losing a close friend... -")?;
+                        ctx.next()?;
+                        ctx.mes("- All I could do was to keep tapping his shoulder... as he quietly sobbed... -")?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args!["Let's.. go back...", "Ogen wouldn't want you to be so sad and depressed."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Snorren",
+                            args![
+                                "I guess you are right...",
+                                "There's... sunlight shining here...",
+                                "This... must be a comfort resting place for Ogen."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Snorren",
+                            args!["I should go and tell Luik and the townspeople about this...", "I will go on ahead."],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Snorren#ep13md17::OnDisable")])?;
+                        ctx.lines(args![
+                            "- Snorren stood up with a bitter smile...",
+                            "...I should go back too... I'm worried about Terra. -"
+                        ])?;
+                        ctx.var("ep13_mdrama").set(Val::from(24))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(7068), Val::from(7069)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args!["Whoa, I almost forgot the ring."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                } else {
+                    if ctx.var("ep13_mdrama").get()?.number()? > 23 {
+                        ctx.lines(args![
+                            "Ogen... was petrified as he covered Terra...",
+                            "What was going on between them that they would see past their racial differences...?"
+                        ])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.mes("Before you is a statue made of stone and wood. It's so life-like it's eerie.")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -3186,27 +3123,25 @@ fn villager_ep13_11_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
+        } else if ctx.var("ep13_mdrama").get()?.number()? > 10 {
+            ctx.mes("- The Sapha are having a conversation and not paying attention to my movements. -")?;
+            ctx.next()?;
+            ctx.mes("- They are talking mostly about common town matters, not much useful information. -")?;
+            ctx.next()?;
+            ctx.mes("- I'd better move away from them before they get suspicious of my presence. -")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("ep13_mdrama").get()?.number()? > 10 {
-                ctx.mes("- The Sapha are having a conversation and not paying attention to my movements. -")?;
-                ctx.next()?;
-                ctx.mes("- They are talking mostly about common town matters, not much useful information. -")?;
-                ctx.next()?;
-                ctx.mes("- I'd better move away from them before they get suspicious of my presence. -")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Villager",
-                    args![
-                        "...Outsider?",
-                        "Do you have a permission to come into our village?",
-                        "That's right..Do you even understand me?"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines_as(
+                "Villager",
+                args![
+                    "...Outsider?",
+                    "Do you have a permission to come into our village?",
+                    "That's right..Do you even understand me?"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines_as("Villager", args!["Das?", "idh sd!", "Dh apa sd!-is Das idh."])?;
@@ -3330,32 +3265,30 @@ fn villager_ep13_12_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
+        } else if ctx.var("ep13_mdrama").get()?.number()? > 10 {
+            ctx.mes("- The Sapha are having a conversation and not paying attention to my movements. -")?;
+            ctx.next()?;
+            ctx.mes("- They are talking mostly about common town matters, not much useful information. -")?;
+            ctx.next()?;
+            ctx.mes("- I'd better move away from them before they get suspicious of my presence. -")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("ep13_mdrama").get()?.number()? > 10 {
-                ctx.mes("- The Sapha are having a conversation and not paying attention to my movements. -")?;
-                ctx.next()?;
-                ctx.mes("- They are talking mostly about common town matters, not much useful information. -")?;
-                ctx.next()?;
-                ctx.mes("- I'd better move away from them before they get suspicious of my presence. -")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Villager",
-                    args![
-                        "...Outsider, huh...",
-                        "Since when did we allow outsiders to come and visit?",
-                        "That's right..Do you even understand me?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Villager",
-                    args!["...I guess it doesn't matter....", "Ah, Do we even understand each other?"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines_as(
+                "Villager",
+                args![
+                    "...Outsider, huh...",
+                    "Since when did we allow outsiders to come and visit?",
+                    "That's right..Do you even understand me?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Villager",
+                args!["...I guess it doesn't matter....", "Ah, Do we even understand each other?"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines_as("Villager", args!["Fsd a idh as?", "Nsf iu ai sd a sd!", "Asd fo sdj fso df."])?;
@@ -3757,109 +3690,101 @@ fn snorren_ep13_13_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.lines_as("Snorren", args!["I've been waiting for you...", "Let's make haste."])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
+                            } else if ctx.var("ep13_mdrama").get()? == 21 {
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args![
+                                        "I'm really confused now...Should I believe your story or not.",
+                                        "If it is true that cave really exists and Ogen is hurt..."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("ep13_mdrama").get()? == 23 {
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args![
+                                        "The approximate location is...",
+                                        "Huge Roots of a tree. Got it.",
+                                        "You go ahead first. I will stop by at a refinery and be right after you."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args![
+                                        "Since that place is Laphine's territory, I will go quitely so they won't notice me.",
+                                        "You just go on ahead, I will be right behind you."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("ep13_mdrama").get()? == 24 {
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args![
+                                        "You are back. .. Luik wanted me to tell you this...",
+                                        "Terra, that Laphine, is free now."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args![
+                                        "We are tired of fighting. We didn't even want to start...",
+                                        "And we saw her true intention before everything else."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args![
+                                        "Go and check if Terra went back to her home safely...",
+                                        "Ogen... He went back to Mother Nature."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args![
+                                        "I really don't think what Ogen did was the right thing to do...",
+                                        "But that was... Ogen..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args![
+                                        "Forgive me, I'm a bit depressed...",
+                                        "I'd rather just rest here.",
+                                        "I really appreciate what you've done."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Snorren", args!["Come back anytime...", "Ok?"])?;
+                                ctx.var("ep13_mdrama").set(Val::from(25))?;
+                                ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(15)])?;
+                                ctx.call(Function::ChangeQuest, vec![Val::from(7069), Val::from(7070)])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("ep13_mdrama").get()?.number()? > 24 {
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args![
+                                        "What do you think of this muffler?",
+                                        "This belonged to Ogen...",
+                                        "Does it look good on me?"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             } else {
-                                if ctx.var("ep13_mdrama").get()? == 21 {
-                                    ctx.lines_as(
-                                        "Snorren",
-                                        args![
-                                            "I'm really confused now...Should I believe your story or not.",
-                                            "If it is true that cave really exists and Ogen is hurt..."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("ep13_mdrama").get()? == 23 {
-                                        ctx.lines_as(
-                                            "Snorren",
-                                            args![
-                                                "The approximate location is...",
-                                                "Huge Roots of a tree. Got it.",
-                                                "You go ahead first. I will stop by at a refinery and be right after you."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Snorren",
-                                            args![
-                                                "Since that place is Laphine's territory, I will go quitely so they won't notice me.",
-                                                "You just go on ahead, I will be right behind you."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("ep13_mdrama").get()? == 24 {
-                                            ctx.lines_as(
-                                                "Snorren",
-                                                args![
-                                                    "You are back. .. Luik wanted me to tell you this...",
-                                                    "Terra, that Laphine, is free now."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Snorren",
-                                                args![
-                                                    "We are tired of fighting. We didn't even want to start...",
-                                                    "And we saw her true intention before everything else."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Snorren",
-                                                args![
-                                                    "Go and check if Terra went back to her home safely...",
-                                                    "Ogen... He went back to Mother Nature."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Snorren",
-                                                args![
-                                                    "I really don't think what Ogen did was the right thing to do...",
-                                                    "But that was... Ogen..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Snorren",
-                                                args![
-                                                    "Forgive me, I'm a bit depressed...",
-                                                    "I'd rather just rest here.",
-                                                    "I really appreciate what you've done."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Snorren", args!["Come back anytime...", "Ok?"])?;
-                                            ctx.var("ep13_mdrama").set(Val::from(25))?;
-                                            ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(15)])?;
-                                            ctx.call(Function::ChangeQuest, vec![Val::from(7069), Val::from(7070)])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if ctx.var("ep13_mdrama").get()?.number()? > 24 {
-                                                ctx.lines_as(
-                                                    "Snorren",
-                                                    args![
-                                                        "What do you think of this muffler?",
-                                                        "This belonged to Ogen...",
-                                                        "Does it look good on me?"
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                ctx.lines_as(
-                                                    "Snorren",
-                                                    args!["Outsiders shouldn't be here without permission.", "Please get out of here."],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
-                                    }
-                                }
+                                ctx.lines_as(
+                                    "Snorren",
+                                    args!["Outsiders shouldn't be here without permission.", "Please get out of here."],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         }
                     }
@@ -3895,15 +3820,13 @@ fn to_in013ep13mdwarp01_run(ctx: &Ctx, mut step: ToIn013ep13mdwarp01Step, args: 
                 if (ctx.var("ep13_mdrama").get()?.number()? > 17 && ctx.var("ep13_mdrama").get()?.number()? < 24) {
                     ctx.call(Function::Warp, vec![Val::from("man_in01"), Val::from(13), Val::from(125)])?;
                     return Err(Stop::End);
+                } else if ctx.var("ep13_mdrama").get()?.number()? > 23 {
+                    ctx.call(Function::Warp, vec![Val::from("man_in01"), Val::from(68), Val::from(125)])?;
+                    return Err(Stop::End);
                 } else {
-                    if ctx.var("ep13_mdrama").get()?.number()? > 23 {
-                        ctx.call(Function::Warp, vec![Val::from("man_in01"), Val::from(68), Val::from(125)])?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.mes("The doors are locked... I can't get in.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.mes("The doors are locked... I can't get in.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 return Err(Stop::End);
             }
@@ -3940,200 +3863,194 @@ fn captured_laphine_ep13md_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
             ])?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("ep13_mdrama").get()? == 19 {
-                ctx.lines(args![
-                    "Luik and Snorren did everything to extract juice out of a Yggdrasilberry",
-                    "chopped and stuffed it into a mouth and paste them on the body..."
-                ])?;
-                ctx.next()?;
-                ctx.lines_as("Wounded Laphine", args!["Hmm..."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Luik",
-                    args![
-                        "Finally she's coming to.",
-                        ((Val::from("Ok, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(", it's up to you now.")),
-                        "And you better not fake any of the words she's saying."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.mes("- I nod to Luik and began talking to the Laphine. -")?;
-                ctx.next()?;
-                ctx.mes("- After the Laphine gained her full consciousness, she gazed around and spoke in shaky voice. -")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Wounded Laphine",
-                    args!["Where... am I?", "Oh My! That's right! I need Bradium!", "Get me out of here!"],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Wounded Laphine",
-                    args!["If I don't go back to him quickly, he... he is going to die!!"],
-                )?;
-                ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Who is HE?:Is your name Terra?")])?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            "Wounded Laphine",
-                            args![
-                                "A giant... a giant in a cave...",
-                                "He...He got hurt trying to protect me...",
-                                "He wouldn't move!",
-                                "His body was getting cold."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Wounded Laphine",
-                            args![
-                                "We were each other's enemy......",
-                                "but he saved me...",
-                                "I heard they need a bradium to live!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Wounded Laphine", args!["Give me some bradium. Hurry!", "I can't be late!"])?;
-                        ctx.next()?;
-                        let choice = runtime::select_values(ctx, &[Val::from("You are Terra. Right?")])?;
-                        ctx.var("@menu").set(choice)?;
-                        ctx.lines_as("Terra", args!["How...How do you know my name?", "Who are you?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Arc asked me to find you. So I came here.",
-                                "By the way.. You were saying about a giant, do you mean a Sapha?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["The Sapha in the cave...", "His body was already petrified when I got there."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Terra",
-                            args![
-                                "Giants.. It is said that the Sapha people are cursed to be petrified.",
-                                "And that the Bradium is what prevents them from becoming petrified."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Terra",
-                            args!["So I tried to bring a bradium to him... ...", "But he... Sob..."],
-                        )?;
-                        ctx.next()?;
-                        ctx.mes("- Terra couldn't continue to talk as she was agonizing in the pain from her wounds. -")?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Luik",
-                            args!["Why did she break down like that? What did she say?", "Tell me what she said!!!"],
-                        )?;
-                        ctx.var("ep13_mdrama").set(Val::from(20))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as("Terra", args!["How...How do you know my name?", "Who are you?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["I came looking for you on behalf of Arc.", "Just how did you end up here?"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Terra",
-                            args!["To find a... Bra.. dium.", "That's right. Bradium! Give me a bradium!!"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Terra",
-                            args![
-                                "A giant... a giant in a cave...",
-                                "He...He got hurt trying to protect me...",
-                                "He wouldn't move!",
-                                "His body was getting cold."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Terra",
-                            args![
-                                "We were each other's enemy......",
-                                "but he saved me...",
-                                "I heard they need a bradium to live!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Terra", args!["Give me some bradium. Hurry!", "I can't be late!"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["The Sapha in the cave...", "His body was already petrified when I got there."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Terra",
-                            args![
-                                "Giants.. It is said that the Sapha people are cursed to be petrified.",
-                                "And that the Bradium is what prevents them from becoming petrified."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Terra",
-                            args!["So I tried to bring a bradium to him... ...", "But he... Sob..."],
-                        )?;
-                        ctx.next()?;
-                        ctx.mes("- Terra couldn't continue to talk as she was agonizing in the pain from her wounds. -")?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Luik",
-                            args!["Why did she break down like that? What did she say?", "Tell me what she said!!!"],
-                        )?;
-                        ctx.var("ep13_mdrama").set(Val::from(20))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+        } else if ctx.var("ep13_mdrama").get()? == 19 {
+            ctx.lines(args![
+                "Luik and Snorren did everything to extract juice out of a Yggdrasilberry",
+                "chopped and stuffed it into a mouth and paste them on the body..."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as("Wounded Laphine", args!["Hmm..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Luik",
+                args![
+                    "Finally she's coming to.",
+                    ((Val::from("Ok, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(", it's up to you now.")),
+                    "And you better not fake any of the words she's saying."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.mes("- I nod to Luik and began talking to the Laphine. -")?;
+            ctx.next()?;
+            ctx.mes("- After the Laphine gained her full consciousness, she gazed around and spoke in shaky voice. -")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wounded Laphine",
+                args!["Where... am I?", "Oh My! That's right! I need Bradium!", "Get me out of here!"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Wounded Laphine",
+                args!["If I don't go back to him quickly, he... he is going to die!!"],
+            )?;
+            ctx.next()?;
+            'b1: {
+                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Who is HE?:Is your name Terra?")])?);
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
                 }
-            } else {
-                if ctx.var("ep13_mdrama").get()? == 20 {
+                if matched1 {
+                    ctx.lines_as(
+                        "Wounded Laphine",
+                        args![
+                            "A giant... a giant in a cave...",
+                            "He...He got hurt trying to protect me...",
+                            "He wouldn't move!",
+                            "His body was getting cold."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Wounded Laphine",
+                        args![
+                            "We were each other's enemy......",
+                            "but he saved me...",
+                            "I heard they need a bradium to live!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Wounded Laphine", args!["Give me some bradium. Hurry!", "I can't be late!"])?;
+                    ctx.next()?;
+                    let choice = runtime::select_values(ctx, &[Val::from("You are Terra. Right?")])?;
+                    ctx.var("@menu").set(choice)?;
+                    ctx.lines_as("Terra", args!["How...How do you know my name?", "Who are you?"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args![
+                            "Arc asked me to find you. So I came here.",
+                            "By the way.. You were saying about a giant, do you mean a Sapha?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["The Sapha in the cave...", "His body was already petrified when I got there."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Terra",
+                        args![
+                            "Giants.. It is said that the Sapha people are cursed to be petrified.",
+                            "And that the Bradium is what prevents them from becoming petrified."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Terra",
+                        args!["So I tried to bring a bradium to him... ...", "But he... Sob..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.mes("- Terra couldn't continue to talk as she was agonizing in the pain from her wounds. -")?;
+                    ctx.next()?;
                     ctx.lines_as(
                         "Luik",
-                        args!["Let that Fairy rest for a while, now tell me what you were talking about."],
+                        args!["Why did she break down like that? What did she say?", "Tell me what she said!!!"],
                     )?;
+                    ctx.var("ep13_mdrama").set(Val::from(20))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if (ctx.var("ep13_mdrama").get()?.number()? > 20 && ctx.var("ep13_mdrama").get()?.number()? < 24) {
-                        ctx.lines_as("Luik", args!["She's just too exhausted and fell asleep...", "Leave her alone."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Luik",
-                            args![
-                                "She can leave any time she likes.",
-                                "It feels so dry in here.",
-                                "Oh well, that's normal."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.lines_as("Terra", args!["How...How do you know my name?", "Who are you?"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["I came looking for you on behalf of Arc.", "Just how did you end up here?"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Terra",
+                        args!["To find a... Bra.. dium.", "That's right. Bradium! Give me a bradium!!"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Terra",
+                        args![
+                            "A giant... a giant in a cave...",
+                            "He...He got hurt trying to protect me...",
+                            "He wouldn't move!",
+                            "His body was getting cold."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Terra",
+                        args![
+                            "We were each other's enemy......",
+                            "but he saved me...",
+                            "I heard they need a bradium to live!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Terra", args!["Give me some bradium. Hurry!", "I can't be late!"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["The Sapha in the cave...", "His body was already petrified when I got there."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Terra",
+                        args![
+                            "Giants.. It is said that the Sapha people are cursed to be petrified.",
+                            "And that the Bradium is what prevents them from becoming petrified."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Terra",
+                        args!["So I tried to bring a bradium to him... ...", "But he... Sob..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.mes("- Terra couldn't continue to talk as she was agonizing in the pain from her wounds. -")?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Luik",
+                        args!["Why did she break down like that? What did she say?", "Tell me what she said!!!"],
+                    )?;
+                    ctx.var("ep13_mdrama").set(Val::from(20))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
+        } else if ctx.var("ep13_mdrama").get()? == 20 {
+            ctx.lines_as(
+                "Luik",
+                args!["Let that Fairy rest for a while, now tell me what you were talking about."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if (ctx.var("ep13_mdrama").get()?.number()? > 20 && ctx.var("ep13_mdrama").get()?.number()? < 24) {
+            ctx.lines_as("Luik", args!["She's just too exhausted and fell asleep...", "Leave her alone."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as(
+                "Luik",
+                args![
+                    "She can leave any time she likes.",
+                    "It feels so dry in here.",
+                    "Oh well, that's normal."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         if ctx.var("ep13_mdrama").get()?.number()? < 19 {
@@ -4204,132 +4121,124 @@ fn snorren_ep13md_15_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.call(Function::ChangeQuest, vec![Val::from(7064), Val::from(7065)])?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("ep13_mdrama").get()? == 19 {
+        } else if ctx.var("ep13_mdrama").get()? == 19 {
+            ctx.lines_as(
+                "Snorren",
+                args![
+                    "Please help me translater.",
+                    "We'll be watching as you speak to her.",
+                    "Right, Luik?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Luik", args!["Maybe.", "Let's ask her what happened, before it is too late."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("ep13_mdrama").get()? == 20 {
+            ctx.lines_as(
+                "Snorren",
+                args![
+                    "Let's listen to her story.",
+                    "Why don't we start from... Why does she want a bradium?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Snorren", args!["This part must be told to Luik in exact detail."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("ep13_mdrama").get()? == 21 {
+            ctx.lines_as(
+                "Snorren",
+                args![
+                    "What should I do if the Sapha in the Cave is really Ogen...?",
+                    "Ogen... What should I do if anything happened to him...?"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("ep13_mdrama").get()? == 22 {
+            if (ctx.call(Function::CountItem, vec![Val::from(6085)])?.number()? > 0
+                && ctx.call(Function::CountItem, vec![Val::from(6084)])?.number()? > 0)
+            {
                 ctx.lines_as(
-                    "Snorren",
+                    "Luik",
                     args![
-                        "Please help me translater.",
-                        "We'll be watching as you speak to her.",
-                        "Right, Luik?"
+                        "...This Bradium has not been refined properly...",
+                        "This would be no help...",
+                        "and, this muffler..."
                     ],
                 )?;
                 ctx.next()?;
-                ctx.lines_as("Luik", args!["Maybe.", "Let's ask her what happened, before it is too late."])?;
+                ctx.lines_as(
+                    "Snorren",
+                    args!["This is Ogen's! Ogen's muffler!", "Luik! Ogen! This is Ogen!", "Unrefined Bradium!"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Snorren",
+                    args!["Lu.. Luik. Ogen.. Ogen...?!", "I'm going to Ogen!", "Where is that cave?! Where!"],
+                )?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("Calm down!")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as(
+                    "Luik",
+                    args![
+                        "Yeah. Listen to him, calm down. Snorren.",
+                        "If it is Ogen... We could be able to save him if we make haste."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Luik",
+                    args!["Snorren. Go to Refinery and get the finest bradium...", "Save him."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Luik",
+                    args![
+                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...eh?...")),
+                        "Please look after Snorren...and Ogen.",
+                        "This Laphine, I mean Terra...",
+                        "She truly wanted to save Ogen..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Luik",
+                    args!["I will talk to my superiors to try and settle this matter...", "Please save Ogen."],
+                )?;
+                ctx.call(Function::DelItem, vec![Val::from(6085), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(6084), Val::from(1)])?;
+                ctx.var("ep13_mdrama").set(Val::from(23))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(7067), Val::from(7068)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             } else {
-                if ctx.var("ep13_mdrama").get()? == 20 {
-                    ctx.lines_as(
-                        "Snorren",
-                        args![
-                            "Let's listen to her story.",
-                            "Why don't we start from... Why does she want a bradium?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Snorren", args!["This part must be told to Luik in exact detail."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("ep13_mdrama").get()? == 21 {
-                        ctx.lines_as(
-                            "Snorren",
-                            args![
-                                "What should I do if the Sapha in the Cave is really Ogen...?",
-                                "Ogen... What should I do if anything happened to him...?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("ep13_mdrama").get()? == 22 {
-                            if (ctx.call(Function::CountItem, vec![Val::from(6085)])?.number()? > 0
-                                && ctx.call(Function::CountItem, vec![Val::from(6084)])?.number()? > 0)
-                            {
-                                ctx.lines_as(
-                                    "Luik",
-                                    args![
-                                        "...This Bradium has not been refined properly...",
-                                        "This would be no help...",
-                                        "and, this muffler..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Snorren",
-                                    args!["This is Ogen's! Ogen's muffler!", "Luik! Ogen! This is Ogen!", "Unrefined Bradium!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Snorren",
-                                    args!["Lu.. Luik. Ogen.. Ogen...?!", "I'm going to Ogen!", "Where is that cave?! Where!"],
-                                )?;
-                                ctx.next()?;
-                                let choice = runtime::select_values(ctx, &[Val::from("Calm down!")])?;
-                                ctx.var("@menu").set(choice)?;
-                                ctx.lines_as(
-                                    "Luik",
-                                    args![
-                                        "Yeah. Listen to him, calm down. Snorren.",
-                                        "If it is Ogen... We could be able to save him if we make haste."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Luik",
-                                    args!["Snorren. Go to Refinery and get the finest bradium...", "Save him."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Luik",
-                                    args![
-                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...eh?...")),
-                                        "Please look after Snorren...and Ogen.",
-                                        "This Laphine, I mean Terra...",
-                                        "She truly wanted to save Ogen..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Luik",
-                                    args!["I will talk to my superiors to try and settle this matter...", "Please save Ogen."],
-                                )?;
-                                ctx.call(Function::DelItem, vec![Val::from(6085), Val::from(1)])?;
-                                ctx.call(Function::DelItem, vec![Val::from(6084), Val::from(1)])?;
-                                ctx.var("ep13_mdrama").set(Val::from(23))?;
-                                ctx.call(Function::ChangeQuest, vec![Val::from(7067), Val::from(7068)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    "Luik",
-                                    args![
-                                        "You should bring something that can prove it?",
-                                        "... We have been fighting them for so long, it is hard for us to believe you."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Snorren",
-                                    args!["...Yes... regardless of anything, just to prove what you say is true."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        } else {
-                            if ctx.var("ep13_mdrama").get()? == 23 {
-                                ctx.lines_as("Snorren", args!["Hurry up and take the lead!", "Which way should we go now?"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as("Snorren", args!["How did you get in here?!", "Get out!"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
-                }
+                ctx.lines_as(
+                    "Luik",
+                    args![
+                        "You should bring something that can prove it?",
+                        "... We have been fighting them for so long, it is hard for us to believe you."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Snorren",
+                    args!["...Yes... regardless of anything, just to prove what you say is true."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        } else {
+            if ctx.var("ep13_mdrama").get()? == 23 {
+                ctx.lines_as("Snorren", args!["Hurry up and take the lead!", "Which way should we go now?"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as("Snorren", args!["How did you get in here?!", "Get out!"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     } else {
@@ -4366,221 +4275,215 @@ fn luik_ep13md16_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("ep13_mdrama").get()? == 20 {
-                ctx.lines_as(
-                    "Luik",
-                    args!["First of all, Why did that Laphine come here?", "Why does she need a bradium?"],
-                )?;
-                ctx.next()?;
-                let choice = runtime::select_values(ctx, &[Val::from("To give it to a Sapha in a cave...")])?;
-                ctx.var("@menu").set(choice)?;
+        } else if ctx.var("ep13_mdrama").get()? == 20 {
+            ctx.lines_as(
+                "Luik",
+                args!["First of all, Why did that Laphine come here?", "Why does she need a bradium?"],
+            )?;
+            ctx.next()?;
+            let choice = runtime::select_values(ctx, &[Val::from("To give it to a Sapha in a cave...")])?;
+            ctx.var("@menu").set(choice)?;
+            ctx.lines_as(
+                "Luik",
+                args![
+                    "Sapha in a cave? What cave?",
+                    "Nevermind.... Snorren. You must know something about that cave, right?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Luik", args!["Wait...", "Why would a Laphine give a bradium to our ally?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args![
+                    "They fought in the cave and your friend got hurt and began to petrify.",
+                    "So she came here to get a bradium to try to save his life..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Luik",
+                args![
+                    "They fought?",
+                    "Snorren! What's that look on your face?",
+                    "Spit if out if you have anything to say."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Snorren",
+                args![
+                    "Frankly, Luik. I... told you... Ogen's missing.",
+                    "Ogen's disappearance and that Laphine's arrival coincide..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Luik", args!["And?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Snorren",
+                args![
+                    "Maybe the Sapha that Laphine is talking about is Ogen.",
+                    "Or do we have any other comrades who go to strange caves?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Luik",
+                args![
+                    "We don't, because there are no caves like that here.",
+                    "First, we should find out about the cave they are talking about."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Luik",
+                args![
+                    "You outsiders are in contact with the Laphine right?",
+                    "What if this is an evil plot by them?"
+                ],
+            )?;
+            ctx.next()?;
+            let choice = runtime::select_values(ctx, &[Val::from("That's not true!")])?;
+            ctx.var("@menu").set(choice)?;
+            ctx.lines_as(
+                "Luik",
+                args![
+                    "And how would you prove it?",
+                    "We've been fighting them for a long time.",
+                    "We don't have any reason to trust what you or they are saying."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Luik", args!["And talking about some cave that doesn't even exist."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args![
+                    "That cave really exists, I swear!",
+                    "I.. yeah. I saw a petrified Sapha in that cave."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args![
+                    "I will bring back something that will make you believe.",
+                    "I'm not sure if that Sapha is this Ogen you are looking for...",
+                    "But I'll come back..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["Don't you dare...try to do any harm to Terra."],
+            )?;
+            ctx.var("ep13_mdrama").set(Val::from(21))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(7065), Val::from(7066)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("ep13_mdrama").get()? == 21 {
+            ctx.lines_as(
+                "Luik",
+                args![
+                    "...Anything will do. Try and make me believe you -Outsider- and that Laphine.",
+                    "We Sapha are not stupid people."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Luik",
+                args![
+                    "I promise you that we will continue to treat that Laphine as we did so far and will not do any harm to her."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Luik", args!["Hence, you just focus on finding a way to make us believe you."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("ep13_mdrama").get()? == 22 {
+            if (ctx.call(Function::CountItem, vec![Val::from(6085)])?.number()? > 0
+                && ctx.call(Function::CountItem, vec![Val::from(6084)])?.number()? > 0)
+            {
                 ctx.lines_as(
                     "Luik",
                     args![
-                        "Sapha in a cave? What cave?",
-                        "Nevermind.... Snorren. You must know something about that cave, right?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Luik", args!["Wait...", "Why would a Laphine give a bradium to our ally?"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "They fought in the cave and your friend got hurt and began to petrify.",
-                        "So she came here to get a bradium to try to save his life..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Luik",
-                    args![
-                        "They fought?",
-                        "Snorren! What's that look on your face?",
-                        "Spit if out if you have anything to say."
+                        "...This Bradium has not been refined properly...",
+                        "This would be no help...",
+                        "and, this muffler..."
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Snorren",
-                    args![
-                        "Frankly, Luik. I... told you... Ogen's missing.",
-                        "Ogen's disappearance and that Laphine's arrival coincide..."
-                    ],
+                    args!["This is Ogen's! Ogen's muffler!", "Luik! Ogen! This is Ogen!", "Unrefined Bradium!"],
                 )?;
-                ctx.next()?;
-                ctx.lines_as("Luik", args!["And?"])?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Snorren",
-                    args![
-                        "Maybe the Sapha that Laphine is talking about is Ogen.",
-                        "Or do we have any other comrades who go to strange caves?"
-                    ],
+                    args!["Lu.. Luik. Ogen.. Ogen...?!", "I'm going to Ogen!", "Where is that cave?! Where!"],
                 )?;
                 ctx.next()?;
-                ctx.lines_as(
-                    "Luik",
-                    args![
-                        "We don't, because there are no caves like that here.",
-                        "First, we should find out about the cave they are talking about."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Luik",
-                    args![
-                        "You outsiders are in contact with the Laphine right?",
-                        "What if this is an evil plot by them?"
-                    ],
-                )?;
-                ctx.next()?;
-                let choice = runtime::select_values(ctx, &[Val::from("That's not true!")])?;
+                let choice = runtime::select_values(ctx, &[Val::from("Calm down!")])?;
                 ctx.var("@menu").set(choice)?;
                 ctx.lines_as(
                     "Luik",
                     args![
-                        "And how would you prove it?",
-                        "We've been fighting them for a long time.",
-                        "We don't have any reason to trust what you or they are saying."
+                        "Yeah. Listen to him, calm down. Snorren.",
+                        "If it is Ogen... We could be able to save him if we make haste."
                     ],
                 )?;
                 ctx.next()?;
-                ctx.lines_as("Luik", args!["And talking about some cave that doesn't even exist."])?;
+                ctx.lines_as(
+                    "Luik",
+                    args!["Snorren. Go to Refinery and get the finest bradium...", "Save him."],
+                )?;
                 ctx.next()?;
                 ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    "Luik",
                     args![
-                        "That cave really exists, I swear!",
-                        "I.. yeah. I saw a petrified Sapha in that cave."
+                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...eh?...")),
+                        "Please look after Snorren...and Ogen.",
+                        "This Laphine, I mean Terra...",
+                        "She truly wanted to save Ogen..."
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "I will bring back something that will make you believe.",
-                        "I'm not sure if that Sapha is this Ogen you are looking for...",
-                        "But I'll come back..."
-                    ],
+                    "Luik",
+                    args!["I will talk to my superiors to try and settle this matter...", "Please save Ogen."],
                 )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["Don't you dare...try to do any harm to Terra."],
-                )?;
-                ctx.var("ep13_mdrama").set(Val::from(21))?;
-                ctx.call(Function::ChangeQuest, vec![Val::from(7065), Val::from(7066)])?;
+                ctx.call(Function::DelItem, vec![Val::from(6085), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(6084), Val::from(1)])?;
+                ctx.var("ep13_mdrama").set(Val::from(23))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(7067), Val::from(7068)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             } else {
-                if ctx.var("ep13_mdrama").get()? == 21 {
-                    ctx.lines_as(
-                        "Luik",
-                        args![
-                            "...Anything will do. Try and make me believe you -Outsider- and that Laphine.",
-                            "We Sapha are not stupid people."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Luik",
-                        args![
-                            "I promise you that we will continue to treat that Laphine as we did so far and will not do any harm to her."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Luik", args!["Hence, you just focus on finding a way to make us believe you."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("ep13_mdrama").get()? == 22 {
-                        if (ctx.call(Function::CountItem, vec![Val::from(6085)])?.number()? > 0
-                            && ctx.call(Function::CountItem, vec![Val::from(6084)])?.number()? > 0)
-                        {
-                            ctx.lines_as(
-                                "Luik",
-                                args![
-                                    "...This Bradium has not been refined properly...",
-                                    "This would be no help...",
-                                    "and, this muffler..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Snorren",
-                                args!["This is Ogen's! Ogen's muffler!", "Luik! Ogen! This is Ogen!", "Unrefined Bradium!"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Snorren",
-                                args!["Lu.. Luik. Ogen.. Ogen...?!", "I'm going to Ogen!", "Where is that cave?! Where!"],
-                            )?;
-                            ctx.next()?;
-                            let choice = runtime::select_values(ctx, &[Val::from("Calm down!")])?;
-                            ctx.var("@menu").set(choice)?;
-                            ctx.lines_as(
-                                "Luik",
-                                args![
-                                    "Yeah. Listen to him, calm down. Snorren.",
-                                    "If it is Ogen... We could be able to save him if we make haste."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Luik",
-                                args!["Snorren. Go to Refinery and get the finest bradium...", "Save him."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Luik",
-                                args![
-                                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("...eh?...")),
-                                    "Please look after Snorren...and Ogen.",
-                                    "This Laphine, I mean Terra...",
-                                    "She truly wanted to save Ogen..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Luik",
-                                args!["I will talk to my superiors to try and settle this matter...", "Please save Ogen."],
-                            )?;
-                            ctx.call(Function::DelItem, vec![Val::from(6085), Val::from(1)])?;
-                            ctx.call(Function::DelItem, vec![Val::from(6084), Val::from(1)])?;
-                            ctx.var("ep13_mdrama").set(Val::from(23))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(7067), Val::from(7068)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "Luik",
-                                args![
-                                    "You should bring something that can prove it?",
-                                    "... We have been fighting them for so long, it is hard for us to believe you."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Snorren",
-                                args!["...Yes... regardless of anything, just to prove what you say is true."],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        if ctx.var("ep13_mdrama").get()? == 23 {
-                            ctx.lines_as("Luik", args!["Please... Help Ogen."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as("Luik", args!["How did you get in here?", "You shouldn't be here."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
+                ctx.lines_as(
+                    "Luik",
+                    args![
+                        "You should bring something that can prove it?",
+                        "... We have been fighting them for so long, it is hard for us to believe you."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Snorren",
+                    args!["...Yes... regardless of anything, just to prove what you say is true."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        } else {
+            if ctx.var("ep13_mdrama").get()? == 23 {
+                ctx.lines_as("Luik", args!["Please... Help Ogen."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as("Luik", args!["How did you get in here?", "You shouldn't be here."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     } else {
@@ -4779,57 +4682,53 @@ fn arc_ep13md_l02_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.call(Function::CompleteQuest, vec![Val::from(7071)])?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("ep13_mdrama").get()? == 27 {
-                if ctx.call(Function::StrNpcInfo, vec![Val::from(1)])? == "Arc" {
-                    ctx.lines_as("Arc", args!["Terra. Get some rest...", "Rest easy...", "And..."])?;
-                } else {
-                    ctx.lines_as("Terra", args!["Arc... I will get some rest...", "I'm sorry... And. You..."])?;
-                }
-                ctx.next()?;
+        } else if ctx.var("ep13_mdrama").get()? == 27 {
+            if ctx.call(Function::StrNpcInfo, vec![Val::from(1)])? == "Arc" {
+                ctx.lines_as("Arc", args!["Terra. Get some rest...", "Rest easy...", "And..."])?;
+            } else {
+                ctx.lines_as("Terra", args!["Arc... I will get some rest...", "I'm sorry... And. You..."])?;
+            }
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrNpcInfo, vec![Val::from(1)])?,
+                args![
+                    "Originally... we Laphine were extremely reluctant to have others in our area.",
+                    (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from(", you will be a special exception."))
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrNpcInfo, vec![Val::from(1)])?) + Val::from("]"))
+            ])?;
+            if ctx.call(Function::StrNpcInfo, vec![Val::from(1)])? == "Arc" {
+                ctx.mes("That's what Terra wants too.")?;
+            }
+            ctx.mes("It might be cramped, but you are always welcome to visit us.")?;
+            ctx.var("ep13_mdrama").set(Val::from(28))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("ep13_mdrama").get()?.number()? > 27 {
+            if ctx.call(Function::StrNpcInfo, vec![Val::from(1)])? == "Arc" {
                 ctx.lines_as(
-                    ctx.call(Function::StrNpcInfo, vec![Val::from(1)])?,
+                    "Arc",
                     args![
-                        "Originally... we Laphine were extremely reluctant to have others in our area.",
-                        (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from(", you will be a special exception."))
+                        "How are you adapting to Splendide?",
+                        "Terra's still not fully recovered yet, so keep that in mind."
                     ],
                 )?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrNpcInfo, vec![Val::from(1)])?) + Val::from("]"))
-                ])?;
-                if ctx.call(Function::StrNpcInfo, vec![Val::from(1)])? == "Arc" {
-                    ctx.mes("That's what Terra wants too.")?;
-                }
-                ctx.mes("It might be cramped, but you are always welcome to visit us.")?;
-                ctx.var("ep13_mdrama").set(Val::from(28))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
             } else {
-                if ctx.var("ep13_mdrama").get()?.number()? > 27 {
-                    if ctx.call(Function::StrNpcInfo, vec![Val::from(1)])? == "Arc" {
-                        ctx.lines_as(
-                            "Arc",
-                            args![
-                                "How are you adapting to Splendide?",
-                                "Terra's still not fully recovered yet, so keep that in mind."
-                            ],
-                        )?;
-                    } else {
-                        ctx.lines_as("Terra", args!["I'm sorry...", "My body is not fully recovered yet..."])?;
-                    }
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.call(Function::StrNpcInfo, vec![Val::from(1)])? == "Arc" {
-                        ctx.lines_as("Arc", args!["The back of the right ... ", "......"])?;
-                    } else {
-                        ctx.lines_as("Terra", args!["I'm sorry... I'm so sleepy...", "...I want to sleep..."])?;
-                    }
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+                ctx.lines_as("Terra", args!["I'm sorry...", "My body is not fully recovered yet..."])?;
             }
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            if ctx.call(Function::StrNpcInfo, vec![Val::from(1)])? == "Arc" {
+                ctx.lines_as("Arc", args!["The back of the right ... ", "......"])?;
+            } else {
+                ctx.lines_as("Terra", args!["I'm sorry... I'm so sleepy...", "...I want to sleep..."])?;
+            }
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         if ctx.call(Function::StrNpcInfo, vec![Val::from(1)])? == "Arc" {
@@ -4919,39 +4818,33 @@ fn ep13mdf01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::GetItem, vec![Val::from(522), Val::from(1)])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("ep13_mdrama").get()? == 15 {
-            ctx.mes("I've already pulled out a Yggdradsil... but is there anyting else..?")?;
-            ctx.next()?;
-            l_apple = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
-            if l_apple.clone().number()? < 50 {
-                ctx.lines(args!["I've been bitten by an unknown insect.", "It hurts!"])?;
-                ctx.call(Function::PercentHeal, vec![Val::from(-30), Val::from(0)])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if l_apple.clone() == 50 {
-                    ctx.mes("I found an apple.")?;
-                    ctx.call(Function::GetItem, vec![Val::from(512), Val::from(1)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.mes("There's nothing else.")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
+    } else if ctx.var("ep13_mdrama").get()? == 15 {
+        ctx.mes("I've already pulled out a Yggdradsil... but is there anyting else..?")?;
+        ctx.next()?;
+        l_apple = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
+        if l_apple.clone().number()? < 50 {
+            ctx.lines(args!["I've been bitten by an unknown insect.", "It hurts!"])?;
+            ctx.call(Function::PercentHeal, vec![Val::from(-30), Val::from(0)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if l_apple.clone() == 50 {
+            ctx.mes("I found an apple.")?;
+            ctx.call(Function::GetItem, vec![Val::from(512), Val::from(1)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("ep13_mdrama").get()?.number()? > 15 {
-                ctx.mes("There's only an empty shell left.")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args!["A huge fruit is here.", "I don't know what kind of fruit it is."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("There's nothing else.")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+    } else if ctx.var("ep13_mdrama").get()?.number()? > 15 {
+        ctx.mes("There's only an empty shell left.")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args!["A huge fruit is here.", "I don't know what kind of fruit it is."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -4983,39 +4876,33 @@ fn ep13mdf02_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::GetItem, vec![Val::from(522), Val::from(1)])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("ep13_mdrama").get()? == 16 {
-            ctx.mes("I've already pulled out a Yggdradsil... but is there anyting else..?")?;
-            ctx.next()?;
-            l_apple = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
-            if l_apple.clone().number()? < 50 {
-                ctx.lines(args!["I've been bitten by an unknown insect.", "It hurts!"])?;
-                ctx.call(Function::PercentHeal, vec![Val::from(-30), Val::from(0)])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if l_apple.clone() == 50 {
-                    ctx.mes("I found an apple.")?;
-                    ctx.call(Function::GetItem, vec![Val::from(512), Val::from(1)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.mes("There's nothing else.")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
+    } else if ctx.var("ep13_mdrama").get()? == 16 {
+        ctx.mes("I've already pulled out a Yggdradsil... but is there anyting else..?")?;
+        ctx.next()?;
+        l_apple = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
+        if l_apple.clone().number()? < 50 {
+            ctx.lines(args!["I've been bitten by an unknown insect.", "It hurts!"])?;
+            ctx.call(Function::PercentHeal, vec![Val::from(-30), Val::from(0)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if l_apple.clone() == 50 {
+            ctx.mes("I found an apple.")?;
+            ctx.call(Function::GetItem, vec![Val::from(512), Val::from(1)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("ep13_mdrama").get()?.number()? > 16 {
-                ctx.mes("There's only an empty shell left.")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args!["A huge fruit is here.", "I don't know what kind of fruit it is."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("There's nothing else.")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+    } else if ctx.var("ep13_mdrama").get()?.number()? > 16 {
+        ctx.mes("There's only an empty shell left.")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args!["A huge fruit is here.", "I don't know what kind of fruit it is."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -5057,39 +4944,33 @@ fn ep13mdf03_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("ep13_mdrama").get()? == 17 {
-            ctx.mes("I've already pulled out a Yggdradsil... but is there anyting else..?")?;
-            ctx.next()?;
-            l_apple = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
-            if l_apple.clone().number()? < 50 {
-                ctx.lines(args!["I've been bitten by an unknown insect.", "It hurts!"])?;
-                ctx.call(Function::PercentHeal, vec![Val::from(-30), Val::from(0)])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if l_apple.clone() == 50 {
-                    ctx.mes("I found an apple.")?;
-                    ctx.call(Function::GetItem, vec![Val::from(512), Val::from(1)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.mes("There's nothing else.")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
+    } else if ctx.var("ep13_mdrama").get()? == 17 {
+        ctx.mes("I've already pulled out a Yggdradsil... but is there anyting else..?")?;
+        ctx.next()?;
+        l_apple = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
+        if l_apple.clone().number()? < 50 {
+            ctx.lines(args!["I've been bitten by an unknown insect.", "It hurts!"])?;
+            ctx.call(Function::PercentHeal, vec![Val::from(-30), Val::from(0)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if l_apple.clone() == 50 {
+            ctx.mes("I found an apple.")?;
+            ctx.call(Function::GetItem, vec![Val::from(512), Val::from(1)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("ep13_mdrama").get()?.number()? > 17 {
-                ctx.mes("There's only an empty shell left.")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args!["A huge fruit is here.", "I don't know what kind of fruit it is."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("There's nothing else.")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+    } else if ctx.var("ep13_mdrama").get()?.number()? > 17 {
+        ctx.mes("There's only an empty shell left.")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args!["A huge fruit is here.", "I don't know what kind of fruit it is."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -5195,63 +5076,61 @@ fn manuk_galtun_ep13_2day_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if ctx.var("ep13_2_days01").get()? == 1 {
-                l_qst_cpl01 = ctx.call(Function::CheckQuest, vec![Val::from(7074), ctx.constant("HUNTING")?])?;
-                l_qst_cpl02 = ctx.call(Function::CheckQuest, vec![Val::from(7075), ctx.constant("HUNTING")?])?;
-                if (l_qst_cpl01.clone() == 2 && l_qst_cpl02.clone() == 2) {
-                    ctx.lines_as(
-                        "Strom",
-                        args![
-                            "Sure enough... I, the Sapha Galtun, Strom, apologize to you. I should not have been so quick to despise you.",
-                            "I admit that you are a brave soldier, please feel free to visit Manuk."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Strom",
-                        args![
-                            "Although I don't have much to offer, please accept these coins.",
-                            "If you need to buy something, you can use them."
-                        ],
-                    )?;
-                    ctx.call(Function::CompleteQuest, vec![Val::from(7074)])?;
-                    ctx.call(Function::CompleteQuest, vec![Val::from(7075)])?;
-                    ctx.var("ep13_2_days01").set(Val::from(2))?;
-                    ctx.call(Function::GetExperience, vec![Val::from(500000), Val::from(300000)])?;
-                    ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(10)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as(
-                        "Strom",
-                        args![
-                            "If you want to show you're so strong...",
-                            "Please find and defeat the Rata and Duneyrr in the cave."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            } else {
+        } else if ctx.var("ep13_2_days01").get()? == 1 {
+            l_qst_cpl01 = ctx.call(Function::CheckQuest, vec![Val::from(7074), ctx.constant("HUNTING")?])?;
+            l_qst_cpl02 = ctx.call(Function::CheckQuest, vec![Val::from(7075), ctx.constant("HUNTING")?])?;
+            if (l_qst_cpl01.clone() == 2 && l_qst_cpl02.clone() == 2) {
                 ctx.lines_as(
                     "Strom",
                     args![
-                        "Here icy climate is not suitable for biological survival, but we do not feel cold,",
-                        "so we're not very concerned about it."
+                        "Sure enough... I, the Sapha Galtun, Strom, apologize to you. I should not have been so quick to despise you.",
+                        "I admit that you are a brave soldier, please feel free to visit Manuk."
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Strom",
                     args![
-                        "But... you're different.",
-                        "In such cold weather, you are best to don Hillslions fur..."
+                        "Although I don't have much to offer, please accept these coins.",
+                        "If you need to buy something, you can use them."
+                    ],
+                )?;
+                ctx.call(Function::CompleteQuest, vec![Val::from(7074)])?;
+                ctx.call(Function::CompleteQuest, vec![Val::from(7075)])?;
+                ctx.var("ep13_2_days01").set(Val::from(2))?;
+                ctx.call(Function::GetExperience, vec![Val::from(500000), Val::from(300000)])?;
+                ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(10)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as(
+                    "Strom",
+                    args![
+                        "If you want to show you're so strong...",
+                        "Please find and defeat the Rata and Duneyrr in the cave."
                     ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+        } else {
+            ctx.lines_as(
+                "Strom",
+                args![
+                    "Here icy climate is not suitable for biological survival, but we do not feel cold,",
+                    "so we're not very concerned about it."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Strom",
+                args![
+                    "But... you're different.",
+                    "In such cold weather, you are best to don Hillslions fur..."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines_as("Manuk Galtun", args!["Arpe? Yu osp sad?", "EW pisdn psa?", "We psis?"])?;
@@ -5741,27 +5620,25 @@ fn pet_breeder_ep13_eden01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("ep13_2_wanted").get()? == 2 {
-                ctx.lines_as(
-                    "Pinedel",
-                    args![
-                        "I will forward everything to Rin.",
-                        "She'll love it.",
-                        ((Val::from("Just tell her your name ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Pinedel",
-                    args![
-                        "I can remember that I've heard about you from Rin.",
-                        "But Rin likes you, so that must mean that you're nice."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if ctx.var("ep13_2_wanted").get()? == 2 {
+            ctx.lines_as(
+                "Pinedel",
+                args![
+                    "I will forward everything to Rin.",
+                    "She'll love it.",
+                    ((Val::from("Just tell her your name ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Pinedel",
+                args![
+                    "I can remember that I've heard about you from Rin.",
+                    "But Rin likes you, so that must mean that you're nice."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
         ctx.lines_as(
             "Pinedel",
@@ -5804,53 +5681,47 @@ fn pet_breeder_ep13_eden01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("ep13_2_dayegg").get()? == 2 {
-            ctx.lines_as(
-                "Pinedel",
-                args!["Those eggs are about to hatch now.", "I will investigate those back home."],
-            )?;
-            l_alba_check = ctx.call(Function::CheckQuest, vec![Val::from(7078), ctx.constant("PLAYTIME")?])?;
-            if l_alba_check.clone() == -1 {
-                ctx.close_window()?;
-                ctx.call(Function::EraseQuest, vec![Val::from(7078)])?;
-                ctx.var("ep13_2_dayegg").set(Val::from(3))?;
-                return Err(Stop::End);
-            } else {
-                if (l_alba_check.clone() == 0 || l_alba_check.clone() == 1) {
-                    ctx.mes("For now I still need more time.")?;
-                    ctx.next()?;
-                    ctx.lines_as("Pinedel", args!["Can you come back here tomorrow?"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
+    } else if ctx.var("ep13_2_dayegg").get()? == 2 {
+        ctx.lines_as(
+            "Pinedel",
+            args!["Those eggs are about to hatch now.", "I will investigate those back home."],
+        )?;
+        l_alba_check = ctx.call(Function::CheckQuest, vec![Val::from(7078), ctx.constant("PLAYTIME")?])?;
+        if l_alba_check.clone() == -1 {
             ctx.close_window()?;
             ctx.call(Function::EraseQuest, vec![Val::from(7078)])?;
             ctx.var("ep13_2_dayegg").set(Val::from(3))?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("ep13_2_dayegg").get()? == 3 {
-                ctx.lines_as(
-                    "Pinedel",
-                    args![
-                        "Do you want to help me gather more Dragon eggs today?",
-                        "I want to try many things with those eggs."
-                    ],
-                )?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(ctx, &[Val::from("Sure.:Sorry, I can't.")])?) == 1 {
-                    ctx.lines_as("Pinedel", args!["Please collect 10 Draco Eggs."])?;
-                    ctx.var("ep13_2_dayegg").set(Val::from(1))?;
-                    ctx.call(Function::SetQuest, vec![Val::from(7077)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                ctx.lines_as("Pinedel", args!["Ok. You have your own business here.", "Go ahead."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if (l_alba_check.clone() == 0 || l_alba_check.clone() == 1) {
+            ctx.mes("For now I still need more time.")?;
+            ctx.next()?;
+            ctx.lines_as("Pinedel", args!["Can you come back here tomorrow?"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+        ctx.close_window()?;
+        ctx.call(Function::EraseQuest, vec![Val::from(7078)])?;
+        ctx.var("ep13_2_dayegg").set(Val::from(3))?;
+        return Err(Stop::End);
+    } else if ctx.var("ep13_2_dayegg").get()? == 3 {
+        ctx.lines_as(
+            "Pinedel",
+            args![
+                "Do you want to help me gather more Dragon eggs today?",
+                "I want to try many things with those eggs."
+            ],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Sure.:Sorry, I can't.")])?) == 1 {
+            ctx.lines_as("Pinedel", args!["Please collect 10 Draco Eggs."])?;
+            ctx.var("ep13_2_dayegg").set(Val::from(1))?;
+            ctx.call(Function::SetQuest, vec![Val::from(7077)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as("Pinedel", args!["Ok. You have your own business here.", "Go ahead."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.lines_as(
         "Pinedel",
@@ -6574,203 +6445,195 @@ fn schwarzwald_mechanic_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("ep13_2_rhea").get()? == 7 {
-                    ctx.mes("- He's making a grim face at a flooding pile of research documents. -")?;
+            } else if ctx.var("ep13_2_rhea").get()? == 7 {
+                ctx.mes("- He's making a grim face at a flooding pile of research documents. -")?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["Ah, You are here."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mechanic Engineer Dorance",
+                    args!["t seems like you've done much for us. I thank you for that.", "But...Sigh..."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mechanic Engineer Dorance",
+                    args![
+                        "Can you see this? The amount of these research documents?",
+                        "It is a good thing that we finally decoded the other world's language... it's just too much."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["We can't always accompany a Linguist for an interpretion... We need to communicate with those other world races in order to explore this world..."])?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["To store this amount of information will need a super computer the size of this headquarter building and its processing speed will be very very slow."])?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["Sigh... Anyways, If there's any way to store an enormous amount of data, I should be able to make a very-small portable translator."])?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["I heard that by using a Magical Spell of Rune-Midgarts, you can transpose data to a magical power and lock it into a gem... I'd like some suggestions from the Rune-Midgarts Magician."])?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["Would you be kind to ask them for help?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mechanic Engineer Dorance",
+                    args!["While you are gone, I be here organizing these documents."],
+                )?;
+                ctx.call(Function::CompleteQuest, vec![Val::from(8248)])?;
+                ctx.call(Function::SetQuest, vec![Val::from(8249)])?;
+                ctx.var("ep13_2_rhea").set(Val::from(8))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if (ctx.var("ep13_2_rhea").get()?.number()? > 7 && ctx.var("ep13_2_rhea").get()?.number()? < 11) {
+                ctx.lines_as("Mechanic Engineer Dorance", args!["To store this amount of information will need a super computer with a size of this headquarter building. and its processing speed will be very very slow..."])?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["Sigh... Anyways, If there's any way to store an enormous amount of data, I could be able to make a very-small portable translator."])?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["I heard that by using the Magical Spell of Rune-Midgarts, you could transpose a data to a magical power and lock it into a gem....I'd like to get some suggestion from the Magician of Rune-Midgarts."])?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["Would you be kind to ask them for help?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mechanic Engineer Dorance",
+                    args!["While you are gone, I be here organizing these documents."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("ep13_2_rhea").get()? == 11 {
+                ctx.lines_as("Mechanic Engineer Dorance", args!["How'd it go?"])?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("Give him the Gem.")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["Ah, Looks like you've succeeded.", "Inputting data into a gem with a magical power... It's something you can't do with a technology... It's a bit resentful to admit, but it's magnificent."])?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["Well then, I should be working on making a machine to read the magical data in this Gem so we could use them right away."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mechanic Engineer Dorance",
+                    args!["Hmm...", "Fortunately, It won't be as hard as we thought."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Mechanic Engineer Dorance", args!["If we transform a magical power wave to an eletric signal and connect it to a human body, then transmit a data to a brain directly. That will allow us to receive and understand a data without any loading process."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mechanic Engineer Dorance",
+                    args![
+                        "I don't have time to explain everything. I have to start the work right away.",
+                        "With all preperation done, allow me about one hour to finish this thing."
+                    ],
+                )?;
+                ctx.call(Function::CompleteQuest, vec![Val::from(8252)])?;
+                ctx.call(Function::SetQuest, vec![Val::from(8253)])?;
+                ctx.var("ep13_2_rhea").set(Val::from(12))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("ep13_2_rhea").get()? == 12 {
+                l_trs_time01 = ctx.call(Function::CheckQuest, vec![Val::from(8253), ctx.constant("PLAYTIME")?])?;
+                if l_trs_time01.clone() == 2 {
+                    ctx.lines_as("Mechanic Engineer Dorance", args!["Sigh, What should I do now?!"])?;
                     ctx.next()?;
-                    ctx.lines_as("Mechanic Engineer Dorance", args!["Ah, You are here."])?;
+                    ctx.lines(args!["- Dorance is walking here and there -", "- in a dither. -"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["Is something wrong?!"],
+                    )?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Mechanic Engineer Dorance",
-                        args!["t seems like you've done much for us. I thank you for that.", "But...Sigh..."],
+                        args!["What should I do?! Ain't I REALLY a genius?!"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Mechanic Engineer Dorance", args!["I've made it!!!"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mechanic Engineer Dorance",
+                        args![
+                            "Convenient portable size!",
+                            "Fashionable and practical design!",
+                            "Features the Other World's Words / Idiom / Grammer / Phrases!!"
+                        ],
                     )?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Mechanic Engineer Dorance",
                         args![
-                            "Can you see this? The amount of these research documents?",
-                            "It is a good thing that we finally decoded the other world's language... it's just too much."
+                            "Have you experienced the loading speed?",
+                            "Don't you even mention it if you haven't."
                         ],
                     )?;
                     ctx.next()?;
-                    ctx.lines_as("Mechanic Engineer Dorance", args!["We can't always accompany a Linguist for an interpretion... We need to communicate with those other world races in order to explore this world..."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Mechanic Engineer Dorance", args!["To store this amount of information will need a super computer the size of this headquarter building and its processing speed will be very very slow."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Mechanic Engineer Dorance", args!["Sigh... Anyways, If there's any way to store an enormous amount of data, I should be able to make a very-small portable translator."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Mechanic Engineer Dorance", args!["I heard that by using a Magical Spell of Rune-Midgarts, you can transpose data to a magical power and lock it into a gem... I'd like some suggestions from the Rune-Midgarts Magician."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Mechanic Engineer Dorance", args!["Would you be kind to ask them for help?"])?;
+                    ctx.lines_as(
+                        "Mechanic Engineer Dorance",
+                        args![
+                            "That's not all!",
+                            "For the Well-Being life, it will buff your strength and intelligence!!!!"
+                        ],
+                    )?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Mechanic Engineer Dorance",
-                        args!["While you are gone, I be here organizing these documents."],
+                        args!["With all these marvelous features, it's just 39,900 zeny....!!!"],
                     )?;
-                    ctx.call(Function::CompleteQuest, vec![Val::from(8248)])?;
-                    ctx.call(Function::SetQuest, vec![Val::from(8249)])?;
-                    ctx.var("ep13_2_rhea").set(Val::from(8))?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["...Just what are you trying to imitate..."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Mechanic Engineer Dorance", args!["Important thing is, I've made it!!"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Mechanic Engineer Dorance", args!["Well, Seeing is believing.", "Take a look."])?;
+                    ctx.next()?;
+                    ctx.mes("- He handed over the small ring. -")?;
+                    ctx.next()?;
+                    ctx.lines_as("Mechanic Engineer Dorance", args!["The name is 'the Ring of Wise King'. I designed it after the Ring used by ancient king to communicate with animals."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Mechanic Engineer Dorance", args!["Do not just look at it like any other rings. You see this small gem here? This socket which holds a gem and a ring part are precisely crafted, it will transform a magical power wave to electric signal and trasmit it directly to our brain."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Mechanic Engineer Dorance", args!["Since this electric signal is same as the signal used by our body's nerve system, it will enable us to understand and use the language fluently."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Mechanic Engineer Dorance", args!["Once this translator gets popularized, it'd be just a matter of time for us to advance into the other world. Well, the problem is...we don't have enough quantity yet..."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mechanic Engineer Dorance",
+                        args![
+                            "Hmm...",
+                            "Anyways, now we've got the idea, I will give you this first piece of work."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mechanic Engineer Dorance",
+                        args![
+                            "Thank you for helping us out.",
+                            "I hope this ring would be a big help for your journey through the other world."
+                        ],
+                    )?;
+                    ctx.call(Function::CompleteQuest, vec![Val::from(8253)])?;
+                    ctx.var("ep13_2_rhea").set(Val::from(100))?;
+                    ctx.call(Function::GetExperience, vec![Val::from(1000000), Val::from(300000)])?;
+                    ctx.call(Function::GetItem, vec![Val::from(2782), Val::from(1)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 } else {
-                    if (ctx.var("ep13_2_rhea").get()?.number()? > 7 && ctx.var("ep13_2_rhea").get()?.number()? < 11) {
-                        ctx.lines_as("Mechanic Engineer Dorance", args!["To store this amount of information will need a super computer with a size of this headquarter building. and its processing speed will be very very slow..."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Mechanic Engineer Dorance", args!["Sigh... Anyways, If there's any way to store an enormous amount of data, I could be able to make a very-small portable translator."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Mechanic Engineer Dorance", args!["I heard that by using the Magical Spell of Rune-Midgarts, you could transpose a data to a magical power and lock it into a gem....I'd like to get some suggestion from the Magician of Rune-Midgarts."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Mechanic Engineer Dorance", args!["Would you be kind to ask them for help?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Mechanic Engineer Dorance",
-                            args!["While you are gone, I be here organizing these documents."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("ep13_2_rhea").get()? == 11 {
-                            ctx.lines_as("Mechanic Engineer Dorance", args!["How'd it go?"])?;
-                            ctx.next()?;
-                            let choice = runtime::select_values(ctx, &[Val::from("Give him the Gem.")])?;
-                            ctx.var("@menu").set(choice)?;
-                            ctx.lines_as("Mechanic Engineer Dorance", args!["Ah, Looks like you've succeeded.", "Inputting data into a gem with a magical power... It's something you can't do with a technology... It's a bit resentful to admit, but it's magnificent."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Mechanic Engineer Dorance", args!["Well then, I should be working on making a machine to read the magical data in this Gem so we could use them right away."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mechanic Engineer Dorance",
-                                args!["Hmm...", "Fortunately, It won't be as hard as we thought."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Mechanic Engineer Dorance", args!["If we transform a magical power wave to an eletric signal and connect it to a human body, then transmit a data to a brain directly. That will allow us to receive and understand a data without any loading process."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mechanic Engineer Dorance",
-                                args![
-                                    "I don't have time to explain everything. I have to start the work right away.",
-                                    "With all preperation done, allow me about one hour to finish this thing."
-                                ],
-                            )?;
-                            ctx.call(Function::CompleteQuest, vec![Val::from(8252)])?;
-                            ctx.call(Function::SetQuest, vec![Val::from(8253)])?;
-                            ctx.var("ep13_2_rhea").set(Val::from(12))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("ep13_2_rhea").get()? == 12 {
-                                l_trs_time01 = ctx.call(Function::CheckQuest, vec![Val::from(8253), ctx.constant("PLAYTIME")?])?;
-                                if l_trs_time01.clone() == 2 {
-                                    ctx.lines_as("Mechanic Engineer Dorance", args!["Sigh, What should I do now?!"])?;
-                                    ctx.next()?;
-                                    ctx.lines(args!["- Dorance is walking here and there -", "- in a dither. -"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args!["Is something wrong?!"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mechanic Engineer Dorance",
-                                        args!["What should I do?! Ain't I REALLY a genius?!"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mechanic Engineer Dorance", args!["I've made it!!!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mechanic Engineer Dorance",
-                                        args![
-                                            "Convenient portable size!",
-                                            "Fashionable and practical design!",
-                                            "Features the Other World's Words / Idiom / Grammer / Phrases!!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mechanic Engineer Dorance",
-                                        args![
-                                            "Have you experienced the loading speed?",
-                                            "Don't you even mention it if you haven't."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mechanic Engineer Dorance",
-                                        args![
-                                            "That's not all!",
-                                            "For the Well-Being life, it will buff your strength and intelligence!!!!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mechanic Engineer Dorance",
-                                        args!["With all these marvelous features, it's just 39,900 zeny....!!!"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args!["...Just what are you trying to imitate..."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mechanic Engineer Dorance", args!["Important thing is, I've made it!!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mechanic Engineer Dorance", args!["Well, Seeing is believing.", "Take a look."])?;
-                                    ctx.next()?;
-                                    ctx.mes("- He handed over the small ring. -")?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mechanic Engineer Dorance", args!["The name is 'the Ring of Wise King'. I designed it after the Ring used by ancient king to communicate with animals."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mechanic Engineer Dorance", args!["Do not just look at it like any other rings. You see this small gem here? This socket which holds a gem and a ring part are precisely crafted, it will transform a magical power wave to electric signal and trasmit it directly to our brain."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mechanic Engineer Dorance", args!["Since this electric signal is same as the signal used by our body's nerve system, it will enable us to understand and use the language fluently."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mechanic Engineer Dorance", args!["Once this translator gets popularized, it'd be just a matter of time for us to advance into the other world. Well, the problem is...we don't have enough quantity yet..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mechanic Engineer Dorance",
-                                        args![
-                                            "Hmm...",
-                                            "Anyways, now we've got the idea, I will give you this first piece of work."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mechanic Engineer Dorance",
-                                        args![
-                                            "Thank you for helping us out.",
-                                            "I hope this ring would be a big help for your journey through the other world."
-                                        ],
-                                    )?;
-                                    ctx.call(Function::CompleteQuest, vec![Val::from(8253)])?;
-                                    ctx.var("ep13_2_rhea").set(Val::from(100))?;
-                                    ctx.call(Function::GetExperience, vec![Val::from(1000000), Val::from(300000)])?;
-                                    ctx.call(Function::GetItem, vec![Val::from(2782), Val::from(1)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines(args![
-                                        "- He has scattered mechanical parts -",
-                                        "- all over the room and so wrapped up -",
-                                        "- in his work -"
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.lines(args!["- I might get bitten if I bother him -", "- Let's leave him alone -"])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            } else {
-                                ctx.lines_as("Mechanic Engineer Dorance", args!["Thank you for your help."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Mechanic Engineer Dorance",
-                                    args!["I hope this ring would be a big help for your journey through the other world."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
+                    ctx.lines(args![
+                        "- He has scattered mechanical parts -",
+                        "- all over the room and so wrapped up -",
+                        "- in his work -"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines(args!["- I might get bitten if I bother him -", "- Let's leave him alone -"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
+            } else {
+                ctx.lines_as("Mechanic Engineer Dorance", args!["Thank you for your help."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mechanic Engineer Dorance",
+                    args!["I hope this ring would be a big help for your journey through the other world."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     } else {
@@ -7222,89 +7085,81 @@ fn arunafeltz_linguist_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.var("ep13_2_rhea").set(Val::from(4))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
+                } else if (ctx.var("ep13_2_rhea").get()?.number()? > 3 && ctx.var("ep13_2_rhea").get()?.number()? < 6) {
+                    ctx.lines_as("Linguist Dictionary", args!["I heard that ^0000ffRune-Midgarts Magician^000000 knows a way to conduct a research from a sample of language, would you go see him and ask him to help me?"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Linguist Dictionary",
+                        args!["The ^0000ff Rune-Midgarts Magician^000000 is wandering inside of the Expedition Camp."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Linguist Dictionary",
+                        args!["It's difficult to continue this research without some more samples of language. Please do my favor."],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("ep13_2_rhea").get()? == 6 {
+                    ctx.mes("- The Linguist is writing on a paper as if he's obsessed by something -")?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["...Oh, Hello there."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["I heard that you brought us a Gem with the other world's language recorded within it. Thanks to your help, decoding process is going well.", "Actually, it's going TOO well..."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["It's a wonder that at the moment when I heard that language first-hand I could decode it flawlessly in spite of myself. It must be the blessing of Goddess Freya."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["But the problem is...", "How are we going to put together this tremendous data and make it into a portable translator... I just can't figure out how."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["I wonder what the Mechanic Engineer from the Schwarzwald Republic would think... Would you be kind to go ask him?"])?;
+                    ctx.call(Function::CompleteQuest, vec![Val::from(8247)])?;
+                    ctx.call(Function::SetQuest, vec![Val::from(8248)])?;
+                    ctx.var("ep13_2_rhea").set(Val::from(7))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if (ctx.var("ep13_2_rhea").get()?.number()? > 6 && ctx.var("ep13_2_rhea").get()?.number()? < 13) {
+                    ctx.lines_as("Linguist Dictionary", args!["Just how are we going to put together these tremendous data and make it into a portable translator...I just can't figure out how."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["I wonder what the Mechanic Engineer from the Republic of Schwarzwald would think...Would you be kind to go ask him?"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("ep13_2_rhea").get()?.number()? > 12 {
+                    ctx.lines_as(
+                        "Linguist Dictionary",
+                        args![
+                            "So, Finally we were able to make a translator!",
+                            "How is it working? Isn't there any problem with it?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Linguist Dictionary",
+                        args!["I hope this translator would help you with your journey."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["However, Although using a translator is important, the basics of language and communication is that you should try to understand others."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["You should not just rely everything on a mere machine...don't forget to be understanding. Enjoy your journey in the otherworld with that translator."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if (ctx.var("ep13_2_rhea").get()?.number()? > 3 && ctx.var("ep13_2_rhea").get()?.number()? < 6) {
-                        ctx.lines_as("Linguist Dictionary", args!["I heard that ^0000ffRune-Midgarts Magician^000000 knows a way to conduct a research from a sample of language, would you go see him and ask him to help me?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Linguist Dictionary",
-                            args!["The ^0000ff Rune-Midgarts Magician^000000 is wandering inside of the Expedition Camp."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Linguist Dictionary",
-                            args!["It's difficult to continue this research without some more samples of language. Please do my favor."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("ep13_2_rhea").get()? == 6 {
-                            ctx.mes("- The Linguist is writing on a paper as if he's obsessed by something -")?;
-                            ctx.next()?;
-                            ctx.lines_as("Linguist Dictionary", args!["...Oh, Hello there."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Linguist Dictionary", args!["I heard that you brought us a Gem with the other world's language recorded within it. Thanks to your help, decoding process is going well.", "Actually, it's going TOO well..."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Linguist Dictionary", args!["It's a wonder that at the moment when I heard that language first-hand I could decode it flawlessly in spite of myself. It must be the blessing of Goddess Freya."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Linguist Dictionary", args!["But the problem is...", "How are we going to put together this tremendous data and make it into a portable translator... I just can't figure out how."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Linguist Dictionary", args!["I wonder what the Mechanic Engineer from the Schwarzwald Republic would think... Would you be kind to go ask him?"])?;
-                            ctx.call(Function::CompleteQuest, vec![Val::from(8247)])?;
-                            ctx.call(Function::SetQuest, vec![Val::from(8248)])?;
-                            ctx.var("ep13_2_rhea").set(Val::from(7))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (ctx.var("ep13_2_rhea").get()?.number()? > 6 && ctx.var("ep13_2_rhea").get()?.number()? < 13) {
-                                ctx.lines_as("Linguist Dictionary", args!["Just how are we going to put together these tremendous data and make it into a portable translator...I just can't figure out how."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Linguist Dictionary", args!["I wonder what the Mechanic Engineer from the Republic of Schwarzwald would think...Would you be kind to go ask him?"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("ep13_2_rhea").get()?.number()? > 12 {
-                                    ctx.lines_as(
-                                        "Linguist Dictionary",
-                                        args![
-                                            "So, Finally we were able to make a translator!",
-                                            "How is it working? Isn't there any problem with it?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Linguist Dictionary",
-                                        args!["I hope this translator would help you with your journey."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Linguist Dictionary", args!["However, Although using a translator is important, the basics of language and communication is that you should try to understand others."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Linguist Dictionary", args!["You should not just rely everything on a mere machine...don't forget to be understanding. Enjoy your journey in the otherworld with that translator."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines_as(
-                                        "Linguist Dictionary",
-                                        args![
-                                            "So, Finally we were able to make a translator!",
-                                            "How is it working? Isn't there any problem with it?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Linguist Dictionary",
-                                        args!["I hope this translator would help you with your journey."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Linguist Dictionary", args!["However, Although using a translator is important, the basics of language and communication is that you should try to understand others."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Linguist Dictionary", args!["You should not just rely everything on a mere machine...don't forget to be understanding. Enjoy your journey in the otherworld with that translator."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                    }
+                    ctx.lines_as(
+                        "Linguist Dictionary",
+                        args![
+                            "So, Finally we were able to make a translator!",
+                            "How is it working? Isn't there any problem with it?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Linguist Dictionary",
+                        args!["I hope this translator would help you with your journey."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["However, Although using a translator is important, the basics of language and communication is that you should try to understand others."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Linguist Dictionary", args!["You should not just rely everything on a mere machine...don't forget to be understanding. Enjoy your journey in the otherworld with that translator."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -7538,13 +7393,70 @@ fn rune_midgarts_magician_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("ep13_2_rhea").get()? == 8 {
-                        ctx.lines_as("Magician Whisper", args!["Hmm...There's more data than we thought..."])?;
+                } else if ctx.var("ep13_2_rhea").get()? == 8 {
+                    ctx.lines_as("Magician Whisper", args!["Hmm...There's more data than we thought..."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Magician Whisper", args!["Of course it is a piece of cake to turn data into magical power and put'em into a gem...Most important thing is, I don't know if there's a jewl that has enough storage space to store that much of data..."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Magician Whisper", args!["I heard that cold side of a field outside of the Expedition Camp, ^0000ff Mysterious Ore that can't be found in the Midgard."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Magician Whisper", args!["Only if we could find that ore, it would make this work much easier... What do you think about that? Do you think you could go and find one for me?"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Magician Whisper",
+                        args!["While you are gone, I will organize the data to put into the Gem."],
+                    )?;
+                    ctx.call(Function::CompleteQuest, vec![Val::from(8249)])?;
+                    ctx.call(Function::SetQuest, vec![Val::from(8250)])?;
+                    ctx.var("ep13_2_rhea").set(Val::from(9))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("ep13_2_rhea").get()? == 9 {
+                    if ctx.call(Function::CountItem, vec![Val::from(6048)])?.number()? > 0 {
+                        ctx.lines_as("Magician Whisper", args!["Oh! Is this that ore?"])?;
                         ctx.next()?;
-                        ctx.lines_as("Magician Whisper", args!["Of course it is a piece of cake to turn data into magical power and put'em into a gem...Most important thing is, I don't know if there's a jewl that has enough storage space to store that much of data..."])?;
+                        ctx.lines_as("Magician Whisper", args!["This sure is interesting. It has not been refined yet, but I can sense mysterious power from this ore."])?;
                         ctx.next()?;
-                        ctx.lines_as("Magician Whisper", args!["I heard that cold side of a field outside of the Expedition Camp, ^0000ff Mysterious Ore that can't be found in the Midgard."])?;
+                        ctx.lines_as(
+                            "Magician Whisper",
+                            args!["It's something like... the special wave with a life force."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Magician Whisper",
+                            args!["Let's test and see see how much magical power it could store."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "- He closed his eyes and chanted a spell -",
+                            "- with the ore on his hand. -"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Magician Whisper",
+                            args!["Lumos Nox Densaugeo Dissendium Diffindo Engorgio Mobiliarbus Expecto patronum!!!!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_FLASHER")?])?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
+                        ctx.lines_as("Magician Whisper", args!["Wow!!! Th, This is unbelievable!"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Magician Whisper",
+                            args![
+                                "An ore with this much storage space, only a size of fingernail could store both of two languages!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Magician Whisper", args!["Could you wait for a minute?", "Take some rest while I craft this ore into a gem and put the magical data into it. You look exhausted..."])?;
+                        ctx.call(Function::CompleteQuest, vec![Val::from(8250)])?;
+                        ctx.call(Function::SetQuest, vec![Val::from(8251)])?;
+                        ctx.call(Function::DelItem, vec![Val::from(6048), Val::from(1)])?;
+                        ctx.var("ep13_2_rhea").set(Val::from(10))?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as("Magician Whisper", args!["I heard that the cold side of the field outside of the Expedition Camp has a Unidentified Mineral that can't be found in Midgard."])?;
                         ctx.next()?;
                         ctx.lines_as("Magician Whisper", args!["Only if we could find that ore, it would make this work much easier... What do you think about that? Do you think you could go and find one for me?"])?;
                         ctx.next()?;
@@ -7552,141 +7464,76 @@ fn rune_midgarts_magician_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             "Magician Whisper",
                             args!["While you are gone, I will organize the data to put into the Gem."],
                         )?;
-                        ctx.call(Function::CompleteQuest, vec![Val::from(8249)])?;
-                        ctx.call(Function::SetQuest, vec![Val::from(8250)])?;
-                        ctx.var("ep13_2_rhea").set(Val::from(9))?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("ep13_2_rhea").get()? == 9 {
-                            if ctx.call(Function::CountItem, vec![Val::from(6048)])?.number()? > 0 {
-                                ctx.lines_as("Magician Whisper", args!["Oh! Is this that ore?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Magician Whisper", args!["This sure is interesting. It has not been refined yet, but I can sense mysterious power from this ore."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Magician Whisper",
-                                    args!["It's something like... the special wave with a life force."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Magician Whisper",
-                                    args!["Let's test and see see how much magical power it could store."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "- He closed his eyes and chanted a spell -",
-                                    "- with the ore on his hand. -"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Magician Whisper",
-                                    args!["Lumos Nox Densaugeo Dissendium Diffindo Engorgio Mobiliarbus Expecto patronum!!!!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_FLASHER")?])?;
-                                ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
-                                ctx.lines_as("Magician Whisper", args!["Wow!!! Th, This is unbelievable!"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Magician Whisper",
-                                    args![
-                                        "An ore with this much storage space, only a size of fingernail could store both of two languages!"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Magician Whisper", args!["Could you wait for a minute?", "Take some rest while I craft this ore into a gem and put the magical data into it. You look exhausted..."])?;
-                                ctx.call(Function::CompleteQuest, vec![Val::from(8250)])?;
-                                ctx.call(Function::SetQuest, vec![Val::from(8251)])?;
-                                ctx.call(Function::DelItem, vec![Val::from(6048), Val::from(1)])?;
-                                ctx.var("ep13_2_rhea").set(Val::from(10))?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as("Magician Whisper", args!["I heard that the cold side of the field outside of the Expedition Camp has a Unidentified Mineral that can't be found in Midgard."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Magician Whisper", args!["Only if we could find that ore, it would make this work much easier... What do you think about that? Do you think you could go and find one for me?"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Magician Whisper",
-                                    args!["While you are gone, I will organize the data to put into the Gem."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                    }
+                } else {
+                    if ctx.var("ep13_2_rhea").get()? == 10 {
+                        if ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])? == 3 {
+                            ctx.lines(args!["- His face turned a bit pale, -", "- He looked pleased as he saw you -"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Magician Whisper", args!["Ah! Just in time!"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Magician Whisper", args!["I've just finished infusing the magical power.", "From now on, it's up to the Mechanic Engineer from Schwarzwald to combined this gem with a machine to make it work as a real-time translator."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Magician Whisper",
+                                args![
+                                    "I will ask you one last favor.",
+                                    "Please deliver this crafted gem to the Mechanic Engineer from Schwarzwald."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Magician Whisper", args!["I'm really sorry to ask you so many favors..., Ah...I've used up too much magical power...I should rest for a while."])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "- ^0000ff Received the Crafted Gem ^000000 -",
+                                "- ^0000ff from Whisper !!^000000 -"
+                            ])?;
+                            ctx.call(Function::CompleteQuest, vec![Val::from(8251)])?;
+                            ctx.call(Function::SetQuest, vec![Val::from(8252)])?;
+                            ctx.var("ep13_2_rhea").set(Val::from(11))?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if ctx.var("ep13_2_rhea").get()? == 10 {
-                                if ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])? == 3 {
-                                    ctx.lines(args!["- His face turned a bit pale, -", "- He looked pleased as he saw you -"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Magician Whisper", args!["Ah! Just in time!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Magician Whisper", args!["I've just finished infusing the magical power.", "From now on, it's up to the Mechanic Engineer from Schwarzwald to combined this gem with a machine to make it work as a real-time translator."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Magician Whisper",
-                                        args![
-                                            "I will ask you one last favor.",
-                                            "Please deliver this crafted gem to the Mechanic Engineer from Schwarzwald."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Magician Whisper", args!["I'm really sorry to ask you so many favors..., Ah...I've used up too much magical power...I should rest for a while."])?;
-                                    ctx.next()?;
-                                    ctx.lines(args![
-                                        "- ^0000ff Received the Crafted Gem ^000000 -",
-                                        "- ^0000ff from Whisper !!^000000 -"
-                                    ])?;
-                                    ctx.call(Function::CompleteQuest, vec![Val::from(8251)])?;
-                                    ctx.call(Function::SetQuest, vec![Val::from(8252)])?;
-                                    ctx.var("ep13_2_rhea").set(Val::from(11))?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines_as("Magician Whisper", args!["Could you wait for a minute?", "Take some rest while I craft this ore into a gem and put the magical data into it. You look exhausted..."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            } else {
-                                if ctx.var("ep13_2_rhea").get()? == 11 {
-                                    ctx.lines_as(
-                                        "Magician Whisper",
-                                        args!["Please deliver this crafted gem to the Mechanic Engineer from Schwarzwald."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Magician Whisper", args!["I'm really sorry to ask you so many favors..., Ah...I've used up too much magical power...I should rest for a while."])?;
-                                    ctx.next()?;
-                                    ctx.lines(args!["- He looks so sleepy and said -", "- as he rubbing his closing eyes. -"])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("ep13_2_rhea").get()? == 12 {
-                                        ctx.lines_as("Magician Whisper", args!["How's the translator making process going?"])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("ep13_2_rhea").get()?.number()? > 12 {
-                                            ctx.lines_as(
-                                                "Magician Whisper",
-                                                args!["I've just received a message that the translator is finished!"],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Magician Whisper", args!["We are short on the amount just yet, still it will make our advance to the other world easier!"])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            ctx.lines_as(
-                                                "Magician Whisper",
-                                                args!["I've just received a message that the translator is finished!"],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Magician Whisper", args!["We are short on the amount just yet, still it will make our advance to the other world easier!"])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
-                                }
-                            }
+                            ctx.lines_as("Magician Whisper", args!["Could you wait for a minute?", "Take some rest while I craft this ore into a gem and put the magical data into it. You look exhausted..."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    } else {
+                        if ctx.var("ep13_2_rhea").get()? == 11 {
+                            ctx.lines_as(
+                                "Magician Whisper",
+                                args!["Please deliver this crafted gem to the Mechanic Engineer from Schwarzwald."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Magician Whisper", args!["I'm really sorry to ask you so many favors..., Ah...I've used up too much magical power...I should rest for a while."])?;
+                            ctx.next()?;
+                            ctx.lines(args!["- He looks so sleepy and said -", "- as he rubbing his closing eyes. -"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("ep13_2_rhea").get()? == 12 {
+                            ctx.lines_as("Magician Whisper", args!["How's the translator making process going?"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("ep13_2_rhea").get()?.number()? > 12 {
+                            ctx.lines_as(
+                                "Magician Whisper",
+                                args!["I've just received a message that the translator is finished!"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Magician Whisper", args!["We are short on the amount just yet, still it will make our advance to the other world easier!"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.lines_as(
+                                "Magician Whisper",
+                                args!["I've just received a message that the translator is finished!"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Magician Whisper", args!["We are short on the amount just yet, still it will make our advance to the other world easier!"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -7902,83 +7749,81 @@ fn translator_preparation_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
         ctx.lines_as("EP 13 Translator Quest Preparation", args!["Cancelled"])?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if l_i.clone() == 0 {
+        ctx.lines_as("EP 13 Translator Quest Preparation", args!["Try again."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if l_i.clone() == 0 {
-            ctx.lines_as("EP 13 Translator Quest Preparation", args!["Try again."])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "EP 13 Translator Quest Preparation",
-                args!["I'm the NPC who gives the Episode 13.2 Translator Quest's Linked-Quest Items."],
-            )?;
-            ctx.next()?;
-            ctx.mes("What would you like to do?")?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Receive EP13.1 Quest:Receive Quest Window - Meeting with Fairy and Giant",
-                    )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "EP 13 Translator Quest Preparation",
-                        args!["Episode 13.1 - The Report Quest Reward Item Received."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "EP 13 Translator Quest Preparation",
-                        args![
-                            ((Val::from("Currently the Report Quest's Set Item is ") + ctx.var("ep13_1_edq").get()?) + Val::from(".")),
-                            "Do you want to proceed?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("No:Yes")])?) == 1 {
-                        ctx.lines_as("EP 13 Translator Quest Preparation", args!["Cancelled"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as(
-                        "EP 13 Translator Quest Preparation",
-                        args!["Episode 13.1 - The Report Quest Reward Item Received."],
-                    )?;
-                    ctx.var("ep13_1_edq").set(Val::from(14))?;
+        ctx.lines_as(
+            "EP 13 Translator Quest Preparation",
+            args!["I'm the NPC who gives the Episode 13.2 Translator Quest's Linked-Quest Items."],
+        )?;
+        ctx.next()?;
+        ctx.mes("What would you like to do?")?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "Receive EP13.1 Quest:Receive Quest Window - Meeting with Fairy and Giant",
+                )],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "EP 13 Translator Quest Preparation",
+                    args!["Episode 13.1 - The Report Quest Reward Item Received."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "EP 13 Translator Quest Preparation",
+                    args![
+                        ((Val::from("Currently the Report Quest's Set Item is ") + ctx.var("ep13_1_edq").get()?) + Val::from(".")),
+                        "Do you want to proceed?"
+                    ],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("No:Yes")])?) == 1 {
+                    ctx.lines_as("EP 13 Translator Quest Preparation", args!["Cancelled"])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "EP 13 Translator Quest Preparation",
-                        args!["Episode 13.1 - Receiving the Quest window - Meeting with Fairy and Giant."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("EP 13 Translator Quest Preparation", args!["Do you want to proceed?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("No:Yes")])?) == 1 {
-                        ctx.lines_as("EP 13 Translator Quest Preparation", args!["Cancelled"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as(
-                        "EP 13 Translator Quest Preparation",
-                        args!["Episode 13.1 - The Report Quest Reward Item Received."],
-                    )?;
-                    ctx.call(Function::SetQuest, vec![Val::from(2158)])?;
-                    ctx.call(Function::SetQuest, vec![Val::from(2159)])?;
+                ctx.lines_as(
+                    "EP 13 Translator Quest Preparation",
+                    args!["Episode 13.1 - The Report Quest Reward Item Received."],
+                )?;
+                ctx.var("ep13_1_edq").set(Val::from(14))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "EP 13 Translator Quest Preparation",
+                    args!["Episode 13.1 - Receiving the Quest window - Meeting with Fairy and Giant."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("EP 13 Translator Quest Preparation", args!["Do you want to proceed?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("No:Yes")])?) == 1 {
+                    ctx.lines_as("EP 13 Translator Quest Preparation", args!["Cancelled"])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                ctx.lines_as(
+                    "EP 13 Translator Quest Preparation",
+                    args!["Episode 13.1 - The Report Quest Reward Item Received."],
+                )?;
+                ctx.call(Function::SetQuest, vec![Val::from(2158)])?;
+                ctx.call(Function::SetQuest, vec![Val::from(2159)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -8084,186 +7929,182 @@ fn scientist_lifeguard_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.var("ep13_2_tre").set(Val::from(1))?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if (ctx.var("ep13_2_tre").get()? == 1 || ctx.var("ep13_2_tre").get()? == 100) {
-                if ctx.call(Function::CheckWeight, vec![Val::from(1201), Val::from(1)])? == 0 {
-                    ctx.lines(args![
-                        "It looks like you're carrying too many things.",
-                        "Why not put some of your items in storage and come back?"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                l_dayq_chk = ctx.call(Function::CheckQuest, vec![Val::from(2182), ctx.constant("PLAYTIME")?])?;
-                if (l_dayq_chk.clone() == 0 || l_dayq_chk.clone() == 1) {
-                    ctx.lines(args![
-                        "The future of the Sapha is up to you.",
-                        "I do not have any need of your help right now."
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.call(Function::EraseQuest, vec![Val::from(2182)])?;
-                    'b1: {
-                        let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 0), Val::from("Mt. Mjolnir"), true);
-                            runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 1), Val::from("10"), true);
-                            runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 2), Val::from("2"), true);
-                            break 'b1;
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 0), Val::from("Abyss Lake"), true);
-                            runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 1), Val::from("5"), true);
-                            runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 2), Val::from("3"), true);
-                            break 'b1;
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 0), Val::from("Thor Volcano"), true);
-                            runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 1), Val::from("5"), true);
-                            runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 2), Val::from("4"), true);
-                            break 'b1;
-                        }
-                    }
-                    ctx.mes("Recently, someone who came from Schwarzwald gave me a small mineral as a gift from his home town when he saw our study of Bradium.")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Dr. Lifeguard",
-                        args![
-                            "I can't say for sure until now,",
-                            "but this mineral seems to have",
-                            "many interesting features."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Dr. Lifeguard",
-                        args![
-                            "As I examine this mineral",
-                            "more and more, it's really",
-                            "different from the one in Jotunheim.",
-                            "This mineral must be helpful",
-                            "to make a new vaccine!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Dr. Lifeguard",
-                        args![
-                            "But the amount of the mineral",
-                            "is too little to make a",
-                            "preparation for the",
-                            "examination."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Dr. Lifeguard",
-                        args!["You said you're from Midgard, right? Do you think you can bring me a little bit more of that mineral.."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Dr. Lifeguard",
-                        args![
-                            "He said it's from",
-                            ((Val::from("^FF0000") + runtime::local_get(&l_rand_dayq_s, &Val::from(0), true)) + Val::from("^000000.")),
-                            ((Val::from("I think ^FF0000") + runtime::local_get(&l_rand_dayq_s, &Val::from(1), true))
-                                + Val::from("^000000 would be enough."))
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Dr. Lifeguard",
-                        args![
-                            "I'll give you this portable toolbox.",
-                            "Things like a detector and a little hammer for mining minerals are included in this toolbox."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Dr. Lifeguard",
-                        args!["Take it, it shold be", "helpful in collecting", "the minerals I need."],
-                    )?;
-                    ctx.var("ep13_2_tre")
-                        .set(runtime::atoi(&runtime::local_get(&l_rand_dayq_s, &Val::from(2), true)))?;
-                    ctx.call(
-                        Function::SetQuest,
-                        vec![
-                            (Val::from(2179)
-                                + (runtime::atoi(&runtime::local_get(&l_rand_dayq_s, &Val::from(2), true)).try_sub(Val::from(2))?)),
-                        ],
-                    )?;
-                    ctx.call(Function::GetItem, vec![Val::from(6076), Val::from(1)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            } else {
-                if ((ctx.var("ep13_2_tre").get()? == 2 || ctx.var("ep13_2_tre").get()? == 3) || ctx.var("ep13_2_tre").get()? == 4) {
-                    if ((ctx.var("ep13_2_tre").get()? == 2 && ctx.call(Function::CountItem, vec![Val::from(6077)])?.number()? > 9)
-                        || (ctx.var("ep13_2_tre").get()? != 2 && ctx.call(Function::CountItem, vec![Val::from(6077)])?.number()? > 4))
-                    {
-                        ctx.lines(args!["Oh! Yes, that's it!", "This much will be enough!"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Dr. Lifeguard", args!["I really appreciate your help."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Dr. Lifeguard",
-                            args![
-                                "These are coins of the Manuk.",
-                                "This may not be much, but if you collect more, they can be used to buy some items from our merchants."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Dr. Lifeguard",
-                            args![
-                                "If you want to help my study for the sake of the Sapha, come to me at any time.",
-                                "I will be very happy for any help you can give."
-                            ],
-                        )?;
-                        l_stone_chk = ctx.call(Function::CountItem, vec![Val::from(6077)])?;
-                        l_stoneelse_chk = ctx.call(Function::CountItem, vec![Val::from(6078)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(6077), l_stone_chk.clone()])?;
-                        ctx.call(Function::DelItem, vec![Val::from(6078), l_stoneelse_chk.clone()])?;
-                        ctx.call(Function::DelItem, vec![Val::from(6076), Val::from(1)])?;
-                        ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(3)])?;
-                        ctx.call(
-                            Function::ChangeQuest,
-                            vec![
-                                (Val::from(2179) + (ctx.var("ep13_2_tre").get()?.try_sub(Val::from(2))?)),
-                                Val::from(2182),
-                            ],
-                        )?;
-                        ctx.var("ep13_2_tre").set(Val::from(100))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines(args!["The future of the Sapha is up to you.", "I wish you good luck."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                } else {
-                    ctx.mes("Hmm...")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+        } else if (ctx.var("ep13_2_tre").get()? == 1 || ctx.var("ep13_2_tre").get()? == 100) {
+            if ctx.call(Function::CheckWeight, vec![Val::from(1201), Val::from(1)])? == 0 {
+                ctx.lines(args![
+                    "It looks like you're carrying too many things.",
+                    "Why not put some of your items in storage and come back?"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
+            l_dayq_chk = ctx.call(Function::CheckQuest, vec![Val::from(2182), ctx.constant("PLAYTIME")?])?;
+            if (l_dayq_chk.clone() == 0 || l_dayq_chk.clone() == 1) {
+                ctx.lines(args![
+                    "The future of the Sapha is up to you.",
+                    "I do not have any need of your help right now."
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.call(Function::EraseQuest, vec![Val::from(2182)])?;
+                'b1: {
+                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                    let mut matched1 = false;
+                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                        && !subject1.loosely_equals(&Val::from(2))
+                        && !subject1.loosely_equals(&Val::from(3));
+                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 0), Val::from("Mt. Mjolnir"), true);
+                        runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 1), Val::from("10"), true);
+                        runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 2), Val::from("2"), true);
+                        break 'b1;
+                    }
+                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 0), Val::from("Abyss Lake"), true);
+                        runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 1), Val::from("5"), true);
+                        runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 2), Val::from("3"), true);
+                        break 'b1;
+                    }
+                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                        matched1 = true;
+                    }
+                    if matched1 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 0), Val::from("Thor Volcano"), true);
+                        runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 1), Val::from("5"), true);
+                        runtime::local_set(&mut l_rand_dayq_s, &Val::from(base + 2), Val::from("4"), true);
+                        break 'b1;
+                    }
+                }
+                ctx.mes("Recently, someone who came from Schwarzwald gave me a small mineral as a gift from his home town when he saw our study of Bradium.")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Dr. Lifeguard",
+                    args![
+                        "I can't say for sure until now,",
+                        "but this mineral seems to have",
+                        "many interesting features."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Dr. Lifeguard",
+                    args![
+                        "As I examine this mineral",
+                        "more and more, it's really",
+                        "different from the one in Jotunheim.",
+                        "This mineral must be helpful",
+                        "to make a new vaccine!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Dr. Lifeguard",
+                    args![
+                        "But the amount of the mineral",
+                        "is too little to make a",
+                        "preparation for the",
+                        "examination."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Dr. Lifeguard",
+                    args!["You said you're from Midgard, right? Do you think you can bring me a little bit more of that mineral.."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Dr. Lifeguard",
+                    args![
+                        "He said it's from",
+                        ((Val::from("^FF0000") + runtime::local_get(&l_rand_dayq_s, &Val::from(0), true)) + Val::from("^000000.")),
+                        ((Val::from("I think ^FF0000") + runtime::local_get(&l_rand_dayq_s, &Val::from(1), true))
+                            + Val::from("^000000 would be enough."))
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Dr. Lifeguard",
+                    args![
+                        "I'll give you this portable toolbox.",
+                        "Things like a detector and a little hammer for mining minerals are included in this toolbox."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Dr. Lifeguard",
+                    args!["Take it, it shold be", "helpful in collecting", "the minerals I need."],
+                )?;
+                ctx.var("ep13_2_tre")
+                    .set(runtime::atoi(&runtime::local_get(&l_rand_dayq_s, &Val::from(2), true)))?;
+                ctx.call(
+                    Function::SetQuest,
+                    vec![
+                        (Val::from(2179)
+                            + (runtime::atoi(&runtime::local_get(&l_rand_dayq_s, &Val::from(2), true)).try_sub(Val::from(2))?)),
+                    ],
+                )?;
+                ctx.call(Function::GetItem, vec![Val::from(6076), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        } else if ((ctx.var("ep13_2_tre").get()? == 2 || ctx.var("ep13_2_tre").get()? == 3) || ctx.var("ep13_2_tre").get()? == 4) {
+            if ((ctx.var("ep13_2_tre").get()? == 2 && ctx.call(Function::CountItem, vec![Val::from(6077)])?.number()? > 9)
+                || (ctx.var("ep13_2_tre").get()? != 2 && ctx.call(Function::CountItem, vec![Val::from(6077)])?.number()? > 4))
+            {
+                ctx.lines(args!["Oh! Yes, that's it!", "This much will be enough!"])?;
+                ctx.next()?;
+                ctx.lines_as("Dr. Lifeguard", args!["I really appreciate your help."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Dr. Lifeguard",
+                    args![
+                        "These are coins of the Manuk.",
+                        "This may not be much, but if you collect more, they can be used to buy some items from our merchants."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Dr. Lifeguard",
+                    args![
+                        "If you want to help my study for the sake of the Sapha, come to me at any time.",
+                        "I will be very happy for any help you can give."
+                    ],
+                )?;
+                l_stone_chk = ctx.call(Function::CountItem, vec![Val::from(6077)])?;
+                l_stoneelse_chk = ctx.call(Function::CountItem, vec![Val::from(6078)])?;
+                ctx.call(Function::DelItem, vec![Val::from(6077), l_stone_chk.clone()])?;
+                ctx.call(Function::DelItem, vec![Val::from(6078), l_stoneelse_chk.clone()])?;
+                ctx.call(Function::DelItem, vec![Val::from(6076), Val::from(1)])?;
+                ctx.call(Function::GetItem, vec![Val::from(6080), Val::from(3)])?;
+                ctx.call(
+                    Function::ChangeQuest,
+                    vec![
+                        (Val::from(2179) + (ctx.var("ep13_2_tre").get()?.try_sub(Val::from(2))?)),
+                        Val::from(2182),
+                    ],
+                )?;
+                ctx.var("ep13_2_tre").set(Val::from(100))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines(args!["The future of the Sapha is up to you.", "I wish you good luck."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        } else {
+            ctx.mes("Hmm...")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines_as(
@@ -8336,12 +8177,10 @@ fn mjo_find_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         l_stst = ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])?;
                         if l_stst.clone() == 5 {
                             ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(5)])?;
+                        } else if l_stst.clone() == 1 {
+                            ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(1)])?;
                         } else {
-                            if l_stst.clone() == 1 {
-                                ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(1)])?;
-                            } else {
-                                ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(2)])?;
-                            }
+                            ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(2)])?;
                         }
                         ctx.close_window()?;
                         ctx.call(
@@ -9258,12 +9097,10 @@ fn hu_find_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         l_stst = ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])?;
                         if l_stst.clone() == 5 {
                             ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(5)])?;
+                        } else if l_stst.clone() == 1 {
+                            ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(2)])?;
                         } else {
-                            if l_stst.clone() == 1 {
-                                ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(2)])?;
-                            } else {
-                                ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(1)])?;
-                            }
+                            ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(1)])?;
                         }
                         ctx.call(
                             Function::DoNpcEvent,
@@ -9615,12 +9452,10 @@ fn ve_find_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         l_stst = ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])?;
                         if l_stst.clone() == 5 {
                             ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(5)])?;
+                        } else if l_stst.clone() == 1 {
+                            ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(2)])?;
                         } else {
-                            if l_stst.clone() == 1 {
-                                ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(2)])?;
-                            } else {
-                                ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(1)])?;
-                            }
+                            ctx.call(Function::GetItem, vec![Val::from(6077), Val::from(1)])?;
                         }
                         ctx.call(
                             Function::DoNpcEvent,
@@ -9980,142 +9815,136 @@ fn high_laphine_grenouille_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                 ctx.call(Function::SetQuest, vec![Val::from(2183)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if (ctx.var("ep13_2_tre1").get()? == 1 || ctx.var("ep13_2_tre1").get()? == 2) {
+            } else if (ctx.var("ep13_2_tre1").get()? == 1 || ctx.var("ep13_2_tre1").get()? == 2) {
+                ctx.lines_as(
+                    "Grenouille",
+                    args!["Get a seed from Flowery,", "and then use a Purifier", "to make the seed blossom."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("ep13_2_tre1").get()? == 3 {
+                if ctx.call(Function::CountItem, vec![Val::from(6079)])? == 1 {
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_SWEAT")?])?;
+                    ctx.call(
+                        Function::Emotion,
+                        vec![
+                            ctx.constant("ET_SWEAT")?,
+                            Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                        ],
+                    )?;
+                    ctx.lines_as("Grenouille", args!["Hoo, this is one of the", "most common kinds of flowers."])?;
+                    ctx.next()?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
                     ctx.lines_as(
                         "Grenouille",
-                        args!["Get a seed from Flowery,", "and then use a Purifier", "to make the seed blossom."],
+                        args![
+                            "Haha, Don't worry.",
+                            "Common flowers like this can bring the familiarity of home back to the soldiers."
+                        ],
                     )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Grenouille",
+                        args![
+                            "For now, I'll extract a liquid that",
+                            "includes the scent of this flower by using a distiller.",
+                            "Making a ^3131FFPerfume^000000."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Grenouille", args!["Would you please wait a while?"])?;
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2183), Val::from(2184)])?;
+                    ctx.var("ep13_2_tre1").set(Val::from(4))?;
+                    ctx.call(Function::DelItem, vec![Val::from(6079), Val::from(1)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 } else {
-                    if ctx.var("ep13_2_tre1").get()? == 3 {
-                        if ctx.call(Function::CountItem, vec![Val::from(6079)])? == 1 {
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_SWEAT")?])?;
-                            ctx.call(
-                                Function::Emotion,
-                                vec![
-                                    ctx.constant("ET_SWEAT")?,
-                                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                ],
-                            )?;
-                            ctx.lines_as("Grenouille", args!["Hoo, this is one of the", "most common kinds of flowers."])?;
-                            ctx.next()?;
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
-                            ctx.lines_as(
-                                "Grenouille",
-                                args![
-                                    "Haha, Don't worry.",
-                                    "Common flowers like this can bring the familiarity of home back to the soldiers."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Grenouille",
-                                args![
-                                    "For now, I'll extract a liquid that",
-                                    "includes the scent of this flower by using a distiller.",
-                                    "Making a ^3131FFPerfume^000000."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Grenouille", args!["Would you please wait a while?"])?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2183), Val::from(2184)])?;
-                            ctx.var("ep13_2_tre1").set(Val::from(4))?;
-                            ctx.call(Function::DelItem, vec![Val::from(6079), Val::from(1)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as("Grenouille", args!["Where is the flower?"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                    ctx.lines_as("Grenouille", args!["Where is the flower?"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            } else {
+                if ctx.var("ep13_2_tre1").get()? == 4 {
+                    l_ttalk = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
+                    if l_ttalk.clone().number()? < 8 {
+                        ctx.mes("- clitter-clatter -")?;
+                        ctx.next()?;
+                        ctx.lines(args!["- clitter-clatter -", "- clitter-clatter -"])?;
+                        ctx.next()?;
+                        ctx.lines(args!["- clitter-clatter -", "- clitter-clatter -", "- Spraying something -"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Grenouille", args!["Not finished yet.", "Please wait a second."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     } else {
-                        if ctx.var("ep13_2_tre1").get()? == 4 {
-                            l_ttalk = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
-                            if l_ttalk.clone().number()? < 8 {
-                                ctx.mes("- clitter-clatter -")?;
-                                ctx.next()?;
-                                ctx.lines(args!["- clitter-clatter -", "- clitter-clatter -"])?;
-                                ctx.next()?;
-                                ctx.lines(args!["- clitter-clatter -", "- clitter-clatter -", "- Spraying something -"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Grenouille", args!["Not finished yet.", "Please wait a second."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.mes("- clitter-clatter -")?;
-                                ctx.next()?;
-                                ctx.lines(args!["- clitter-clatter -", "- clitter-clatter -"])?;
-                                ctx.next()?;
-                                ctx.lines(args!["- clitter-clatter -", "- clitter-clatter -", "- Spraying something -"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Grenouille", args!["Wow, finished!"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Grenouille",
-                                    args!["I think I'll call this perfume", "The ^3131FFSoul of Alfheim^000000!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Grenouille",
-                                    args![
-                                        "This perfume can relieve their minds by using",
-                                        "the scent of their hometown Alfheim.",
-                                        "Though it's not a permanent solution, I think it will help them feel comfortable for now."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Grenouille",
-                                    args![
-                                        "Here, I'll give you this perfume,",
-                                        "help the exhausted soldiers and",
-                                        "let me know the result, please!"
-                                    ],
-                                )?;
-                                ctx.var("ep13_2_tre1").set(Val::from(5))?;
-                                ctx.call(Function::GetItem, vec![Val::from(6082), Val::from(5)])?;
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2184), Val::from(2185)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        } else {
-                            if ctx.var("ep13_2_tre1").get()? == 5 {
-                                if ctx.call(Function::CountItem, vec![Val::from(6082)])?.number()? < 1 {
-                                    ctx.lines_as("Grenouille", args!["Oh! How's the reaction of the soldiers?"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args![
-                                            "Yes, they seemed to be happy.",
-                                            "But, it still made someone cry because he probably misses Alfheim."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Grenouille", args!["Oh! That means it works!", "Thanks."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Grenouille", args!["Thanks for your help.", "This is my reward for you.", "I hope this will be helpful to you.", "If you have something to talk to me about, come to me whenever. Nice to meet you, human from Midgard."])?;
-                                    ctx.var("ep13_2_tre1").set(Val::from(6))?;
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2185), Val::from(2186)])?;
-                                    ctx.call(Function::GetItem, vec![Val::from(6081), Val::from(3)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines_as(
-                                        "Grenouille",
-                                        args!["Go and spray this perfume for the exhausted soldiers in Splendide!"],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            } else {
-                                ctx.lines_as("Grenouille", args!["I hope this long battle will end soon."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
+                        ctx.mes("- clitter-clatter -")?;
+                        ctx.next()?;
+                        ctx.lines(args!["- clitter-clatter -", "- clitter-clatter -"])?;
+                        ctx.next()?;
+                        ctx.lines(args!["- clitter-clatter -", "- clitter-clatter -", "- Spraying something -"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Grenouille", args!["Wow, finished!"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Grenouille",
+                            args!["I think I'll call this perfume", "The ^3131FFSoul of Alfheim^000000!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Grenouille",
+                            args![
+                                "This perfume can relieve their minds by using",
+                                "the scent of their hometown Alfheim.",
+                                "Though it's not a permanent solution, I think it will help them feel comfortable for now."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Grenouille",
+                            args![
+                                "Here, I'll give you this perfume,",
+                                "help the exhausted soldiers and",
+                                "let me know the result, please!"
+                            ],
+                        )?;
+                        ctx.var("ep13_2_tre1").set(Val::from(5))?;
+                        ctx.call(Function::GetItem, vec![Val::from(6082), Val::from(5)])?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2184), Val::from(2185)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
+                } else if ctx.var("ep13_2_tre1").get()? == 5 {
+                    if ctx.call(Function::CountItem, vec![Val::from(6082)])?.number()? < 1 {
+                        ctx.lines_as("Grenouille", args!["Oh! How's the reaction of the soldiers?"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args![
+                                "Yes, they seemed to be happy.",
+                                "But, it still made someone cry because he probably misses Alfheim."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Grenouille", args!["Oh! That means it works!", "Thanks."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Grenouille", args!["Thanks for your help.", "This is my reward for you.", "I hope this will be helpful to you.", "If you have something to talk to me about, come to me whenever. Nice to meet you, human from Midgard."])?;
+                        ctx.var("ep13_2_tre1").set(Val::from(6))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2185), Val::from(2186)])?;
+                        ctx.call(Function::GetItem, vec![Val::from(6081), Val::from(3)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as(
+                            "Grenouille",
+                            args!["Go and spray this perfume for the exhausted soldiers in Splendide!"],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                } else {
+                    ctx.lines_as("Grenouille", args!["I hope this long battle will end soon."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         } else {
@@ -10215,22 +10044,20 @@ fn middle_ranked_laphine_la_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
             ctx.call(Function::GetItem, vec![Val::from(7193), Val::from(1)])?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if ctx.var("ep13_2_tre1").get()? == 2 {
+            ctx.lines_as(
+                "Flowery",
+                args![
+                    "I gave you the seed, so it's up to you that what would you do with the seed.",
+                    "I feel dizzy when I look at my room."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("ep13_2_tre1").get()? == 2 {
-                ctx.lines_as(
-                    "Flowery",
-                    args![
-                        "I gave you the seed, so it's up to you that what would you do with the seed.",
-                        "I feel dizzy when I look at my room."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Flowery", args!["Yuuuum~", "Can you believe that right in front of us is a battle field? Though it's very silent and peaceful at the moment. So do I~"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines_as("Flowery", args!["Yuuuum~", "Can you believe that right in front of us is a battle field? Though it's very silent and peaceful at the moment. So do I~"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines_as(
@@ -11311,53 +11138,51 @@ fn bazett_teablack_ep13bs_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
+        } else if ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])? == 1 {
+            ctx.lines_as("Industrious Man", args!["Gthgh sdsWryi", "Apeu hjsu opuer "])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["?????", "What'd you say?"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Industrious Man",
+                args!["Oh! Sorry, I think I said it wrong...", "I was just infatuated with my research..."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Industrious Man",
+                args!["You should find a way to understand this strange language that I've discovered here in the Ash Vacuum."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Industrious Man",
+                args!["Without the ability to communicate it would be really difficult to get around here, don't you think?"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])? == 1 {
-                ctx.lines_as("Industrious Man", args!["Gthgh sdsWryi", "Apeu hjsu opuer "])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["?????", "What'd you say?"],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Industrious Man",
-                    args!["Oh! Sorry, I think I said it wrong...", "I was just infatuated with my research..."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Industrious Man",
-                    args!["You should find a way to understand this strange language that I've discovered here in the Ash Vacuum."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Industrious Man",
-                    args!["Without the ability to communicate it would be really difficult to get around here, don't you think?"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Industrious Man", args!["TalDathMush Di nahDeh", "ReAnduDu So sehr"])?;
-                ctx.next()?;
-                ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["?????", "Huh?"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Industrious Man",
-                    args!["Oh! I must've said it wrong...", "My research hasn't been going too well lately."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Industrious Man",
-                    args!["There should be a way for you to understand this strange language here."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Industrious Man",
-                    args!["Without the ability to communicate it would be really difficult to get around here, don't you think?"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines_as("Industrious Man", args!["TalDathMush Di nahDeh", "ReAnduDu So sehr"])?;
+            ctx.next()?;
+            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["?????", "Huh?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Industrious Man",
+                args!["Oh! I must've said it wrong...", "My research hasn't been going too well lately."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Industrious Man",
+                args!["There should be a way for you to understand this strange language here."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Industrious Man",
+                args!["Without the ability to communicate it would be really difficult to get around here, don't you think?"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ctx.var("ep13_2_busut").get()? == 1 {
@@ -11695,39 +11520,37 @@ fn worker_ep13bs_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::SetQuest, vec![Val::from(11105)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("ep13_2_bs1").get()? == 2 {
-                    if ctx.call(Function::CountItem, vec![Val::from(6032)])?.number()? > 29 {
-                        ctx.lines_as(
-                            "Gill",
-                            args!["You helped me collect all of the Horns of Hillslion?", "Thank you so much."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Gill", args!["It's all because of you, we are able to prevent anything disastrous.", ((Val::from("^0000FFEven though you're also an alien race, but compared to the vile fairies^000000, I'm glad to have met someone like ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))])?;
-                        ctx.call(Function::DelItem, vec![Val::from(6032), Val::from(30)])?;
-                        ctx.var("ep13_2_bs1").set(Val::from(3))?;
-                        ctx.var("ep13_2_busut").set(Val::from(4))?;
-                        ctx.call(Function::CompleteQuest, vec![Val::from(11105)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as("Gill", args!["Sorry, again for making you do this but I will be waiting here for you to bring back the^0000FF 30 Horn of Hillslions.^000000."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+            } else if ctx.var("ep13_2_bs1").get()? == 2 {
+                if ctx.call(Function::CountItem, vec![Val::from(6032)])?.number()? > 29 {
+                    ctx.lines_as(
+                        "Gill",
+                        args!["You helped me collect all of the Horns of Hillslion?", "Thank you so much."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Gill", args!["It's all because of you, we are able to prevent anything disastrous.", ((Val::from("^0000FFEven though you're also an alien race, but compared to the vile fairies^000000, I'm glad to have met someone like ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))])?;
+                    ctx.call(Function::DelItem, vec![Val::from(6032), Val::from(30)])?;
+                    ctx.var("ep13_2_bs1").set(Val::from(3))?;
+                    ctx.var("ep13_2_busut").set(Val::from(4))?;
+                    ctx.call(Function::CompleteQuest, vec![Val::from(11105)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if ctx.var("ep13_2_bs1").get()? == 3 {
-                        ctx.lines_as("Gill", args!["Thank you for helping me.", ((Val::from("^0000FFEven though you're also an alien race, but compared to the vile fairies^000000, I'm glad to have met someone like ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Worker",
-                            args!["This is too dangerous, it's become too loose...", "It must be replaced soon..."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.lines_as("Gill", args!["Sorry, again for making you do this but I will be waiting here for you to bring back the^0000FF 30 Horn of Hillslions.^000000."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            } else {
+                if ctx.var("ep13_2_bs1").get()? == 3 {
+                    ctx.lines_as("Gill", args!["Thank you for helping me.", ((Val::from("^0000FFEven though you're also an alien race, but compared to the vile fairies^000000, I'm glad to have met someone like ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as(
+                        "Worker",
+                        args!["This is too dangerous, it's become too loose...", "It must be replaced soon..."],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         } else {
@@ -11861,38 +11684,36 @@ fn worker_ep13bs_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.call(Function::SetQuest, vec![Val::from(11105)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("ep13_2_bs1").get()? == 2 {
-                        if ctx.call(Function::CountItem, vec![Val::from(6032)])?.number()? > 29 {
-                            ctx.lines_as(
-                                "Gill",
-                                args!["You helped me collect all of the Horns of Hillslion?", "Thank you so much."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Gill", args!["It's all because of you, we are able to prevent anything disastrous.", ((Val::from("^0000FFEven though you're also an alien race, but compared to the vile fairies^000000, I'm glad to have met someone like ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))])?;
-                            ctx.call(Function::DelItem, vec![Val::from(6032), Val::from(30)])?;
-                            ctx.var("ep13_2_bs1").set(Val::from(3))?;
-                            ctx.call(Function::CompleteQuest, vec![Val::from(11105)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as("Gill", args!["Making you do something like this, I feel ashamed."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                } else if ctx.var("ep13_2_bs1").get()? == 2 {
+                    if ctx.call(Function::CountItem, vec![Val::from(6032)])?.number()? > 29 {
+                        ctx.lines_as(
+                            "Gill",
+                            args!["You helped me collect all of the Horns of Hillslion?", "Thank you so much."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Gill", args!["It's all because of you, we are able to prevent anything disastrous.", ((Val::from("^0000FFEven though you're also an alien race, but compared to the vile fairies^000000, I'm glad to have met someone like ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))])?;
+                        ctx.call(Function::DelItem, vec![Val::from(6032), Val::from(30)])?;
+                        ctx.var("ep13_2_bs1").set(Val::from(3))?;
+                        ctx.call(Function::CompleteQuest, vec![Val::from(11105)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     } else {
-                        if ctx.var("ep13_2_bs1").get()? == 3 {
-                            ctx.lines_as("Gill", args!["Thank you for helping me.", ((Val::from("^0000FFEven though you're also an alien race, but compared to the vile Fairies^000000, I'm glad to have met someone like ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "Worker",
-                                args!["This is too dangerous, it's become too loose...", "It must be replaced soon..."],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                        ctx.lines_as("Gill", args!["Making you do something like this, I feel ashamed."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                } else {
+                    if ctx.var("ep13_2_bs1").get()? == 3 {
+                        ctx.lines_as("Gill", args!["Thank you for helping me.", ((Val::from("^0000FFEven though you're also an alien race, but compared to the vile Fairies^000000, I'm glad to have met someone like ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as(
+                            "Worker",
+                            args!["This is too dangerous, it's become too loose...", "It must be replaced soon..."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             } else {

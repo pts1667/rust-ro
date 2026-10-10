@@ -107,75 +107,67 @@ fn rogue_guildsman_rg_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Markie", args!["Alright...", "Let's get started!"])?;
                 ctx.next()?;
-            } else {
-                if ctx.var("rogue_q").get()? == 1 {
-                    ctx.lines_as(
-                        "Markie",
-                        args![
-                            "You again?",
-                            "Okay, you probably screwed up last time 'cuz you were way too nervous. So just chill and pass",
-                            "this test, okay?"
-                        ],
-                    )?;
+            } else if ctx.var("rogue_q").get()? == 1 {
+                ctx.lines_as(
+                    "Markie",
+                    args![
+                        "You again?",
+                        "Okay, you probably screwed up last time 'cuz you were way too nervous. So just chill and pass",
+                        "this test, okay?"
+                    ],
+                )?;
+                ctx.next()?;
+            } else if ctx.var("rogue_q").get()? == 2 {
+                ctx.lines_as("Markie", args!["Go talk to Smith. His test might be pretty hard. He's one of the guys who makes sure that people pay up their debts to us. So yeah, he might be a bit of a hard case."])?;
+                ctx.next()?;
+                ctx.lines_as("Markie", args!["Yeah...", "That guy can be pretty anal, but we need a guy like him in our guild. Anyway, be careful. Lots of luck to you, pal."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if (ctx.var("rogue_q").get()?.number()? > 2 && ctx.var("rogue_q").get()?.number()? < 16) {
+                ctx.lines_as("Markie", args!["Hey yo...", "Do your best."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Markie",
+                    args![
+                        "Heh heh...",
+                        "Fresh meat. This'll be",
+                        "a cinch to--Wait! Er, I wasn't talkin' about you! I meant the other fresh meat~"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if (ctx.var("rogue_q").get()? == 16 || ctx.var("rogue_q").get()? == 17) {
+                ctx.call(Function::ChangeQuest, vec![Val::from(2026), Val::from(2027)])?;
+                ctx.mes("[Markie]")?;
+                if ctx.var("rogue_q").get()? == 16 {
+                    ctx.lines(args![
+                        "Oh hey, it's you!",
+                        "You did a good job, guy.",
+                        "Now, lemme change your",
+                        "job to Rogue. You earned it!"
+                    ])?;
                     ctx.next()?;
+                    ctx.lines_as("Markie", args!["Congrats~!", "You look", "sooo dope!"])?;
                 } else {
-                    if ctx.var("rogue_q").get()? == 2 {
-                        ctx.lines_as("Markie", args!["Go talk to Smith. His test might be pretty hard. He's one of the guys who makes sure that people pay up their debts to us. So yeah, he might be a bit of a hard case."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Markie", args!["Yeah...", "That guy can be pretty anal, but we need a guy like him in our guild. Anyway, be careful. Lots of luck to you, pal."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if (ctx.var("rogue_q").get()?.number()? > 2 && ctx.var("rogue_q").get()?.number()? < 16) {
-                            ctx.lines_as("Markie", args!["Hey yo...", "Do your best."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Markie",
-                                args![
-                                    "Heh heh...",
-                                    "Fresh meat. This'll be",
-                                    "a cinch to--Wait! Er, I wasn't talkin' about you! I meant the other fresh meat~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (ctx.var("rogue_q").get()? == 16 || ctx.var("rogue_q").get()? == 17) {
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2026), Val::from(2027)])?;
-                                ctx.mes("[Markie]")?;
-                                if ctx.var("rogue_q").get()? == 16 {
-                                    ctx.lines(args![
-                                        "Oh hey, it's you!",
-                                        "You did a good job, guy.",
-                                        "Now, lemme change your",
-                                        "job to Rogue. You earned it!"
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Markie", args!["Congrats~!", "You look", "sooo dope!"])?;
-                                } else {
-                                    ctx.lines(args!["Oh! It's you!", "You were actually able to put up with that guy? Good stuff! Must've had a rough time collect all those items, eh?"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Markie", args!["Hey hey~", "Congrats!", "You've been", "doin' a great job~"])?;
-                                }
-                                l_jlevel = ctx.var("JobLevel").get()?;
-                                shared::other_global_functions::job_change(ctx, vec![ctx.constant("JOB_ROGUE")?])?;
-                                shared::other_global_functions::f_clearjobvar(ctx, vec![])?;
-                                ctx.call(Function::CompleteQuest, vec![Val::from(2027)])?;
-                                ctx.next()?;
-                                ctx.lines_as("Markie", args!["Now...", "It's time", "for me to make", "a speech~ *Ahem*"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Markie", args!["Enjoy your freedom as a Rogue. Just remember that you gotta be free and responsible at the same time. So treat other guys the way you wanna be treated, kay? Alright, seeya round."])?;
-                                ctx.close_window()?;
-                                if l_jlevel.clone() == 50 {
-                                    ctx.call(Function::GetItem, vec![Val::from(1220), Val::from(1)])?;
-                                } else {
-                                    ctx.call(Function::GetItem, vec![Val::from(1219), Val::from(1)])?;
-                                }
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
+                    ctx.lines(args!["Oh! It's you!", "You were actually able to put up with that guy? Good stuff! Must've had a rough time collect all those items, eh?"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Markie", args!["Hey hey~", "Congrats!", "You've been", "doin' a great job~"])?;
                 }
+                l_jlevel = ctx.var("JobLevel").get()?;
+                shared::other_global_functions::job_change(ctx, vec![ctx.constant("JOB_ROGUE")?])?;
+                shared::other_global_functions::f_clearjobvar(ctx, vec![])?;
+                ctx.call(Function::CompleteQuest, vec![Val::from(2027)])?;
+                ctx.next()?;
+                ctx.lines_as("Markie", args!["Now...", "It's time", "for me to make", "a speech~ *Ahem*"])?;
+                ctx.next()?;
+                ctx.lines_as("Markie", args!["Enjoy your freedom as a Rogue. Just remember that you gotta be free and responsible at the same time. So treat other guys the way you wanna be treated, kay? Alright, seeya round."])?;
+                ctx.close_window()?;
+                if l_jlevel.clone() == 50 {
+                    ctx.call(Function::GetItem, vec![Val::from(1220), Val::from(1)])?;
+                } else {
+                    ctx.call(Function::GetItem, vec![Val::from(1219), Val::from(1)])?;
+                }
+                return Err(Stop::End);
             }
             if Val::from(runtime::select_values(
                 ctx,
@@ -633,61 +625,55 @@ fn rogue_guildsman_rg_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-        } else {
-            if ctx.var("JobLevel").get()?.number()? < 40 {
-                ctx.lines_as("Rogue Guildsman", args!["Whoa, slow down newbie. We only accept people who are at least Thief Job Level 40. I ain't risking myself by letting you in before you're ready. Got it?"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
-    } else {
-        if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?) {
-            ctx.lines_as(
-                "Rogue Guildsman",
-                args![
-                    "Huh...?",
-                    "What's an Assassin doin' here? Uh, you haven't been assigned to kill someone in the Rogue Guild, are you?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rogue Guildsman",
-                args!["In any case, don't mess with us! You can't catch me... I'm a smooth criminal!"],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Rogue Guildsman", args!["Don't get it, huh? It's something I always used to say to Huey. If you're in the Assassin Guild, you oughta have met him..."])?;
+        } else if ctx.var("JobLevel").get()?.number()? < 40 {
+            ctx.lines_as("Rogue Guildsman", args!["Whoa, slow down newbie. We only accept people who are at least Thief Job Level 40. I ain't risking myself by letting you in before you're ready. Got it?"])?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
-                ctx.lines_as(
-                    "Markie",
-                    args![
-                        "Hey hey~",
-                        "Long time no see.",
-                        "Eh, right now we don't",
-                        "any requests from the",
-                        "guild for you, so just",
-                        "check back again later."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Rogue Guildsman",
-                    args![
-                        "Hey you...",
-                        "Get your ugly",
-                        "ass out of here",
-                        "before I redecorate",
-                        "that face of yours!"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
         }
+    } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?) {
+        ctx.lines_as(
+            "Rogue Guildsman",
+            args![
+                "Huh...?",
+                "What's an Assassin doin' here? Uh, you haven't been assigned to kill someone in the Rogue Guild, are you?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rogue Guildsman",
+            args!["In any case, don't mess with us! You can't catch me... I'm a smooth criminal!"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Rogue Guildsman", args!["Don't get it, huh? It's something I always used to say to Huey. If you're in the Assassin Guild, you oughta have met him..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
+        ctx.lines_as(
+            "Markie",
+            args![
+                "Hey hey~",
+                "Long time no see.",
+                "Eh, right now we don't",
+                "any requests from the",
+                "guild for you, so just",
+                "check back again later."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Rogue Guildsman",
+            args![
+                "Hey you...",
+                "Get your ugly",
+                "ass out of here",
+                "before I redecorate",
+                "that face of yours!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -747,246 +733,240 @@ fn mr_smith_rg_run(ctx: &Ctx, mut step: MrSmithRgStep, args: Vec<Val>) -> Result
                                 Val::from(3),
                             ],
                         )?;
-                    } else {
-                        if (l_item_need.clone().number()? > 5 && l_item_need.clone().number()? < 11) {
-                            mr_smith_rg_run(
-                                ctx,
-                                MrSmithRgStep::SReq,
-                                vec![
-                                    Val::from("10 Green Herb"),
-                                    Val::from("10 Crab Shell"),
-                                    Val::from("10 Snake Scale"),
-                                    Val::from("10 Garlet"),
-                                    Val::from(4),
-                                ],
-                            )?;
-                        } else {
-                            if (l_item_need.clone().number()? > 10 && l_item_need.clone().number()? < 15) {
-                                mr_smith_rg_run(
-                                    ctx,
-                                    MrSmithRgStep::SReq,
-                                    vec![
-                                        Val::from("10 Yellow Herb"),
-                                        Val::from("10 Shell"),
-                                        Val::from("10 Grasshopper's Leg"),
-                                        Val::from("10 Bear's Footskin"),
-                                        Val::from(5),
-                                    ],
-                                )?;
-                            } else {
-                                if l_item_need.clone() == 15 {
-                                    ctx.lines_as("Mr. Smith", args!["I will let you know..."])?;
-                                    ctx.var("rogue_q").set(Val::from(6))?;
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2017), Val::from(2021)])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mr. Smith", args!["I will let you know......"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mr. Smith", args!["I will let you know........", "By the way....."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mr. Smith", args!["Oh man...", "This is...", "Damn...", "Annoying!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mr. Smith", args!["..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mr. Smith", args!["...", "......"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mr. Smith", args!["...", "......", "........."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mr. Smith", args!["Today, I'm in a pissed off mood, ya' know why?! I haven't collected any bills! God! Idiot Thieves coming at me all the time, wanting to become Rogues!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args!["Jesus! Now I understand why our leader told us that working as customer support sucks."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args![
-                                            "That god damn guild master assigned me to this shitty job. I'm better than this F$@king job!"
-                                        ],
-                                    )?;
-                                    ctx.call(
-                                        Function::MapAnnounce,
-                                        vec![
-                                            Val::from("in_rogue"),
-                                            Val::from("That god damn guild master assigned me to this shitty job! That Bastard!"),
-                                            ctx.constant("BC_MAP")?,
-                                        ],
-                                    )?;
-                                    ctx.mes("That bastard should go to F$@king hell, I'm gonna kick that mother F$@kers ass! F#%k F#%k F#%k !!!")?;
-                                    ctx.call(Function::MapAnnounce, vec![Val::from("in_rogue"), Val::from("That bastard should go to F$@king hell, I'm gonna kick that mother F$@kers ass! F#%k F#%k F#%k !!!"), ctx.constant("BC_MAP")?])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args!["That dipshit who just tried to change his job, the one before you..."],
-                                    )?;
-                                    ctx.call(
-                                        Function::MapAnnounce,
-                                        vec![
-                                            Val::from("in_rogue"),
-                                            Val::from("That dipshit who just tried to change his job, the one before you..."),
-                                            ctx.constant("BC_MAP")?,
-                                        ],
-                                    )?;
-                                    ctx.mes("You know what the f#@k he talked to me about?!?")?;
-                                    ctx.call(
-                                        Function::MapAnnounce,
-                                        vec![
-                                            Val::from("in_rogue"),
-                                            Val::from("You know what the f#@k he talked to me about?!?"),
-                                            ctx.constant("BC_MAP")?,
-                                        ],
-                                    )?;
-                                    ctx.mes("F#$@%#$*#$%@#$!!")?;
-                                    ctx.call(
-                                        Function::MapAnnounce,
-                                        vec![Val::from("in_rogue"), Val::from("F#$@%#$*#$%@#$!!"), ctx.constant("BC_MAP")?],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args![
-                                            "What the--?! What's with this chat filter?! Stop #*!@$ing me! you stupid F#$%*! Let me talk!!!"
-                                        ],
-                                    )?;
-                                    ctx.call(Function::MapAnnounce, vec![Val::from("in_rogue"), Val::from("What the--?! What's with this chat filter?! Stop #*!@$ing me! you stupid F#$%*! Let me talk!!!"), ctx.constant("BC_MAP")?])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args![
-                                            ((Val::from("What the f#@k you looking at...? ")
-                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from("? That's your name!?"))
-                                        ],
-                                    )?;
-                                    ctx.call(
-                                        Function::MapAnnounce,
-                                        vec![
-                                            Val::from("in_rogue"),
-                                            ((Val::from("What the f#@k you looking at...? ")
-                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from("? That's your name!?")),
-                                            ctx.constant("BC_MAP")?,
-                                        ],
-                                    )?;
-                                    ctx.lines(args![
-                                        " ",
-                                        ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]")),
-                                        "Umm...",
-                                        "Sir...?",
-                                        "I didn't mean to make you upset. I just came here to so I could become a Rogue."
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args!["Holy shit on a stick, what the f#$k was I just f!#king talking about, you moron!"],
-                                    )?;
-                                    ctx.call(
-                                        Function::MapAnnounce,
-                                        vec![
-                                            Val::from("in_rogue"),
-                                            Val::from("Holy shit on a stick, what the f#$k was I just f!#king talking about, you moron!"),
-                                            ctx.constant("BC_MAP")?,
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args!["Just leave me alone! Just leave alone! Just leave me alone!"],
-                                    )?;
-                                    ctx.call(
-                                        Function::MapAnnounce,
-                                        vec![
-                                            Val::from("in_rogue"),
-                                            Val::from("Just leave me alone! Just leave alone! Just leave me alone!"),
-                                            ctx.constant("BC_MAP")?,
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args!["Do whatever you want, okay? Just do whatever the F$!!K you want...!!"],
-                                    )?;
-                                    ctx.call(
-                                        Function::MapAnnounce,
-                                        vec![
-                                            Val::from("in_rogue"),
-                                            Val::from("Do whatever you want, okay? Just do whatever the F$!!K you want...!!"),
-                                            ctx.constant("BC_MAP")?,
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mr. Smith", args!["Your application fee... ^FF000010,000 zeny^000000!!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args![
-                                            "^FF00005 Crysalis^000000!",
-                                            "^FF00005 Empty Bottle^000000!",
-                                            "^FF00005 Iron Ore^000000!",
-                                            "^FF00005 Stone Heart^000000!!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args![
-                                            "^FF00005 Red Herb^000000!",
-                                            "^FF00005 Animal Skin^000000!!",
-                                            "^FF00005 Yellow Gemstone^000000!!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args![
-                                            "^FF00005 Tooth of Bat^000000!",
-                                            "^FF00005 Scorpion Tail^000000!!",
-                                            "^FF00005 Yoyo Tail^000000!!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args![
-                                            "^FF00005 Monster's Feed^000000!",
-                                            "^FF00005 Fluff^000000!!",
-                                            "^FF00005 Clover^000000!!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args![
-                                            "^FF00005 Feather of Birds^000000!",
-                                            "^FF00005 Talon^000000!!",
-                                            "^FF00005 Spawn^000000!!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Mr. Smith", args!["Don't even think about coming back until you've got all those or I'll kill you where you stand."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args!["What the F$@k? Did you just say I'm annoying you? Shut up, you ungrateful prick!"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args!["I just added ^FF000010 Raccoon Leaf^000000 to the list. You better get it!"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Mr. Smith",
-                                        args![
-                                            "F%$#*&#@$%#@$@#$%@$%&*k! Haven't you ever thought about how hard it would be to be an NPC!?!"
-                                        ],
-                                    )?;
-                                    ctx.call(Function::MapAnnounce, vec![Val::from("in_rogue"), Val::from("F%$#*&#@$%#@$@#$%@$%&*k! Haven't you ever thought about how hard it would be to be an NPC!?!"), ctx.constant("BC_MAP")?])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
+                    } else if (l_item_need.clone().number()? > 5 && l_item_need.clone().number()? < 11) {
+                        mr_smith_rg_run(
+                            ctx,
+                            MrSmithRgStep::SReq,
+                            vec![
+                                Val::from("10 Green Herb"),
+                                Val::from("10 Crab Shell"),
+                                Val::from("10 Snake Scale"),
+                                Val::from("10 Garlet"),
+                                Val::from(4),
+                            ],
+                        )?;
+                    } else if (l_item_need.clone().number()? > 10 && l_item_need.clone().number()? < 15) {
+                        mr_smith_rg_run(
+                            ctx,
+                            MrSmithRgStep::SReq,
+                            vec![
+                                Val::from("10 Yellow Herb"),
+                                Val::from("10 Shell"),
+                                Val::from("10 Grasshopper's Leg"),
+                                Val::from("10 Bear's Footskin"),
+                                Val::from(5),
+                            ],
+                        )?;
+                    } else if l_item_need.clone() == 15 {
+                        ctx.lines_as("Mr. Smith", args!["I will let you know..."])?;
+                        ctx.var("rogue_q").set(Val::from(6))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2017), Val::from(2021)])?;
+                        ctx.next()?;
+                        ctx.lines_as("Mr. Smith", args!["I will let you know......"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Mr. Smith", args!["I will let you know........", "By the way....."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Mr. Smith", args!["Oh man...", "This is...", "Damn...", "Annoying!"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Mr. Smith", args!["..."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Mr. Smith", args!["...", "......"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Mr. Smith", args!["...", "......", "........."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Mr. Smith", args!["Today, I'm in a pissed off mood, ya' know why?! I haven't collected any bills! God! Idiot Thieves coming at me all the time, wanting to become Rogues!"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args!["Jesus! Now I understand why our leader told us that working as customer support sucks."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args![
+                                "That god damn guild master assigned me to this shitty job. I'm better than this F$@king job!"
+                            ],
+                        )?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("in_rogue"),
+                                Val::from("That god damn guild master assigned me to this shitty job! That Bastard!"),
+                                ctx.constant("BC_MAP")?,
+                            ],
+                        )?;
+                        ctx.mes("That bastard should go to F$@king hell, I'm gonna kick that mother F$@kers ass! F#%k F#%k F#%k !!!")?;
+                        ctx.call(Function::MapAnnounce, vec![Val::from("in_rogue"), Val::from("That bastard should go to F$@king hell, I'm gonna kick that mother F$@kers ass! F#%k F#%k F#%k !!!"), ctx.constant("BC_MAP")?])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args!["That dipshit who just tried to change his job, the one before you..."],
+                        )?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("in_rogue"),
+                                Val::from("That dipshit who just tried to change his job, the one before you..."),
+                                ctx.constant("BC_MAP")?,
+                            ],
+                        )?;
+                        ctx.mes("You know what the f#@k he talked to me about?!?")?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("in_rogue"),
+                                Val::from("You know what the f#@k he talked to me about?!?"),
+                                ctx.constant("BC_MAP")?,
+                            ],
+                        )?;
+                        ctx.mes("F#$@%#$*#$%@#$!!")?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![Val::from("in_rogue"), Val::from("F#$@%#$*#$%@#$!!"), ctx.constant("BC_MAP")?],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args![
+                                "What the--?! What's with this chat filter?! Stop #*!@$ing me! you stupid F#$%*! Let me talk!!!"
+                            ],
+                        )?;
+                        ctx.call(Function::MapAnnounce, vec![Val::from("in_rogue"), Val::from("What the--?! What's with this chat filter?! Stop #*!@$ing me! you stupid F#$%*! Let me talk!!!"), ctx.constant("BC_MAP")?])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args![
+                                ((Val::from("What the f#@k you looking at...? ")
+                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("? That's your name!?"))
+                            ],
+                        )?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("in_rogue"),
+                                ((Val::from("What the f#@k you looking at...? ")
+                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("? That's your name!?")),
+                                ctx.constant("BC_MAP")?,
+                            ],
+                        )?;
+                        ctx.lines(args![
+                            " ",
+                            ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]")),
+                            "Umm...",
+                            "Sir...?",
+                            "I didn't mean to make you upset. I just came here to so I could become a Rogue."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args!["Holy shit on a stick, what the f#$k was I just f!#king talking about, you moron!"],
+                        )?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("in_rogue"),
+                                Val::from("Holy shit on a stick, what the f#$k was I just f!#king talking about, you moron!"),
+                                ctx.constant("BC_MAP")?,
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args!["Just leave me alone! Just leave alone! Just leave me alone!"],
+                        )?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("in_rogue"),
+                                Val::from("Just leave me alone! Just leave alone! Just leave me alone!"),
+                                ctx.constant("BC_MAP")?,
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args!["Do whatever you want, okay? Just do whatever the F$!!K you want...!!"],
+                        )?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("in_rogue"),
+                                Val::from("Do whatever you want, okay? Just do whatever the F$!!K you want...!!"),
+                                ctx.constant("BC_MAP")?,
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Mr. Smith", args!["Your application fee... ^FF000010,000 zeny^000000!!"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args![
+                                "^FF00005 Crysalis^000000!",
+                                "^FF00005 Empty Bottle^000000!",
+                                "^FF00005 Iron Ore^000000!",
+                                "^FF00005 Stone Heart^000000!!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args![
+                                "^FF00005 Red Herb^000000!",
+                                "^FF00005 Animal Skin^000000!!",
+                                "^FF00005 Yellow Gemstone^000000!!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args![
+                                "^FF00005 Tooth of Bat^000000!",
+                                "^FF00005 Scorpion Tail^000000!!",
+                                "^FF00005 Yoyo Tail^000000!!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args![
+                                "^FF00005 Monster's Feed^000000!",
+                                "^FF00005 Fluff^000000!!",
+                                "^FF00005 Clover^000000!!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args![
+                                "^FF00005 Feather of Birds^000000!",
+                                "^FF00005 Talon^000000!!",
+                                "^FF00005 Spawn^000000!!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Mr. Smith", args!["Don't even think about coming back until you've got all those or I'll kill you where you stand."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args!["What the F$@k? Did you just say I'm annoying you? Shut up, you ungrateful prick!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args!["I just added ^FF000010 Raccoon Leaf^000000 to the list. You better get it!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Smith",
+                            args![
+                                "F%$#*&#@$%#@$@#$%@$%&*k! Haven't you ever thought about how hard it would be to be an NPC!?!"
+                            ],
+                        )?;
+                        ctx.call(Function::MapAnnounce, vec![Val::from("in_rogue"), Val::from("F%$#*&#@$%#@$@#$%@$%&*k! Haven't you ever thought about how hard it would be to be an NPC!?!"), ctx.constant("BC_MAP")?])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 } else {
                     if ctx.var("rogue_q").get()?.number()? < 2 {
@@ -1191,12 +1171,10 @@ fn mr_smith_rg_run(ctx: &Ctx, mut step: MrSmithRgStep, args: Vec<Val>) -> Result
                                                         ctx.var("rogue_q").set(Val::from(9))?;
                                                         if ctx.call(Function::CheckQuest, vec![Val::from(2018)])? != -1 {
                                                             ctx.call(Function::ChangeQuest, vec![Val::from(2018), Val::from(2022)])?;
+                                                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
+                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2022)])?;
                                                         } else {
-                                                            if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
-                                                                ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2022)])?;
-                                                            } else {
-                                                                ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2022)])?;
-                                                            }
+                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2022)])?;
                                                         }
                                                         ctx.next()?;
                                                         ctx.lines_as("Mr. Smith", args!["Right! I know", "just the guy~!"])?;
@@ -1227,12 +1205,10 @@ fn mr_smith_rg_run(ctx: &Ctx, mut step: MrSmithRgStep, args: Vec<Val>) -> Result
                                                         ctx.var("rogue_q").set(Val::from(10))?;
                                                         if ctx.call(Function::CheckQuest, vec![Val::from(2018)])? != -1 {
                                                             ctx.call(Function::ChangeQuest, vec![Val::from(2018), Val::from(2023)])?;
+                                                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
+                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2023)])?;
                                                         } else {
-                                                            if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
-                                                                ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2023)])?;
-                                                            } else {
-                                                                ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2023)])?;
-                                                            }
+                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2023)])?;
                                                         }
                                                         ctx.next()?;
                                                         ctx.lines_as(
@@ -1266,12 +1242,10 @@ fn mr_smith_rg_run(ctx: &Ctx, mut step: MrSmithRgStep, args: Vec<Val>) -> Result
                                                         ctx.var("rogue_q").set(Val::from(11))?;
                                                         if ctx.call(Function::CheckQuest, vec![Val::from(2018)])? != -1 {
                                                             ctx.call(Function::ChangeQuest, vec![Val::from(2018), Val::from(2024)])?;
+                                                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
+                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2024)])?;
                                                         } else {
-                                                            if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
-                                                                ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2024)])?;
-                                                            } else {
-                                                                ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2024)])?;
-                                                            }
+                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2024)])?;
                                                         }
                                                         ctx.next()?;
                                                         ctx.lines_as(
@@ -1307,77 +1281,69 @@ fn mr_smith_rg_run(ctx: &Ctx, mut step: MrSmithRgStep, args: Vec<Val>) -> Result
                                                     ctx.lines_as("Mr. Smith", args!["Ah...almost forgot, keep in mind not to mention anything about upgrading items. This is very important."])?;
                                                     ctx.close_window()?;
                                                     return Err(Stop::End);
-                                                } else {
-                                                    if ctx.var("rogue_q").get()? == 9 {
-                                                        ctx.lines_as(
-                                                            "Mr. Smith",
-                                                            args!["What...?", "Did you just", "say that you", "forgot where to go?"],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Head one field East and enter the building that is South of the Sandarman Fortress to meet Aragham Junior."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Mr. Smith",
-                                                            args!["The password is ^0000FFAragham never hoarded upgrade items^000000."],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    } else {
-                                                        if ctx.var("rogue_q").get()? == 10 {
-                                                            ctx.lines_as(
-                                                                "Mr. Smith",
-                                                                args!["What...?", "Did you just", "say that you", "forgot where to go?"],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Mr. Smith",
-                                                                args![
-                                                                    "Go to the building",
-                                                                    "at Kokomo Beach,",
-                                                                    "which is on the way",
-                                                                    "to Comodo, to meet",
-                                                                    "Antonio Junior."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Mr. Smith", args!["The password is ^0000FF'Antonio doesn't enjoy destroying upgrade items'^000000."])?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        } else {
-                                                            if ctx.var("rogue_q").get()? == 11 {
-                                                                ctx.lines_as(
-                                                                    "Mr. Smith",
-                                                                    args![
-                                                                        "What...?",
-                                                                        "Did you just",
-                                                                        "say that you",
-                                                                        "forgot where to go?"
-                                                                    ],
-                                                                )?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Mr. Smith", args!["Go to the field South of Sandarman Fortress, which is on the way to Morocc from here, to meet Hollgrehenn Junior."])?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Mr. Smith", args!["The password is ^0000FFMy father never hoarded upgrade items^000000."])?;
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            } else {
-                                                                if ctx.var("rogue_q").get()?.number()? > 11 {
-                                                                    ctx.lines_as(
-                                                                        "Mr. Smith",
-                                                                        args![
-                                                                            "Hmmm...?",
-                                                                            "Don't you have",
-                                                                            "to go somewhere",
-                                                                            "else to complete",
-                                                                            "your Rogue training?"
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                }
-                                                            }
-                                                        }
-                                                    }
+                                                } else if ctx.var("rogue_q").get()? == 9 {
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args!["What...?", "Did you just", "say that you", "forgot where to go?"],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Head one field East and enter the building that is South of the Sandarman Fortress to meet Aragham Junior."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args!["The password is ^0000FFAragham never hoarded upgrade items^000000."],
+                                                    )?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                } else if ctx.var("rogue_q").get()? == 10 {
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args!["What...?", "Did you just", "say that you", "forgot where to go?"],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args![
+                                                            "Go to the building",
+                                                            "at Kokomo Beach,",
+                                                            "which is on the way",
+                                                            "to Comodo, to meet",
+                                                            "Antonio Junior."
+                                                        ],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["The password is ^0000FF'Antonio doesn't enjoy destroying upgrade items'^000000."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                } else if ctx.var("rogue_q").get()? == 11 {
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args![
+                                                            "What...?",
+                                                            "Did you just",
+                                                            "say that you",
+                                                            "forgot where to go?"
+                                                        ],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Go to the field South of Sandarman Fortress, which is on the way to Morocc from here, to meet Hollgrehenn Junior."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["The password is ^0000FFMy father never hoarded upgrade items^000000."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                } else if ctx.var("rogue_q").get()?.number()? > 11 {
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args![
+                                                            "Hmmm...?",
+                                                            "Don't you have",
+                                                            "to go somewhere",
+                                                            "else to complete",
+                                                            "your Rogue training?"
+                                                        ],
+                                                    )?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
                                                 }
                                             }
                                         }
@@ -1411,12 +1377,10 @@ fn mr_smith_rg_run(ctx: &Ctx, mut step: MrSmithRgStep, args: Vec<Val>) -> Result
                 ctx.var("rogue_q").set(l_var.clone())?;
                 if l_var.clone() == 3 {
                     ctx.call(Function::ChangeQuest, vec![Val::from(2017), Val::from(2018)])?;
+                } else if l_var.clone() == 4 {
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2017), Val::from(2019)])?;
                 } else {
-                    if l_var.clone() == 4 {
-                        ctx.call(Function::ChangeQuest, vec![Val::from(2017), Val::from(2019)])?;
-                    } else {
-                        ctx.call(Function::ChangeQuest, vec![Val::from(2017), Val::from(2020)])?;
-                    }
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2017), Val::from(2020)])?;
                 }
                 ctx.next()?;
                 ctx.lines_as(
@@ -2282,19 +2246,17 @@ fn hermanthorn_jr_rg_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::ChangeQuest, vec![Val::from(2025), Val::from(2026)])?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("rogue_q").get()? == 12 {
+        ctx.lines_as("HermanthornJr.", args!["Oh right. This is really important. You need a password to enter the tunnel. To unlock the door, the four number combination is ^0000FF3019^000000."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("rogue_q").get()? == 12 {
-            ctx.lines_as("HermanthornJr.", args!["Oh right. This is really important. You need a password to enter the tunnel. To unlock the door, the four number combination is ^0000FF3019^000000."])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "HermanthornJr.",
-                args!["Huh...?", "What the hell", "are you doing here.", "Scram, why don't you?"],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as(
+            "HermanthornJr.",
+            args!["Huh...?", "What the hell", "are you doing here.", "Scram, why don't you?"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2329,27 +2291,25 @@ fn he_to_rogue_rg_run(ctx: &Ctx, mut step: HeToRogueRgStep, args: Vec<Val>) -> R
                     }
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if l_input.clone() == 3019 {
-                        if ctx.var("rogue_q").get()? == 12 {
-                            ctx.lines(args!["^3355FFThe door", "has opened.^000000"])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("in_rogue"), Val::from(10), Val::from(21)])?;
-                            ctx.var("rogue_q").set(Val::from(12))?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "HermanthornJr.",
-                                args!["Well...", "Didn't I tell you", "that I changed the", "password? *Wink Wink*"],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                } else if l_input.clone() == 3019 {
+                    if ctx.var("rogue_q").get()? == 12 {
+                        ctx.lines(args!["^3355FFThe door", "has opened.^000000"])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("in_rogue"), Val::from(10), Val::from(21)])?;
+                        ctx.var("rogue_q").set(Val::from(12))?;
+                        return Err(Stop::End);
                     } else {
-                        ctx.lines(args!["^3355FFThe door", "is still locked.^000000"])?;
+                        ctx.lines_as(
+                            "HermanthornJr.",
+                            args!["Well...", "Didn't I tell you", "that I changed the", "password? *Wink Wink*"],
+                        )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                } else {
+                    ctx.lines(args!["^3355FFThe door", "is still locked.^000000"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -2727,51 +2687,47 @@ fn aragham_junior_rg_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("rogue_q").get()? == 13 {
-            ctx.lines_as("Aragham Jr.", args!["Oh, you're back.", "I think you'll do well this time. Another motto Rogues have is '^0000FFFailure teaches success^000000.' Well, then again..."])?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("Re-Test:Cancel")])?) == 1 {
-                ctx.lines_as("Aragham Jr.", args!["Good luck."])?;
-                ctx.close_window()?;
-                ctx.call(Function::Warp, vec![Val::from("in_rogue"), Val::from(15), Val::from(105)])?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Aragham Jr.",
-                args!["Fine, fine.", "Take your time", "and come back", "when you're ready."],
-            )?;
+    } else if ctx.var("rogue_q").get()? == 13 {
+        ctx.lines_as("Aragham Jr.", args!["Oh, you're back.", "I think you'll do well this time. Another motto Rogues have is '^0000FFFailure teaches success^000000.' Well, then again..."])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Re-Test:Cancel")])?) == 1 {
+            ctx.lines_as("Aragham Jr.", args!["Good luck."])?;
             ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("in_rogue"), Val::from(15), Val::from(105)])?;
             return Err(Stop::End);
-        } else {
-            if !ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
-                ctx.lines_as(
-                    "Aragham Jr.",
-                    args!["Huh...?", "Who are you?!", "You're not from", "the Rogue Guild!!"],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Aragham Jr.",
-                    args!["You've come here to kill me, haven't you? N-no! I'm can't die yet! Get lost! Otherwise, I'll kill you first!"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Aragham Jr.",
-                    args![
-                        "Hey...",
-                        "what brings",
-                        "you back here?",
-                        "Why don't you",
-                        "take a rest",
-                        "before you leave?"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
         }
+        ctx.lines_as(
+            "Aragham Jr.",
+            args!["Fine, fine.", "Take your time", "and come back", "when you're ready."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if !ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
+        ctx.lines_as(
+            "Aragham Jr.",
+            args!["Huh...?", "Who are you?!", "You're not from", "the Rogue Guild!!"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Aragham Jr.",
+            args!["You've come here to kill me, haven't you? N-no! I'm can't die yet! Get lost! Otherwise, I'll kill you first!"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Aragham Jr.",
+            args![
+                "Hey...",
+                "what brings",
+                "you back here?",
+                "Why don't you",
+                "take a rest",
+                "before you leave?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2819,46 +2775,42 @@ fn hollgrehenn_junior_rg_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("rogue_q").get()? == 15 {
-            ctx.lines_as("Hollgrehenn Jr.", args!["Huh.", "You failed.", "Gonna try again?"])?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("Re-Test:Cancel.")])?) == 1 {
-                ctx.lines_as("Hollgrehenn Jr.", args!["Good luck."])?;
-                ctx.close_window()?;
-                ctx.call(Function::Warp, vec![Val::from("in_rogue"), Val::from(15), Val::from(105)])?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Hollgrehenn Jr.",
-                args!["Take your time.", "Come back here", "when you're ready."],
-            )?;
+    } else if ctx.var("rogue_q").get()? == 15 {
+        ctx.lines_as("Hollgrehenn Jr.", args!["Huh.", "You failed.", "Gonna try again?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Re-Test:Cancel.")])?) == 1 {
+            ctx.lines_as("Hollgrehenn Jr.", args!["Good luck."])?;
             ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("in_rogue"), Val::from(15), Val::from(105)])?;
             return Err(Stop::End);
-        } else {
-            if !ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
-                ctx.lines_as("Hollgrehenn Jr.", args!["Huh...?", "You're not from", "the Rogue Guild..."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hollgrehenn Jr.",
-                    args!["You better get out", "of here right now", "if you know what's", "good for you..."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hollgrehenn Jr.",
-                    args!["Now...", "Beat it before", "I change my mind", "about killing you."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Hollgrehenn Jr.",
-                    args!["Hey...", "Come to visit?", "We Rogues gotta", "stick together, huh?"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
         }
+        ctx.lines_as(
+            "Hollgrehenn Jr.",
+            args!["Take your time.", "Come back here", "when you're ready."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if !ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
+        ctx.lines_as("Hollgrehenn Jr.", args!["Huh...?", "You're not from", "the Rogue Guild..."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hollgrehenn Jr.",
+            args!["You better get out", "of here right now", "if you know what's", "good for you..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hollgrehenn Jr.",
+            args!["Now...", "Beat it before", "I change my mind", "about killing you."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Hollgrehenn Jr.",
+            args!["Hey...", "Come to visit?", "We Rogues gotta", "stick together, huh?"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2927,55 +2879,51 @@ fn antonio_junior_rg_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("rogue_q").get()? == 14 {
-            ctx.lines_as(
-                "Antonio Jr.",
-                args!["You failed...?", "I guess that's life.", "Are you gonna try", "again or what?"],
-            )?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("Re-test:Cancel")])?) == 1 {
-                ctx.lines_as(
-                    "Antonio Jr.",
-                    args![
-                        "Remember, I'm doing",
-                        "you a favor here...",
-                        "Now, don't come back",
-                        "until you're a Rogue."
-                    ],
-                )?;
-                ctx.close_window()?;
-                ctx.call(Function::Warp, vec![Val::from("in_rogue"), Val::from(15), Val::from(105)])?;
-                return Err(Stop::End);
-            }
+    } else if ctx.var("rogue_q").get()? == 14 {
+        ctx.lines_as(
+            "Antonio Jr.",
+            args!["You failed...?", "I guess that's life.", "Are you gonna try", "again or what?"],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Re-test:Cancel")])?) == 1 {
             ctx.lines_as(
                 "Antonio Jr.",
                 args![
-                    "I don't have time",
-                    "to fool around with",
-                    "you. Hurry up, get",
-                    "ready, then take",
-                    "the test."
+                    "Remember, I'm doing",
+                    "you a favor here...",
+                    "Now, don't come back",
+                    "until you're a Rogue."
                 ],
             )?;
             ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("in_rogue"), Val::from(15), Val::from(105)])?;
             return Err(Stop::End);
-        } else {
-            if !ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
-                ctx.lines(args!["Huh...?", "Who are you?!", "You're not from", "the Rogue Guild!!"])?;
-                ctx.next()?;
-                ctx.lines_as("Antonio Jr.", args!["You've come here to kill me?! I won't let you!! Come on, give me your best shot! You can't fight if I rip out your eyes!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Antonio Jr.",
-                    args!["Hey, how's it goin'?", "Take it easy, and just", "relax before you leave."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
         }
+        ctx.lines_as(
+            "Antonio Jr.",
+            args![
+                "I don't have time",
+                "to fool around with",
+                "you. Hurry up, get",
+                "ready, then take",
+                "the test."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if !ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
+        ctx.lines(args!["Huh...?", "Who are you?!", "You're not from", "the Rogue Guild!!"])?;
+        ctx.next()?;
+        ctx.lines_as("Antonio Jr.", args!["You've come here to kill me?! I won't let you!! Come on, give me your best shot! You can't fight if I rip out your eyes!"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Antonio Jr.",
+            args!["Hey, how's it goin'?", "Take it easy, and just", "relax before you leave."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 

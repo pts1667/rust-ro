@@ -187,27 +187,25 @@ fn friar_patrick_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 } else {
                     if (l_ins_bapho_check.clone() == 0 || l_ins_bapho_check.clone() == 1) {
                         ctx.lines_as("Friar Patrick", args!["It seems you have entered this shrine recently... You cannot reenter because Baphomet's Curse still remains. Baphomet's Curse disappears only after a certain amount of time has passed."])?;
-                    } else {
-                        if l_ins_bapho_check.clone() == 2 {
-                            ctx.lines_as(
-                                "Friar Patrick",
-                                args!["Umm... It seems that Baphomet's Curse has weakened. I can remove it now."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Friar Patrick", args!["Haaaaaaap... Hocus Pocus Wingardium Abracadabra!!!!!"])?;
-                            ctx.next()?;
-                            ctx.call(Function::EraseQuest, vec![Val::from(3040)])?;
-                            if ctx.call(Function::CheckQuest, vec![Val::from(3041)])?.number()? >= 0 {
-                                ctx.call(Function::EraseQuest, vec![Val::from(3041)])?;
-                            }
-                            if ctx.call(Function::CheckQuest, vec![Val::from(3045)])?.number()? >= 0 {
-                                ctx.call(Function::EraseQuest, vec![Val::from(3045)])?;
-                            }
-                            ctx.lines_as(
-                                "Friar Patrick",
-                                args!["Huu... It's over. Now that I've released Baphomet's Curse, you can enter again."],
-                            )?;
+                    } else if l_ins_bapho_check.clone() == 2 {
+                        ctx.lines_as(
+                            "Friar Patrick",
+                            args!["Umm... It seems that Baphomet's Curse has weakened. I can remove it now."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Friar Patrick", args!["Haaaaaaap... Hocus Pocus Wingardium Abracadabra!!!!!"])?;
+                        ctx.next()?;
+                        ctx.call(Function::EraseQuest, vec![Val::from(3040)])?;
+                        if ctx.call(Function::CheckQuest, vec![Val::from(3041)])?.number()? >= 0 {
+                            ctx.call(Function::EraseQuest, vec![Val::from(3041)])?;
                         }
+                        if ctx.call(Function::CheckQuest, vec![Val::from(3045)])?.number()? >= 0 {
+                            ctx.call(Function::EraseQuest, vec![Val::from(3045)])?;
+                        }
+                        ctx.lines_as(
+                            "Friar Patrick",
+                            args!["Huu... It's over. Now that I've released Baphomet's Curse, you can enter again."],
+                        )?;
                     }
                 }
             } else {
@@ -223,8 +221,8 @@ fn friar_patrick_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         if !matched1 && subject1.loosely_equals(&Val::from(3)) {
             matched1 = true;
         }
-        if matched1 {
-            if l_doll.clone() == 1 {
+        if matched1
+            && l_doll.clone() == 1 {
                 ctx.lines_as(
                     "Friar Patrick",
                     args!["That is... the villainous doll that you are holding... Let me see it."],
@@ -243,7 +241,6 @@ fn friar_patrick_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::SetQuest, vec![Val::from(3042)])?;
                 break 'b1;
             }
-        }
         if !matched1 && subject1.loosely_equals(&Val::from(4)) {
             matched1 = true;
         }
@@ -335,42 +332,38 @@ fn grave_of_baphomet_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if (l_ins_bapho_check.clone() == 0 || l_ins_bapho_check.clone() == 1) {
-            ctx.lines_as(
-                "Friar Patrick",
-                args![
-                    "It seems you have entered this shrine recently... You cannot reenter because the curse of Baphomet still remains.",
-                    "The curse of Baphomet disappears after a certain amount of time after you entered."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if l_ins_bapho_check.clone() == 2 {
-                ctx.lines_as(
-                    "Friar Patrick",
-                    args!["Umm... It seems the curse of Baphomet weakened. I'll clear the bad curse."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Friar Patrick", args!["Haaaaaaap... Wingardium Leviosa Expecto Patronum !!!!!"])?;
-                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HOLYHIT")?])?;
-                ctx.call(Function::EraseQuest, vec![Val::from(3040)])?;
-                if ctx.call(Function::CheckQuest, vec![Val::from(3041)])?.number()? >= 0 {
-                    ctx.call(Function::EraseQuest, vec![Val::from(3041)])?;
-                }
-                if ctx.call(Function::CheckQuest, vec![Val::from(3045)])?.number()? >= 0 {
-                    ctx.call(Function::EraseQuest, vec![Val::from(3045)])?;
-                }
-                ctx.next()?;
-                ctx.lines_as(
-                    "Friar Patrick",
-                    args!["Huu... It's over. Now I released all of the curses on you. You can enter again."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if (l_ins_bapho_check.clone() == 0 || l_ins_bapho_check.clone() == 1) {
+        ctx.lines_as(
+            "Friar Patrick",
+            args![
+                "It seems you have entered this shrine recently... You cannot reenter because the curse of Baphomet still remains.",
+                "The curse of Baphomet disappears after a certain amount of time after you entered."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if l_ins_bapho_check.clone() == 2 {
+        ctx.lines_as(
+            "Friar Patrick",
+            args!["Umm... It seems the curse of Baphomet weakened. I'll clear the bad curse."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Friar Patrick", args!["Haaaaaaap... Wingardium Leviosa Expecto Patronum !!!!!"])?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HOLYHIT")?])?;
+        ctx.call(Function::EraseQuest, vec![Val::from(3040)])?;
+        if ctx.call(Function::CheckQuest, vec![Val::from(3041)])?.number()? >= 0 {
+            ctx.call(Function::EraseQuest, vec![Val::from(3041)])?;
         }
+        if ctx.call(Function::CheckQuest, vec![Val::from(3045)])?.number()? >= 0 {
+            ctx.call(Function::EraseQuest, vec![Val::from(3045)])?;
+        }
+        ctx.next()?;
+        ctx.lines_as(
+            "Friar Patrick",
+            args!["Huu... It's over. Now I released all of the curses on you. You can enter again."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -444,204 +437,196 @@ fn rust_blackhand_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-    } else {
-        if (l_new_maje.clone() == -1 && ctx.call(Function::CountItem, vec![Val::from(6004)])?.number()? > 0) {
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("About the Cursed Baphomet Doll:Stop talking.")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Rust Blackhand",
-                        args!["What?... Hmmm... Did you get the doll? You're pretty good, unlike your appearance..."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Rust Blackhand",
-                        args!["Let me see... Needless to say, Patric must have sent you here to deal with the doll, right?"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Rust Blackhand",
-                        args!["Cool... I'll help you make the evil doll useful. What? What can I do?"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Rust Blackhand",
-                        args![
-                            "I can make the strong and large horns of the wicked devil Baphomet for you. A helm that has his immense power."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Rust Blackhand", args!["It is called the ^4d4dffGigantic Magestic Goat^000000. You'll realize that the Magestic Goat you're familiar with is nothing in comparison."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Rust Blackhand", args!["The Cursed Baphomet Doll is the most important ingredient... I'll make you if you want. What would you like to do?"])?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("I want to make one!:I don't need one.")],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as("Rust Blackhand", args!["kkk... Yes, wise men take their chances when the opportunity comes. I'll tell you the ingredients. Don't forget, and bring them all."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Rust Blackhand", args!["^0000FFCursed Baphomet Doll, Magestic Goat, 30 Crystal of Darkness, 50 Fragment of Darkness^000000, and the most important, production cost is ^0000FF990000^000000 Zeny."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Rust Blackhand", args!["You can get the Magestic Goat from the weak Baphomet in the Labyrinth Forest. Crystal of Darkness and Fragment of Darkness are from the Incarnation of Morocc."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Rust Blackhand",
-                                args!["I'm sure that you can get the ingredients because you sealed the real Baphomet. Can't you? kkk..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Rust Blackhand", args!["You'll never know how great this hat is until you get one. If you understood, go and get the ingredients."])?;
-                            if ctx.call(Function::IsBeginQuest, vec![Val::from(3042)])?.is_true() {
-                                ctx.call(Function::ChangeQuest, vec![Val::from(3042), Val::from(3043)])?;
-                            } else {
-                                ctx.call(Function::SetQuest, vec![Val::from(3043)])?;
-                            }
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Rust Blackhand",
-                                args!["Huh... Do you? Do whatever you want... Do you really want to let this opportunity go to waste?"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Rust Blackhand",
-                                args!["Tut, tut... I don't care if the wicked doll threatens your life all the time!"],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as("Rust Blackhand", args!["What a dull boy he is... huh..."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if (l_new_maje.clone() == -1 && ctx.call(Function::CountItem, vec![Val::from(6004)])?.number()? > 0) {
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("About the Cursed Baphomet Doll:Stop talking.")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if (l_new_maje.clone() == -1 && ctx.call(Function::CountItem, vec![Val::from(6004)])? == 0) {
-                ctx.lines_as("Rust Blackhand", args!["If you don't have business with me, go away! As you see, I make equipment for the Brothers at the monastery, not for adventurers like you. Do you understand?"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if (l_new_maje.clone() == 2 && ctx.call(Function::CountItem, vec![Val::from(6004)])?.number()? > 0) {
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("About the Cursed Baphomet Doll:Stop talking.")],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Rust Blackhand", args!["What?... You again? What do you want this time?"])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Rust Blackhand",
-                                args!["What? You got another doll from the wicked devil? Umm... You're much better than I thought..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Rust Blackhand", args!["Alright... I'll help you again."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Rust Blackhand", args!["If you want to make the doll into a ^4d4dffGigantic Magestic Goat^000000 again, I can make you another."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Rust Blackhand",
-                                args!["I'll tell you the ingredients again. So, do you want to make?"],
-                            )?;
-                            ctx.next()?;
-                            'b4: {
-                                let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("I want.:No, I don't want.")])?);
-                                let mut matched4 = false;
-                                let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    ctx.lines_as("Rust Blackhand", args!["kkk... Yes, wise men take their chances when the opportunity comes. I'll tell you the ingredients. Don't forget, and bring them all."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rust Blackhand", args!["^0000FFCursed Baphomet Doll, Magestic Goat, 30 Crystal of Darkness, 50 Fragment of Darkness^000000, and the most important, production cost is ^0000FF990000^000000 Zeny."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rust Blackhand", args!["You can get the Magestic Goat from the weak Baphomet in the Labyrinth Forest. Crystal of Darkness and Fragment of Darkness are from the Incarnation of Morocc."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rust Blackhand", args!["I'm sure that you can get the ingredients because you sealed the real Baphomet. Can't you? kkk..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rust Blackhand", args!["You'll never know how great this hat is until you get one. If you understood, go and get the ingredients."])?;
-                                    if ctx.call(Function::IsBeginQuest, vec![Val::from(3042)])?.is_true() {
-                                        ctx.call(Function::ChangeQuest, vec![Val::from(3042), Val::from(3043)])?;
-                                    } else {
-                                        ctx.call(Function::EraseQuest, vec![Val::from(3043)])?;
-                                        ctx.call(Function::SetQuest, vec![Val::from(3043)])?;
-                                    }
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    ctx.lines_as(
-                                        "Rust Blackhand",
-                                        args![
-                                            "Huh... Do you? Do whatever you want... Do you really want to let this opportunity go to waste?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Rust Blackhand",
-                                        args!["Tut, tut... I don't care if the wicked doll threatens your life all the time!"],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Rust Blackhand", args!["What a dull boy he is... huh..."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+            if matched1 {
+                ctx.lines_as(
+                    "Rust Blackhand",
+                    args!["What?... Hmmm... Did you get the doll? You're pretty good, unlike your appearance..."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Rust Blackhand",
+                    args!["Let me see... Needless to say, Patric must have sent you here to deal with the doll, right?"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Rust Blackhand",
+                    args!["Cool... I'll help you make the evil doll useful. What? What can I do?"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Rust Blackhand",
+                    args![
+                        "I can make the strong and large horns of the wicked devil Baphomet for you. A helm that has his immense power."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Rust Blackhand", args!["It is called the ^4d4dffGigantic Magestic Goat^000000. You'll realize that the Magestic Goat you're familiar with is nothing in comparison."])?;
+                ctx.next()?;
+                ctx.lines_as("Rust Blackhand", args!["The Cursed Baphomet Doll is the most important ingredient... I'll make you if you want. What would you like to do?"])?;
+                ctx.next()?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("I want to make one!:I don't need one.")],
+                    )?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
                     }
-                } else {
-                    if (l_new_maje.clone() == 2 && ctx.call(Function::CountItem, vec![Val::from(6004)])? == 0) {
+                    if matched2 {
+                        ctx.lines_as("Rust Blackhand", args!["kkk... Yes, wise men take their chances when the opportunity comes. I'll tell you the ingredients. Don't forget, and bring them all."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Rust Blackhand", args!["^0000FFCursed Baphomet Doll, Magestic Goat, 30 Crystal of Darkness, 50 Fragment of Darkness^000000, and the most important, production cost is ^0000FF990000^000000 Zeny."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Rust Blackhand", args!["You can get the Magestic Goat from the weak Baphomet in the Labyrinth Forest. Crystal of Darkness and Fragment of Darkness are from the Incarnation of Morocc."])?;
+                        ctx.next()?;
                         ctx.lines_as(
                             "Rust Blackhand",
-                            args!["Why are you hanging around here? If you don't want a ^4d4dffGigantic Magestic Goat^000000, go away."],
+                            args!["I'm sure that you can get the ingredients because you sealed the real Baphomet. Can't you? kkk..."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Rust Blackhand", args!["You'll never know how great this hat is until you get one. If you understood, go and get the ingredients."])?;
+                        if ctx.call(Function::IsBeginQuest, vec![Val::from(3042)])?.is_true() {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(3042), Val::from(3043)])?;
+                        } else {
+                            ctx.call(Function::SetQuest, vec![Val::from(3043)])?;
+                        }
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines_as(
+                            "Rust Blackhand",
+                            args!["Huh... Do you? Do whatever you want... Do you really want to let this opportunity go to waste?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Rust Blackhand",
+                            args!["Tut, tut... I don't care if the wicked doll threatens your life all the time!"],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
                 }
             }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Rust Blackhand", args!["What a dull boy he is... huh..."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+    } else if (l_new_maje.clone() == -1 && ctx.call(Function::CountItem, vec![Val::from(6004)])? == 0) {
+        ctx.lines_as("Rust Blackhand", args!["If you don't have business with me, go away! As you see, I make equipment for the Brothers at the monastery, not for adventurers like you. Do you understand?"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (l_new_maje.clone() == 2 && ctx.call(Function::CountItem, vec![Val::from(6004)])?.number()? > 0) {
+        'b3: {
+            let subject3 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("About the Cursed Baphomet Doll:Stop talking.")],
+            )?);
+            let mut matched3 = false;
+            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as("Rust Blackhand", args!["What?... You again? What do you want this time?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Rust Blackhand",
+                    args!["What? You got another doll from the wicked devil? Umm... You're much better than I thought..."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Rust Blackhand", args!["Alright... I'll help you again."])?;
+                ctx.next()?;
+                ctx.lines_as("Rust Blackhand", args!["If you want to make the doll into a ^4d4dffGigantic Magestic Goat^000000 again, I can make you another."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Rust Blackhand",
+                    args!["I'll tell you the ingredients again. So, do you want to make?"],
+                )?;
+                ctx.next()?;
+                'b4: {
+                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("I want.:No, I don't want.")])?);
+                    let mut matched4 = false;
+                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.lines_as("Rust Blackhand", args!["kkk... Yes, wise men take their chances when the opportunity comes. I'll tell you the ingredients. Don't forget, and bring them all."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Rust Blackhand", args!["^0000FFCursed Baphomet Doll, Magestic Goat, 30 Crystal of Darkness, 50 Fragment of Darkness^000000, and the most important, production cost is ^0000FF990000^000000 Zeny."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Rust Blackhand", args!["You can get the Magestic Goat from the weak Baphomet in the Labyrinth Forest. Crystal of Darkness and Fragment of Darkness are from the Incarnation of Morocc."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Rust Blackhand", args!["I'm sure that you can get the ingredients because you sealed the real Baphomet. Can't you? kkk..."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Rust Blackhand", args!["You'll never know how great this hat is until you get one. If you understood, go and get the ingredients."])?;
+                        if ctx.call(Function::IsBeginQuest, vec![Val::from(3042)])?.is_true() {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(3042), Val::from(3043)])?;
+                        } else {
+                            ctx.call(Function::EraseQuest, vec![Val::from(3043)])?;
+                            ctx.call(Function::SetQuest, vec![Val::from(3043)])?;
+                        }
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.lines_as(
+                            "Rust Blackhand",
+                            args![
+                                "Huh... Do you? Do whatever you want... Do you really want to let this opportunity go to waste?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Rust Blackhand",
+                            args!["Tut, tut... I don't care if the wicked doll threatens your life all the time!"],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+            }
+            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as("Rust Blackhand", args!["What a dull boy he is... huh..."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if (l_new_maje.clone() == 2 && ctx.call(Function::CountItem, vec![Val::from(6004)])? == 0) {
+        ctx.lines_as(
+            "Rust Blackhand",
+            args!["Why are you hanging around here? If you don't want a ^4d4dffGigantic Magestic Goat^000000, go away."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -1087,78 +1072,74 @@ fn gravestone_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 }
             }
         }
-    } else {
-        if ctx.var("'ins_baphomet").get()? == 1 {
-            ctx.lines_as("Voice of the Gravestone", args!["To open the entrance, you must substantialize my soul. I'll open the entrance and reactivate the weakened seals after I am substantilized."])?;
+    } else if ctx.var("'ins_baphomet").get()? == 1 {
+        ctx.lines_as("Voice of the Gravestone", args!["To open the entrance, you must substantialize my soul. I'll open the entrance and reactivate the weakened seals after I am substantilized."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Voice of the Gravestone",
+            args!["To substantialize my soul, you should find my pendant. You can find my body near a grave here."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Voice of the Gravestone",
+            args!["If your ^0000FFparty leader^000000 brings me the pendant, my soul can be substantialized. So, hurry up."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (ctx.var("'ins_baphomet").get()? == 2
+        && ctx
+            .call(Function::IsPartyLeader, vec![l_party_id.clone()])?
+            .loosely_equals(&Val::from(1)))
+    {
+        ctx.lines_as("Voice of the Gravestone", args!["Did you find the pendant?"])?;
+        ctx.next()?;
+        if ctx.call(Function::CountItem, vec![Val::from(6003)])?.number()? > 0 {
+            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_MAPPILLAR")?])?;
+            ctx.lines_as("Voice of the Gravestone", args!["Yes... This is... My pendant..."])?;
             ctx.next()?;
-            ctx.lines_as(
-                "Voice of the Gravestone",
-                args!["To substantialize my soul, you should find my pendant. You can find my body near a grave here."],
+            ctx.call(Function::DelItem, vec![Val::from(6003), Val::from(1)])?;
+            ctx.call(
+                Function::EnableNpc,
+                vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Ancient Hero's Soul#1F")])?],
             )?;
+            ctx.call(
+                Function::DisableNpc,
+                vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Gravestone#")])?],
+            )?;
+            ctx.lines_as("Voice of the Gravestone", args!["Now I can substantialize my soul. I'll wait for you in front of the altar of fire located at the center of this grave. Let's meet there."])?;
             ctx.next()?;
-            ctx.lines_as(
-                "Voice of the Gravestone",
-                args!["If your ^0000FFparty leader^000000 brings me the pendant, my soul can be substantialized. So, hurry up."],
+            ctx.call(
+                Function::MapAnnounce,
+                vec![
+                    ctx.call(Function::InstanceMapName, vec![Val::from("1@cata")])?,
+                    Val::from("Ancient Hero's Soul : I'll wait for you in front of the altar of fire located at the center"),
+                    ctx.constant("BC_MAP")?,
+                    Val::from("0xFFFF00"),
+                ],
             )?;
+            ctx.mes("I can feel the voice becoming faint.")?;
             ctx.close_window()?;
             return Err(Stop::End);
         } else {
-            if (ctx.var("'ins_baphomet").get()? == 2
-                && ctx
-                    .call(Function::IsPartyLeader, vec![l_party_id.clone()])?
-                    .loosely_equals(&Val::from(1)))
-            {
-                ctx.lines_as("Voice of the Gravestone", args!["Did you find the pendant?"])?;
-                ctx.next()?;
-                if ctx.call(Function::CountItem, vec![Val::from(6003)])?.number()? > 0 {
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_MAPPILLAR")?])?;
-                    ctx.lines_as("Voice of the Gravestone", args!["Yes... This is... My pendant..."])?;
-                    ctx.next()?;
-                    ctx.call(Function::DelItem, vec![Val::from(6003), Val::from(1)])?;
-                    ctx.call(
-                        Function::EnableNpc,
-                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Ancient Hero's Soul#1F")])?],
-                    )?;
-                    ctx.call(
-                        Function::DisableNpc,
-                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Gravestone#")])?],
-                    )?;
-                    ctx.lines_as("Voice of the Gravestone", args!["Now I can substantialize my soul. I'll wait for you in front of the altar of fire located at the center of this grave. Let's meet there."])?;
-                    ctx.next()?;
-                    ctx.call(
-                        Function::MapAnnounce,
-                        vec![
-                            ctx.call(Function::InstanceMapName, vec![Val::from("1@cata")])?,
-                            Val::from("Ancient Hero's Soul : I'll wait for you in front of the altar of fire located at the center"),
-                            ctx.constant("BC_MAP")?,
-                            Val::from("0xFFFF00"),
-                        ],
-                    )?;
-                    ctx.mes("I can feel the voice becoming faint.")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as(
-                        "Voice of the Gravestone",
-                        args!["Are you still there? Bring back my pendant as soon as possible."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voice of the Gravestone",
-                        args!["You can find my body near a grave here. Go and get my pendant there."],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            } else {
-                ctx.lines_as(
-                    "Voice of the Gravestone",
-                    args!["I want to talk to ^0000FFa representative among your party^000000. Everyone else, wait here."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines_as(
+                "Voice of the Gravestone",
+                args!["Are you still there? Bring back my pendant as soon as possible."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Voice of the Gravestone",
+                args!["You can find my body near a grave here. Go and get my pendant there."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+    } else {
+        ctx.lines_as(
+            "Voice of the Gravestone",
+            args!["I want to talk to ^0000FFa representative among your party^000000. Everyone else, wait here."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -1421,99 +1402,91 @@ fn ancient_hero_s_soul_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("'ins_baphomet").get()? == 3 {
-                ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
-                ctx.lines_as("Ancient Hero's Soul", args!["Do you have a ^0000FFToken of Apostle^000000?"])?;
-                ctx.next()?;
-                if ctx.call(Function::CountItem, vec![Val::from(6002)])?.number()? > 0 {
-                    ctx.var("'ins_baphomet").set(Val::from(4))?;
-                    ctx.lines_as("Ancient Hero's Soul", args!["Okay. You've done your work. Tell your representative to check your companions and come to me when everyone has finished their work."])?;
-                } else {
-                    ctx.lines_as(
-                        "Ancient Hero's Soul",
-                        args!["Not ready yet? You should prepare ^0000FFToken of Apostle^000000."],
-                    )?;
-                }
-                ctx.close_window()?;
-                ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                return Err(Stop::End);
+        } else if ctx.var("'ins_baphomet").get()? == 3 {
+            ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
+            ctx.lines_as("Ancient Hero's Soul", args!["Do you have a ^0000FFToken of Apostle^000000?"])?;
+            ctx.next()?;
+            if ctx.call(Function::CountItem, vec![Val::from(6002)])?.number()? > 0 {
+                ctx.var("'ins_baphomet").set(Val::from(4))?;
+                ctx.lines_as("Ancient Hero's Soul", args!["Okay. You've done your work. Tell your representative to check your companions and come to me when everyone has finished their work."])?;
             } else {
-                if (ctx.var("'ins_baphomet").get()? == 4
-                    && ctx
-                        .call(Function::IsPartyLeader, vec![l_party_id.clone()])?
-                        .loosely_equals(&Val::from(1)))
-                {
-                    ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
-                    ctx.lines_as(
-                        "Ancient Hero's Soul",
-                        args![
-                            "Are you ready? I opened the sealed gate. To pass the gate, you should carry a ^0000FFToken of Apostle^000000."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.var("'ins_baphomet").set(Val::from(5))?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TELEPORTATION")?])?;
-                    ctx.call(
-                        Function::EnableNpc,
-                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("ins_bapho_to_2f")])?],
-                    )?;
-                    ctx.call(
-                        Function::DoNpcEvent,
-                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("ins_baphomet_1f_timer")])? + Val::from("::OnDisable"))],
-                    )?;
-                    ctx.lines_as(
-                        "Ancient Hero's Soul",
-                        args!["Now you can go to the main altar. It is located in the bottom right corner of this floor."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ancient Hero's Soul",
-                        args!["Your real battle will begin... I'll follow you soon and find a way to help you."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Ancient Hero's Soul", args!["Go ahead, warriors."])?;
-                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                    ctx.call(
-                        Function::MapAnnounce,
-                        vec![
-                            ctx.call(Function::InstanceMapName, vec![Val::from("1@cata")])?,
-                            Val::from("Ancient Hero's Soul : Now you can go to the Main Altar's gate. It is located in the Southeast"),
-                            ctx.constant("BC_MAP")?,
-                            Val::from("0xFFFF00"),
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("'ins_baphomet").get()? == 4 {
-                        ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
-                        ctx.lines_as("Ancient Hero's Soul", args!["Are you ready? I opened the sealed gate. To pass the gate, you should carry a ^0000FFToken of Apostle^000000."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Ancient Hero's Soul",
-                            args!["I'll complete opening the sealed gate when your representative tells me that you're ready."],
-                        )?;
-                        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("'ins_baphomet").get()? == 5 {
-                            ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
-                            ctx.lines_as("Ancient Hero's Soul", args!["What are you doing? The entrance of the main altar is opened now, go and fight! The entrance is near the bottom right side of this floor."])?;
-                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
-                            ctx.lines_as("Ancient Hero's Soul", args!["I have nothing to say to you..."])?;
-                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
+                ctx.lines_as(
+                    "Ancient Hero's Soul",
+                    args!["Not ready yet? You should prepare ^0000FFToken of Apostle^000000."],
+                )?;
             }
+            ctx.close_window()?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            return Err(Stop::End);
+        } else if (ctx.var("'ins_baphomet").get()? == 4
+            && ctx
+                .call(Function::IsPartyLeader, vec![l_party_id.clone()])?
+                .loosely_equals(&Val::from(1)))
+        {
+            ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
+            ctx.lines_as(
+                "Ancient Hero's Soul",
+                args![
+                    "Are you ready? I opened the sealed gate. To pass the gate, you should carry a ^0000FFToken of Apostle^000000."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.var("'ins_baphomet").set(Val::from(5))?;
+            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TELEPORTATION")?])?;
+            ctx.call(
+                Function::EnableNpc,
+                vec![ctx.call(Function::InstanceNpcName, vec![Val::from("ins_bapho_to_2f")])?],
+            )?;
+            ctx.call(
+                Function::DoNpcEvent,
+                vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("ins_baphomet_1f_timer")])? + Val::from("::OnDisable"))],
+            )?;
+            ctx.lines_as(
+                "Ancient Hero's Soul",
+                args!["Now you can go to the main altar. It is located in the bottom right corner of this floor."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Ancient Hero's Soul",
+                args!["Your real battle will begin... I'll follow you soon and find a way to help you."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Ancient Hero's Soul", args!["Go ahead, warriors."])?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            ctx.call(
+                Function::MapAnnounce,
+                vec![
+                    ctx.call(Function::InstanceMapName, vec![Val::from("1@cata")])?,
+                    Val::from("Ancient Hero's Soul : Now you can go to the Main Altar's gate. It is located in the Southeast"),
+                    ctx.constant("BC_MAP")?,
+                    Val::from("0xFFFF00"),
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("'ins_baphomet").get()? == 4 {
+            ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
+            ctx.lines_as("Ancient Hero's Soul", args!["Are you ready? I opened the sealed gate. To pass the gate, you should carry a ^0000FFToken of Apostle^000000."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Ancient Hero's Soul",
+                args!["I'll complete opening the sealed gate when your representative tells me that you're ready."],
+            )?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("'ins_baphomet").get()? == 5 {
+            ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
+            ctx.lines_as("Ancient Hero's Soul", args!["What are you doing? The entrance of the main altar is opened now, go and fight! The entrance is near the bottom right side of this floor."])?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
+            ctx.lines_as("Ancient Hero's Soul", args!["I have nothing to say to you..."])?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
 }
@@ -1648,16 +1621,14 @@ fn bobbing_torch_ss_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.call(Function::DisableNpc, vec![])?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if (ctx.var("'ins_baphomet").get()? == 3 && ctx.call(Function::CountItem, vec![Val::from(6001)])?.number()? > 10) {
+            ctx.mes("You have 10 Essence of Fire already, so you don't need to collect any more.")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if (ctx.var("'ins_baphomet").get()? == 3 && ctx.call(Function::CountItem, vec![Val::from(6001)])?.number()? > 10) {
-                ctx.mes("You have 10 Essence of Fire already, so you don't need to collect any more.")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.mes("You don't need to collect Essence of Fire anymore.")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("You don't need to collect Essence of Fire anymore.")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.mes("A huge torch appearing as if it can burn everything is bobbing up and down in front of me..")?;
@@ -2697,82 +2668,74 @@ fn magical_seal_ss_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 Val::from(0),
             ],
         )?;
-    } else {
-        if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "2" {
-            ctx.call(
-                Function::AreaMobUseSkill,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(123),
-                    Val::from(109),
-                    Val::from(10),
-                    Val::from(1929),
-                    Val::from("NPC_INVINCIBLEOFF"),
-                    Val::from(1),
-                    Val::from(0),
-                    Val::from(0),
-                    ctx.constant("ET_HELP")?,
-                    Val::from(0),
-                ],
-            )?;
-        } else {
-            if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "4" {
-                ctx.call(
-                    Function::AreaMobUseSkill,
-                    vec![
-                        l_map_s.clone(),
-                        Val::from(123),
-                        Val::from(22),
-                        Val::from(10),
-                        Val::from(1929),
-                        Val::from("NPC_INVINCIBLEOFF"),
-                        Val::from(1),
-                        Val::from(0),
-                        Val::from(0),
-                        ctx.constant("ET_HELP")?,
-                        Val::from(0),
-                    ],
-                )?;
-            } else {
-                if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "8" {
-                    ctx.call(
-                        Function::AreaMobUseSkill,
-                        vec![
-                            l_map_s.clone(),
-                            Val::from(35),
-                            Val::from(21),
-                            Val::from(10),
-                            Val::from(1929),
-                            Val::from("NPC_INVINCIBLEOFF"),
-                            Val::from(1),
-                            Val::from(0),
-                            Val::from(0),
-                            ctx.constant("ET_HELP")?,
-                            Val::from(0),
-                        ],
-                    )?;
-                } else {
-                    if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "10" {
-                        ctx.call(
-                            Function::AreaMobUseSkill,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(35),
-                                Val::from(109),
-                                Val::from(10),
-                                Val::from(1929),
-                                Val::from("NPC_INVINCIBLEOFF"),
-                                Val::from(1),
-                                Val::from(0),
-                                Val::from(0),
-                                ctx.constant("ET_HELP")?,
-                                Val::from(0),
-                            ],
-                        )?;
-                    }
-                }
-            }
-        }
+    } else if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "2" {
+        ctx.call(
+            Function::AreaMobUseSkill,
+            vec![
+                l_map_s.clone(),
+                Val::from(123),
+                Val::from(109),
+                Val::from(10),
+                Val::from(1929),
+                Val::from("NPC_INVINCIBLEOFF"),
+                Val::from(1),
+                Val::from(0),
+                Val::from(0),
+                ctx.constant("ET_HELP")?,
+                Val::from(0),
+            ],
+        )?;
+    } else if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "4" {
+        ctx.call(
+            Function::AreaMobUseSkill,
+            vec![
+                l_map_s.clone(),
+                Val::from(123),
+                Val::from(22),
+                Val::from(10),
+                Val::from(1929),
+                Val::from("NPC_INVINCIBLEOFF"),
+                Val::from(1),
+                Val::from(0),
+                Val::from(0),
+                ctx.constant("ET_HELP")?,
+                Val::from(0),
+            ],
+        )?;
+    } else if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "8" {
+        ctx.call(
+            Function::AreaMobUseSkill,
+            vec![
+                l_map_s.clone(),
+                Val::from(35),
+                Val::from(21),
+                Val::from(10),
+                Val::from(1929),
+                Val::from("NPC_INVINCIBLEOFF"),
+                Val::from(1),
+                Val::from(0),
+                Val::from(0),
+                ctx.constant("ET_HELP")?,
+                Val::from(0),
+            ],
+        )?;
+    } else if ctx.call(Function::StrNpcInfo, vec![Val::from(2)])? == "10" {
+        ctx.call(
+            Function::AreaMobUseSkill,
+            vec![
+                l_map_s.clone(),
+                Val::from(35),
+                Val::from(109),
+                Val::from(10),
+                Val::from(1929),
+                Val::from("NPC_INVINCIBLEOFF"),
+                Val::from(1),
+                Val::from(0),
+                Val::from(0),
+                ctx.constant("ET_HELP")?,
+                Val::from(0),
+            ],
+        )?;
     }
     ctx.call(Function::PercentHeal, vec![Val::from(-50), Val::from(0)])?;
     ctx.call(

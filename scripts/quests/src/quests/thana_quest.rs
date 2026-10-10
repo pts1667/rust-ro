@@ -1314,194 +1314,186 @@ fn entrance_guide_run(ctx: &Ctx, mut step: EntranceGuideStep, args: Vec<Val>) ->
                                     }
                                 }
                             }
+                        } else if ctx.var("thana_tower").get()? == 3 {
+                            entrance_guide_run(ctx, EntranceGuideStep::LRequest, vec![])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("thana_tower").get()? == 4 {
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "Rekenber Corporation must have another intention,",
+                                    "since they don't seem interested in the tower much.",
+                                    "I want to know their intention."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "This tower is sealed and separated from the outside.",
+                                    "We need to break those seals, explore inside and develop it."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "We are developing the 3rd and 4th floors now...",
+                                    "There are still seals there.",
+                                    "You can find out some clues when you search around them."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("thana_tower").get()?.number()? > 4 && ctx.var("thana_tower").get()?.number()? < 9) {
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "The magical key and messages?",
+                                    "...we absolutely haven't learned all the tower's secrets..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "Who made the seals?",
+                                    "...can you investigate more?",
+                                    "There must be definitive evidence..."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("thana_tower").get()? == 9 {
+                            ctx.lines_as("Burled", args!["Any new progress?"])?;
+                            ctx.next()?;
+                            let choice = runtime::select_values(ctx, &[Val::from("I found Varmunt's Journal...")])?;
+                            ctx.var("@menu").set(choice)?;
+                            ctx.lines(args!["- You show him Varmunt's Journal.", "Burled reads it. -"])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "...I recognize this.",
+                                    "This is the hologragh of the wise man Varmunt.",
+                                    "Regenschirm from Rekenber's huge research institute has..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "...isn't this the one they are looking for now?!",
+                                    "Isn't their mission to find out Varmunt's research materials...?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "For assisting uncompleted research...",
+                                    "Varmunt's research materials are needed...",
+                                    "...so their mission isn't just an investigation of the tower."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "Something to get as an advantage...",
+                                    "Even they don't know where it is...",
+                                    "...anyways, this is the one of their main objects."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "It's absolutely great. The wise man Varmunt's belongings. How unbelievable!",
+                                    "Now, what do we do with this?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Burled", args!["Originally everything we found out in this tower was under control of the Rekenber Corporation.", "This is supposed to theirs, but..."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    ((Val::from("How would you like to keep this, ")
+                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from("?")),
+                                    "Definitely this should be a secret.",
+                                    "...um, this is a little revenge for them."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "I can guess that there are several secrets in this tower through this note.",
+                                    ((Val::from("This secret should be disclosed by you, ")
+                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from(", before Rekenber does."))
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "No matter how much power they obtain... they won't get to know about this tower...",
+                                    "Haha..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    "...haha...",
+                                    "I feel a bit relieved.",
+                                    "Thanks.",
+                                    "This isn't much, but here's a return present."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Burled",
+                                args![
+                                    ((Val::from("I hope that these will be useful for you, ")
+                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from("."))
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "- Burled gives you the note and an Old Violet Box. -",
+                                " ",
+                                "^4d4dffYou acquire one Old Violet Box,",
+                                "as well as a little EXP.^000000"
+                            ])?;
+                            ctx.var("thana_tower").set(Val::from(10))?;
+                            ctx.call(Function::CompleteQuest, vec![Val::from(7053)])?;
+                            ctx.call(Function::GetExperience, vec![Val::from(120000), Val::from(10000)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if ctx.var("thana_tower").get()? == 3 {
-                                entrance_guide_run(ctx, EntranceGuideStep::LRequest, vec![])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("thana_tower").get()? == 4 {
-                                    ctx.lines_as(
-                                        "Burled",
-                                        args![
-                                            "Rekenber Corporation must have another intention,",
-                                            "since they don't seem interested in the tower much.",
-                                            "I want to know their intention."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Burled",
-                                        args![
-                                            "This tower is sealed and separated from the outside.",
-                                            "We need to break those seals, explore inside and develop it."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Burled",
-                                        args![
-                                            "We are developing the 3rd and 4th floors now...",
-                                            "There are still seals there.",
-                                            "You can find out some clues when you search around them."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("thana_tower").get()?.number()? > 4 && ctx.var("thana_tower").get()?.number()? < 9) {
-                                        ctx.lines_as(
-                                            "Burled",
-                                            args![
-                                                "The magical key and messages?",
-                                                "...we absolutely haven't learned all the tower's secrets..."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Burled",
-                                            args![
-                                                "Who made the seals?",
-                                                "...can you investigate more?",
-                                                "There must be definitive evidence..."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("thana_tower").get()? == 9 {
-                                            ctx.lines_as("Burled", args!["Any new progress?"])?;
-                                            ctx.next()?;
-                                            let choice = runtime::select_values(ctx, &[Val::from("I found Varmunt's Journal...")])?;
-                                            ctx.var("@menu").set(choice)?;
-                                            ctx.lines(args!["- You show him Varmunt's Journal.", "Burled reads it. -"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    "...I recognize this.",
-                                                    "This is the hologragh of the wise man Varmunt.",
-                                                    "Regenschirm from Rekenber's huge research institute has..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    "...isn't this the one they are looking for now?!",
-                                                    "Isn't their mission to find out Varmunt's research materials...?"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    "For assisting uncompleted research...",
-                                                    "Varmunt's research materials are needed...",
-                                                    "...so their mission isn't just an investigation of the tower."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    "Something to get as an advantage...",
-                                                    "Even they don't know where it is...",
-                                                    "...anyways, this is the one of their main objects."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    "It's absolutely great. The wise man Varmunt's belongings. How unbelievable!",
-                                                    "Now, what do we do with this?"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Burled", args!["Originally everything we found out in this tower was under control of the Rekenber Corporation.", "This is supposed to theirs, but..."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    ((Val::from("How would you like to keep this, ")
-                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                        + Val::from("?")),
-                                                    "Definitely this should be a secret.",
-                                                    "...um, this is a little revenge for them."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    "I can guess that there are several secrets in this tower through this note.",
-                                                    ((Val::from("This secret should be disclosed by you, ")
-                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                        + Val::from(", before Rekenber does."))
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    "No matter how much power they obtain... they won't get to know about this tower...",
-                                                    "Haha..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    "...haha...",
-                                                    "I feel a bit relieved.",
-                                                    "Thanks.",
-                                                    "This isn't much, but here's a return present."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args![
-                                                    ((Val::from("I hope that these will be useful for you, ")
-                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                        + Val::from("."))
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines(args![
-                                                "- Burled gives you the note and an Old Violet Box. -",
-                                                " ",
-                                                "^4d4dffYou acquire one Old Violet Box,",
-                                                "as well as a little EXP.^000000"
-                                            ])?;
-                                            ctx.var("thana_tower").set(Val::from(10))?;
-                                            ctx.call(Function::CompleteQuest, vec![Val::from(7053)])?;
-                                            ctx.call(Function::GetExperience, vec![Val::from(120000), Val::from(10000)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            ctx.lines_as(
-                                                "Burled",
-                                                args!["Are you keeping the secrets well?", "Is there a Phantom on the top of this tower?"],
-                                            )?;
-                                            if ctx.call(Function::Rand, vec![Val::from(3)])? == 1 {
-                                                ctx.mes("You look tired. This isn't a big deal, but it's for you.")?;
-                                                runtime::npc_skill(
-                                                    ctx,
-                                                    &Val::from("AL_HEAL"),
-                                                    &Val::from(11),
-                                                    &Val::from(50),
-                                                    &Val::from(70),
-                                                )?;
-                                            }
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
-                                }
+                            ctx.lines_as(
+                                "Burled",
+                                args!["Are you keeping the secrets well?", "Is there a Phantom on the top of this tower?"],
+                            )?;
+                            if ctx.call(Function::Rand, vec![Val::from(3)])? == 1 {
+                                ctx.mes("You look tired. This isn't a big deal, but it's for you.")?;
+                                runtime::npc_skill(
+                                    ctx,
+                                    &Val::from("AL_HEAL"),
+                                    &Val::from(11),
+                                    &Val::from(50),
+                                    &Val::from(70),
+                                )?;
                             }
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -1686,33 +1678,31 @@ fn rune_device_tt1_run(ctx: &Ctx, mut step: RuneDeviceTt1Step, args: Vec<Val>) -
                                 ctx.next()?;
                                 step = RuneDeviceTt1Step::LKey;
                                 continue 'machine;
+                            } else if ctx.call(Function::GetEquipWeaponLevel, vec![ctx.constant("EQI_HAND_R")?])? == 4 {
+                                ctx.lines(args![
+                                    ((Val::from("^3355FFWith your ")
+                                        + ctx.call(Function::GetEquipName, vec![ctx.constant("EQI_HAND_R")?])?)
+                                        + Val::from(" in")),
+                                    "hand, you smash the energy",
+                                    "field with all of your strength. After absorbing the impact, the",
+                                    "field fizzles out with a soft,",
+                                    "gentle ''pzzzzzh'' sound.^000000"
+                                ])?;
+                                ctx.next()?;
+                                step = RuneDeviceTt1Step::LKey;
+                                continue 'machine;
                             } else {
-                                if ctx.call(Function::GetEquipWeaponLevel, vec![ctx.constant("EQI_HAND_R")?])? == 4 {
-                                    ctx.lines(args![
-                                        ((Val::from("^3355FFWith your ")
-                                            + ctx.call(Function::GetEquipName, vec![ctx.constant("EQI_HAND_R")?])?)
-                                            + Val::from(" in")),
-                                        "hand, you smash the energy",
-                                        "field with all of your strength. After absorbing the impact, the",
-                                        "field fizzles out with a soft,",
-                                        "gentle ''pzzzzzh'' sound.^000000"
-                                    ])?;
-                                    ctx.next()?;
-                                    step = RuneDeviceTt1Step::LKey;
-                                    continue 'machine;
-                                } else {
-                                    ctx.lines(args![
-                                        "^3355FFYou smash the energy",
-                                        "field with your weapon",
-                                        "using all of your strength,",
-                                        "but you weren't able to",
-                                        "break down the barrier.",
-                                        "You probably need a more",
-                                        "powerful weapon...^000000"
-                                    ])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
+                                ctx.lines(args![
+                                    "^3355FFYou smash the energy",
+                                    "field with your weapon",
+                                    "using all of your strength,",
+                                    "but you weren't able to",
+                                    "break down the barrier.",
+                                    "You probably need a more",
+                                    "powerful weapon...^000000"
+                                ])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         }
                         if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -2666,68 +2656,48 @@ fn brilliant_statue_tt4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 if matched3 {
                                     if l_small_1.clone() == 0 {
                                         ctx.mes("1st Small Wheel: No Change")?;
+                                    } else if l_small_1.clone() == 1 {
+                                        ctx.mes("1st Small Wheel: Down")?;
+                                    } else if l_small_1.clone() == 2 {
+                                        ctx.mes("1st Small Wheel: Up")?;
                                     } else {
-                                        if l_small_1.clone() == 1 {
-                                            ctx.mes("1st Small Wheel: Down")?;
-                                        } else {
-                                            if l_small_1.clone() == 2 {
-                                                ctx.mes("1st Small Wheel: Up")?;
-                                            } else {
-                                                ctx.mes("1st Small Wheel: Pressed")?;
-                                            }
-                                        }
+                                        ctx.mes("1st Small Wheel: Pressed")?;
                                     }
                                     if l_small_2.clone() == 0 {
                                         ctx.mes("2nd Small Wheel: No Change")?;
+                                    } else if l_small_2.clone() == 1 {
+                                        ctx.mes("2nd Small Wheel: Pressed")?;
+                                    } else if l_small_2.clone() == 2 {
+                                        ctx.mes("2nd Small Wheel: Down")?;
                                     } else {
-                                        if l_small_2.clone() == 1 {
-                                            ctx.mes("2nd Small Wheel: Pressed")?;
-                                        } else {
-                                            if l_small_2.clone() == 2 {
-                                                ctx.mes("2nd Small Wheel: Down")?;
-                                            } else {
-                                                ctx.mes("2nd Small Wheel: Up")?;
-                                            }
-                                        }
+                                        ctx.mes("2nd Small Wheel: Up")?;
                                     }
                                     if l_big_1.clone() == 0 {
                                         ctx.mes("1st Big Wheel: No Change")?;
+                                    } else if l_big_1.clone() == 1 {
+                                        ctx.mes("1st Big Wheel: Up")?;
+                                    } else if l_big_1.clone() == 2 {
+                                        ctx.mes("1st Big Wheel: Moved")?;
                                     } else {
-                                        if l_big_1.clone() == 1 {
-                                            ctx.mes("1st Big Wheel: Up")?;
-                                        } else {
-                                            if l_big_1.clone() == 2 {
-                                                ctx.mes("1st Big Wheel: Moved")?;
-                                            } else {
-                                                ctx.mes("1st Big Wheel: Down")?;
-                                            }
-                                        }
+                                        ctx.mes("1st Big Wheel: Down")?;
                                     }
                                     if l_big_2.clone() == 0 {
                                         ctx.mes("2nd Big Wheel: No Change")?;
+                                    } else if l_big_2.clone() == 1 {
+                                        ctx.mes("2nd Big Wheel: Moved")?;
+                                    } else if l_big_2.clone() == 2 {
+                                        ctx.mes("2nd Big Wheel: Up")?;
                                     } else {
-                                        if l_big_2.clone() == 1 {
-                                            ctx.mes("2nd Big Wheel: Moved")?;
-                                        } else {
-                                            if l_big_2.clone() == 2 {
-                                                ctx.mes("2nd Big Wheel: Up")?;
-                                            } else {
-                                                ctx.mes("2nd Big Wheel: Down")?;
-                                            }
-                                        }
+                                        ctx.mes("2nd Big Wheel: Down")?;
                                     }
                                     if l_big_3.clone() == 0 {
                                         ctx.mes("3rd Big Wheel: No Change")?;
+                                    } else if l_big_3.clone() == 1 {
+                                        ctx.mes("3rd Big Wheel: Down")?;
+                                    } else if l_big_3.clone() == 2 {
+                                        ctx.mes("3rd Big Wheel: Up")?;
                                     } else {
-                                        if l_big_3.clone() == 1 {
-                                            ctx.mes("3rd Big Wheel: Down")?;
-                                        } else {
-                                            if l_big_3.clone() == 2 {
-                                                ctx.mes("3rd Big Wheel: Up")?;
-                                            } else {
-                                                ctx.mes("3rd Big Wheel: Moved")?;
-                                            }
-                                        }
+                                        ctx.mes("3rd Big Wheel: Moved")?;
                                     }
                                     break 'b2;
                                 }
@@ -4262,13 +4232,11 @@ fn gateto_thanatos_run(ctx: &Ctx, mut step: GatetoThanatosStep, args: Vec<Val>) 
                 if (ctx.var("$@thana_summon").get()? == 0 || ctx.var("$@thana_summon").get()? == 6) {
                     ctx.call(Function::DisableNpc, vec![Val::from("#gateto_thanatos")])?;
                     ctx.call(Function::StopNpcTimer, vec![])?;
-                } else {
-                    if ctx.var("$@thana_summon").get()? == 5 {
-                        if l_touch.clone().is_true() {
-                            ctx.call(Function::Warp, vec![Val::from("thana_boss"), Val::from(136), Val::from(116)])?;
-                        } else {
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("#gateto_thanatos::OnOn2")])?;
-                        }
+                } else if ctx.var("$@thana_summon").get()? == 5 {
+                    if l_touch.clone().is_true() {
+                        ctx.call(Function::Warp, vec![Val::from("thana_boss"), Val::from(136), Val::from(116)])?;
+                    } else {
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("#gateto_thanatos::OnOn2")])?;
                     }
                 }
                 return Err(Stop::End);

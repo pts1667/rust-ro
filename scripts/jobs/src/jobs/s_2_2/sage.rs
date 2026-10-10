@@ -39,31 +39,29 @@ fn dean_of_the_academy_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ])?;
             ctx.next()?;
             ctx.lines_as("Kayron Grik", args!["Our knowledge is the mainspring of activity which helps the kingdom to be developed faster.", "Please keep this in mind: you must study and record everything you've discovered so that all in the kingdom may benefit."])?;
+        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.lines(args![
+                "Hahah, so my little Novice, what brings you this way? ...I guess you're on a sightseeing trip?",
+                "You must have had a really hard time to reach this place. I must say, you seem interested in the Sage class."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Kayron Grik",
+                args![
+                    "If you aspire to become a Sage, you must first live life as a Mage. Only then shall you have a chance.",
+                    "I am looking forward seeing you again."
+                ],
+            )?;
         } else {
-            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.lines(args![
-                    "Hahah, so my little Novice, what brings you this way? ...I guess you're on a sightseeing trip?",
-                    "You must have had a really hard time to reach this place. I must say, you seem interested in the Sage class."
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Kayron Grik",
-                    args![
-                        "If you aspire to become a Sage, you must first live life as a Mage. Only then shall you have a chance.",
-                        "I am looking forward seeing you again."
-                    ],
-                )?;
-            } else {
-                ctx.lines(args!["*Chuckle* Although we've been studying this world for a long time, I know that studying in itself will fulfill all the needs of the people.", "Other classes are just as important to the welfare of Rune-Midgarts..."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Kayron Grik",
-                    args![
-                        "However, if you happen to meet a Sage down the road, I hope you will lend him your assistance.",
-                        "And if you do, he shall repay you in kind..."
-                    ],
-                )?;
-            }
+            ctx.lines(args!["*Chuckle* Although we've been studying this world for a long time, I know that studying in itself will fulfill all the needs of the people.", "Other classes are just as important to the welfare of Rune-Midgarts..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Kayron Grik",
+                args![
+                    "However, if you happen to meet a Sage down the road, I hope you will lend him your assistance.",
+                    "And if you do, he shall repay you in kind..."
+                ],
+            )?;
         }
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("job_sage_kayron"), Val::from(255)])?;
@@ -179,98 +177,96 @@ fn dean_of_the_academy_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("job_sage_kayron"), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("sage_q").get()? == 15 {
-            if ctx.call(Function::CountItem, vec![Val::from(1550)])?.number()? > 0 {
-                if ctx.var("JobLevel").get()?.number()? < 40 {
-                    ctx.var("sage_q").set(Val::from(0))?;
-                    ctx.lines(args![
-                        "You don't seem to be qualified yet.",
-                        "Remember, you must reach at least job level 40 to become a Sage."
-                    ])?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Cutin, vec![Val::from("job_sage_kayron"), Val::from(255)])?;
-                    return Err(Stop::End);
-                }
-                if ctx.var("SkillPoint").get()?.is_true() {
-                    ctx.lines(args![
-                        "You possess remaining skill points...",
-                        "Before you submit your dissertation, please take care this matter first."
-                    ])?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Cutin, vec![Val::from("job_sage_kayron"), Val::from(255)])?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("sage_q").get()? == 15 {
+        if ctx.call(Function::CountItem, vec![Val::from(1550)])?.number()? > 0 {
+            if ctx.var("JobLevel").get()?.number()? < 40 {
+                ctx.var("sage_q").set(Val::from(0))?;
                 ctx.lines(args![
-                    "Ho~ So? Did you finally complete your dissertation? Well done.",
-                    "Let me see."
+                    "You don't seem to be qualified yet.",
+                    "Remember, you must reach at least job level 40 to become a Sage."
                 ])?;
-                ctx.next()?;
-                ctx.lines_as("Kayron Grik", args!["Hmm..."])?;
-                ctx.next()?;
-                ctx.lines_as("Kayron Grik", args!["Huh..."])?;
-                ctx.next()?;
-                ctx.lines_as("Kayron Grik", args!["Interesting..."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Kayron Grik",
-                    args![
-                        "Although it's roughly written, it's well done for a beginner.",
-                        "Ah yes...you seem to be proficient in studying."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.call(Function::CompleteQuest, vec![Val::from(2052)])?;
-                shared::other_global_functions::job_change(ctx, vec![ctx.constant("JOB_SAGE")?])?;
-                shared::other_global_functions::f_clearjobvar(ctx, vec![])?;
-                ctx.lines_as(
-                    "Kayron Grik",
-                    args![
-                        "Congratulations! You have now become a Sage.",
-                        "Always remember to keep a studious and analytical mindset."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Kayron Grik",
-                    args![
-                        "Also, keep this dissertation and treat it with care, since it is one and only book you have written.",
-                        "You may have need of it one of these days. And it shall forever remind of this grandiose moment."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Kayron Grik",
-                    args!["Well then...May God fill your path with knowledge.", "Study with diligence!!"],
-                )?;
-            } else {
-                ctx.lines(args![
-                    "Hmm? What has happened to you? Where did you leave your dissertation?",
-                    "Please bring it to me so that you may pass the test."
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Kayron Grik",
-                    args![
-                        "Wait...you didn't lose it, did you?",
-                        "Well...that's your business. It is regrettable that you won't be able to get a chance to write a book anymore."
-                    ],
-                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("job_sage_kayron"), Val::from(255)])?;
+                return Err(Stop::End);
             }
+            if ctx.var("SkillPoint").get()?.is_true() {
+                ctx.lines(args![
+                    "You possess remaining skill points...",
+                    "Before you submit your dissertation, please take care this matter first."
+                ])?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("job_sage_kayron"), Val::from(255)])?;
+                return Err(Stop::End);
+            }
+            ctx.lines(args![
+                "Ho~ So? Did you finally complete your dissertation? Well done.",
+                "Let me see."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as("Kayron Grik", args!["Hmm..."])?;
+            ctx.next()?;
+            ctx.lines_as("Kayron Grik", args!["Huh..."])?;
+            ctx.next()?;
+            ctx.lines_as("Kayron Grik", args!["Interesting..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Kayron Grik",
+                args![
+                    "Although it's roughly written, it's well done for a beginner.",
+                    "Ah yes...you seem to be proficient in studying."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.call(Function::CompleteQuest, vec![Val::from(2052)])?;
+            shared::other_global_functions::job_change(ctx, vec![ctx.constant("JOB_SAGE")?])?;
+            shared::other_global_functions::f_clearjobvar(ctx, vec![])?;
+            ctx.lines_as(
+                "Kayron Grik",
+                args![
+                    "Congratulations! You have now become a Sage.",
+                    "Always remember to keep a studious and analytical mindset."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Kayron Grik",
+                args![
+                    "Also, keep this dissertation and treat it with care, since it is one and only book you have written.",
+                    "You may have need of it one of these days. And it shall forever remind of this grandiose moment."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Kayron Grik",
+                args!["Well then...May God fill your path with knowledge.", "Study with diligence!!"],
+            )?;
         } else {
             ctx.lines(args![
-                "*Chuckle* Becoming a Sage isn't as simple as you may have assumed.",
-                "You cannot become a Sage because your magic skills are inadequate..."
+                "Hmm? What has happened to you? Where did you leave your dissertation?",
+                "Please bring it to me so that you may pass the test."
             ])?;
             ctx.next()?;
             ctx.lines_as(
                 "Kayron Grik",
                 args![
-                    "Study diligently, and return when you finish your dissertation.",
-                    "Until then, farewell!"
+                    "Wait...you didn't lose it, did you?",
+                    "Well...that's your business. It is regrettable that you won't be able to get a chance to write a book anymore."
                 ],
             )?;
         }
+    } else {
+        ctx.lines(args![
+            "*Chuckle* Becoming a Sage isn't as simple as you may have assumed.",
+            "You cannot become a Sage because your magic skills are inadequate..."
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kayron Grik",
+            args![
+                "Study diligently, and return when you finish your dissertation.",
+                "Until then, farewell!"
+            ],
+        )?;
     }
     ctx.close_window()?;
     ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
@@ -331,49 +327,47 @@ fn staff_of_the_academy_a_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     "Also, please give my regards to your colleagues as well."
                 ],
             )?;
+        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.mes("Welcome to the Schweicherbil Magic Academy.")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Metheus Sylphe",
+                args![
+                    "This place is specialized in Sage class training. Mostly, what we do is study about monsters and magic spells.",
+                    "We always welcome new students."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Metheus Sylphe",
+                args![
+                    "People who are at job jevel 40 as Mage class are qualified to apply for enrollment.",
+                    "By passing selected courses, we will then approve them as Sages."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Metheus Sylphe",
+                args!["If you're interested in the Sage class, please come again.", "And have a good day."],
+            )?;
         } else {
-            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.mes("Welcome to the Schweicherbil Magic Academy.")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Metheus Sylphe",
-                    args![
-                        "This place is specialized in Sage class training. Mostly, what we do is study about monsters and magic spells.",
-                        "We always welcome new students."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Metheus Sylphe",
-                    args![
-                        "People who are at job jevel 40 as Mage class are qualified to apply for enrollment.",
-                        "By passing selected courses, we will then approve them as Sages."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Metheus Sylphe",
-                    args!["If you're interested in the Sage class, please come again.", "And have a good day."],
-                )?;
-            } else {
-                ctx.mes("Welcome to the Schweicherbil Magic Academy.")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Metheus Sylphe",
-                    args![
-                        "This place is specialized in Sage class training. What we do is study about monsters and magic spells.",
-                        "People who are at job jevel 40 as Mage class are qualified to apply for enrollment."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Metheus Sylphe",
-                    args![
-                        "If you have any Mage friends, please let them know about this academy.",
-                        "Have a good day."
-                    ],
-                )?;
-            }
+            ctx.mes("Welcome to the Schweicherbil Magic Academy.")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Metheus Sylphe",
+                args![
+                    "This place is specialized in Sage class training. What we do is study about monsters and magic spells.",
+                    "People who are at job jevel 40 as Mage class are qualified to apply for enrollment."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Metheus Sylphe",
+                args![
+                    "If you have any Mage friends, please let them know about this academy.",
+                    "Have a good day."
+                ],
+            )?;
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -809,288 +803,276 @@ fn staff_of_the_academy_a_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if (ctx.var("sage_q").get()?.number()? >= 1 && ctx.var("sage_q").get()?.number()? <= 3) {
-            ctx.mes("Welcome, once again.")?;
+    } else if (ctx.var("sage_q").get()?.number()? >= 1 && ctx.var("sage_q").get()?.number()? <= 3) {
+        ctx.mes("Welcome, once again.")?;
+        ctx.next()?;
+        if (ctx.call(Function::CountItem, vec![Val::from(1006)])?.number()? > 0
+            && ctx.call(Function::CountItem, vec![Val::from(1007)])?.number()? > 0)
+        {
+            ctx.call(Function::DelItem, vec![Val::from(1006), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(1007), Val::from(1)])?;
+            ctx.lines_as(
+                "Metheus Sylphe",
+                args!["Well done. Let me proceed with your application request."],
+            )?;
+            ctx.var("sage_q").set(Val::from(4))?;
             ctx.next()?;
-            if (ctx.call(Function::CountItem, vec![Val::from(1006)])?.number()? > 0
-                && ctx.call(Function::CountItem, vec![Val::from(1007)])?.number()? > 0)
-            {
-                ctx.call(Function::DelItem, vec![Val::from(1006), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(1007), Val::from(1)])?;
-                ctx.lines_as(
-                    "Metheus Sylphe",
-                    args!["Well done. Let me proceed with your application request."],
-                )?;
-                ctx.var("sage_q").set(Val::from(4))?;
-                ctx.next()?;
-            } else {
-                if ctx.var("Zeny").get()?.number()? > 69999 {
-                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(70000))?))?;
+        } else if ctx.var("Zeny").get()?.number()? > 69999 {
+            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(70000))?))?;
+            ctx.lines_as(
+                "Metheus Sylphe",
+                args!["Well done. Let me proceed with your application request."],
+            )?;
+            ctx.var("sage_q").set(Val::from(4))?;
+            ctx.next()?;
+        } else {
+            'b4: {
+                let subject4 = ctx.var("sage_q").get()?;
+                let mut matched4 = false;
+                let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                    && !subject4.loosely_equals(&Val::from(2))
+                    && !subject4.loosely_equals(&Val::from(3));
+                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                    matched4 = true;
+                }
+                if matched4 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(916), false);
+                    runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(914), false);
+                    runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(1002), false);
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
+                    runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
+                    runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(25), false);
+                    break 'b4;
+                }
+                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                    matched4 = true;
+                }
+                if matched4 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(705), false);
+                    runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(949), false);
+                    runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(1024), false);
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
+                    runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
+                    runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(25), false);
+                    break 'b4;
+                }
+                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                    matched4 = true;
+                }
+                if matched4 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(916), false);
+                    runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(914), false);
+                    runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(705), false);
+                    runtime::local_set(&mut l_item, &Val::from(base + 3), Val::from(949), false);
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
+                    runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
+                    runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(50), false);
+                    runtime::local_set(&mut l_count, &Val::from(base + 3), Val::from(50), false);
+                    break 'b4;
+                }
+            }
+            l_size = (Val::from(l_item.len() as i32).try_sub(Val::from(1))?);
+            l_i = Val::from(0);
+            'l5: loop {
+                if !(runtime::op(&l_i.clone(), "<", &l_size.clone())?.is_true()
+                    && runtime::op(
+                        &ctx.call(Function::CountItem, vec![runtime::local_get(&l_item, &l_i.clone(), false)])?,
+                        ">=",
+                        &runtime::local_get(&l_count, &l_i.clone(), false),
+                    )?
+                    .is_true())
+                {
+                    break 'l5;
+                }
+                'b5: {}
+                l_i = (l_i.clone() + Val::from(1));
+            }
+            if l_i.clone().loosely_equals(&l_size.clone()) {
+                if ctx.var("Zeny").get()?.number()? > 29999 {
+                    l_i = Val::from(0);
+                    'l6: loop {
+                        if !(runtime::op(&l_i.clone(), "<", &l_size.clone())?.is_true()) {
+                            break 'l6;
+                        }
+                        'b6: {
+                            ctx.call(
+                                Function::DelItem,
+                                vec![
+                                    runtime::local_get(&l_item, &l_i.clone(), false),
+                                    runtime::local_get(&l_count, &l_i.clone(), false),
+                                ],
+                            )?;
+                        }
+                        l_i = (l_i.clone() + Val::from(1));
+                    }
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(30000))?))?;
                     ctx.lines_as(
                         "Metheus Sylphe",
                         args!["Well done. Let me proceed with your application request."],
                     )?;
+                    l_sage_q_t = ctx.var("sage_q").get()?;
                     ctx.var("sage_q").set(Val::from(4))?;
                     ctx.next()?;
-                } else {
-                    'b4: {
-                        let subject4 = ctx.var("sage_q").get()?;
-                        let mut matched4 = false;
-                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                            && !subject4.loosely_equals(&Val::from(2))
-                            && !subject4.loosely_equals(&Val::from(3));
-                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(916), false);
-                            runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(914), false);
-                            runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(1002), false);
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
-                            runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
-                            runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(25), false);
-                            break 'b4;
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(705), false);
-                            runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(949), false);
-                            runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(1024), false);
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
-                            runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
-                            runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(25), false);
-                            break 'b4;
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(916), false);
-                            runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(914), false);
-                            runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(705), false);
-                            runtime::local_set(&mut l_item, &Val::from(base + 3), Val::from(949), false);
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
-                            runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
-                            runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(50), false);
-                            runtime::local_set(&mut l_count, &Val::from(base + 3), Val::from(50), false);
-                            break 'b4;
-                        }
-                    }
-                    l_size = (Val::from(l_item.len() as i32).try_sub(Val::from(1))?);
-                    l_i = Val::from(0);
-                    'l5: loop {
-                        if !(runtime::op(&l_i.clone(), "<", &l_size.clone())?.is_true()
-                            && runtime::op(
-                                &ctx.call(Function::CountItem, vec![runtime::local_get(&l_item, &l_i.clone(), false)])?,
-                                ">=",
-                                &runtime::local_get(&l_count, &l_i.clone(), false),
-                            )?
-                            .is_true())
-                        {
-                            break 'l5;
-                        }
-                        'b5: {}
-                        l_i = (l_i.clone() + Val::from(1));
-                    }
-                    if l_i.clone().loosely_equals(&l_size.clone()) {
-                        if ctx.var("Zeny").get()?.number()? > 29999 {
-                            l_i = Val::from(0);
-                            'l6: loop {
-                                if !(runtime::op(&l_i.clone(), "<", &l_size.clone())?.is_true()) {
-                                    break 'l6;
-                                }
-                                'b6: {
-                                    ctx.call(
-                                        Function::DelItem,
-                                        vec![
-                                            runtime::local_get(&l_item, &l_i.clone(), false),
-                                            runtime::local_get(&l_count, &l_i.clone(), false),
-                                        ],
-                                    )?;
-                                }
-                                l_i = (l_i.clone() + Val::from(1));
-                            }
-                            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(30000))?))?;
-                            ctx.lines_as(
-                                "Metheus Sylphe",
-                                args!["Well done. Let me proceed with your application request."],
-                            )?;
-                            l_sage_q_t = ctx.var("sage_q").get()?;
-                            ctx.var("sage_q").set(Val::from(4))?;
-                            ctx.next()?;
-                        }
-                        ctx.lines_as(
-                            "Metheus Sylphe",
-                            args![
-                                "I am sorry to say that you are not ready yet.",
-                                "Although you brought all of the items, the money you have now is less than 30,000 zeny."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Metheus Sylphe",
-                            args![
-                                "As I told you before, you must bring all of those items, as well as the 30,000 zeny together.",
-                                "Please make sure that you have the required items and money."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Metheus Sylphe",
-                            args![
-                                "I am sorry to say that it seems you didn't bring all of the required items.",
-                                "I shall remind you what to bring, in case you have forgotten."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Metheus Sylphe",
-                            args![
-                                "Please bring the following items to me.",
-                                (((runtime::local_get(&l_count, &Val::from(0), false) + Val::from(" ^3355FF"))
-                                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item, &Val::from(0), false)])?)
-                                    + Val::from("^000000")),
-                                (((runtime::local_get(&l_count, &Val::from(1), false) + Val::from(" ^3355FF"))
-                                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item, &Val::from(1), false)])?)
-                                    + Val::from("^000000")),
-                                (((runtime::local_get(&l_count, &Val::from(2), false) + Val::from(" ^3355FF"))
-                                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item, &Val::from(2), false)])?)
-                                    + Val::from("^000000"))
-                            ],
-                        )?;
-                        if ctx.var("sage_q").get()? == 3 {
-                            ctx.lines(args![
-                                (((runtime::local_get(&l_count, &Val::from(3), false) + Val::from(" ^3355FF"))
-                                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item, &Val::from(3), false)])?)
-                                    + Val::from("^000000"))
-                            ])?;
-                        }
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Metheus Sylphe",
-                            args![
-                                "If you bring all of these items, your tuition fee will be reduced from 70,000 zeny to 30,000 zeny.",
-                                "Good luck."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
                 }
-            }
-            ctx.lines_as(
-                "Metheus Sylphe",
-                args!["Let's complete the application form.", "Please put your signature here."],
-            )?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[ctx.call(Function::StrCharInfo, vec![Val::from(0)])?])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.mes("[Metheus Sylphe]")?;
-            'b7: {
-                let subject7 = l_sage_q_t.clone();
-                let mut matched7 = false;
-                let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                    && !subject7.loosely_equals(&Val::from(2))
-                    && !subject7.loosely_equals(&Val::from(3));
-                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                    matched7 = true;
-                }
-                if matched7 {
-                    ctx.lines(args![
-                        ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                            + Val::from(". It's a very nice name."))
-                    ])?;
-                    break 'b7;
-                }
-                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                    matched7 = true;
-                }
-                if matched7 {
-                    ctx.lines(args![
-                        ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                            + Val::from(". It sounds very sagacious."))
-                    ])?;
-                    break 'b7;
-                }
-                if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                    matched7 = true;
-                }
-                if matched7 {
-                    ctx.lines(args![
-                        ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                            + Val::from(". Interesting name."))
-                    ])?;
-                    break 'b7;
-                }
-            }
-            ctx.next()?;
-            ctx.lines_as(
-                "Metheus Sylphe",
-                args!["Ah yes, everything is in readiness.", "Next, you will take an entrance test."],
-            )?;
-            ctx.var("sage_q").set(Val::from(4))?;
-            if ctx.call(Function::CheckQuest, vec![Val::from(2043)])? != -1 {
-                ctx.call(Function::ChangeQuest, vec![Val::from(2043), Val::from(2041)])?;
-            } else {
-                if ctx.call(Function::CheckQuest, vec![Val::from(2044)])? != -1 {
-                    ctx.call(Function::ChangeQuest, vec![Val::from(2044), Val::from(2041)])?;
-                } else {
-                    if ctx.call(Function::CheckQuest, vec![Val::from(2045)])? != -1 {
-                        ctx.call(Function::ChangeQuest, vec![Val::from(2045), Val::from(2041)])?;
-                    } else {
-                        ctx.call(Function::SetQuest, vec![Val::from(2041)])?;
-                    }
-                }
-            }
-            ctx.next()?;
-            ctx.lines_as(
-                "Metheus Sylphe",
-                args!["Please visit Professor Claytos.", "He's in the left room."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("sage_q").get()? == 4 {
-                ctx.lines(args![
-                    "Huh? What are you doing here? You're supposed to be taking the entrance test by now.",
-                    "Please visit Professor Claytos in the left room."
-                ])?;
+                ctx.lines_as(
+                    "Metheus Sylphe",
+                    args![
+                        "I am sorry to say that you are not ready yet.",
+                        "Although you brought all of the items, the money you have now is less than 30,000 zeny."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Metheus Sylphe",
+                    args![
+                        "As I told you before, you must bring all of those items, as well as the 30,000 zeny together.",
+                        "Please make sure that you have the required items and money."
+                    ],
+                )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             } else {
-                if ctx.var("sage_q").get()? == 15 {
+                ctx.lines_as(
+                    "Metheus Sylphe",
+                    args![
+                        "I am sorry to say that it seems you didn't bring all of the required items.",
+                        "I shall remind you what to bring, in case you have forgotten."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Metheus Sylphe",
+                    args![
+                        "Please bring the following items to me.",
+                        (((runtime::local_get(&l_count, &Val::from(0), false) + Val::from(" ^3355FF"))
+                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item, &Val::from(0), false)])?)
+                            + Val::from("^000000")),
+                        (((runtime::local_get(&l_count, &Val::from(1), false) + Val::from(" ^3355FF"))
+                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item, &Val::from(1), false)])?)
+                            + Val::from("^000000")),
+                        (((runtime::local_get(&l_count, &Val::from(2), false) + Val::from(" ^3355FF"))
+                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item, &Val::from(2), false)])?)
+                            + Val::from("^000000"))
+                    ],
+                )?;
+                if ctx.var("sage_q").get()? == 3 {
                     ctx.lines(args![
-                        "Oh, are you done with the dissertation?",
-                        "Sure, you can submit it to Dean Kayron."
+                        (((runtime::local_get(&l_count, &Val::from(3), false) + Val::from(" ^3355FF"))
+                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item, &Val::from(3), false)])?)
+                            + Val::from("^000000"))
                     ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Metheus Sylphe",
-                        args!["So long as you make the effort, you should achieve good results.", "Good luck."],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines(args![
-                        "Oh sorry, this is a rather inconvenient time to converse.",
-                        "Please come back later. I apologize for troubling you."
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
                 }
+                ctx.next()?;
+                ctx.lines_as(
+                    "Metheus Sylphe",
+                    args![
+                        "If you bring all of these items, your tuition fee will be reduced from 70,000 zeny to 30,000 zeny.",
+                        "Good luck."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
+        ctx.lines_as(
+            "Metheus Sylphe",
+            args!["Let's complete the application form.", "Please put your signature here."],
+        )?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[ctx.call(Function::StrCharInfo, vec![Val::from(0)])?])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.mes("[Metheus Sylphe]")?;
+        'b7: {
+            let subject7 = l_sage_q_t.clone();
+            let mut matched7 = false;
+            let no_case7 = !subject7.loosely_equals(&Val::from(1))
+                && !subject7.loosely_equals(&Val::from(2))
+                && !subject7.loosely_equals(&Val::from(3));
+            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                matched7 = true;
+            }
+            if matched7 {
+                ctx.lines(args![
+                    ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                        + Val::from(". It's a very nice name."))
+                ])?;
+                break 'b7;
+            }
+            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                matched7 = true;
+            }
+            if matched7 {
+                ctx.lines(args![
+                    ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                        + Val::from(". It sounds very sagacious."))
+                ])?;
+                break 'b7;
+            }
+            if !matched7 && subject7.loosely_equals(&Val::from(3)) {
+                matched7 = true;
+            }
+            if matched7 {
+                ctx.lines(args![
+                    ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                        + Val::from(". Interesting name."))
+                ])?;
+                break 'b7;
+            }
+        }
+        ctx.next()?;
+        ctx.lines_as(
+            "Metheus Sylphe",
+            args!["Ah yes, everything is in readiness.", "Next, you will take an entrance test."],
+        )?;
+        ctx.var("sage_q").set(Val::from(4))?;
+        if ctx.call(Function::CheckQuest, vec![Val::from(2043)])? != -1 {
+            ctx.call(Function::ChangeQuest, vec![Val::from(2043), Val::from(2041)])?;
+        } else if ctx.call(Function::CheckQuest, vec![Val::from(2044)])? != -1 {
+            ctx.call(Function::ChangeQuest, vec![Val::from(2044), Val::from(2041)])?;
+        } else if ctx.call(Function::CheckQuest, vec![Val::from(2045)])? != -1 {
+            ctx.call(Function::ChangeQuest, vec![Val::from(2045), Val::from(2041)])?;
+        } else {
+            ctx.call(Function::SetQuest, vec![Val::from(2041)])?;
+        }
+        ctx.next()?;
+        ctx.lines_as(
+            "Metheus Sylphe",
+            args!["Please visit Professor Claytos.", "He's in the left room."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("sage_q").get()? == 4 {
+        ctx.lines(args![
+            "Huh? What are you doing here? You're supposed to be taking the entrance test by now.",
+            "Please visit Professor Claytos in the left room."
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("sage_q").get()? == 15 {
+        ctx.lines(args![
+            "Oh, are you done with the dissertation?",
+            "Sure, you can submit it to Dean Kayron."
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Metheus Sylphe",
+            args!["So long as you make the effort, you should achieve good results.", "Good luck."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args![
+            "Oh sorry, this is a rather inconvenient time to converse.",
+            "Please come back later. I apologize for troubling you."
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -1130,31 +1112,27 @@ fn written_test_professor_s_run(ctx: &Ctx, mut step: WrittenTestProfessorSStep, 
                                 "You must share your knowledge with others by taking excellent notes."
                             ],
                         )?;
+                    } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+                        ctx.lines(args![
+                            "What are you doing here, kid?",
+                            "This is a Magic Academy, not a day care center."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Claytos Verdo",
+                            args!["Go outside and play with the Porings. That's your job.", "Go out, chop chop!!"],
+                        )?;
+                    } else if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?) {
+                        ctx.lines(args![
+                            "Well...look who came crawling back. Magic addict.",
+                            "Yeah yeah, so it's not so bad to be devoted to magic."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as("Claytos Verdo", args!["But I hope you remember, no one can live alone.", "Although you're strong enough for solo play, you must cooperate and help other people. That's what a Wizard shoud stand for."])?;
                     } else {
-                        if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                            ctx.lines(args![
-                                "What are you doing here, kid?",
-                                "This is a Magic Academy, not a day care center."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Claytos Verdo",
-                                args!["Go outside and play with the Porings. That's your job.", "Go out, chop chop!!"],
-                            )?;
-                        } else {
-                            if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_WIZARD")?) {
-                                ctx.lines(args![
-                                    "Well...look who came crawling back. Magic addict.",
-                                    "Yeah yeah, so it's not so bad to be devoted to magic."
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines_as("Claytos Verdo", args!["But I hope you remember, no one can live alone.", "Although you're strong enough for solo play, you must cooperate and help other people. That's what a Wizard shoud stand for."])?;
-                            } else {
-                                ctx.lines(args!["Hmm... I understand that you want to enter our prestigious academy, but since you chose to live as a different class,", "I don't think you can become a Sage."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Claytos Verdo", args!["So, don't go around regretting why you chose a job other than Sage. You'd better go out and hunt, leveling up your current job."])?;
-                            }
-                        }
+                        ctx.lines(args!["Hmm... I understand that you want to enter our prestigious academy, but since you chose to live as a different class,", "I don't think you can become a Sage."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Claytos Verdo", args!["So, don't go around regretting why you chose a job other than Sage. You'd better go out and hunt, leveling up your current job."])?;
                     }
                     ctx.close_window()?;
                     return Err(Stop::End);
@@ -1221,61 +1199,55 @@ fn written_test_professor_s_run(ctx: &Ctx, mut step: WrittenTestProfessorSStep, 
                             )?;
                             step = WrittenTestProfessorSStep::LAskQuestions;
                             continue 'machine;
+                        } else if ctx.var("sage_q").get()? == 5 {
+                            ctx.lines(args!["Welcome back.", "So, did you study harder this time?"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Claytos Verdo", args!["You will take the written test under the same conditions as the test you took before. I'll give you 20 questions.", "Each correct answer will give you 5 points. When your score reaches 80 points, you pass the test."])?;
+                            ctx.next()?;
+                            ctx.var("sage_m2")
+                                .set(ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?)?;
+                            ctx.lines_as(
+                                "Claytos Verdo",
+                                args!["Okay, there's no need to wait.", "Answer immediately, or I'll fail you again."],
+                            )?;
+                            ctx.var("sage_q").set(Val::from(5))?;
+                            step = WrittenTestProfessorSStep::LAskQuestions;
+                            continue 'machine;
+                            return Err(Stop::End);
+                        } else if ctx.var("sage_q").get()? == 6 {
+                            ctx.lines(args![
+                                "What else do you want?! Do you want to take this test again?",
+                                "You've already passed!"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Claytos Verdo",
+                                args!["Go visit Professor Hermes for the practical examination.", "Move!"],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("sage_q").get()? == 15 {
+                            ctx.lines(args![
+                                "Heh heh, It seems you're done with your dissertation.",
+                                "But I'm not the person handling that part of the test."
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Claytos Verdo",
+                                args![
+                                    "submit your thesis to Dean Kayron.",
+                                    "He will decide whether you are qualified to graduate or not."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if ctx.var("sage_q").get()? == 5 {
-                                ctx.lines(args!["Welcome back.", "So, did you study harder this time?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Claytos Verdo", args!["You will take the written test under the same conditions as the test you took before. I'll give you 20 questions.", "Each correct answer will give you 5 points. When your score reaches 80 points, you pass the test."])?;
-                                ctx.next()?;
-                                ctx.var("sage_m2")
-                                    .set(ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?)?;
-                                ctx.lines_as(
-                                    "Claytos Verdo",
-                                    args!["Okay, there's no need to wait.", "Answer immediately, or I'll fail you again."],
-                                )?;
-                                ctx.var("sage_q").set(Val::from(5))?;
-                                step = WrittenTestProfessorSStep::LAskQuestions;
-                                continue 'machine;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("sage_q").get()? == 6 {
-                                    ctx.lines(args![
-                                        "What else do you want?! Do you want to take this test again?",
-                                        "You've already passed!"
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Claytos Verdo",
-                                        args!["Go visit Professor Hermes for the practical examination.", "Move!"],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("sage_q").get()? == 15 {
-                                        ctx.lines(args![
-                                            "Heh heh, It seems you're done with your dissertation.",
-                                            "But I'm not the person handling that part of the test."
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Claytos Verdo",
-                                            args![
-                                                "submit your thesis to Dean Kayron.",
-                                                "He will decide whether you are qualified to graduate or not."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines(args![
-                                            "I'm too busy to take care of written tests.",
-                                            "Come back later, and I'll spare some time to talk."
-                                        ])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
+                            ctx.lines(args![
+                                "I'm too busy to take care of written tests.",
+                                "Come back later, and I'll spare some time to talk."
+                            ])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                         step = WrittenTestProfessorSStep::HoistEnd1;
                         continue 'machine;
@@ -1775,40 +1747,36 @@ fn written_test_professor_s_run(ctx: &Ctx, mut step: WrittenTestProfessorSStep, 
                             "Go visit Professor Hermes for the practical examination."
                         ],
                     )?;
+                } else if l_sage_t.clone().number()? >= 80 {
+                    ctx.var("sage_q").set(Val::from(6))?;
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2041), Val::from(2046)])?;
+                    ctx.mes("Yeah, not bad. I assume that you will at least understand what you're going to learn in class.")?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Claytos Verdo",
+                        args![
+                            "You passed the written test.",
+                            "Go visit Professor Hermes for the practical examination."
+                        ],
+                    )?;
+                } else if ctx.var("sage_q").get()? == 4 {
+                    ctx.var("sage_q").set(Val::from(5))?;
+                    ctx.mes("Oh well...what a shame: You failed.")?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Claytos Verdo",
+                        args![
+                            "But I'll give you another chance to take the written test,",
+                            "Go study harder and come back later."
+                        ],
+                    )?;
                 } else {
-                    if l_sage_t.clone().number()? >= 80 {
-                        ctx.var("sage_q").set(Val::from(6))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(2041), Val::from(2046)])?;
-                        ctx.mes("Yeah, not bad. I assume that you will at least understand what you're going to learn in class.")?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Claytos Verdo",
-                            args![
-                                "You passed the written test.",
-                                "Go visit Professor Hermes for the practical examination."
-                            ],
-                        )?;
-                    } else {
-                        if ctx.var("sage_q").get()? == 4 {
-                            ctx.var("sage_q").set(Val::from(5))?;
-                            ctx.mes("Oh well...what a shame: You failed.")?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Claytos Verdo",
-                                args![
-                                    "But I'll give you another chance to take the written test,",
-                                    "Go study harder and come back later."
-                                ],
-                            )?;
-                        } else {
-                            ctx.mes("Oh what a shame: You failed.")?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Claytos Verdo",
-                                args!["But I'll give you another chance,", "Go study even harder and come back."],
-                            )?;
-                        }
-                    }
+                    ctx.mes("Oh what a shame: You failed.")?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Claytos Verdo",
+                        args!["But I'll give you another chance,", "Go study even harder and come back."],
+                    )?;
                 }
                 ctx.close_window()?;
                 return Err(Stop::End);
@@ -1858,43 +1826,41 @@ fn practical_examination_p_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                     "You'd better look for trustworthy comrades."
                 ],
             )?;
+        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.mes("Heh heh, now ain't that a cute little Novice?")?;
+            ctx.next()?;
+            ctx.lines_as("Hermes Tris", args!["In this continent of Rune-Midgarts, there are a lot of unknown places and objects that haven't been fully discovered.", "The monsters, mysterious objects and heroes of myths..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hermes Tris",
+                args![
+                    "Why don't you consider being a Sage in the future?",
+                    "You will love studying the world."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hermes Tris",
+                args!["If by chance you do decide to do that, we'll meet again.", "Take care, kiddy."],
+            )?;
         } else {
-            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.mes("Heh heh, now ain't that a cute little Novice?")?;
-                ctx.next()?;
-                ctx.lines_as("Hermes Tris", args!["In this continent of Rune-Midgarts, there are a lot of unknown places and objects that haven't been fully discovered.", "The monsters, mysterious objects and heroes of myths..."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hermes Tris",
-                    args![
-                        "Why don't you consider being a Sage in the future?",
-                        "You will love studying the world."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hermes Tris",
-                    args!["If by chance you do decide to do that, we'll meet again.", "Take care, kiddy."],
-                )?;
-            } else {
-                ctx.mes("Welcome to the Schweicherbil Magic Academy.")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hermes Tris",
-                    args![
-                        "We Sages are more like scholars than Mages.",
-                        "We are very helpful and powerful as members of a party."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hermes Tris",
-                    args![
-                        "Try to make a party with a Sage next time.",
-                        "The wisdom a Sage will bring will be more than helpful for your party..."
-                    ],
-                )?;
-            }
+            ctx.mes("Welcome to the Schweicherbil Magic Academy.")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hermes Tris",
+                args![
+                    "We Sages are more like scholars than Mages.",
+                    "We are very helpful and powerful as members of a party."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hermes Tris",
+                args![
+                    "Try to make a party with a Sage next time.",
+                    "The wisdom a Sage will bring will be more than helpful for your party..."
+                ],
+            )?;
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -2089,66 +2055,58 @@ fn practical_examination_p_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                 return Err(Stop::End);
                             }
                         }
+                    } else if ctx.var("sage_q").get()? == 9 {
+                        ctx.lines(args![
+                            "Huh? Didn't you understand what I said?",
+                            "I told you to study Yggdrasil."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Hermes Tris",
+                            args!["Go ask for help from Professor Saphien. He's in the Lecture Room."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("sage_q").get()? == 11 {
+                        ctx.lines(args![
+                            "Huh? Didn't you understand what I said?",
+                            "I told you to study monsters."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Hermes Tris",
+                            args!["Go ask for help from Professor Lucius. He's in the Monster Museum."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("sage_q").get()? == 13 {
+                        ctx.lines(args![
+                            "Huh? Didn't you understand what I said?",
+                            "I told you to study magic spells that possess certain properties."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Hermes Tris",
+                            args!["Go ask a help from Professor Aebecee. He's in the Somatology Laboratory."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("sage_q").get()? == 15 {
+                        ctx.lines(args![
+                            "What are you doing here? Aren't you supposed to be with Dean Kayron?",
+                            "Oh well, there's no harm in showing me your dissertation though..."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as("Hermes Tris", args!["But then again, maybe there is. Go see Dean Kayron."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     } else {
-                        if ctx.var("sage_q").get()? == 9 {
-                            ctx.lines(args![
-                                "Huh? Didn't you understand what I said?",
-                                "I told you to study Yggdrasil."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Hermes Tris",
-                                args!["Go ask for help from Professor Saphien. He's in the Lecture Room."],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("sage_q").get()? == 11 {
-                                ctx.lines(args![
-                                    "Huh? Didn't you understand what I said?",
-                                    "I told you to study monsters."
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Hermes Tris",
-                                    args!["Go ask for help from Professor Lucius. He's in the Monster Museum."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("sage_q").get()? == 13 {
-                                    ctx.lines(args![
-                                        "Huh? Didn't you understand what I said?",
-                                        "I told you to study magic spells that possess certain properties."
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Hermes Tris",
-                                        args!["Go ask a help from Professor Aebecee. He's in the Somatology Laboratory."],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("sage_q").get()? == 15 {
-                                        ctx.lines(args![
-                                            "What are you doing here? Aren't you supposed to be with Dean Kayron?",
-                                            "Oh well, there's no harm in showing me your dissertation though..."
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Hermes Tris", args!["But then again, maybe there is. Go see Dean Kayron."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines(args![
-                                            "Oh sorry, I'm quite busy at the moment...",
-                                            "If you have any questions, go visit the professor I've assigned to you."
-                                        ])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                        }
+                        ctx.lines(args![
+                            "Oh sorry, I'm quite busy at the moment...",
+                            "If you have any questions, go visit the professor I've assigned to you."
+                        ])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -2186,32 +2144,30 @@ fn history_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     "One of these days you'll look back to this moment and realize it changed your life."
                 ],
             )?;
+        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.mes("A Novice? Why is a novice here?")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Saphien Layless",
+                args!["One whose life has many possibilities... ", "How do you wish to lead your life?"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Saphien Layless",
+                args![
+                    "No matter what you decide to be, everything depends on your choice.",
+                    "May God bless you so that you can choose the path best for you..."
+                ],
+            )?;
         } else {
-            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.mes("A Novice? Why is a novice here?")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Saphien Layless",
-                    args!["One whose life has many possibilities... ", "How do you wish to lead your life?"],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Saphien Layless",
-                    args![
-                        "No matter what you decide to be, everything depends on your choice.",
-                        "May God bless you so that you can choose the path best for you..."
-                    ],
-                )?;
-            } else {
-                ctx.mes("Welcome, I am in charge of historical studies here in the academy.")?;
-                ctx.next()?;
-                ctx.lines_as("Saphien Layless", args!["The world as we know it is a result of events that described in the records of the ages. It is historical events that have shaped the world as it is today.", "Therefore, knowing the past means you will better understand the present and...the future."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Saphien Layless",
-                    args!["Reflect upon your past.", "You will see your path in the future..."],
-                )?;
-            }
+            ctx.mes("Welcome, I am in charge of historical studies here in the academy.")?;
+            ctx.next()?;
+            ctx.lines_as("Saphien Layless", args!["The world as we know it is a result of events that described in the records of the ages. It is historical events that have shaped the world as it is today.", "Therefore, knowing the past means you will better understand the present and...the future."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Saphien Layless",
+                args!["Reflect upon your past.", "You will see your path in the future..."],
+            )?;
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -2359,68 +2315,64 @@ fn history_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
+            } else if ctx.call(Function::CountItem, vec![Val::from(608)])?.number()? > 0 {
+                ctx.lines_as(
+                    "Saphien Layless",
+                    args![
+                        "Hmm, did you prepare for class? Let's see...",
+                        "Oh! So you brought me the Yggdrasil Seed?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Saphien Layless",
+                    args![
+                        "Very well. Now I am starting the class..",
+                        "Listen carefully, I will not accept dozing off in the middle of class."
+                    ],
+                )?;
+                ctx.next()?;
+            } else if ctx.call(Function::CountItem, vec![Val::from(610)])?.number()? > 0 {
+                ctx.lines_as(
+                    "Saphien Layless",
+                    args!["Hmm, did you prepare for class? Let's see...", "Yggdrasil Leaf..."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Saphien Layless",
+                    args![
+                        "You can purchase this item from the town of Al De Baran! You didn't show any effort.",
+                        ((Val::from("So, I must give you - 10 points, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                            + Val::from("."))
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Saphien Layless",
+                    args![
+                        "Okay, now I am starting the class.",
+                        "Listen carefully, I will not accept you dozing off in the middle of class, or any more slacking."
+                    ],
+                )?;
+                ctx.next()?;
             } else {
-                if ctx.call(Function::CountItem, vec![Val::from(608)])?.number()? > 0 {
-                    ctx.lines_as(
-                        "Saphien Layless",
-                        args![
-                            "Hmm, did you prepare for class? Let's see...",
-                            "Oh! So you brought me the Yggdrasil Seed?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Saphien Layless",
-                        args![
-                            "Very well. Now I am starting the class..",
-                            "Listen carefully, I will not accept dozing off in the middle of class."
-                        ],
-                    )?;
-                    ctx.next()?;
-                } else {
-                    if ctx.call(Function::CountItem, vec![Val::from(610)])?.number()? > 0 {
-                        ctx.lines_as(
-                            "Saphien Layless",
-                            args!["Hmm, did you prepare for class? Let's see...", "Yggdrasil Leaf..."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Saphien Layless",
-                            args![
-                                "You can purchase this item from the town of Al De Baran! You didn't show any effort.",
-                                ((Val::from("So, I must give you - 10 points, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                    + Val::from("."))
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Saphien Layless",
-                            args![
-                                "Okay, now I am starting the class.",
-                                "Listen carefully, I will not accept you dozing off in the middle of class, or any more slacking."
-                            ],
-                        )?;
-                        ctx.next()?;
-                    } else {
-                        ctx.lines_as(
-                            "Saphien Layless",
-                            args![
-                                "Huh? You're not ready to this class yet!",
-                                "I told you to bring me any items related Yggdrasil."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Saphien Layless",
-                            args![
-                                "Tell me when you're ready.",
-                                "Don't worry about being late, we professors are paid to wait around."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+                ctx.lines_as(
+                    "Saphien Layless",
+                    args![
+                        "Huh? You're not ready to this class yet!",
+                        "I told you to bring me any items related Yggdrasil."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Saphien Layless",
+                    args![
+                        "Tell me when you're ready.",
+                        "Don't worry about being late, we professors are paid to wait around."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
             ctx.lines_as(
                 "Saphien Layless",
@@ -3057,36 +3009,34 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     "I think it will be more helpful than wasting your time on me."
                 ],
             )?;
+        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.mes("What brings you to me, kid?")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "You'd better go out and play with your pals. ",
+                    "This is not a place where you can fool around."
+                ],
+            )?;
         } else {
-            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.mes("What brings you to me, kid?")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lucius Celsus",
-                    args![
-                        "You'd better go out and play with your pals. ",
-                        "This is not a place where you can fool around."
-                    ],
-                )?;
-            } else {
-                ctx.mes("Hmm? What brings you to me? Are you interested in watching monsters?")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lucius Celsus",
-                    args![
-                        "You're allowed to watch. However, do not disturb them by making any fuss.",
-                        "And keep your hands off, some of these guys are way too dangerous to touch."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lucius Celsus",
-                    args![
-                        "By the way, if you catch any rare monsters in future, let me know.",
-                        "I am willing to purchase those at any cost."
-                    ],
-                )?;
-            }
+            ctx.mes("Hmm? What brings you to me? Are you interested in watching monsters?")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "You're allowed to watch. However, do not disturb them by making any fuss.",
+                    "And keep your hands off, some of these guys are way too dangerous to touch."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "By the way, if you catch any rare monsters in future, let me know.",
+                    "I am willing to purchase those at any cost."
+                ],
+            )?;
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -3167,32 +3117,30 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "5 ^3355FFFish Tail^000000."
                     ],
                 )?;
+            } else if ctx.var("sage_m4").get()? == 2 {
+                ctx.var("sage_q2").set(Val::from(2))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(2048), Val::from(2054)])?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args![
+                        "Go bring the following items to me.",
+                        "5 ^3355FFNipper^000000,",
+                        "5 ^3355FFClam Flesh^000000,",
+                        "5 ^3355FFHeart of Mermaid^000000."
+                    ],
+                )?;
             } else {
-                if ctx.var("sage_m4").get()? == 2 {
-                    ctx.var("sage_q2").set(Val::from(2))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(2048), Val::from(2054)])?;
-                    ctx.lines_as(
-                        "Lucius Celsus",
-                        args![
-                            "Go bring the following items to me.",
-                            "5 ^3355FFNipper^000000,",
-                            "5 ^3355FFClam Flesh^000000,",
-                            "5 ^3355FFHeart of Mermaid^000000."
-                        ],
-                    )?;
-                } else {
-                    ctx.var("sage_q2").set(Val::from(3))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(2048), Val::from(2054)])?;
-                    ctx.lines_as(
-                        "Lucius Celsus",
-                        args![
-                            "Go bring following items to me.",
-                            "5 ^3355FFTendon^000000,",
-                            "5 ^3355FFNipper^000000,",
-                            "5 ^3355FFSharp Scale^000000."
-                        ],
-                    )?;
-                }
+                ctx.var("sage_q2").set(Val::from(3))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(2048), Val::from(2054)])?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args![
+                        "Go bring following items to me.",
+                        "5 ^3355FFTendon^000000,",
+                        "5 ^3355FFNipper^000000,",
+                        "5 ^3355FFSharp Scale^000000."
+                    ],
+                )?;
             }
             ctx.next()?;
             ctx.lines_as(
@@ -3201,616 +3149,442 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if (ctx.var("sage_q2").get()?.number()? >= 1 && ctx.var("sage_q2").get()?.number()? <= 3) {
-                'b1: {
-                    let subject1 = ctx.var("sage_q2").get()?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        let base = Val::from(0).number()?;
-                        runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(962), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(1052), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1023), false);
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        let base = Val::from(0).number()?;
-                        runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(960), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(966), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        let base = Val::from(0).number()?;
-                        runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1050), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(960), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(963), false);
-                        break 'b1;
-                    }
+        } else if (ctx.var("sage_q2").get()?.number()? >= 1 && ctx.var("sage_q2").get()?.number()? <= 3) {
+            'b1: {
+                let subject1 = ctx.var("sage_q2").get()?;
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                    && !subject1.loosely_equals(&Val::from(2))
+                    && !subject1.loosely_equals(&Val::from(3));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
                 }
-                if ((ctx
-                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
-                    .number()?
-                    > 4
-                    && ctx
-                        .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(1), false)])?
-                        .number()?
-                        > 4)
-                    && ctx
-                        .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(2), false)])?
-                        .number()?
-                        > 4)
-                {
-                    ctx.lines(args![
-                        "You showed great effort to gather all of those.",
-                        "Well, I am not sure if you gathered them by yourself or bought them from shops..."
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lucius Celsus",
-                        args![
-                            "Somehow the monsters that drop those items have something in common.",
-                            "Can you tell me what that similarity is?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "They possess water property.:They are fishes.:They are aggressive.:Um...they monsters.",
-                            )],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3))
-                            && !subject2.loosely_equals(&Val::from(4));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Lucius Celsus",
-                                args![
-                                    "Yes, they possess water property and at the same time they are fishes.",
-                                    "Most fish class monsters live underwater, so they are attributed with the water property."
-                                ],
-                            )?;
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Lucius Celsus",
-                                args![
-                                    "Yes, they possess water property and at the same time they are fishes.",
-                                    "Most fish class monsters live underwater, so they are attributed with the water property."
-                                ],
-                            )?;
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.var("sage_m4").set(Val::from(4))?;
-                            ctx.lines_as(
-                                "Lucius Celsus",
-                                args![
-                                    "...I didn't know Phens were aggressive nowadays?",
-                                    "Or do Marina and Plankton team up to start a fight with you?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Lucius Celsus",
-                                args![
-                                    "All the monsters from which you obtained these items are not agressive... get a grip.",
-                                    "They are all fishes and possess water property."
-                                ],
-                            )?;
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.var("sage_m4").set(Val::from(4))?;
-                            ctx.lines_as(
-                                "Lucius Celsus",
-                                args![
-                                    "What...! What are you here for!? You are here to study about specific monsters, microcephalic moron!",
-                                    "Sigh...they are all fishes and possess water property."
-                                ],
-                            )?;
-                            break 'b2;
-                        }
-                    }
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lucius Celsus",
-                        args![
-                            "Not all fish class monsters possess water property, but most of them do.",
-                            "So which kind of magic would work best on most fish class monsters?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Lightening Bolt.:Fire Bolt.:Thunder Storm.:Frost Diver.")],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3))
-                            && !subject3.loosely_equals(&Val::from(4));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Lucius Celsus", args!["That's right, Lightening Bolt, which possesses the wind property, works best on water property monsters.", "Although you might want to be careful of monsters that recognize magic casting."])?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.var("sage_m4").set(Val::from(4))?;
-                            ctx.lines_as("Lucius Celsus", args!["What? Fire Bolt! Fire cannot beat water, you imbecile!", "Most fishes are attributed with the water property. Therefore, they are weak to wind property magic spells. Don't you get it?"])?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Lucius Celsus",
-                                args![
-                                    "Yeah, Thunder Storm spell is fine... it's a wind property spell.",
-                                    "However, you will be in trouble if you use the spell in a poorly chosen spot."
-                                ],
-                            )?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.var("sage_m4").set(Val::from(4))?;
-                            ctx.lines_as("Lucius Celsus", args!["I can't fathom such stupidity! This question asks you to choose a property that counters water! Don't you get it?", "Logically, any magic spell possessing the water property cannot overcome the water atrribute monsters!"])?;
-                            break 'b3;
-                        }
-                    }
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lucius Celsus",
-                        args![
-                            "By the way, although some monsters such as Penomena or Aster are considered to be fish class monsters, ",
-                            "they have a different property than the others. You'd better be careful with them."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lucius Celsus",
-                        args!["Okay, let me teach you about insect monsters.", "Let's see... hmm... hmm..."],
-                    )?;
-                    ctx.next()?;
-                    'b4: {
-                        let subject4 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
-                        let mut matched4 = false;
-                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                            && !subject4.loosely_equals(&Val::from(2))
-                            && !subject4.loosely_equals(&Val::from(3))
-                            && !subject4.loosely_equals(&Val::from(4));
-                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            ctx.var("sage_q2").set(Val::from(4))?;
-                            if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2056)])?;
-                            } else {
-                                if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2056)])?;
-                                } else {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2056)])?;
-                                }
-                            }
-                            ctx.lines(args![
-                                "5 ^3355FFCobweb^000000,",
-                                "5 ^3355FFShell^000000,",
-                                "5 ^3355FFInsect Feeler^000000."
-                            ])?;
-                            break 'b4;
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            ctx.var("sage_q2").set(Val::from(5))?;
-                            if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2057)])?;
-                            } else {
-                                if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2057)])?;
-                                } else {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2057)])?;
-                                }
-                            }
-                            ctx.lines(args![
-                                "5 ^3355FFHorn^000000,",
-                                "5 ^3355FFSnail's Shell^000000,",
-                                "5 ^3355FFMoth Dust^000000."
-                            ])?;
-                            break 'b4;
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            ctx.var("sage_q2").set(Val::from(6))?;
-                            if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2058)])?;
-                            } else {
-                                if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2058)])?;
-                                } else {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2058)])?;
-                                }
-                            }
-                            ctx.lines(args![
-                                "5 ^3355FFMantis Scythe^000000,",
-                                "5 ^3355FFWorm Peeling^000000,",
-                                "5 ^3355FFRainbow Shell^000000."
-                            ])?;
-                            break 'b4;
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            ctx.var("sage_q2").set(Val::from(7))?;
-                            if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2059)])?;
-                            } else {
-                                if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2059)])?;
-                                } else {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2059)])?;
-                                }
-                            }
-                            ctx.lines(args![
-                                "5 ^3355FFCobweb^000000,",
-                                "5 ^3355FFMantis Scythe^000000,",
-                                "5 ^3355FFSolid Shell^000000."
-                            ])?;
-                        }
-                    }
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lucius Celsus",
-                        args!["I will proceed with the class when you bring those to me.", "Have fun."],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
+                if matched1 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(962), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(1052), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1023), false);
+                    break 'b1;
                 }
-                ctx.lines(args![
-                    "What, you already forgot what I told you just a minute before?",
-                    "What a nusance... listen carefully this time."
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lucius Celsus",
-                    args![
-                        ((Val::from("5 ^3355FF")
-                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
-                            + Val::from("^000000,")),
-                        ((Val::from("5 ^3355FF")
-                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(1), false)])?)
-                            + Val::from("^000000,")),
-                        ((Val::from("5 ^3355FF")
-                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(2), false)])?)
-                            + Val::from("^000000,"))
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if (ctx.var("sage_q2").get()?.number()? >= 4 && ctx.var("sage_q2").get()?.number()? <= 7) {
-                    'b5: {
-                        let subject5 = ctx.var("sage_q2").get()?;
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(4))
-                            && !subject5.loosely_equals(&Val::from(5))
-                            && !subject5.loosely_equals(&Val::from(6))
-                            && !subject5.loosely_equals(&Val::from(7));
-                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1025), false);
-                            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(935), false);
-                            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(928), false);
-                            break 'b5;
-                        }
-                        if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(947), false);
-                            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(946), false);
-                            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1057), false);
-                            break 'b5;
-                        }
-                        if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1031), false);
-                            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(955), false);
-                            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1013), false);
-                            break 'b5;
-                        }
-                        if !matched5 && subject5.loosely_equals(&Val::from(7)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1025), false);
-                            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(1031), false);
-                            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(943), false);
-                            break 'b5;
-                        }
-                    }
-                    if ((ctx
-                        .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
-                        .number()?
-                        > 4
-                        && ctx
-                            .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(1), false)])?
-                            .number()?
-                            > 4)
-                        && ctx
-                            .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(2), false)])?
-                            .number()?
-                            > 4)
-                    {
-                        ctx.lines(args![
-                            "Well done. So, did you watch insects while gathering those items?",
-                            "Oh well, I believe you did a good job with the task."
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lucius Celsus",
-                            args![
-                                "Insect class monsters do not share the same property most of the time, ",
-                                "You must think twice before you cast a magic spell on an insect."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lucius Celsus",
-                            args![
-                                "It's remarkable that insects can detect hidden objects.",
-                                "Therefore, any hiding skill such as the Hiding skill or Cloaking skill will not work on insect monsters."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lucius Celsus",
-                            args![
-                                "Some insects form a group and live together.",
-                                "They are controlled by the head of the group..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lucius Celsus",
-                            args![
-                                "For instance, Maya the queen ant...",
-                                "Mistress, the queen of hornets,",
-                                "or Golden Thiefbug, the king of thiefbugs..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lucius Celsus",
-                            args![
-                                "You cannot beat those boss monsters alone, ",
-                                "you'd better form a party if you want to fight with them."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lucius Celsus",
-                            args![
-                                "That's the end of my class...it's time for you to write a thesis.",
-                                "Bring me following items for writing the thesis."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lucius Celsus",
-                            args![
-                                "^3355FF1 Feather of Birds^000000 which will be used as a pen,",
-                                "^3355FF1 Animal Skin^000000 which will be used as paper,",
-                                "^3355FF1 Trunk^000000 which will be used to bind a book,",
-                                "^3355FF1 Squid Ink^000000 which will be used as ink,",
-                                "^3355FF1 Empty Bottle^000000 which will be used for holding squid ink."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.var("sage_q2").set(Val::from(0))?;
-                        ctx.var("sage_q").set(Val::from(12))?;
-                        if ctx.call(Function::CheckQuest, vec![Val::from(2056)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2056), Val::from(2051)])?;
-                        } else {
-                            if ctx.call(Function::CheckQuest, vec![Val::from(2057)])? != -1 {
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2057), Val::from(2051)])?;
-                            } else {
-                                if ctx.call(Function::CheckQuest, vec![Val::from(2058)])? != -1 {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2058), Val::from(2051)])?;
-                                } else {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2059), Val::from(2051)])?;
-                                }
-                            }
-                        }
-                        ctx.lines_as(
-                            "Lucius Celsus",
-                            args![
-                                "I will help you in writing the thesis when you bring all of those items.",
-                                "You're almost there. Isn't learning easy?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines(args![
-                        "What, you already forgot what I told you?",
-                        "What a nuisance...listen carefully this time."
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lucius Celsus",
-                        args![
-                            ((Val::from("5 ^3355FF")
-                                + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
-                                + Val::from("^000000,")),
-                            ((Val::from("5 ^3355FF")
-                                + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(1), false)])?)
-                                + Val::from("^000000,")),
-                            ((Val::from("5 ^3355FF")
-                                + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(2), false)])?)
-                                + Val::from("^000000,"))
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(960), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(966), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
+                    break 'b1;
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1050), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(960), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(963), false);
+                    break 'b1;
                 }
             }
-        }
-        ctx.mes("Zzz...Zzz...")?;
-        ctx.close_window()?;
-        return Err(Stop::End);
-    } else {
-        if ctx.var("sage_q").get()? == 12 {
-            if ((((ctx.call(Function::CountItem, vec![Val::from(916)])?.number()? > 0
-                && ctx.call(Function::CountItem, vec![Val::from(919)])?.number()? > 0)
-                && ctx.call(Function::CountItem, vec![Val::from(1019)])?.number()? > 0)
-                && ctx.call(Function::CountItem, vec![Val::from(1024)])?.number()? > 0)
-                && ctx.call(Function::CountItem, vec![Val::from(713)])?.number()? > 0)
+            if ((ctx
+                .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
+                .number()?
+                > 4
+                && ctx
+                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(1), false)])?
+                    .number()?
+                    > 4)
+                && ctx
+                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(2), false)])?
+                    .number()?
+                    > 4)
             {
-                ctx.call(Function::DelItem, vec![Val::from(916), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(919), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(1019), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(1024), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(713), Val::from(1)])?;
                 ctx.lines(args![
-                    "Hmph. Lucky brat brought all of the items.",
-                    "Well, I don't expect you to write an outrageously great thesis though..."
+                    "You showed great effort to gather all of those.",
+                    "Well, I am not sure if you gathered them by yourself or bought them from shops..."
                 ])?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Lucius Celsus",
                     args![
-                        "Well, if you really want to write it by yourself, I can let you handle it but...",
-                        "I will give you a work of staggering genius. Just make a copy of it under your name."
+                        "Somehow the monsters that drop those items have something in common.",
+                        "Can you tell me what that similarity is?"
                     ],
                 )?;
                 ctx.next()?;
-                ctx.lines_as(
-                    "Lucius Celsus",
-                    args!["You got a problem with that? Tough, that's my style.", "Just do what I say."],
-                )?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from(
+                            "They possess water property.:They are fishes.:They are aggressive.:Um...they monsters.",
+                        )],
+                    )?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                        && !subject2.loosely_equals(&Val::from(2))
+                        && !subject2.loosely_equals(&Val::from(3))
+                        && !subject2.loosely_equals(&Val::from(4));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines_as(
+                            "Lucius Celsus",
+                            args![
+                                "Yes, they possess water property and at the same time they are fishes.",
+                                "Most fish class monsters live underwater, so they are attributed with the water property."
+                            ],
+                        )?;
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines_as(
+                            "Lucius Celsus",
+                            args![
+                                "Yes, they possess water property and at the same time they are fishes.",
+                                "Most fish class monsters live underwater, so they are attributed with the water property."
+                            ],
+                        )?;
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.var("sage_m4").set(Val::from(4))?;
+                        ctx.lines_as(
+                            "Lucius Celsus",
+                            args![
+                                "...I didn't know Phens were aggressive nowadays?",
+                                "Or do Marina and Plankton team up to start a fight with you?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Lucius Celsus",
+                            args![
+                                "All the monsters from which you obtained these items are not agressive... get a grip.",
+                                "They are all fishes and possess water property."
+                            ],
+                        )?;
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.var("sage_m4").set(Val::from(4))?;
+                        ctx.lines_as(
+                            "Lucius Celsus",
+                            args![
+                                "What...! What are you here for!? You are here to study about specific monsters, microcephalic moron!",
+                                "Sigh...they are all fishes and possess water property."
+                            ],
+                        )?;
+                        break 'b2;
+                    }
+                }
                 ctx.next()?;
-                ctx.mes("..........")?;
-                ctx.next()?;
-                ctx.mes("....................")?;
-                ctx.next()?;
-                ctx.mes(".................................")?;
-                ctx.next()?;
-                let choice = runtime::select_values(ctx, &[Val::from(".....Monsters vary by physical appearance,")])?;
-                ctx.var("@menu").set(choice)?;
-                ctx.mes(".....Monsters vary by physical appearance,")?;
-                let choice = runtime::select_values(ctx, &[Val::from("...and possess various elemental properties.")])?;
-                ctx.var("@menu").set(choice)?;
-                ctx.mes("...and possess various elemental properties.")?;
-                let choice = runtime::select_values(ctx, &[Val::from("You must be aware of each monster's properties,")])?;
-                ctx.var("@menu").set(choice)?;
-                ctx.mes("You must be aware of each monster's properties,")?;
-                let choice = runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "...and be aware that certain spells work differently on different monsters.",
-                    )],
-                )?;
-                ctx.var("@menu").set(choice)?;
-                ctx.mes("...and be aware that certain spells work differently on different monsters.")?;
-                let choice = runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "You must be especially careful of holy property and shadow property monsters.",
-                    )],
-                )?;
-                ctx.var("@menu").set(choice)?;
-                ctx.mes("You must be especially careful of holy property and shadow property monsters.")?;
-                let choice = runtime::select_values(
-                    ctx,
-                    &[Val::from("These monsters are most dangerous, though occasionally cute.")],
-                )?;
-                ctx.var("@menu").set(choice)?;
-                ctx.mes("These monsters are most dangerous.")?;
-                ctx.next()?;
-                ctx.mes("..........")?;
-                ctx.next()?;
-                ctx.mes("....................")?;
-                ctx.next()?;
-                ctx.mes(".................................")?;
-                ctx.next()?;
-                ctx.var("sage_q").set(Val::from(15))?;
-                ctx.call(Function::ChangeQuest, vec![Val::from(2051), Val::from(2052)])?;
                 ctx.lines_as(
                     "Lucius Celsus",
                     args![
-                        "Are you done? Okay, then it's over.",
-                        "You won't be able to write another thesis again, handle this with care."
+                        "Not all fish class monsters possess water property, but most of them do.",
+                        "So which kind of magic would work best on most fish class monsters?"
                     ],
                 )?;
-                ctx.call(Function::GetItem, vec![Val::from(1550), Val::from(1)])?;
+                ctx.next()?;
+                'b3: {
+                    let subject3 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Lightening Bolt.:Fire Bolt.:Thunder Storm.:Frost Diver.")],
+                    )?);
+                    let mut matched3 = false;
+                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                        && !subject3.loosely_equals(&Val::from(2))
+                        && !subject3.loosely_equals(&Val::from(3))
+                        && !subject3.loosely_equals(&Val::from(4));
+                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as("Lucius Celsus", args!["That's right, Lightening Bolt, which possesses the wind property, works best on water property monsters.", "Although you might want to be careful of monsters that recognize magic casting."])?;
+                        break 'b3;
+                    }
+                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.var("sage_m4").set(Val::from(4))?;
+                        ctx.lines_as("Lucius Celsus", args!["What? Fire Bolt! Fire cannot beat water, you imbecile!", "Most fishes are attributed with the water property. Therefore, they are weak to wind property magic spells. Don't you get it?"])?;
+                        break 'b3;
+                    }
+                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as(
+                            "Lucius Celsus",
+                            args![
+                                "Yeah, Thunder Storm spell is fine... it's a wind property spell.",
+                                "However, you will be in trouble if you use the spell in a poorly chosen spot."
+                            ],
+                        )?;
+                        break 'b3;
+                    }
+                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.var("sage_m4").set(Val::from(4))?;
+                        ctx.lines_as("Lucius Celsus", args!["I can't fathom such stupidity! This question asks you to choose a property that counters water! Don't you get it?", "Logically, any magic spell possessing the water property cannot overcome the water atrribute monsters!"])?;
+                        break 'b3;
+                    }
+                }
                 ctx.next()?;
                 ctx.lines_as(
                     "Lucius Celsus",
                     args![
-                        "Show this masterpiece to the dean.",
-                        "Then, he will let you graduate from the academy. See you."
+                        "By the way, although some monsters such as Penomena or Aster are considered to be fish class monsters, ",
+                        "they have a different property than the others. You'd better be careful with them."
                     ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args!["Okay, let me teach you about insect monsters.", "Let's see... hmm... hmm..."],
+                )?;
+                ctx.next()?;
+                'b4: {
+                    let subject4 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
+                    let mut matched4 = false;
+                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                        && !subject4.loosely_equals(&Val::from(2))
+                        && !subject4.loosely_equals(&Val::from(3))
+                        && !subject4.loosely_equals(&Val::from(4));
+                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.var("sage_q2").set(Val::from(4))?;
+                        if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2056)])?;
+                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2056)])?;
+                        } else {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2056)])?;
+                        }
+                        ctx.lines(args![
+                            "5 ^3355FFCobweb^000000,",
+                            "5 ^3355FFShell^000000,",
+                            "5 ^3355FFInsect Feeler^000000."
+                        ])?;
+                        break 'b4;
+                    }
+                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.var("sage_q2").set(Val::from(5))?;
+                        if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2057)])?;
+                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2057)])?;
+                        } else {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2057)])?;
+                        }
+                        ctx.lines(args![
+                            "5 ^3355FFHorn^000000,",
+                            "5 ^3355FFSnail's Shell^000000,",
+                            "5 ^3355FFMoth Dust^000000."
+                        ])?;
+                        break 'b4;
+                    }
+                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.var("sage_q2").set(Val::from(6))?;
+                        if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2058)])?;
+                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2058)])?;
+                        } else {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2058)])?;
+                        }
+                        ctx.lines(args![
+                            "5 ^3355FFMantis Scythe^000000,",
+                            "5 ^3355FFWorm Peeling^000000,",
+                            "5 ^3355FFRainbow Shell^000000."
+                        ])?;
+                        break 'b4;
+                    }
+                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.var("sage_q2").set(Val::from(7))?;
+                        if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2059)])?;
+                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2059)])?;
+                        } else {
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2059)])?;
+                        }
+                        ctx.lines(args![
+                            "5 ^3355FFCobweb^000000,",
+                            "5 ^3355FFMantis Scythe^000000,",
+                            "5 ^3355FFSolid Shell^000000."
+                        ])?;
+                    }
+                }
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args!["I will proceed with the class when you bring those to me.", "Have fun."],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
+            }
+            ctx.lines(args![
+                "What, you already forgot what I told you just a minute before?",
+                "What a nusance... listen carefully this time."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    ((Val::from("5 ^3355FF")
+                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
+                        + Val::from("^000000,")),
+                    ((Val::from("5 ^3355FF")
+                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(1), false)])?)
+                        + Val::from("^000000,")),
+                    ((Val::from("5 ^3355FF")
+                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(2), false)])?)
+                        + Val::from("^000000,"))
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if (ctx.var("sage_q2").get()?.number()? >= 4 && ctx.var("sage_q2").get()?.number()? <= 7) {
+            'b5: {
+                let subject5 = ctx.var("sage_q2").get()?;
+                let mut matched5 = false;
+                let no_case5 = !subject5.loosely_equals(&Val::from(4))
+                    && !subject5.loosely_equals(&Val::from(5))
+                    && !subject5.loosely_equals(&Val::from(6))
+                    && !subject5.loosely_equals(&Val::from(7));
+                if !matched5 && subject5.loosely_equals(&Val::from(4)) {
+                    matched5 = true;
+                }
+                if matched5 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1025), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(935), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(928), false);
+                    break 'b5;
+                }
+                if !matched5 && subject5.loosely_equals(&Val::from(5)) {
+                    matched5 = true;
+                }
+                if matched5 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(947), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(946), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1057), false);
+                    break 'b5;
+                }
+                if !matched5 && subject5.loosely_equals(&Val::from(6)) {
+                    matched5 = true;
+                }
+                if matched5 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1031), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(955), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1013), false);
+                    break 'b5;
+                }
+                if !matched5 && subject5.loosely_equals(&Val::from(7)) {
+                    matched5 = true;
+                }
+                if matched5 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1025), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(1031), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(943), false);
+                    break 'b5;
+                }
+            }
+            if ((ctx
+                .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
+                .number()?
+                > 4
+                && ctx
+                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(1), false)])?
+                    .number()?
+                    > 4)
+                && ctx
+                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(2), false)])?
+                    .number()?
+                    > 4)
+            {
                 ctx.lines(args![
-                    "What, are you sure that you're ready? No, I don't think so.",
-                    "Oh well... listen carefully this time."
+                    "Well done. So, did you watch insects while gathering those items?",
+                    "Oh well, I believe you did a good job with the task."
                 ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args![
+                        "Insect class monsters do not share the same property most of the time, ",
+                        "You must think twice before you cast a magic spell on an insect."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args![
+                        "It's remarkable that insects can detect hidden objects.",
+                        "Therefore, any hiding skill such as the Hiding skill or Cloaking skill will not work on insect monsters."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args![
+                        "Some insects form a group and live together.",
+                        "They are controlled by the head of the group..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args![
+                        "For instance, Maya the queen ant...",
+                        "Mistress, the queen of hornets,",
+                        "or Golden Thiefbug, the king of thiefbugs..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args![
+                        "You cannot beat those boss monsters alone, ",
+                        "you'd better form a party if you want to fight with them."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lucius Celsus",
+                    args![
+                        "That's the end of my class...it's time for you to write a thesis.",
+                        "Bring me following items for writing the thesis."
+                    ],
+                )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Lucius Celsus",
@@ -3823,48 +3597,204 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
+                ctx.var("sage_q2").set(Val::from(0))?;
+                ctx.var("sage_q").set(Val::from(12))?;
+                if ctx.call(Function::CheckQuest, vec![Val::from(2056)])? != -1 {
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2056), Val::from(2051)])?;
+                } else if ctx.call(Function::CheckQuest, vec![Val::from(2057)])? != -1 {
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2057), Val::from(2051)])?;
+                } else if ctx.call(Function::CheckQuest, vec![Val::from(2058)])? != -1 {
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2058), Val::from(2051)])?;
+                } else {
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2059), Val::from(2051)])?;
+                }
                 ctx.lines_as(
                     "Lucius Celsus",
                     args![
-                        "You have been doing fine, I guess you can do this without a problem.",
-                        "Go get them. Hurry up."
+                        "I will help you in writing the thesis when you bring all of those items.",
+                        "You're almost there. Isn't learning easy?"
                     ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            ctx.lines(args![
+                "What, you already forgot what I told you?",
+                "What a nuisance...listen carefully this time."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    ((Val::from("5 ^3355FF")
+                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
+                        + Val::from("^000000,")),
+                    ((Val::from("5 ^3355FF")
+                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(1), false)])?)
+                        + Val::from("^000000,")),
+                    ((Val::from("5 ^3355FF")
+                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(2), false)])?)
+                        + Val::from("^000000,"))
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.mes("Zzz...Zzz...")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("sage_q").get()? == 12 {
+        if ((((ctx.call(Function::CountItem, vec![Val::from(916)])?.number()? > 0
+            && ctx.call(Function::CountItem, vec![Val::from(919)])?.number()? > 0)
+            && ctx.call(Function::CountItem, vec![Val::from(1019)])?.number()? > 0)
+            && ctx.call(Function::CountItem, vec![Val::from(1024)])?.number()? > 0)
+            && ctx.call(Function::CountItem, vec![Val::from(713)])?.number()? > 0)
+        {
+            ctx.call(Function::DelItem, vec![Val::from(916), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(919), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(1019), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(1024), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(713), Val::from(1)])?;
+            ctx.lines(args![
+                "Hmph. Lucky brat brought all of the items.",
+                "Well, I don't expect you to write an outrageously great thesis though..."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "Well, if you really want to write it by yourself, I can let you handle it but...",
+                    "I will give you a work of staggering genius. Just make a copy of it under your name."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args!["You got a problem with that? Tough, that's my style.", "Just do what I say."],
+            )?;
+            ctx.next()?;
+            ctx.mes("..........")?;
+            ctx.next()?;
+            ctx.mes("....................")?;
+            ctx.next()?;
+            ctx.mes(".................................")?;
+            ctx.next()?;
+            let choice = runtime::select_values(ctx, &[Val::from(".....Monsters vary by physical appearance,")])?;
+            ctx.var("@menu").set(choice)?;
+            ctx.mes(".....Monsters vary by physical appearance,")?;
+            let choice = runtime::select_values(ctx, &[Val::from("...and possess various elemental properties.")])?;
+            ctx.var("@menu").set(choice)?;
+            ctx.mes("...and possess various elemental properties.")?;
+            let choice = runtime::select_values(ctx, &[Val::from("You must be aware of each monster's properties,")])?;
+            ctx.var("@menu").set(choice)?;
+            ctx.mes("You must be aware of each monster's properties,")?;
+            let choice = runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "...and be aware that certain spells work differently on different monsters.",
+                )],
+            )?;
+            ctx.var("@menu").set(choice)?;
+            ctx.mes("...and be aware that certain spells work differently on different monsters.")?;
+            let choice = runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "You must be especially careful of holy property and shadow property monsters.",
+                )],
+            )?;
+            ctx.var("@menu").set(choice)?;
+            ctx.mes("You must be especially careful of holy property and shadow property monsters.")?;
+            let choice = runtime::select_values(
+                ctx,
+                &[Val::from("These monsters are most dangerous, though occasionally cute.")],
+            )?;
+            ctx.var("@menu").set(choice)?;
+            ctx.mes("These monsters are most dangerous.")?;
+            ctx.next()?;
+            ctx.mes("..........")?;
+            ctx.next()?;
+            ctx.mes("....................")?;
+            ctx.next()?;
+            ctx.mes(".................................")?;
+            ctx.next()?;
+            ctx.var("sage_q").set(Val::from(15))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(2051), Val::from(2052)])?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "Are you done? Okay, then it's over.",
+                    "You won't be able to write another thesis again, handle this with care."
+                ],
+            )?;
+            ctx.call(Function::GetItem, vec![Val::from(1550), Val::from(1)])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "Show this masterpiece to the dean.",
+                    "Then, he will let you graduate from the academy. See you."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("sage_q").get()? == 15 {
-                ctx.lines(args![
-                    "What are you doing here, Go show your thesis to the dean!",
-                    "Don't wasn't any more time here."
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lucius Celsus",
-                    args![
-                        "It seems you have too much time on your hands. Okay, I will assign you some tasks.",
-                        "Hahaha, did you say no? Alright then, fine. Scram."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args![
-                    "Wah~! My brain is gonna blow up soon! Why must I have to prepare all of these things?!",
-                    "Who are you?! Don't disturb me, I'm busy!!"
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lucius Celsus",
-                    args![
-                        "If you just want to watch monsters here, fine with me...",
-                        "Just don't ask me any questions."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines(args![
+                "What, are you sure that you're ready? No, I don't think so.",
+                "Oh well... listen carefully this time."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "^3355FF1 Feather of Birds^000000 which will be used as a pen,",
+                    "^3355FF1 Animal Skin^000000 which will be used as paper,",
+                    "^3355FF1 Trunk^000000 which will be used to bind a book,",
+                    "^3355FF1 Squid Ink^000000 which will be used as ink,",
+                    "^3355FF1 Empty Bottle^000000 which will be used for holding squid ink."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "You have been doing fine, I guess you can do this without a problem.",
+                    "Go get them. Hurry up."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    } else {
+        if ctx.var("sage_q").get()? == 15 {
+            ctx.lines(args![
+                "What are you doing here, Go show your thesis to the dean!",
+                "Don't wasn't any more time here."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "It seems you have too much time on your hands. Okay, I will assign you some tasks.",
+                    "Hahaha, did you say no? Alright then, fine. Scram."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines(args![
+                "Wah~! My brain is gonna blow up soon! Why must I have to prepare all of these things?!",
+                "Who are you?! Don't disturb me, I'm busy!!"
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lucius Celsus",
+                args![
+                    "If you just want to watch monsters here, fine with me...",
+                    "Just don't ask me any questions."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
 }
@@ -3897,38 +3827,36 @@ fn physics_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     "Oh dearie, don't be nervous...where's your sense of adventure?"
                 ],
             )?;
+        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.mes("Well, aren't you the cutest little Novice~")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Aebecee George",
+                args![
+                    "What are you doing here, sweetcakes? Do you just come over to see what's in here?",
+                    "Do you want some candy? Candy, my precious? Tee hee."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Aebecee George",
+                args![
+                    "Oh gosh...Sorry, I thought I had some...",
+                    "But I've got other treats, you catch my drift?"
+                ],
+            )?;
         } else {
-            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.mes("Well, aren't you the cutest little Novice~")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Aebecee George",
-                    args![
-                        "What are you doing here, sweetcakes? Do you just come over to see what's in here?",
-                        "Do you want some candy? Candy, my precious? Tee hee."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Aebecee George",
-                    args![
-                        "Oh gosh...Sorry, I thought I had some...",
-                        "But I've got other treats, you catch my drift?"
-                    ],
-                )?;
-            } else {
-                ctx.mes("Hey there, tee hee, how's it going sailor?")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Aebecee George",
-                    args![
-                        "Did you come here to look around? Huh...?",
-                        "Well, if you're not here for business, you must be here..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Aebecee George", args!["...for PLEASURE.", "Hey wait! Come back~!"])?;
-            }
+            ctx.mes("Hey there, tee hee, how's it going sailor?")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Aebecee George",
+                args![
+                    "Did you come here to look around? Huh...?",
+                    "Well, if you're not here for business, you must be here..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Aebecee George", args!["...for PLEASURE.", "Hey wait! Come back~!"])?;
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -3972,247 +3900,245 @@ fn physics_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if ctx.var("sage_q2").get()? == 1 {
+            if ctx.call(Function::CountItem, vec![Val::from(7049)])?.number()? > 29 {
+                ctx.lines(args![
+                    "Oh~ how sweet! You brought them all~ thank you~",
+                    "Oh, can you wait a little bit? I need to do something before we start. Tee hee~"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Aebecee George", args!["Hocus-focus!!"])?;
+                ctx.next()?;
+                ctx.lines_as("Aebecee George", args!["Hocus~focus!!"])?;
+                ctx.next()?;
+                ctx.lines_as("Aebecee George", args!["Ho~cus~fo~cus!!"])?;
+                ctx.next()?;
+                ctx.call(Function::DelItem, vec![Val::from(7049), Val::from(30)])?;
+                ctx.lines_as(
+                    "Aebecee George",
+                    args!["Tee hee, you naughty stone~", "Only 3 of them worked for me. Tee hee~"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Aebecee George",
+                    args![
+                        "Here's my other favor to ask of you. Oh, are those tears of...joy?",
+                        "Oh, I'm sooo excited too! Tee hee~"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.call(Function::GetItem, vec![Val::from(991), Val::from(1)])?;
+                ctx.call(Function::GetItem, vec![Val::from(993), Val::from(1)])?;
+                ctx.call(Function::GetItem, vec![Val::from(992), Val::from(1)])?;
+                ctx.lines_as(
+                    "Aebecee George",
+                    args![
+                        "I will give you these elemental ores...but...they are not for free.",
+                        "Whoa there cowboy! Don't pull out so soon~ Listen, tee hee~"
+                    ],
+                )?;
+                ctx.var("sage_q2").set(Val::from(2))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(2060), Val::from(2061)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Aebecee George",
+                    args![
+                        "Please make arrows using these items and bring them to me, pretty please~",
+                        "50 ^3355FFCrystal Arrow^000000,",
+                        "50 ^3355FFStone Arrow^000000,",
+                        "50 ^3355FFWind Arrow^000000."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Aebecee George",
+                    args![
+                        "Ask any of your Archer friends if you know any.",
+                        "I am looking forward to seeing you again, tee hee~"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines(args![
+                    "You don't have all the items? And here I was, getting all hot and bothered.",
+                    "Go on, sweetheart, and hurry baaack~"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Aebecee George",
+                    args![
+                        "I asked you to bring ^3355FF30 Stone^000000.",
+                        "There are many out there, so you won't have too hard a time getting them~ tee hee."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         } else {
-            if ctx.var("sage_q2").get()? == 1 {
-                if ctx.call(Function::CountItem, vec![Val::from(7049)])?.number()? > 29 {
+            if ctx.var("sage_q2").get()? == 2 {
+                if ((ctx.call(Function::CountItem, vec![Val::from(1754)])?.number()? > 49
+                    && ctx.call(Function::CountItem, vec![Val::from(1756)])?.number()? > 49)
+                    && ctx.call(Function::CountItem, vec![Val::from(1755)])?.number()? > 49)
+                {
                     ctx.lines(args![
-                        "Oh~ how sweet! You brought them all~ thank you~",
-                        "Oh, can you wait a little bit? I need to do something before we start. Tee hee~"
+                        "Oh~ how sweet! You brought them all~ Oh thank you~",
+                        "Well now, let's get down to business. Tee hee~"
                     ])?;
                     ctx.next()?;
-                    ctx.lines_as("Aebecee George", args!["Hocus-focus!!"])?;
-                    ctx.next()?;
-                    ctx.lines_as("Aebecee George", args!["Hocus~focus!!"])?;
-                    ctx.next()?;
-                    ctx.lines_as("Aebecee George", args!["Ho~cus~fo~cus!!"])?;
-                    ctx.next()?;
-                    ctx.call(Function::DelItem, vec![Val::from(7049), Val::from(30)])?;
-                    ctx.lines_as(
-                        "Aebecee George",
-                        args!["Tee hee, you naughty stone~", "Only 3 of them worked for me. Tee hee~"],
-                    )?;
-                    ctx.next()?;
                     ctx.lines_as(
                         "Aebecee George",
                         args![
-                            "Here's my other favor to ask of you. Oh, are those tears of...joy?",
-                            "Oh, I'm sooo excited too! Tee hee~"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.call(Function::GetItem, vec![Val::from(991), Val::from(1)])?;
-                    ctx.call(Function::GetItem, vec![Val::from(993), Val::from(1)])?;
-                    ctx.call(Function::GetItem, vec![Val::from(992), Val::from(1)])?;
-                    ctx.lines_as(
-                        "Aebecee George",
-                        args![
-                            "I will give you these elemental ores...but...they are not for free.",
-                            "Whoa there cowboy! Don't pull out so soon~ Listen, tee hee~"
-                        ],
-                    )?;
-                    ctx.var("sage_q2").set(Val::from(2))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(2060), Val::from(2061)])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Aebecee George",
-                        args![
-                            "Please make arrows using these items and bring them to me, pretty please~",
-                            "50 ^3355FFCrystal Arrow^000000,",
-                            "50 ^3355FFStone Arrow^000000,",
-                            "50 ^3355FFWind Arrow^000000."
+                            "I'll say something, and you just write everything down.",
+                            "Don't forget to underline the important sentences~"
                         ],
                     )?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Aebecee George",
                         args![
-                            "Ask any of your Archer friends if you know any.",
-                            "I am looking forward to seeing you again, tee hee~"
+                            "Water property magic is sooo strong against the fire property.",
+                            "Just remember those burly, sexay fire fighters, shall we say, putting out that fire with water. Ooh, wet!"
                         ],
                     )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Aebecee George",
+                        args![
+                            "Wind property magic totally dominates the water property! Oh, yes~",
+                            "Think of a hot flash, and by that I mean ligntening, striking a lake. Oh, I'm bad!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Aebecee George", args!["In terms of strength, magic with earth property goes on top of wind property magic! Ho~~", "Just think of how the wind passionately beats against the cliffside near the Lookout Point or Lover's Lane. Tee hee~"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Aebecee George",
+                        args![
+                            "Magic with fire property is strong against earth property! Tee hee~",
+                            "Just think of burning wood, sprung from the earth, in a cozy fireplace. On the bearskin, in the dark~"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Aebecee George",
+                        args!["...Oh my gosh! Time flies sooo fast!", "Let's call it a day, dear, tee hee~"],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(1754), Val::from(50)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(1756), Val::from(50)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(1755), Val::from(50)])?;
+                    ctx.lines_as("Aebecee George", args!["When you come to the next class, bring ^3355FF1 Holy Water^000000~", "I hope you have at least one Priest friend. Oh, you don't? Well, it couldn't hurt to get friendly with one."])?;
+                    ctx.var("sage_q2").set(Val::from(3))?;
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2061), Val::from(2062)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 } else {
-                    ctx.lines(args![
-                        "You don't have all the items? And here I was, getting all hot and bothered.",
-                        "Go on, sweetheart, and hurry baaack~"
-                    ])?;
+                    ctx.lines(args!["What are you doing here, precious...are you trying to fool me? Tee hee~", "I hope you didn't sell the elemental ores I gave you? Naughty naughty~ Don't you know diamonds are a girl's best friend? Tee hee~"])?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Aebecee George",
                         args![
-                            "I asked you to bring ^3355FF30 Stone^000000.",
-                            "There are many out there, so you won't have too hard a time getting them~ tee hee."
+                            "50 ^3355FFCrystal Arrow^000000,",
+                            "50 ^3355FFStone Arrow^000000,",
+                            "50 ^3355FFWind Arrow^000000.",
+                            "Ask your Archer friend if you have one~ tee hee."
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             } else {
-                if ctx.var("sage_q2").get()? == 2 {
-                    if ((ctx.call(Function::CountItem, vec![Val::from(1754)])?.number()? > 49
-                        && ctx.call(Function::CountItem, vec![Val::from(1756)])?.number()? > 49)
-                        && ctx.call(Function::CountItem, vec![Val::from(1755)])?.number()? > 49)
-                    {
+                if ctx.var("sage_q2").get()? == 3 {
+                    if ctx.call(Function::CountItem, vec![Val::from(523)])?.number()? > 0 {
                         ctx.lines(args![
-                            "Oh~ how sweet! You brought them all~ Oh thank you~",
-                            "Well now, let's get down to business. Tee hee~"
+                            "Oh~ how sweet! You brought some Holy Water~ thanks honey~",
+                            "Oh righty, we should start class. Tee hee~"
                         ])?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Aebecee George",
                             args![
-                                "I'll say something, and you just write everything down.",
-                                "Don't forget to underline the important sentences~"
+                                "Just Like last time, I will speak and you just write down everything I say.",
+                                "Even if you don't understand, just pretend and go with the flow, alright? Tee hee~"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Aebecee George", args!["Water Magic is weak against wind property! Yes, that's right~", "Just remember why you don't keep the electric fan around when you're taking a hot bubble bath. Ooh! So electric!"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Aebecee George",
+                            args![
+                                "Magic with the wind property is weak against earth property!",
+                                "Think of how the wind can't, shall we say, penetrate a mud facial mask~"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Aebecee George", args!["Magic with earth property is weak against fire property! Tee hee~", "Just think of burning wood, sprung from the earth, in a cozy fireplace. On the be--oh? I said that already? Oh poopy."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Aebecee George",
+                            args![
+                                "Magic with fire property is weak against water property! Yes~",
+                                "When things get flaming hot, it's best to splash things in cold water. Don't you agree~?"
                             ],
                         )?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Aebecee George",
                             args![
-                                "Water property magic is sooo strong against the fire property.",
-                                "Just remember those burly, sexay fire fighters, shall we say, putting out that fire with water. Ooh, wet!"
+                                "Oh, it's the end of the class~ tee hee.",
+                                "So? Do you think you've learned a lot? You can thank me, honey!"
                             ],
                         )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(523), Val::from(1)])?;
+                        ctx.lines_as(
+                            "Aebecee George",
+                            args![
+                                "Well, that's it. You can write your thesis with what I've taught you!",
+                                "Tee hee~ yes! Yes! I am the best teacher in the world! Oh, I am on fire! Tee hee~"
+                            ],
+                        )?;
+                        ctx.var("sage_q2").set(Val::from(0))?;
+                        ctx.var("sage_q").set(Val::from(14))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2062), Val::from(2051)])?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Aebecee George",
                             args![
-                                "Wind property magic totally dominates the water property! Oh, yes~",
-                                "Think of a hot flash, and by that I mean ligntening, striking a lake. Oh, I'm bad!"
+                                "Okay, please gather these items so you can write the thesis, dear~ Tee hee~",
+                                "^3355FF1 Feather of Birds^000000 which will be used as a pen,",
+                                "^3355FF1 Animal Skin^000000 which will be used as paper,",
+                                "^3355FF1 Trunk^000000 which will be used to bind a book,",
+                                "^3355FF1 Squid Ink^000000 which will be used as ink,",
+                                "^3355FF1 Empty Bottle^000000 to keep that Squid Ink from splashing."
                             ],
                         )?;
                         ctx.next()?;
-                        ctx.lines_as("Aebecee George", args!["In terms of strength, magic with earth property goes on top of wind property magic! Ho~~", "Just think of how the wind passionately beats against the cliffside near the Lookout Point or Lover's Lane. Tee hee~"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Aebecee George",
-                            args![
-                                "Magic with fire property is strong against earth property! Tee hee~",
-                                "Just think of burning wood, sprung from the earth, in a cozy fireplace. On the bearskin, in the dark~"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Aebecee George",
-                            args!["...Oh my gosh! Time flies sooo fast!", "Let's call it a day, dear, tee hee~"],
-                        )?;
-                        ctx.next()?;
-                        ctx.call(Function::DelItem, vec![Val::from(1754), Val::from(50)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(1756), Val::from(50)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(1755), Val::from(50)])?;
-                        ctx.lines_as("Aebecee George", args!["When you come to the next class, bring ^3355FF1 Holy Water^000000~", "I hope you have at least one Priest friend. Oh, you don't? Well, it couldn't hurt to get friendly with one."])?;
-                        ctx.var("sage_q2").set(Val::from(3))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(2061), Val::from(2062)])?;
+                        ctx.lines_as("Aebecee George", args!["So get on out there cowboy and hurry back~ Tee hee~"])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     } else {
-                        ctx.lines(args!["What are you doing here, precious...are you trying to fool me? Tee hee~", "I hope you didn't sell the elemental ores I gave you? Naughty naughty~ Don't you know diamonds are a girl's best friend? Tee hee~"])?;
+                        ctx.lines(args![
+                            "What are you doing here, precious...are you playing games? Tee hee.",
+                            "Oh, poor dear. Did you already forget what I told you? Do you want me to remind you? Tee hee~"
+                        ])?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Aebecee George",
                             args![
-                                "50 ^3355FFCrystal Arrow^000000,",
-                                "50 ^3355FFStone Arrow^000000,",
-                                "50 ^3355FFWind Arrow^000000.",
-                                "Ask your Archer friend if you have one~ tee hee."
+                                "^3355FF1 Holy Water^000000,",
+                                "It couldn't hurt to get friendly with an Aco or Priest...tee hee."
                             ],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
                 } else {
-                    if ctx.var("sage_q2").get()? == 3 {
-                        if ctx.call(Function::CountItem, vec![Val::from(523)])?.number()? > 0 {
-                            ctx.lines(args![
-                                "Oh~ how sweet! You brought some Holy Water~ thanks honey~",
-                                "Oh righty, we should start class. Tee hee~"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Aebecee George",
-                                args![
-                                    "Just Like last time, I will speak and you just write down everything I say.",
-                                    "Even if you don't understand, just pretend and go with the flow, alright? Tee hee~"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Aebecee George", args!["Water Magic is weak against wind property! Yes, that's right~", "Just remember why you don't keep the electric fan around when you're taking a hot bubble bath. Ooh! So electric!"])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Aebecee George",
-                                args![
-                                    "Magic with the wind property is weak against earth property!",
-                                    "Think of how the wind can't, shall we say, penetrate a mud facial mask~"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Aebecee George", args!["Magic with earth property is weak against fire property! Tee hee~", "Just think of burning wood, sprung from the earth, in a cozy fireplace. On the be--oh? I said that already? Oh poopy."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Aebecee George",
-                                args![
-                                    "Magic with fire property is weak against water property! Yes~",
-                                    "When things get flaming hot, it's best to splash things in cold water. Don't you agree~?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Aebecee George",
-                                args![
-                                    "Oh, it's the end of the class~ tee hee.",
-                                    "So? Do you think you've learned a lot? You can thank me, honey!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.call(Function::DelItem, vec![Val::from(523), Val::from(1)])?;
-                            ctx.lines_as(
-                                "Aebecee George",
-                                args![
-                                    "Well, that's it. You can write your thesis with what I've taught you!",
-                                    "Tee hee~ yes! Yes! I am the best teacher in the world! Oh, I am on fire! Tee hee~"
-                                ],
-                            )?;
-                            ctx.var("sage_q2").set(Val::from(0))?;
-                            ctx.var("sage_q").set(Val::from(14))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2062), Val::from(2051)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Aebecee George",
-                                args![
-                                    "Okay, please gather these items so you can write the thesis, dear~ Tee hee~",
-                                    "^3355FF1 Feather of Birds^000000 which will be used as a pen,",
-                                    "^3355FF1 Animal Skin^000000 which will be used as paper,",
-                                    "^3355FF1 Trunk^000000 which will be used to bind a book,",
-                                    "^3355FF1 Squid Ink^000000 which will be used as ink,",
-                                    "^3355FF1 Empty Bottle^000000 to keep that Squid Ink from splashing."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Aebecee George", args!["So get on out there cowboy and hurry back~ Tee hee~"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "What are you doing here, precious...are you playing games? Tee hee.",
-                                "Oh, poor dear. Did you already forget what I told you? Do you want me to remind you? Tee hee~"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Aebecee George",
-                                args![
-                                    "^3355FF1 Holy Water^000000,",
-                                    "It couldn't hurt to get friendly with an Aco or Priest...tee hee."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        ctx.mes("So...do you have the time? I'm kidding, girlfriend!")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.mes("So...do you have the time? I'm kidding, girlfriend!")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }

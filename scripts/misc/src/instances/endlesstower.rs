@@ -55,192 +55,186 @@ fn captain_janssen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("in_102tower").set(Val::from(2))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("in_102tower").get()? == 2 {
-            ctx.lines_as("Captain Janssen", args!["So all I could do was cast anchor at that humongous tower after my fleet was wrecked. At first, we were only going to stay there until the rainstorm was over, but it didn't end as soon as we had hoped."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Captain Janssen",
-                args!["My crew was starving, and a few of them walked into the tower in order to find food... They never came back."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(l_name_s.clone(), args!["Why didn't you go in there with them?"])?;
-            ctx.next()?;
-            ctx.lines_as("Captain Janssen", args!["My instincts told me that tower was dangerous. I was curious, but I wasn't going to risk my life. We waited for them to come back for 7 days until the rainstorm was finally over, but no one returned."])?;
-            ctx.next()?;
-            ctx.lines_as("Captain Janssen", args!["In our desperation to survive, we abandoned all our goods, and left the tower only with a little bit of the water and edible plants we'd found around the tower. When we finally reached land, I was the only one alive..."])?;
-            ctx.next()?;
-            ctx.mes("^0000ffYou could imagine the heartwretching scene of the dying fleet on their last voyage, even if he didn't explain it any further. A look of somber regret swept over his face as he remained silent a while, and then he said:^000000")?;
-            ctx.next()?;
-            ctx.lines_as("Captain Janssen", args!["I have something I must do before I die. I must retrieve the remains of my crew that died in the tower, and give them a proper burial."])?;
-            ctx.next()?;
-            ctx.lines_as("Captain Janssen", args!["I feel so lucky to meet a warm-hearted adventurer like you. With the money you've given me, I can finally go sailing to the tower again."])?;
-            ctx.next()?;
-            ctx.lines_as(l_name_s.clone(), args!["How about hiring me as your first mate?"])?;
-            ctx.next()?;
-            ctx.lines_as("Captain Janssen", args!["Thank you, but it is an extremely dangerous place. I have my duty to fulfill, but you don't have any obligation to me or them. I don't wish to sacrifice someone as young as you to such a dangerous place."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                l_name_s.clone(),
-                args![
-                    "No...",
-                    ".",
-                    ".",
-                    "As an adventurer, there's my obligation to those in need. I'm also very curious about that place..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Captain Janssen", args!["I was going to leave right away, but since you've joined me, I should give you time to prepare. I'll be waiting here until you're ready to go."])?;
-            ctx.next()?;
-            ctx.lines_as("Captain Janssen", args!["...Okay then...", "Welcome aboard, first mate."])?;
-            ctx.var("in_102tower").set(Val::from(3))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("in_102tower").get()? == 3 {
-                ctx.lines_as("Captain Janssen", args!["Shall we leave now?"])?;
+    } else if ctx.var("in_102tower").get()? == 2 {
+        ctx.lines_as("Captain Janssen", args!["So all I could do was cast anchor at that humongous tower after my fleet was wrecked. At first, we were only going to stay there until the rainstorm was over, but it didn't end as soon as we had hoped."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Captain Janssen",
+            args!["My crew was starving, and a few of them walked into the tower in order to find food... They never came back."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(l_name_s.clone(), args!["Why didn't you go in there with them?"])?;
+        ctx.next()?;
+        ctx.lines_as("Captain Janssen", args!["My instincts told me that tower was dangerous. I was curious, but I wasn't going to risk my life. We waited for them to come back for 7 days until the rainstorm was finally over, but no one returned."])?;
+        ctx.next()?;
+        ctx.lines_as("Captain Janssen", args!["In our desperation to survive, we abandoned all our goods, and left the tower only with a little bit of the water and edible plants we'd found around the tower. When we finally reached land, I was the only one alive..."])?;
+        ctx.next()?;
+        ctx.mes("^0000ffYou could imagine the heartwretching scene of the dying fleet on their last voyage, even if he didn't explain it any further. A look of somber regret swept over his face as he remained silent a while, and then he said:^000000")?;
+        ctx.next()?;
+        ctx.lines_as("Captain Janssen", args!["I have something I must do before I die. I must retrieve the remains of my crew that died in the tower, and give them a proper burial."])?;
+        ctx.next()?;
+        ctx.lines_as("Captain Janssen", args!["I feel so lucky to meet a warm-hearted adventurer like you. With the money you've given me, I can finally go sailing to the tower again."])?;
+        ctx.next()?;
+        ctx.lines_as(l_name_s.clone(), args!["How about hiring me as your first mate?"])?;
+        ctx.next()?;
+        ctx.lines_as("Captain Janssen", args!["Thank you, but it is an extremely dangerous place. I have my duty to fulfill, but you don't have any obligation to me or them. I don't wish to sacrifice someone as young as you to such a dangerous place."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            l_name_s.clone(),
+            args![
+                "No...",
+                ".",
+                ".",
+                "As an adventurer, there's my obligation to those in need. I'm also very curious about that place..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Captain Janssen", args!["I was going to leave right away, but since you've joined me, I should give you time to prepare. I'll be waiting here until you're ready to go."])?;
+        ctx.next()?;
+        ctx.lines_as("Captain Janssen", args!["...Okay then...", "Welcome aboard, first mate."])?;
+        ctx.var("in_102tower").set(Val::from(3))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("in_102tower").get()? == 3 {
+        ctx.lines_as("Captain Janssen", args!["Shall we leave now?"])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Yes, let's go!:No, I'm not quite ready...")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Captain Janssen", args!["Then pull up the anchor, first mate!"])?;
+                ctx.close_window()?;
+                ctx.var("in_102tower").set(Val::from(4))?;
+                ctx.call(Function::Warp, vec![Val::from("e_tower"), Val::from(70), Val::from(114)])?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Captain Janssen", args!["Sure, no problem. Come back when you're ready."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("in_102tower").get()?.number()? > 3 {
+        ctx.lines_as("Captain Janssen", args!["Well, to travel the ocean again, we need to restock on goods. If you give me 10,000 Zeny, I'll take care of the rest."])?;
+        ctx.next()?;
+        'b2: {
+            let subject2 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("I'll come back later.:Let's go, now!")],
+            )?);
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args!["I'm sorry, but I don't have that much money. I'll come back when I save enough."],
+                )?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Yes, let's go!:No, I'm not quite ready...")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as("Captain Janssen", args!["Then pull up the anchor, first mate!"])?;
-                        ctx.close_window()?;
-                        ctx.var("in_102tower").set(Val::from(4))?;
-                        ctx.call(Function::Warp, vec![Val::from("e_tower"), Val::from(70), Val::from(114)])?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as("Captain Janssen", args!["Sure, no problem. Come back when you're ready."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-            } else {
-                if ctx.var("in_102tower").get()?.number()? > 3 {
-                    ctx.lines_as("Captain Janssen", args!["Well, to travel the ocean again, we need to restock on goods. If you give me 10,000 Zeny, I'll take care of the rest."])?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("I'll come back later.:Let's go, now!")],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                l_name_s.clone(),
-                                args!["I'm sorry, but I don't have that much money. I'll come back when I save enough."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Captain Janssen", args!["Sure, no problem. I'll be waiting for your return."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            if ctx.var("Zeny").get()?.number()? < 10000 {
-                                ctx.lines_as(
-                                    "Captain Janssen",
-                                    args![
-                                        "I'm sorry, but you don't have enough money. I need at least 10,000 Zeny to restock our supplies..."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    "Captain Janssen",
-                                    args!["Excellent! Now we're good to go. Let's pull up the anchor again!"],
-                                )?;
-                                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
-                                ctx.close_window()?;
-                                ctx.call(Function::Warp, vec![Val::from("e_tower"), Val::from(70), Val::from(114)])?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
+                ctx.lines_as("Captain Janssen", args!["Sure, no problem. I'll be waiting for your return."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                if ctx.var("Zeny").get()?.number()? < 10000 {
+                    ctx.lines_as(
+                        "Captain Janssen",
+                        args![
+                            "I'm sorry, but you don't have enough money. I need at least 10,000 Zeny to restock our supplies..."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    ctx.lines_as("Captain Janssen", args!["Excuse me, are you an adventurer?"])?;
+                    ctx.lines_as(
+                        "Captain Janssen",
+                        args!["Excellent! Now we're good to go. Let's pull up the anchor again!"],
+                    )?;
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("e_tower"), Val::from(70), Val::from(114)])?;
+                    return Err(Stop::End);
+                }
+            }
+        }
+    } else {
+        ctx.lines_as("Captain Janssen", args!["Excuse me, are you an adventurer?"])?;
+        ctx.next()?;
+        ctx.lines_as("Captain Janssen", args!["I'm sorry to ask you this, especially when this is the first time we've ever met, but can you do me a favor? I'll make it short."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Captain Janssen",
+            args!["Can you donate ^0000ff10,000 Zeny^000000 to me? It's for a cause that's important to me..."],
+        )?;
+        ctx.next()?;
+        'b3: {
+            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("No!:Sure thing.")])?);
+            let mut matched3 = false;
+            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    l_name_s.clone(),
+                    args!["I'm sorry, but you've got the wrong person to ask that."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Captain Janssen",
+                    args![
+                        "I see... Sorry to bother you. I understand it was too rude to ask something like that to begin with."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    "Captain Janssen",
+                    args!["Huh? Are you sure that you don't mind giving me that much money? Wow, thank you so much!"],
+                )?;
+                ctx.next()?;
+                if ctx.var("Zeny").get()?.number()? < 10000 {
+                    ctx.lines_as("Captain Janssen", args!["...I'm sorry, but I don't think you have 10,000 Zeny. Thank you for your kindness, but I need more than that."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args!["I don't know why you'd need so much money, but here. You can take it."],
+                    )?;
                     ctx.next()?;
-                    ctx.lines_as("Captain Janssen", args!["I'm sorry to ask you this, especially when this is the first time we've ever met, but can you do me a favor? I'll make it short."])?;
+                    ctx.mes("^0000ffYou have donated 10,000 Zeny to Captain Janssen^000000.")?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Captain Janssen",
-                        args!["Can you donate ^0000ff10,000 Zeny^000000 to me? It's for a cause that's important to me..."],
+                        args![
+                            "Thank you so much! Now I can stock up on food and materials for my ship. You're kind, very kind!"
+                        ],
                     )?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("No!:Sure thing.")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                l_name_s.clone(),
-                                args!["I'm sorry, but you've got the wrong person to ask that."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Captain Janssen",
-                                args![
-                                    "I see... Sorry to bother you. I understand it was too rude to ask something like that to begin with."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Captain Janssen",
-                                args!["Huh? Are you sure that you don't mind giving me that much money? Wow, thank you so much!"],
-                            )?;
-                            ctx.next()?;
-                            if ctx.var("Zeny").get()?.number()? < 10000 {
-                                ctx.lines_as("Captain Janssen", args!["...I'm sorry, but I don't think you have 10,000 Zeny. Thank you for your kindness, but I need more than that."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    l_name_s.clone(),
-                                    args!["I don't know why you'd need so much money, but here. You can take it."],
-                                )?;
-                                ctx.next()?;
-                                ctx.mes("^0000ffYou have donated 10,000 Zeny to Captain Janssen^000000.")?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Captain Janssen",
-                                    args![
-                                        "Thank you so much! Now I can stock up on food and materials for my ship. You're kind, very kind!"
-                                    ],
-                                )?;
-                                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
-                                ctx.var("in_102tower").set(Val::from(1))?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(10000))?))?;
+                    ctx.var("in_102tower").set(Val::from(1))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }

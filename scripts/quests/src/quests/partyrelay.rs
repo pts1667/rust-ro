@@ -97,16 +97,12 @@ fn ledrion_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::GetItem, vec![Val::from(603), Val::from(3)])?;
         if l_present.clone() == 2 {
             ctx.call(Function::GetItem, vec![Val::from(1365), Val::from(1)])?;
+        } else if l_present.clone() == 4 {
+            ctx.call(Function::GetItem, vec![Val::from(1367), Val::from(1)])?;
+        } else if l_present.clone() == 6 {
+            ctx.call(Function::GetItem, vec![Val::from(1527), Val::from(1)])?;
         } else {
-            if l_present.clone() == 4 {
-                ctx.call(Function::GetItem, vec![Val::from(1367), Val::from(1)])?;
-            } else {
-                if l_present.clone() == 6 {
-                    ctx.call(Function::GetItem, vec![Val::from(1527), Val::from(1)])?;
-                } else {
-                    ctx.call(Function::GetItem, vec![Val::from(617), Val::from(3)])?;
-                }
-            }
+            ctx.call(Function::GetItem, vec![Val::from(617), Val::from(3)])?;
         }
         shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
         ctx.lines_as(
@@ -687,32 +683,30 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("party_relay").set(Val::from(27))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.var("party_relay").get()? == 26
-            && runtime::op(
-                &ctx.var("BaseLevel").get()?,
-                ">",
-                &(ctx.var("party_relay_lv").get()? + Val::from(2)),
-            )?
-            .is_true())
-            && l_relaytime.clone().number()? >= 18)
-            && l_relaytime.clone().number()? < 21)
-        {
-            ctx.lines_as(
-                "Gatan",
-                args![
-                    "Great, you gained some",
-                    "levels, just like I asked.",
-                    "Let me find your next--I swore",
-                    "I left it around somewhere--",
-                    "and I'll give you your next set",
-                    "of instructions. Hang on..."
-                ],
-            )?;
-            ctx.var("party_relay").set(Val::from(27))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((ctx.var("party_relay").get()? == 26
+        && runtime::op(
+            &ctx.var("BaseLevel").get()?,
+            ">",
+            &(ctx.var("party_relay_lv").get()? + Val::from(2)),
+        )?
+        .is_true())
+        && l_relaytime.clone().number()? >= 18)
+        && l_relaytime.clone().number()? < 21)
+    {
+        ctx.lines_as(
+            "Gatan",
+            args![
+                "Great, you gained some",
+                "levels, just like I asked.",
+                "Let me find your next--I swore",
+                "I left it around somewhere--",
+                "and I'll give you your next set",
+                "of instructions. Hang on..."
+            ],
+        )?;
+        ctx.var("party_relay").set(Val::from(27))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 26 {
         ctx.lines_as(
@@ -764,32 +758,30 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("party_relay").set(Val::from(27))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.var("party_relay").get()? == 25
-            && runtime::op(
-                &ctx.var("BaseLevel").get()?,
-                ">",
-                &(ctx.var("party_relay_lv").get()? + Val::from(1)),
-            )?
-            .is_true())
-            && l_relaytime.clone().number()? >= 18)
-            && l_relaytime.clone().number()? < 21)
-        {
-            ctx.lines_as(
-                "Gatan",
-                args![
-                    "Great, you gained some",
-                    "levels, just like I asked.",
-                    "Let me find your next--I swore",
-                    "I left it around somewhere--",
-                    "and I'll give you your next set",
-                    "of instructions. Hang on..."
-                ],
-            )?;
-            ctx.var("party_relay").set(Val::from(27))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((ctx.var("party_relay").get()? == 25
+        && runtime::op(
+            &ctx.var("BaseLevel").get()?,
+            ">",
+            &(ctx.var("party_relay_lv").get()? + Val::from(1)),
+        )?
+        .is_true())
+        && l_relaytime.clone().number()? >= 18)
+        && l_relaytime.clone().number()? < 21)
+    {
+        ctx.lines_as(
+            "Gatan",
+            args![
+                "Great, you gained some",
+                "levels, just like I asked.",
+                "Let me find your next--I swore",
+                "I left it around somewhere--",
+                "and I'll give you your next set",
+                "of instructions. Hang on..."
+            ],
+        )?;
+        ctx.var("party_relay").set(Val::from(27))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 25 {
         ctx.lines_as(
@@ -836,27 +828,25 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("party_relay").set(Val::from(27))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.var("party_relay").get()? == 24
-            && runtime::op(&ctx.var("BaseLevel").get()?, ">", &ctx.var("party_relay_lv").get()?)?.is_true())
-            && l_relaytime.clone().number()? >= 18)
-            && l_relaytime.clone().number()? < 21)
-        {
-            ctx.lines_as(
-                "Gatan",
-                args![
-                    "Great, you gained a",
-                    "level, just like I asked.",
-                    "Let me find your next--I swore",
-                    "I left it around somewhere--",
-                    "and I'll give you your next set",
-                    "of instructions. Hang on..."
-                ],
-            )?;
-            ctx.var("party_relay").set(Val::from(27))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((ctx.var("party_relay").get()? == 24
+        && runtime::op(&ctx.var("BaseLevel").get()?, ">", &ctx.var("party_relay_lv").get()?)?.is_true())
+        && l_relaytime.clone().number()? >= 18)
+        && l_relaytime.clone().number()? < 21)
+    {
+        ctx.lines_as(
+            "Gatan",
+            args![
+                "Great, you gained a",
+                "level, just like I asked.",
+                "Let me find your next--I swore",
+                "I left it around somewhere--",
+                "and I'll give you your next set",
+                "of instructions. Hang on..."
+            ],
+        )?;
+        ctx.var("party_relay").set(Val::from(27))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 24 {
         ctx.lines_as(
@@ -992,122 +982,114 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("BaseLevel").get()?.number()? > 69 {
-                        ctx.lines_as(
-                            "Gatan",
-                            args![
-                                "You're pretty strong,",
-                                "but it wouldn't kill",
-                                "you to gain 2 more",
-                                "Base Levels. Go ahead",
-                                "and do that, alright?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
-                        ctx.var("party_relay").set(Val::from(25))?;
-                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                        ctx.lines_as(
-                            "Gatan",
-                            args![
-                                "I'll go ahead and take",
-                                "your ticket now. Come",
-                                "back after you finish what",
-                                "I've asked, and then we can",
-                                "move on to the next part."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("BaseLevel").get()?.number()? > 59 {
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "You're pretty strong,",
-                                    "but it wouldn't kill",
-                                    "you to gain 2 more",
-                                    "Base Levels. Go ahead",
-                                    "and do that, alright?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
-                            ctx.var("party_relay").set(Val::from(25))?;
-                            ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "I'll go ahead and take",
-                                    "your ticket now. Come",
-                                    "back after you finish what",
-                                    "I've asked, and then we can",
-                                    "move on to the next part."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("BaseLevel").get()?.number()? > 49 {
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "You know, you'd probably",
-                                        "benefit from being just",
-                                        "a little bit stronger. Now",
-                                        "go out and gain 3 Base",
-                                        "Levels for me, okay?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
-                                ctx.var("party_relay").set(Val::from(26))?;
-                                ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "I'll go ahead and take",
-                                        "your ticket now. Come",
-                                        "back after you finish what",
-                                        "I've asked, and then we can",
-                                        "move on to the next part."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("BaseLevel").get()?.number()? > 39 {
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "You know, you'd probably",
-                                            "benefit from being just",
-                                            "a little bit stronger. Now",
-                                            "go out and gain 3 Base",
-                                            "Levels for me, okay?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
-                                    ctx.var("party_relay").set(Val::from(26))?;
-                                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "I'll go ahead and take",
-                                            "your ticket now. Come",
-                                            "back after you finish what",
-                                            "I've asked, and then we can",
-                                            "move on to the next part."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                    }
+                } else if ctx.var("BaseLevel").get()?.number()? > 69 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You're pretty strong,",
+                            "but it wouldn't kill",
+                            "you to gain 2 more",
+                            "Base Levels. Go ahead",
+                            "and do that, alright?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(25))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 59 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You're pretty strong,",
+                            "but it wouldn't kill",
+                            "you to gain 2 more",
+                            "Base Levels. Go ahead",
+                            "and do that, alright?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(25))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 49 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You know, you'd probably",
+                            "benefit from being just",
+                            "a little bit stronger. Now",
+                            "go out and gain 3 Base",
+                            "Levels for me, okay?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(26))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 39 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You know, you'd probably",
+                            "benefit from being just",
+                            "a little bit stronger. Now",
+                            "go out and gain 3 Base",
+                            "Levels for me, okay?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(26))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -1220,122 +1202,114 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("BaseLevel").get()?.number()? > 69 {
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "You're pretty strong,",
-                                    "but it wouldn't kill",
-                                    "you to gain 2 more",
-                                    "Base Levels. Go ahead",
-                                    "and do that, alright?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
-                            ctx.var("party_relay").set(Val::from(25))?;
-                            ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "I'll go ahead and take",
-                                    "your ticket now. Come",
-                                    "back after you finish what",
-                                    "I've asked, and then we can",
-                                    "move on to the next part."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("BaseLevel").get()?.number()? > 59 {
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "You're pretty strong,",
-                                        "but it wouldn't kill",
-                                        "you to gain 2 more",
-                                        "Base Levels. Go ahead",
-                                        "and do that, alright?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
-                                ctx.var("party_relay").set(Val::from(25))?;
-                                ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "I'll go ahead and take",
-                                        "your ticket now. Come",
-                                        "back after you finish what",
-                                        "I've asked, and then we can",
-                                        "move on to the next part."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("BaseLevel").get()?.number()? > 49 {
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "You know, you'd probably",
-                                            "benefit from being just",
-                                            "a little bit stronger. Now",
-                                            "go out and gain 3 Base",
-                                            "Levels for me, okay?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
-                                    ctx.var("party_relay").set(Val::from(26))?;
-                                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "I'll go ahead and take",
-                                            "your ticket now. Come",
-                                            "back after you finish what",
-                                            "I've asked, and then we can",
-                                            "move on to the next part."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("BaseLevel").get()?.number()? > 39 {
-                                        ctx.lines_as(
-                                            "Gatan",
-                                            args![
-                                                "You know, you'd probably",
-                                                "benefit from being just",
-                                                "a little bit stronger. Now",
-                                                "go out and gain 3 Base",
-                                                "Levels for me, okay?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
-                                        ctx.var("party_relay").set(Val::from(26))?;
-                                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                        ctx.lines_as(
-                                            "Gatan",
-                                            args![
-                                                "I'll go ahead and take",
-                                                "your ticket now. Come",
-                                                "back after you finish what",
-                                                "I've asked, and then we can",
-                                                "move on to the next part."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                        }
+                    } else if ctx.var("BaseLevel").get()?.number()? > 69 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You're pretty strong,",
+                                "but it wouldn't kill",
+                                "you to gain 2 more",
+                                "Base Levels. Go ahead",
+                                "and do that, alright?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(25))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? > 59 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You're pretty strong,",
+                                "but it wouldn't kill",
+                                "you to gain 2 more",
+                                "Base Levels. Go ahead",
+                                "and do that, alright?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(25))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? > 49 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You know, you'd probably",
+                                "benefit from being just",
+                                "a little bit stronger. Now",
+                                "go out and gain 3 Base",
+                                "Levels for me, okay?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(26))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? > 39 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You know, you'd probably",
+                                "benefit from being just",
+                                "a little bit stronger. Now",
+                                "go out and gain 3 Base",
+                                "Levels for me, okay?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7738), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(26))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -1441,32 +1415,30 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("party_relay").set(Val::from(16))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.var("party_relay").get()? == 15
-            && runtime::op(
-                &ctx.var("BaseLevel").get()?,
-                ">",
-                &(ctx.var("party_relay_lv").get()? + Val::from(2)),
-            )?
-            .is_true())
-            && l_relaytime.clone().number()? >= 21)
-            && l_relaytime.clone().number()? < 1)
-        {
-            ctx.lines_as(
-                "Gatan",
-                args![
-                    "Great, you gained some",
-                    "levels, just like I asked.",
-                    "Let me find your next--I swore",
-                    "I left it around somewhere--",
-                    "and I'll give you your next set",
-                    "of instructions. Hang on..."
-                ],
-            )?;
-            ctx.var("party_relay").set(Val::from(16))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((ctx.var("party_relay").get()? == 15
+        && runtime::op(
+            &ctx.var("BaseLevel").get()?,
+            ">",
+            &(ctx.var("party_relay_lv").get()? + Val::from(2)),
+        )?
+        .is_true())
+        && l_relaytime.clone().number()? >= 21)
+        && l_relaytime.clone().number()? < 1)
+    {
+        ctx.lines_as(
+            "Gatan",
+            args![
+                "Great, you gained some",
+                "levels, just like I asked.",
+                "Let me find your next--I swore",
+                "I left it around somewhere--",
+                "and I'll give you your next set",
+                "of instructions. Hang on..."
+            ],
+        )?;
+        ctx.var("party_relay").set(Val::from(16))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 15 {
         ctx.lines_as(
@@ -1517,31 +1489,29 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("party_relay").set(Val::from(16))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ((ctx.var("party_relay").get()? == 14
-            && runtime::op(
-                &ctx.var("BaseLevel").get()?,
-                ">",
-                &(ctx.var("party_relay_lv").get()? + Val::from(1)),
-            )?
-            .is_true())
-            && l_relaytime.clone().number()? >= 21)
-        {
-            ctx.lines_as(
-                "Gatan",
-                args![
-                    "Great, you gained some",
-                    "levels, just like I asked.",
-                    "Let me find your next--I swore",
-                    "I left it around somewhere--",
-                    "and I'll give you your next set",
-                    "of instructions. Hang on..."
-                ],
-            )?;
-            ctx.var("party_relay").set(Val::from(16))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ((ctx.var("party_relay").get()? == 14
+        && runtime::op(
+            &ctx.var("BaseLevel").get()?,
+            ">",
+            &(ctx.var("party_relay_lv").get()? + Val::from(1)),
+        )?
+        .is_true())
+        && l_relaytime.clone().number()? >= 21)
+    {
+        ctx.lines_as(
+            "Gatan",
+            args![
+                "Great, you gained some",
+                "levels, just like I asked.",
+                "Let me find your next--I swore",
+                "I left it around somewhere--",
+                "and I'll give you your next set",
+                "of instructions. Hang on..."
+            ],
+        )?;
+        ctx.var("party_relay").set(Val::from(16))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 14 {
         ctx.lines_as(
@@ -1588,26 +1558,24 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("party_relay").set(Val::from(16))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ((ctx.var("party_relay").get()? == 13
-            && runtime::op(&ctx.var("BaseLevel").get()?, ">", &ctx.var("party_relay_lv").get()?)?.is_true())
-            && l_relaytime.clone().number()? >= 21)
-        {
-            ctx.lines_as(
-                "Gatan",
-                args![
-                    "Great, you gained some",
-                    "levels, just like I asked.",
-                    "Let me find your next--I swore",
-                    "I left it around somewhere--",
-                    "and I'll give you your next set",
-                    "of instructions. Hang on..."
-                ],
-            )?;
-            ctx.var("party_relay").set(Val::from(16))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ((ctx.var("party_relay").get()? == 13
+        && runtime::op(&ctx.var("BaseLevel").get()?, ">", &ctx.var("party_relay_lv").get()?)?.is_true())
+        && l_relaytime.clone().number()? >= 21)
+    {
+        ctx.lines_as(
+            "Gatan",
+            args![
+                "Great, you gained some",
+                "levels, just like I asked.",
+                "Let me find your next--I swore",
+                "I left it around somewhere--",
+                "and I'll give you your next set",
+                "of instructions. Hang on..."
+            ],
+        )?;
+        ctx.var("party_relay").set(Val::from(16))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 13 {
         ctx.lines_as(
@@ -1744,122 +1712,114 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("BaseLevel").get()?.number()? > 69 {
-                        ctx.lines_as(
-                            "Gatan",
-                            args![
-                                "You're pretty strong,",
-                                "but it wouldn't kill",
-                                "you to gain 2 more",
-                                "Base Levels. Go ahead",
-                                "and do that, alright?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
-                        ctx.var("party_relay").set(Val::from(14))?;
-                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                        ctx.lines_as(
-                            "Gatan",
-                            args![
-                                "I'll go ahead and take",
-                                "your ticket now. Come",
-                                "back after you finish what",
-                                "I've asked, and then we can",
-                                "move on to the next part."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("BaseLevel").get()?.number()? > 59 {
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "You're pretty strong,",
-                                    "but it wouldn't kill",
-                                    "you to gain 2 more",
-                                    "Base Levels. Go ahead",
-                                    "and do that, alright?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
-                            ctx.var("party_relay").set(Val::from(14))?;
-                            ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "I'll go ahead and take",
-                                    "your ticket now. Come",
-                                    "back after you finish what",
-                                    "I've asked, and then we can",
-                                    "move on to the next part."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("BaseLevel").get()?.number()? > 49 {
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "You know, you'd probably",
-                                        "benefit from being just",
-                                        "a little bit stronger. Now",
-                                        "go out and gain 3 Base",
-                                        "Levels for me, okay?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
-                                ctx.var("party_relay").set(Val::from(15))?;
-                                ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "I'll go ahead and take",
-                                        "your ticket now. Come",
-                                        "back after you finish what",
-                                        "I've asked, and then we can",
-                                        "move on to the next part."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("BaseLevel").get()?.number()? > 39 {
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "You know, you'd probably",
-                                            "benefit from being just",
-                                            "a little bit stronger. Now",
-                                            "go out and gain 3 Base",
-                                            "Levels for me, okay?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
-                                    ctx.var("party_relay").set(Val::from(15))?;
-                                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "I'll go ahead and take",
-                                            "your ticket now. Come",
-                                            "back after you finish what",
-                                            "I've asked, and then we can",
-                                            "move on to the next part."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                    }
+                } else if ctx.var("BaseLevel").get()?.number()? > 69 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You're pretty strong,",
+                            "but it wouldn't kill",
+                            "you to gain 2 more",
+                            "Base Levels. Go ahead",
+                            "and do that, alright?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(14))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 59 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You're pretty strong,",
+                            "but it wouldn't kill",
+                            "you to gain 2 more",
+                            "Base Levels. Go ahead",
+                            "and do that, alright?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(14))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 49 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You know, you'd probably",
+                            "benefit from being just",
+                            "a little bit stronger. Now",
+                            "go out and gain 3 Base",
+                            "Levels for me, okay?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(15))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 39 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You know, you'd probably",
+                            "benefit from being just",
+                            "a little bit stronger. Now",
+                            "go out and gain 3 Base",
+                            "Levels for me, okay?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(15))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -1972,122 +1932,114 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("BaseLevel").get()?.number()? > 69 {
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "You're pretty strong,",
-                                    "but it wouldn't kill",
-                                    "you to gain 2 more",
-                                    "Base Levels. Go ahead",
-                                    "and do that, alright?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
-                            ctx.var("party_relay").set(Val::from(14))?;
-                            ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "I'll go ahead and take",
-                                    "your ticket now. Come",
-                                    "back after you finish what",
-                                    "I've asked, and then we can",
-                                    "move on to the next part."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("BaseLevel").get()?.number()? > 59 {
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "You're pretty strong,",
-                                        "but it wouldn't kill",
-                                        "you to gain 2 more",
-                                        "Base Levels. Go ahead",
-                                        "and do that, alright?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
-                                ctx.var("party_relay").set(Val::from(14))?;
-                                ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "I'll go ahead and take",
-                                        "your ticket now. Come",
-                                        "back after you finish what",
-                                        "I've asked, and then we can",
-                                        "move on to the next part."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("BaseLevel").get()?.number()? > 49 {
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "You know, you'd probably",
-                                            "benefit from being just",
-                                            "a little bit stronger. Now",
-                                            "go out and gain 3 Base",
-                                            "Levels for me, okay?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
-                                    ctx.var("party_relay").set(Val::from(15))?;
-                                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "I'll go ahead and take",
-                                            "your ticket now. Come",
-                                            "back after you finish what",
-                                            "I've asked, and then we can",
-                                            "move on to the next part."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("BaseLevel").get()?.number()? > 39 {
-                                        ctx.lines_as(
-                                            "Gatan",
-                                            args![
-                                                "You know, you'd probably",
-                                                "benefit from being just",
-                                                "a little bit stronger. Now",
-                                                "go out and gain 3 Base",
-                                                "Levels for me, okay?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
-                                        ctx.var("party_relay").set(Val::from(15))?;
-                                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                        ctx.lines_as(
-                                            "Gatan",
-                                            args![
-                                                "I'll go ahead and take",
-                                                "your ticket now. Come",
-                                                "back after you finish what",
-                                                "I've asked, and then we can",
-                                                "move on to the next part."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                        }
+                    } else if ctx.var("BaseLevel").get()?.number()? > 69 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You're pretty strong,",
+                                "but it wouldn't kill",
+                                "you to gain 2 more",
+                                "Base Levels. Go ahead",
+                                "and do that, alright?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(14))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? > 59 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You're pretty strong,",
+                                "but it wouldn't kill",
+                                "you to gain 2 more",
+                                "Base Levels. Go ahead",
+                                "and do that, alright?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(14))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? > 49 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You know, you'd probably",
+                                "benefit from being just",
+                                "a little bit stronger. Now",
+                                "go out and gain 3 Base",
+                                "Levels for me, okay?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(15))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? > 39 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You know, you'd probably",
+                                "benefit from being just",
+                                "a little bit stronger. Now",
+                                "go out and gain 3 Base",
+                                "Levels for me, okay?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7734), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(15))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -2205,31 +2157,29 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("party_relay").set(Val::from(5))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ((ctx.var("party_relay").get()? == 4
-            && runtime::op(
-                &ctx.var("BaseLevel").get()?,
-                ">",
-                &(ctx.var("party_relay_lv").get()? + Val::from(2)),
-            )?
-            .is_true())
-            && (l_relaytime.clone().number()? >= 0 && l_relaytime.clone().number()? < 3))
-        {
-            ctx.lines_as(
-                "Gatan",
-                args![
-                    "Nice work. I guess",
-                    "that Ledrion really knows",
-                    "good adventurers when he",
-                    "sees them. Now, you mind",
-                    "waiting a bit? Um, there's",
-                    "something I have to give you..."
-                ],
-            )?;
-            ctx.var("party_relay").set(Val::from(5))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ((ctx.var("party_relay").get()? == 4
+        && runtime::op(
+            &ctx.var("BaseLevel").get()?,
+            ">",
+            &(ctx.var("party_relay_lv").get()? + Val::from(2)),
+        )?
+        .is_true())
+        && (l_relaytime.clone().number()? >= 0 && l_relaytime.clone().number()? < 3))
+    {
+        ctx.lines_as(
+            "Gatan",
+            args![
+                "Nice work. I guess",
+                "that Ledrion really knows",
+                "good adventurers when he",
+                "sees them. Now, you mind",
+                "waiting a bit? Um, there's",
+                "something I have to give you..."
+            ],
+        )?;
+        ctx.var("party_relay").set(Val::from(5))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 4 {
         ctx.lines_as(
@@ -2280,31 +2230,29 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("party_relay").set(Val::from(5))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ((ctx.var("party_relay").get()? == 3
-            && runtime::op(
-                &ctx.var("BaseLevel").get()?,
-                ">",
-                &(ctx.var("party_relay_lv").get()? + Val::from(1)),
-            )?
-            .is_true())
-            && (l_relaytime.clone().number()? >= 0 && l_relaytime.clone().number()? < 3))
-        {
-            ctx.lines_as(
-                "Gatan",
-                args![
-                    "Nice work. I guess",
-                    "that Ledrion really knows",
-                    "good adventurers when he",
-                    "sees them. Now, you mind",
-                    "waiting a bit? Um, there's",
-                    "something I have to give you..."
-                ],
-            )?;
-            ctx.var("party_relay").set(Val::from(5))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ((ctx.var("party_relay").get()? == 3
+        && runtime::op(
+            &ctx.var("BaseLevel").get()?,
+            ">",
+            &(ctx.var("party_relay_lv").get()? + Val::from(1)),
+        )?
+        .is_true())
+        && (l_relaytime.clone().number()? >= 0 && l_relaytime.clone().number()? < 3))
+    {
+        ctx.lines_as(
+            "Gatan",
+            args![
+                "Nice work. I guess",
+                "that Ledrion really knows",
+                "good adventurers when he",
+                "sees them. Now, you mind",
+                "waiting a bit? Um, there's",
+                "something I have to give you..."
+            ],
+        )?;
+        ctx.var("party_relay").set(Val::from(5))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 3 {
         ctx.lines_as(
@@ -2350,26 +2298,24 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("party_relay").set(Val::from(5))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ((ctx.var("party_relay").get()? == 99
-            && runtime::op(&ctx.var("BaseLevel").get()?, ">", &ctx.var("party_relay_lv").get()?)?.is_true())
-            && (l_relaytime.clone().number()? >= 0 && l_relaytime.clone().number()? < 3))
-        {
-            ctx.lines_as(
-                "Gatan",
-                args![
-                    "Nice work. I guess",
-                    "that Ledrion really knows",
-                    "good adventurers when he",
-                    "sees them. Now, you mind",
-                    "waiting a bit? Um, there's",
-                    "something I have to give you..."
-                ],
-            )?;
-            ctx.var("party_relay").set(Val::from(5))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ((ctx.var("party_relay").get()? == 99
+        && runtime::op(&ctx.var("BaseLevel").get()?, ">", &ctx.var("party_relay_lv").get()?)?.is_true())
+        && (l_relaytime.clone().number()? >= 0 && l_relaytime.clone().number()? < 3))
+    {
+        ctx.lines_as(
+            "Gatan",
+            args![
+                "Nice work. I guess",
+                "that Ledrion really knows",
+                "good adventurers when he",
+                "sees them. Now, you mind",
+                "waiting a bit? Um, there's",
+                "something I have to give you..."
+            ],
+        )?;
+        ctx.var("party_relay").set(Val::from(5))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 99 {
         ctx.lines_as(
@@ -2507,122 +2453,114 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("BaseLevel").get()?.number()? > 69 {
-                        ctx.lines_as(
-                            "Gatan",
-                            args![
-                                "You're pretty strong,",
-                                "but it wouldn't kill",
-                                "you to gain 2 more",
-                                "Base Levels. Go ahead",
-                                "and do that, alright?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
-                        ctx.var("party_relay").set(Val::from(3))?;
-                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                        ctx.lines_as(
-                            "Gatan",
-                            args![
-                                "I'll go ahead and take",
-                                "your ticket now. Come",
-                                "back after you finish what",
-                                "I've asked, and then we can",
-                                "move on to the next part."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("BaseLevel").get()?.number()? > 59 {
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "You're pretty strong,",
-                                    "but it wouldn't kill",
-                                    "you to gain 2 more",
-                                    "Base Levels. Go ahead",
-                                    "and do that, alright?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
-                            ctx.var("party_relay").set(Val::from(3))?;
-                            ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "I'll go ahead and take",
-                                    "your ticket now. Come",
-                                    "back after you finish what",
-                                    "I've asked, and then we can",
-                                    "move on to the next part."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("BaseLevel").get()?.number()? > 49 {
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "You know, you'd probably",
-                                        "benefit from being just",
-                                        "a little bit stronger. Now",
-                                        "go out and gain 3 Base",
-                                        "Levels for me, okay?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
-                                ctx.var("party_relay").set(Val::from(4))?;
-                                ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "I'll go ahead and take",
-                                        "your ticket now. Come",
-                                        "back after you finish what",
-                                        "I've asked, and then we can",
-                                        "move on to the next part."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("BaseLevel").get()?.number()? > 39 {
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "You know, you'd probably",
-                                            "benefit from being just",
-                                            "a little bit stronger. Now",
-                                            "go out and gain 3 Base",
-                                            "Levels for me, okay?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
-                                    ctx.var("party_relay").set(Val::from(4))?;
-                                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "I'll go ahead and take",
-                                            "your ticket now. Come",
-                                            "back after you finish what",
-                                            "I've asked, and then we can",
-                                            "move on to the next part."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                    }
+                } else if ctx.var("BaseLevel").get()?.number()? > 69 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You're pretty strong,",
+                            "but it wouldn't kill",
+                            "you to gain 2 more",
+                            "Base Levels. Go ahead",
+                            "and do that, alright?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(3))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 59 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You're pretty strong,",
+                            "but it wouldn't kill",
+                            "you to gain 2 more",
+                            "Base Levels. Go ahead",
+                            "and do that, alright?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(3))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 49 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You know, you'd probably",
+                            "benefit from being just",
+                            "a little bit stronger. Now",
+                            "go out and gain 3 Base",
+                            "Levels for me, okay?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(4))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("BaseLevel").get()?.number()? > 39 {
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "You know, you'd probably",
+                            "benefit from being just",
+                            "a little bit stronger. Now",
+                            "go out and gain 3 Base",
+                            "Levels for me, okay?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
+                    ctx.var("party_relay").set(Val::from(4))?;
+                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                    ctx.lines_as(
+                        "Gatan",
+                        args![
+                            "I'll go ahead and take",
+                            "your ticket now. Come",
+                            "back after you finish what",
+                            "I've asked, and then we can",
+                            "move on to the next part."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -2737,159 +2675,149 @@ fn gatan_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("BaseLevel").get()?.number()? > 69 {
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "You're pretty strong,",
-                                    "but it wouldn't kill",
-                                    "you to gain 2 more",
-                                    "Base Levels. Go ahead",
-                                    "and do that, alright?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
-                            ctx.var("party_relay").set(Val::from(3))?;
-                            ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                            ctx.lines_as(
-                                "Gatan",
-                                args![
-                                    "I'll go ahead and take",
-                                    "your ticket now. Come",
-                                    "back after you finish what",
-                                    "I've asked, and then we can",
-                                    "move on to the next part."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("BaseLevel").get()?.number()? > 59 {
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "You're pretty strong,",
-                                        "but it wouldn't kill",
-                                        "you to gain 2 more",
-                                        "Base Levels. Go ahead",
-                                        "and do that, alright?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
-                                ctx.var("party_relay").set(Val::from(3))?;
-                                ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                ctx.lines_as(
-                                    "Gatan",
-                                    args![
-                                        "I'll go ahead and take",
-                                        "your ticket now. Come",
-                                        "back after you finish what",
-                                        "I've asked, and then we can",
-                                        "move on to the next part."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("BaseLevel").get()?.number()? > 49 {
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "You know, you'd probably",
-                                            "benefit from being just",
-                                            "a little bit stronger. Now",
-                                            "go out and gain 3 Base",
-                                            "Levels for me, okay?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
-                                    ctx.var("party_relay").set(Val::from(4))?;
-                                    ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                    ctx.lines_as(
-                                        "Gatan",
-                                        args![
-                                            "I'll go ahead and take",
-                                            "your ticket now. Come",
-                                            "back after you finish what",
-                                            "I've asked, and then we can",
-                                            "move on to the next part."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("BaseLevel").get()?.number()? > 39 {
-                                        ctx.lines_as(
-                                            "Gatan",
-                                            args![
-                                                "You know, you'd probably",
-                                                "benefit from being just",
-                                                "a little bit stronger. Now",
-                                                "go out and gain 3 Base",
-                                                "Levels for me, okay?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
-                                        ctx.var("party_relay").set(Val::from(4))?;
-                                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
-                                        ctx.lines_as(
-                                            "Gatan",
-                                            args!["I'll keep your ticket.", "When you're finished, please come back."],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                        }
+                    } else if ctx.var("BaseLevel").get()?.number()? > 69 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You're pretty strong,",
+                                "but it wouldn't kill",
+                                "you to gain 2 more",
+                                "Base Levels. Go ahead",
+                                "and do that, alright?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(3))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? > 59 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You're pretty strong,",
+                                "but it wouldn't kill",
+                                "you to gain 2 more",
+                                "Base Levels. Go ahead",
+                                "and do that, alright?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(3))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? > 49 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You know, you'd probably",
+                                "benefit from being just",
+                                "a little bit stronger. Now",
+                                "go out and gain 3 Base",
+                                "Levels for me, okay?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(4))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "I'll go ahead and take",
+                                "your ticket now. Come",
+                                "back after you finish what",
+                                "I've asked, and then we can",
+                                "move on to the next part."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("BaseLevel").get()?.number()? > 39 {
+                        ctx.lines_as(
+                            "Gatan",
+                            args![
+                                "You know, you'd probably",
+                                "benefit from being just",
+                                "a little bit stronger. Now",
+                                "go out and gain 3 Base",
+                                "Levels for me, okay?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(7730), Val::from(1)])?;
+                        ctx.var("party_relay").set(Val::from(4))?;
+                        ctx.var("party_relay_lv").set(ctx.var("BaseLevel").get()?)?;
+                        ctx.lines_as(
+                            "Gatan",
+                            args!["I'll keep your ticket.", "When you're finished, please come back."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
-        } else {
-            if ((ctx.var("BaseLevel").get()?.number()? > 39 && ctx.call(Function::CountItem, vec![Val::from(7730)])?.number()? > 0)
-                && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?))
-            {
-                ctx.lines_as(
-                    "Gatan",
-                    args![
-                        "Oh, um... Is that...?",
-                        "That's a ticket from",
-                        "Ledrion, huh? (^666666Nuts! I've",
-                        "got to work now?^000000) It's nice",
-                        "to meet you. I'm Gatan."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Gatan",
-                    args![
-                        "Hate to tell you, but",
-                        "I'm not on duty right now.",
-                        "You should really come back",
-                        "and talk to me during my",
-                        "work hours, okay? I need",
-                        "my rest from work, you know?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Gatan",
-                    args![
-                        "I'll tell you when I work,",
-                        "just don't forget: come from",
-                        "11 AM to 2 PM, or 12 AM to",
-                        "3 AM, Pacific Standard Time.",
-                        "Good luck to you, alright?"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if ((ctx.var("BaseLevel").get()?.number()? > 39 && ctx.call(Function::CountItem, vec![Val::from(7730)])?.number()? > 0)
+            && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?))
+        {
+            ctx.lines_as(
+                "Gatan",
+                args![
+                    "Oh, um... Is that...?",
+                    "That's a ticket from",
+                    "Ledrion, huh? (^666666Nuts! I've",
+                    "got to work now?^000000) It's nice",
+                    "to meet you. I'm Gatan."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Gatan",
+                args![
+                    "Hate to tell you, but",
+                    "I'm not on duty right now.",
+                    "You should really come back",
+                    "and talk to me during my",
+                    "work hours, okay? I need",
+                    "my rest from work, you know?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Gatan",
+                args![
+                    "I'll tell you when I work,",
+                    "just don't forget: come from",
+                    "11 AM to 2 PM, or 12 AM to",
+                    "3 AM, Pacific Standard Time.",
+                    "Good luck to you, alright?"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     ctx.lines_as(
@@ -2996,45 +2924,43 @@ fn bafhail_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((((ctx.var("party_relay").get()? == 29 && l_relaytime.clone().number()? >= 11) && l_relaytime.clone().number()? < 14)
-            && ctx.call(Function::CountItem, vec![Val::from(1012)])?.number()? > 19)
-            && ctx.call(Function::CountItem, vec![Val::from(1048)])?.number()? > 19)
-            && ctx.call(Function::CountItem, vec![Val::from(7003)])?.number()? > 19)
-        {
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Well, it looks like you came",
-                    "at the right time and brought",
-                    "everything I asked. Good work.",
-                    "Please take your next ticket",
-                    "and this small reward for you."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(1012), Val::from(20)])?;
-            ctx.call(Function::DelItem, vec![Val::from(1048), Val::from(20)])?;
-            ctx.call(Function::DelItem, vec![Val::from(7003), Val::from(20)])?;
-            ctx.var("party_relay").set(Val::from(30))?;
-            ctx.call(Function::GetItem, vec![Val::from(7740), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
-            ctx.call(Function::GetItem, vec![Val::from(607), Val::from(2)])?;
-            shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Make sure that you give",
-                    "that ticket to an Archer",
-                    "or Merchant Class member",
-                    "of your group, and have him",
-                    "bring it to a boy named Lospii.",
-                    "Goodbye now, and good luck~"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((((ctx.var("party_relay").get()? == 29 && l_relaytime.clone().number()? >= 11) && l_relaytime.clone().number()? < 14)
+        && ctx.call(Function::CountItem, vec![Val::from(1012)])?.number()? > 19)
+        && ctx.call(Function::CountItem, vec![Val::from(1048)])?.number()? > 19)
+        && ctx.call(Function::CountItem, vec![Val::from(7003)])?.number()? > 19)
+    {
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Well, it looks like you came",
+                "at the right time and brought",
+                "everything I asked. Good work.",
+                "Please take your next ticket",
+                "and this small reward for you."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(1012), Val::from(20)])?;
+        ctx.call(Function::DelItem, vec![Val::from(1048), Val::from(20)])?;
+        ctx.call(Function::DelItem, vec![Val::from(7003), Val::from(20)])?;
+        ctx.var("party_relay").set(Val::from(30))?;
+        ctx.call(Function::GetItem, vec![Val::from(7740), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
+        ctx.call(Function::GetItem, vec![Val::from(607), Val::from(2)])?;
+        shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Make sure that you give",
+                "that ticket to an Archer",
+                "or Merchant Class member",
+                "of your group, and have him",
+                "bring it to a boy named Lospii.",
+                "Goodbye now, and good luck~"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 29 {
         ctx.lines_as(
@@ -3105,52 +3031,50 @@ fn bafhail_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7739)])?.number()? > 0 && l_relaytime.clone().number()? >= 0)
-            && l_relaytime.clone().number()? < 3)
-            && (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
-                || ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?)))
-        {
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Oh, isn't that ticket...?",
-                    "Ah, good, good. Judging",
-                    "from your Job, Gatan must",
-                    "have sent you, right? Nice",
-                    "to meet you, I'm Bafhail~",
-                    "Now, let's get to business."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "My mission is",
-                    "for you to collect",
-                    "^4D4DFF20 Frills^000000,",
-                    "^4D4DFF20 Anolian Skins^000000, and",
-                    "^4D4DFF20 Horrendous Hairs^000000."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(7739), Val::from(1)])?;
-            ctx.var("party_relay").set(Val::from(29))?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Understood?",
-                    "Understood?",
-                    "Alright then, if you'll",
-                    "just hand me your ticket,",
-                    "you can start gathering",
-                    "those items I listed.",
-                    "I'll see you later~"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7739)])?.number()? > 0 && l_relaytime.clone().number()? >= 0)
+        && l_relaytime.clone().number()? < 3)
+        && (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
+            || ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?)))
+    {
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Oh, isn't that ticket...?",
+                "Ah, good, good. Judging",
+                "from your Job, Gatan must",
+                "have sent you, right? Nice",
+                "to meet you, I'm Bafhail~",
+                "Now, let's get to business."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "My mission is",
+                "for you to collect",
+                "^4D4DFF20 Frills^000000,",
+                "^4D4DFF20 Anolian Skins^000000, and",
+                "^4D4DFF20 Horrendous Hairs^000000."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(7739), Val::from(1)])?;
+        ctx.var("party_relay").set(Val::from(29))?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Understood?",
+                "Understood?",
+                "Alright then, if you'll",
+                "just hand me your ticket,",
+                "you can start gathering",
+                "those items I listed.",
+                "I'll see you later~"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if (ctx.call(Function::CountItem, vec![Val::from(7739)])?.number()? > 0
         && (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
@@ -3231,44 +3155,42 @@ fn bafhail_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((((ctx.var("party_relay").get()? == 19 && l_relaytime.clone().number()? >= 18) && l_relaytime.clone().number()? < 21)
-            && ctx.call(Function::CountItem, vec![Val::from(1015)])?.number()? > 9)
-            && ctx.call(Function::CountItem, vec![Val::from(7172)])?.number()? > 9)
-            && ctx.call(Function::CountItem, vec![Val::from(7155)])?.number()? > 9)
-        {
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Well, it looks like you came",
-                    "at the right time and brought",
-                    "everything I asked. Good work.",
-                    "Please take your next ticket",
-                    "and this small reward for you."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(1015), Val::from(10)])?;
-            ctx.call(Function::DelItem, vec![Val::from(7172), Val::from(10)])?;
-            ctx.call(Function::DelItem, vec![Val::from(7155), Val::from(10)])?;
-            ctx.var("party_relay").set(Val::from(20))?;
-            ctx.call(Function::GetItem, vec![Val::from(7736), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
-            shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Do me a favor and make",
-                    "sure that the Merchant",
-                    "Class character in your",
-                    "group delivers that ticket",
-                    "to Lospii. Alright, I guess",
-                    "I'll see you later, then."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((((ctx.var("party_relay").get()? == 19 && l_relaytime.clone().number()? >= 18) && l_relaytime.clone().number()? < 21)
+        && ctx.call(Function::CountItem, vec![Val::from(1015)])?.number()? > 9)
+        && ctx.call(Function::CountItem, vec![Val::from(7172)])?.number()? > 9)
+        && ctx.call(Function::CountItem, vec![Val::from(7155)])?.number()? > 9)
+    {
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Well, it looks like you came",
+                "at the right time and brought",
+                "everything I asked. Good work.",
+                "Please take your next ticket",
+                "and this small reward for you."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(1015), Val::from(10)])?;
+        ctx.call(Function::DelItem, vec![Val::from(7172), Val::from(10)])?;
+        ctx.call(Function::DelItem, vec![Val::from(7155), Val::from(10)])?;
+        ctx.var("party_relay").set(Val::from(20))?;
+        ctx.call(Function::GetItem, vec![Val::from(7736), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
+        shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Do me a favor and make",
+                "sure that the Merchant",
+                "Class character in your",
+                "group delivers that ticket",
+                "to Lospii. Alright, I guess",
+                "I'll see you later, then."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 19 {
         ctx.lines_as(
@@ -3333,44 +3255,42 @@ fn bafhail_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((((ctx.var("party_relay").get()? == 18 && l_relaytime.clone().number()? >= 18) && l_relaytime.clone().number()? < 21)
-            && ctx.call(Function::CountItem, vec![Val::from(7157)])?.number()? > 9)
-            && ctx.call(Function::CountItem, vec![Val::from(1021)])?.number()? > 9)
-            && ctx.call(Function::CountItem, vec![Val::from(7101)])?.number()? > 9)
-        {
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Well, it looks like you came",
-                    "at the right time and brought",
-                    "everything I asked. Good work.",
-                    "Please take your next ticket",
-                    "and this small reward for you."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(7157), Val::from(10)])?;
-            ctx.call(Function::DelItem, vec![Val::from(1021), Val::from(10)])?;
-            ctx.call(Function::DelItem, vec![Val::from(7101), Val::from(10)])?;
-            ctx.var("party_relay").set(Val::from(20))?;
-            ctx.call(Function::GetItem, vec![Val::from(7736), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
-            shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Do me a favor and make",
-                    "sure that the Merchant",
-                    "Class character in your",
-                    "group delivers that ticket",
-                    "to Lospii. Alright, I guess",
-                    "I'll see you later, then."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((((ctx.var("party_relay").get()? == 18 && l_relaytime.clone().number()? >= 18) && l_relaytime.clone().number()? < 21)
+        && ctx.call(Function::CountItem, vec![Val::from(7157)])?.number()? > 9)
+        && ctx.call(Function::CountItem, vec![Val::from(1021)])?.number()? > 9)
+        && ctx.call(Function::CountItem, vec![Val::from(7101)])?.number()? > 9)
+    {
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Well, it looks like you came",
+                "at the right time and brought",
+                "everything I asked. Good work.",
+                "Please take your next ticket",
+                "and this small reward for you."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(7157), Val::from(10)])?;
+        ctx.call(Function::DelItem, vec![Val::from(1021), Val::from(10)])?;
+        ctx.call(Function::DelItem, vec![Val::from(7101), Val::from(10)])?;
+        ctx.var("party_relay").set(Val::from(20))?;
+        ctx.call(Function::GetItem, vec![Val::from(7736), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
+        shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Do me a favor and make",
+                "sure that the Merchant",
+                "Class character in your",
+                "group delivers that ticket",
+                "to Lospii. Alright, I guess",
+                "I'll see you later, then."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 18 {
         ctx.lines_as(
@@ -3461,59 +3381,57 @@ fn bafhail_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7735)])?.number()? > 0 && l_relaytime.clone().number()? >= 18)
-            && l_relaytime.clone().number()? < 21)
-            && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?))
-        {
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Oh, isn't that ticket...?",
-                    "Ah, good, good. Judging",
-                    "from your Job, Gatan must",
-                    "have sent you, right? Nice",
-                    "to meet you, I'm Bafhail~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Alright, let's get down",
-                    "to what you came for.",
-                    "My mission is for you to",
-                    "collect some items, and",
-                    "for you to bring them at",
-                    "the right time. Bring me..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "^4D4DFF10 Tongues^000000,",
-                    "^4D4DFF10 Leopard Claws^000000, and",
-                    "^4D4DFF10 Poisonous Toad Skins^000000."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(7735), Val::from(1)])?;
-            ctx.var("party_relay").set(Val::from(19))?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Understood?",
-                    "Alright then, if you'll",
-                    "just hand me your ticket,",
-                    "you can start gathering",
-                    "those items I listed.",
-                    "I'll see you later~"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7735)])?.number()? > 0 && l_relaytime.clone().number()? >= 18)
+        && l_relaytime.clone().number()? < 21)
+        && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?))
+    {
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Oh, isn't that ticket...?",
+                "Ah, good, good. Judging",
+                "from your Job, Gatan must",
+                "have sent you, right? Nice",
+                "to meet you, I'm Bafhail~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Alright, let's get down",
+                "to what you came for.",
+                "My mission is for you to",
+                "collect some items, and",
+                "for you to bring them at",
+                "the right time. Bring me..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "^4D4DFF10 Tongues^000000,",
+                "^4D4DFF10 Leopard Claws^000000, and",
+                "^4D4DFF10 Poisonous Toad Skins^000000."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(7735), Val::from(1)])?;
+        ctx.var("party_relay").set(Val::from(19))?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Understood?",
+                "Alright then, if you'll",
+                "just hand me your ticket,",
+                "you can start gathering",
+                "those items I listed.",
+                "I'll see you later~"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if (ctx.call(Function::CountItem, vec![Val::from(7735)])?.number()? > 0
         && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?))
@@ -3594,44 +3512,42 @@ fn bafhail_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("party_relay").get()? == 8
-            && (((l_relaytime.clone().number()? >= 21 && ctx.call(Function::CountItem, vec![Val::from(7196)])?.number()? > 9)
-                && ctx.call(Function::CountItem, vec![Val::from(7184)])?.number()? > 9)
-                && ctx.call(Function::CountItem, vec![Val::from(920)])?.number()? > 9))
-        {
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Well, it looks like you came",
-                    "at the right time and brought",
-                    "everything I asked. Good work.",
-                    "Please take your next ticket",
-                    "and this small reward for you."
-                ],
-            )?;
-            ctx.call(Function::DelItem, vec![Val::from(7196), Val::from(10)])?;
-            ctx.call(Function::DelItem, vec![Val::from(7189), Val::from(10)])?;
-            ctx.call(Function::DelItem, vec![Val::from(920), Val::from(10)])?;
-            ctx.var("party_relay").set(Val::from(9))?;
-            ctx.call(Function::GetItem, vec![Val::from(7732), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(607), Val::from(2)])?;
-            shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Please give that",
-                    "ticket to the Archer",
-                    "Class member of your",
-                    "group, and have him",
-                    "deliver it to Lospii, okay?",
-                    "Good luck on your travels~"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (ctx.var("party_relay").get()? == 8
+        && (((l_relaytime.clone().number()? >= 21 && ctx.call(Function::CountItem, vec![Val::from(7196)])?.number()? > 9)
+            && ctx.call(Function::CountItem, vec![Val::from(7184)])?.number()? > 9)
+            && ctx.call(Function::CountItem, vec![Val::from(920)])?.number()? > 9))
+    {
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Well, it looks like you came",
+                "at the right time and brought",
+                "everything I asked. Good work.",
+                "Please take your next ticket",
+                "and this small reward for you."
+            ],
+        )?;
+        ctx.call(Function::DelItem, vec![Val::from(7196), Val::from(10)])?;
+        ctx.call(Function::DelItem, vec![Val::from(7189), Val::from(10)])?;
+        ctx.call(Function::DelItem, vec![Val::from(920), Val::from(10)])?;
+        ctx.var("party_relay").set(Val::from(9))?;
+        ctx.call(Function::GetItem, vec![Val::from(7732), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(607), Val::from(2)])?;
+        shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Please give that",
+                "ticket to the Archer",
+                "Class member of your",
+                "group, and have him",
+                "deliver it to Lospii, okay?",
+                "Good luck on your travels~"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 8 {
         ctx.lines_as(
@@ -3693,42 +3609,40 @@ fn bafhail_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("party_relay").get()? == 7
-            && (((l_relaytime.clone().number()? >= 21 && ctx.call(Function::CountItem, vec![Val::from(1027)])?.number()? > 9)
-                && ctx.call(Function::CountItem, vec![Val::from(1040)])?.number()? > 9)
-                && ctx.call(Function::CountItem, vec![Val::from(1023)])?.number()? > 9))
-        {
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Well, it looks like you came",
-                    "at the right time and brought",
-                    "everything I asked. Good work.",
-                    "Please take your next ticket",
-                    "and this small reward for you."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(1027), Val::from(10)])?;
-            ctx.call(Function::DelItem, vec![Val::from(1040), Val::from(10)])?;
-            ctx.call(Function::DelItem, vec![Val::from(1023), Val::from(10)])?;
-            ctx.var("party_relay").set(Val::from(9))?;
-            ctx.call(Function::GetItem, vec![Val::from(7732), Val::from(1)])?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Please give that",
-                    "ticket to the Archer",
-                    "Class member of your",
-                    "group, and have him",
-                    "deliver it to Lospii, okay?",
-                    "Good luck on your travels~"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (ctx.var("party_relay").get()? == 7
+        && (((l_relaytime.clone().number()? >= 21 && ctx.call(Function::CountItem, vec![Val::from(1027)])?.number()? > 9)
+            && ctx.call(Function::CountItem, vec![Val::from(1040)])?.number()? > 9)
+            && ctx.call(Function::CountItem, vec![Val::from(1023)])?.number()? > 9))
+    {
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Well, it looks like you came",
+                "at the right time and brought",
+                "everything I asked. Good work.",
+                "Please take your next ticket",
+                "and this small reward for you."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(1027), Val::from(10)])?;
+        ctx.call(Function::DelItem, vec![Val::from(1040), Val::from(10)])?;
+        ctx.call(Function::DelItem, vec![Val::from(1023), Val::from(10)])?;
+        ctx.var("party_relay").set(Val::from(9))?;
+        ctx.call(Function::GetItem, vec![Val::from(7732), Val::from(1)])?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Please give that",
+                "ticket to the Archer",
+                "Class member of your",
+                "group, and have him",
+                "deliver it to Lospii, okay?",
+                "Good luck on your travels~"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 7 {
         ctx.lines_as(
@@ -3807,58 +3721,56 @@ fn bafhail_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ((ctx.call(Function::CountItem, vec![Val::from(7731)])?.number()? > 0 && ctx.var("BaseLevel").get()?.number()? > 39)
-            && (l_relaytime.clone().number()? >= 21 && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)))
-        {
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Oh, isn't that ticket...?",
-                    "Ah, good, good. Judging",
-                    "from your Job, Gatan must",
-                    "have sent you, right? Nice",
-                    "to meet you, I'm Bafhail~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Alright, let's get down",
-                    "to what you came for.",
-                    "My mission is for you to",
-                    "collect some items, and",
-                    "for you to bring them at",
-                    "the right time. Bring me..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "^4D4DFF10 Fish Tails^000000,",
-                    "^4D4DFF10 Porcupine Quills^000000, and",
-                    "^4D4DFF10 Elder Pixie's Moustaches^000000"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(7731), Val::from(1)])?;
-            ctx.var("party_relay").set(Val::from(7))?;
-            ctx.lines_as(
-                "Bafhail",
-                args![
-                    "Remember that I won't",
-                    "accept your items, even",
-                    "if you have everything,",
-                    "if you don't come during",
-                    "the hours when I accept",
-                    "items for missions, okay?"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ((ctx.call(Function::CountItem, vec![Val::from(7731)])?.number()? > 0 && ctx.var("BaseLevel").get()?.number()? > 39)
+        && (l_relaytime.clone().number()? >= 21 && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)))
+    {
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Oh, isn't that ticket...?",
+                "Ah, good, good. Judging",
+                "from your Job, Gatan must",
+                "have sent you, right? Nice",
+                "to meet you, I'm Bafhail~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Alright, let's get down",
+                "to what you came for.",
+                "My mission is for you to",
+                "collect some items, and",
+                "for you to bring them at",
+                "the right time. Bring me..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "^4D4DFF10 Fish Tails^000000,",
+                "^4D4DFF10 Porcupine Quills^000000, and",
+                "^4D4DFF10 Elder Pixie's Moustaches^000000"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(7731), Val::from(1)])?;
+        ctx.var("party_relay").set(Val::from(7))?;
+        ctx.lines_as(
+            "Bafhail",
+            args![
+                "Remember that I won't",
+                "accept your items, even",
+                "if you have everything,",
+                "if you don't come during",
+                "the hours when I accept",
+                "items for missions, okay?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ((ctx.call(Function::CountItem, vec![Val::from(7731)])?.number()? > 0 && ctx.var("BaseLevel").get()?.number()? > 39)
         && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?))
@@ -4046,61 +3958,59 @@ fn lospii_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("party_relay").get()? == 31 && (l_relaytime.clone().number()? >= 21 && l_juwi.clone().number()? > 13)) {
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Oh! You brought so many",
-                    "friends! One... T-two...",
-                    ((Val::from("You brought ") + l_juwi.clone()) + Val::from("?! Hmpf.")),
-                    "Maybe I gave you something",
-                    "too easy to do. I didn't know",
-                    "you knew this many people!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Oh well, thanks for",
-                    "bringing everyone here.",
-                    "For that, you get this",
-                    "gift from me. Cool, huh?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.var("party_relay").set(Val::from(32))?;
-            ctx.call(Function::GetItem, vec![Val::from(7741), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
-            ctx.call(Function::GetItem, vec![Val::from(607), Val::from(2)])?;
-            shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Okay, now take this",
-                    "ticket, and give it to",
-                    "your leader, the guy that",
-                    "started this whole relay",
-                    "thing. He needs to give",
-                    "the ticket to Ledrion, okay?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "You're almost done!",
-                    "...I think. Um, I'm not",
-                    "really sure what will",
-                    "happen next. I can only",
-                    "remember the parts I have",
-                    "to do. C'mon! I'm just a kid!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (ctx.var("party_relay").get()? == 31 && (l_relaytime.clone().number()? >= 21 && l_juwi.clone().number()? > 13)) {
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Oh! You brought so many",
+                "friends! One... T-two...",
+                ((Val::from("You brought ") + l_juwi.clone()) + Val::from("?! Hmpf.")),
+                "Maybe I gave you something",
+                "too easy to do. I didn't know",
+                "you knew this many people!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Oh well, thanks for",
+                "bringing everyone here.",
+                "For that, you get this",
+                "gift from me. Cool, huh?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.var("party_relay").set(Val::from(32))?;
+        ctx.call(Function::GetItem, vec![Val::from(7741), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
+        ctx.call(Function::GetItem, vec![Val::from(607), Val::from(2)])?;
+        shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Okay, now take this",
+                "ticket, and give it to",
+                "your leader, the guy that",
+                "started this whole relay",
+                "thing. He needs to give",
+                "the ticket to Ledrion, okay?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "You're almost done!",
+                "...I think. Um, I'm not",
+                "really sure what will",
+                "happen next. I can only",
+                "remember the parts I have",
+                "to do. C'mon! I'm just a kid!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 31 {
         ctx.lines_as(
@@ -4182,72 +4092,70 @@ fn lospii_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ((ctx.call(Function::CountItem, vec![Val::from(7740)])?.number()? > 0 && l_relaytime.clone().number()? >= 21)
-            && (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?)
-                || ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)))
-        {
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Hi, I'm Lospii! Maybe",
-                    "I'm younger than you, but",
-                    "I'm in charge of this mission!",
-                    "So you have to listen, okay?",
-                    "Heh heh! Don't be scared~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "I'm working now for this",
-                    "mission thing so you came",
-                    "at a good time! Let's see...",
-                    "I need to give you... Some",
-                    "mission for you to doooo...",
-                    "Oh! I know! I got it!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "We're seeing if you",
-                    "know about teamwork, right?",
-                    "Why don't you show me a lot",
-                    "of your friends? Bring me...",
-                    "14 of them! Yes, that's good!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "I need to be able to",
-                    "see them, you know, so",
-                    "I know you're not lying",
-                    "to me. Bring them reeeally",
-                    "close so I know they're your",
-                    "friends, not some other guys."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(7740), Val::from(1)])?;
-            ctx.var("party_relay").set(Val::from(31))?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Okay, I'll be right",
-                    "here! Oh! And you have",
-                    "to come with your friends",
-                    "while I'm at work! That's",
-                    "important to know!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ((ctx.call(Function::CountItem, vec![Val::from(7740)])?.number()? > 0 && l_relaytime.clone().number()? >= 21)
+        && (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?)
+            || ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?)))
+    {
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Hi, I'm Lospii! Maybe",
+                "I'm younger than you, but",
+                "I'm in charge of this mission!",
+                "So you have to listen, okay?",
+                "Heh heh! Don't be scared~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "I'm working now for this",
+                "mission thing so you came",
+                "at a good time! Let's see...",
+                "I need to give you... Some",
+                "mission for you to doooo...",
+                "Oh! I know! I got it!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "We're seeing if you",
+                "know about teamwork, right?",
+                "Why don't you show me a lot",
+                "of your friends? Bring me...",
+                "14 of them! Yes, that's good!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "I need to be able to",
+                "see them, you know, so",
+                "I know you're not lying",
+                "to me. Bring them reeeally",
+                "close so I know they're your",
+                "friends, not some other guys."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(7740), Val::from(1)])?;
+        ctx.var("party_relay").set(Val::from(31))?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Okay, I'll be right",
+                "here! Oh! And you have",
+                "to come with your friends",
+                "while I'm at work! That's",
+                "important to know!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if (ctx.call(Function::CountItem, vec![Val::from(7740)])?.number()? > 0
         && (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?)
@@ -4357,62 +4265,60 @@ fn lospii_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ((ctx.var("party_relay").get()? == 21 && (l_relaytime.clone().number()? >= 0 && l_relaytime.clone().number()? < 3))
-            && l_juwi.clone().number()? > 11)
-        {
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Oh! You brought so many",
-                    "friends! One... T-two...",
-                    ((Val::from("You brought ") + l_juwi.clone()) + Val::from("?! Hmpf.")),
-                    "Maybe I gave you something",
-                    "too easy to do. I didn't know",
-                    "you knew this many people!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Oh well, thanks for",
-                    "bringing everyone here.",
-                    "For that, you get this",
-                    "gift from me. Cool, huh?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.var("party_relay").set(Val::from(22))?;
-            ctx.call(Function::GetItem, vec![Val::from(7737), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
-            shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Okay, now take this",
-                    "ticket, and give it to",
-                    "your leader, the guy that",
-                    "started this whole relay",
-                    "thing. He needs to give",
-                    "the ticket to Ledrion, okay?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "You're almost done!",
-                    "...I think. Um, I'm not",
-                    "really sure what will",
-                    "happen next. I can only",
-                    "remember the parts I have",
-                    "to do. C'mon! I'm just a kid!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ((ctx.var("party_relay").get()? == 21 && (l_relaytime.clone().number()? >= 0 && l_relaytime.clone().number()? < 3))
+        && l_juwi.clone().number()? > 11)
+    {
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Oh! You brought so many",
+                "friends! One... T-two...",
+                ((Val::from("You brought ") + l_juwi.clone()) + Val::from("?! Hmpf.")),
+                "Maybe I gave you something",
+                "too easy to do. I didn't know",
+                "you knew this many people!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Oh well, thanks for",
+                "bringing everyone here.",
+                "For that, you get this",
+                "gift from me. Cool, huh?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.var("party_relay").set(Val::from(22))?;
+        ctx.call(Function::GetItem, vec![Val::from(7737), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(610), Val::from(2)])?;
+        shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Okay, now take this",
+                "ticket, and give it to",
+                "your leader, the guy that",
+                "started this whole relay",
+                "thing. He needs to give",
+                "the ticket to Ledrion, okay?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "You're almost done!",
+                "...I think. Um, I'm not",
+                "really sure what will",
+                "happen next. I can only",
+                "remember the parts I have",
+                "to do. C'mon! I'm just a kid!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 21 {
         ctx.lines_as(
@@ -4493,72 +4399,70 @@ fn lospii_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7736)])?.number()? > 0 && l_relaytime.clone().number()? >= 0)
-            && l_relaytime.clone().number()? < 3)
-            && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?))
-        {
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Hi, I'm Lospii! Maybe",
-                    "I'm younger than you, but",
-                    "I'm in charge of this mission!",
-                    "So you have to listen, okay?",
-                    "Heh heh! Don't be scared~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "I'm working now for this",
-                    "mission thing so you came",
-                    "at a good time! Let's see...",
-                    "I need to give you... Some",
-                    "mission for you to doooo...",
-                    "Oh! I know! I got it!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "We're seeing if you",
-                    "know about teamwork, right?",
-                    "Why don't you show me a lot",
-                    "of your friends? Bring me...",
-                    "12 of them! Yes, that's good!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "I need to be able to",
-                    "see them, you know, so",
-                    "I know you're not lying",
-                    "to me. Bring them reeeally",
-                    "close so I know they're your",
-                    "friends, not some other guys."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(7736), Val::from(1)])?;
-            ctx.var("party_relay").set(Val::from(21))?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Okay, I'll be right",
-                    "here! Oh! And you have",
-                    "to come with your friends",
-                    "while I'm at work! That's",
-                    "important to know!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7736)])?.number()? > 0 && l_relaytime.clone().number()? >= 0)
+        && l_relaytime.clone().number()? < 3)
+        && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?))
+    {
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Hi, I'm Lospii! Maybe",
+                "I'm younger than you, but",
+                "I'm in charge of this mission!",
+                "So you have to listen, okay?",
+                "Heh heh! Don't be scared~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "I'm working now for this",
+                "mission thing so you came",
+                "at a good time! Let's see...",
+                "I need to give you... Some",
+                "mission for you to doooo...",
+                "Oh! I know! I got it!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "We're seeing if you",
+                "know about teamwork, right?",
+                "Why don't you show me a lot",
+                "of your friends? Bring me...",
+                "12 of them! Yes, that's good!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "I need to be able to",
+                "see them, you know, so",
+                "I know you're not lying",
+                "to me. Bring them reeeally",
+                "close so I know they're your",
+                "friends, not some other guys."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(7736), Val::from(1)])?;
+        ctx.var("party_relay").set(Val::from(21))?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Okay, I'll be right",
+                "here! Oh! And you have",
+                "to come with your friends",
+                "while I'm at work! That's",
+                "important to know!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if (ctx.call(Function::CountItem, vec![Val::from(7736)])?.number()? > 0
         && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?))
@@ -4667,62 +4571,60 @@ fn lospii_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ((ctx.var("party_relay").get()? == 10 && (l_relaytime.clone().number()? >= 18 && l_relaytime.clone().number()? < 21))
-            && l_juwi.clone().number()? > 9)
-        {
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Oh! You brought so many",
-                    "friends! One... T-two...",
-                    ((Val::from("You brought ") + l_juwi.clone()) + Val::from("?! Hmpf.")),
-                    "Maybe I gave you something",
-                    "too easy to do. I didn't know",
-                    "you knew this many people!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Oh well, thanks for",
-                    "bringing everyone here.",
-                    "For that, you get this",
-                    "gift from me. Cool, huh?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.var("party_relay").set(Val::from(11))?;
-            ctx.call(Function::GetItem, vec![Val::from(7733), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(607), Val::from(2)])?;
-            shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Okay, now take this",
-                    "ticket, and give it to",
-                    "your leader, the guy that",
-                    "started this whole relay",
-                    "thing. He needs to give",
-                    "the ticket to Ledrion, okay?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "You're almost done!",
-                    "...I think. Um, I'm not",
-                    "really sure what will",
-                    "happen next. I can only",
-                    "remember the parts I have",
-                    "to do. C'mon! I'm just a kid!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ((ctx.var("party_relay").get()? == 10 && (l_relaytime.clone().number()? >= 18 && l_relaytime.clone().number()? < 21))
+        && l_juwi.clone().number()? > 9)
+    {
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Oh! You brought so many",
+                "friends! One... T-two...",
+                ((Val::from("You brought ") + l_juwi.clone()) + Val::from("?! Hmpf.")),
+                "Maybe I gave you something",
+                "too easy to do. I didn't know",
+                "you knew this many people!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Oh well, thanks for",
+                "bringing everyone here.",
+                "For that, you get this",
+                "gift from me. Cool, huh?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.var("party_relay").set(Val::from(11))?;
+        ctx.call(Function::GetItem, vec![Val::from(7733), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(607), Val::from(2)])?;
+        shared::quests_partyrelay::f_partyrelay_exp(ctx, vec![])?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Okay, now take this",
+                "ticket, and give it to",
+                "your leader, the guy that",
+                "started this whole relay",
+                "thing. He needs to give",
+                "the ticket to Ledrion, okay?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "You're almost done!",
+                "...I think. Um, I'm not",
+                "really sure what will",
+                "happen next. I can only",
+                "remember the parts I have",
+                "to do. C'mon! I'm just a kid!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("party_relay").get()? == 10 {
         ctx.lines_as(
@@ -4803,72 +4705,70 @@ fn lospii_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7732)])?.number()? > 0 && ctx.var("BaseLevel").get()?.number()? > 39)
-            && (l_relaytime.clone().number()? >= 18 && l_relaytime.clone().number()? < 21))
-            && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?))
-        {
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Hi, I'm Lospii! Maybe",
-                    "I'm younger than you, but",
-                    "I'm in charge of this mission!",
-                    "So you have to listen, okay?",
-                    "Heh heh! Don't be scared~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "I'm working now for this",
-                    "mission thing so you came",
-                    "at a good time! Let's see...",
-                    "I need to give you... Some",
-                    "mission for you to doooo...",
-                    "Oh! I know! I got it!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "We're seeing if you",
-                    "know about teamwork, right?",
-                    "Why don't you show me a lot",
-                    "of your friends? Bring me...",
-                    "10 of them! Yes, that's good!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "I need to be able to",
-                    "see them, you know, so",
-                    "I know you're not lying",
-                    "to me. Bring them reeeally",
-                    "close so I know they're your",
-                    "friends, not some other guys."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(7732), Val::from(1)])?;
-            ctx.var("party_relay").set(Val::from(10))?;
-            ctx.lines_as(
-                "Lospii",
-                args![
-                    "Okay, I'll be right",
-                    "here! Oh! And you have",
-                    "to come with your friends",
-                    "while I'm at work! That's",
-                    "important to know!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7732)])?.number()? > 0 && ctx.var("BaseLevel").get()?.number()? > 39)
+        && (l_relaytime.clone().number()? >= 18 && l_relaytime.clone().number()? < 21))
+        && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?))
+    {
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Hi, I'm Lospii! Maybe",
+                "I'm younger than you, but",
+                "I'm in charge of this mission!",
+                "So you have to listen, okay?",
+                "Heh heh! Don't be scared~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "I'm working now for this",
+                "mission thing so you came",
+                "at a good time! Let's see...",
+                "I need to give you... Some",
+                "mission for you to doooo...",
+                "Oh! I know! I got it!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "We're seeing if you",
+                "know about teamwork, right?",
+                "Why don't you show me a lot",
+                "of your friends? Bring me...",
+                "10 of them! Yes, that's good!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "I need to be able to",
+                "see them, you know, so",
+                "I know you're not lying",
+                "to me. Bring them reeeally",
+                "close so I know they're your",
+                "friends, not some other guys."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(7732), Val::from(1)])?;
+        ctx.var("party_relay").set(Val::from(10))?;
+        ctx.lines_as(
+            "Lospii",
+            args![
+                "Okay, I'll be right",
+                "here! Oh! And you have",
+                "to come with your friends",
+                "while I'm at work! That's",
+                "important to know!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ((ctx.call(Function::CountItem, vec![Val::from(7732)])?.number()? > 0 && ctx.var("BaseLevel").get()?.number()? > 39)
         && ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ARCHER")?))

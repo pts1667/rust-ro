@@ -331,231 +331,225 @@ fn busy_boy_prt_run(ctx: &Ctx, mut step: BusyBoyPrtStep, args: Vec<Val>) -> Resu
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("prt_curse").get()? == 1 {
-                            ctx.lines_as(
-                                "Busy-Looking Boy",
-                                args![
-                                    "Aw nuts...",
-                                    "What am I gonna do?",
-                                    "I have to deliver these",
-                                    "books, but... I... Oh man,",
-                                    "I can't get scared now!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Speak with him:Ignore him")])?) == 1 {
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["Say, what seems", "to be the problem?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Busy-Looking Boy", args![".........?"])?;
-                                ctx.next()?;
-                                ctx.mes("[Busy-Looking Boy]")?;
-                                if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                    ctx.lines(args!["Ack! You're that clumsy", "dude who made me drop"])?;
-                                } else {
-                                    ctx.lines(args!["Ack! You're that ditzy", "chick who made me drop"])?;
-                                }
-                                ctx.lines(args![
-                                    "all of those books earlier!",
-                                    "Wait, you ditched me before,",
-                                    "so why act all concerned now?"
-                                ])?;
-                                ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
-                            } else {
-                                ctx.lines_as(
-                                    "Busy-Looking Boy",
-                                    args![
-                                        "Okay, okay...",
-                                        "Don't even think",
-                                        "about floating in",
-                                        "the sky. You're like,",
-                                        "so stable. Don't think...",
-                                        "Just... Just board that ship..."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            ctx.next()?;
-                            let choice = runtime::select_values(ctx, &[Val::from("Well, I, um...")])?;
-                            ctx.var("@menu").set(choice)?;
-                            ctx.mes("[Busy-Looking Boy]")?;
-                            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                ctx.lines(args![
-                                    "Yeah... A real",
-                                    "man wouldn't have",
-                                    "ditched back then",
-                                    "without helping me.",
-                                    "You're a real creepo,",
-                                    "you know that?"
-                                ])?;
-                            } else {
-                                ctx.lines(args![
-                                    "Yeah... If you were",
-                                    "a graceful and considerate",
-                                    "lady, you woulda helped me",
-                                    "out before. I'm right, huh?"
-                                ])?;
-                            }
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFYou instinctively",
-                                "kick over one of the",
-                                "piles of books next",
-                                "to the young boy.",
-                                "You couldn't help it:",
-                                "it was a natural reflex!^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HITDARK")?])?;
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
-                            ctx.mes("^3355FF*BAM!*^000000")?;
-                            ctx.next()?;
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
-                            ctx.lines_as(
-                                "Busy-Looking Boy",
-                                args!["Ack! Those books...!", "It took me so long to", "stack all of those!"],
-                            )?;
-                            ctx.next()?;
+                    } else if ctx.var("prt_curse").get()? == 1 {
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "Aw nuts...",
+                                "What am I gonna do?",
+                                "I have to deliver these",
+                                "books, but... I... Oh man,",
+                                "I can't get scared now!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Speak with him:Ignore him")])?) == 1 {
                             ctx.lines_as(
                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args![
-                                    "Oh no, what a mess!",
-                                    "Here, let me help you",
-                                    "arrange these nicely",
-                                    "out of the bottom of",
-                                    "my freakin' heart."
-                                ],
-                            )?;
-                            ctx.call(
-                                Function::Emotion,
-                                vec![
-                                    ctx.constant("ET_THROB")?,
-                                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                ],
+                                args!["Say, what seems", "to be the problem?"],
                             )?;
                             ctx.next()?;
-                            ctx.lines_as("Busy-Looking Boy", args!["...", "......", "........."])?;
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_THINK")?])?;
+                            ctx.lines_as("Busy-Looking Boy", args![".........?"])?;
                             ctx.next()?;
-                            ctx.lines_as(
-                                "Busy-Looking Boy",
-                                args!["Huh...?", "Oh, thanks for", "helping me out here.", "I really appreciate it."],
-                            )?;
-                            ctx.next()?;
-                            let choice = runtime::select_values(ctx, &[Val::from("Are these all yours?")])?;
-                            ctx.var("@menu").set(choice)?;
+                            ctx.mes("[Busy-Looking Boy]")?;
+                            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                                ctx.lines(args!["Ack! You're that clumsy", "dude who made me drop"])?;
+                            } else {
+                                ctx.lines(args!["Ack! You're that ditzy", "chick who made me drop"])?;
+                            }
+                            ctx.lines(args![
+                                "all of those books earlier!",
+                                "Wait, you ditched me before,",
+                                "so why act all concerned now?"
+                            ])?;
+                            ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
+                        } else {
                             ctx.lines_as(
                                 "Busy-Looking Boy",
                                 args![
-                                    "These? Oh, I'm supposed",
-                                    "to deliver these for my job.",
-                                    "I need to take these to Juno",
-                                    "from the Prontera Library",
-                                    "for a client. However, um..."
+                                    "Okay, okay...",
+                                    "Don't even think",
+                                    "about floating in",
+                                    "the sky. You're like,",
+                                    "so stable. Don't think...",
+                                    "Just... Just board that ship..."
                                 ],
                             )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Busy-Looking Boy",
-                                args![
-                                    "Well...",
-                                    "I get motion sick really",
-                                    "easily, so it scares me to",
-                                    "death to ride the Airship",
-                                    "all the way to Juno."
-                                ],
-                            )?;
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_THINK")?])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Busy-Looking Boy",
-                                args![
-                                    "Now I'm in trouble!",
-                                    "I'm never late, but this",
-                                    "time I just can't help it.",
-                                    "There's nothing I can do!",
-                                    "Oh, I'm gonna lose this job!"
-                                ],
-                            )?;
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Busy-Looking Boy",
-                                args![
-                                    "Wait... You adventurers",
-                                    "do a lot of traveling, right?",
-                                    "If you're traveling to Juno,",
-                                    "would you please deliver this",
-                                    "for me? I'll be in real trouble",
-                                    "if I don't send these books..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            busy_boy_prt_run(ctx, BusyBoyPrtStep::SGetBooks, vec![])?;
-                            ctx.lines_as(
-                                "Busy-Looking Boy",
-                                args![
-                                    "I-I understand.",
-                                    "It's none of your ",
-                                    "business, I know, but",
-                                    "I'm just so desperate..."
-                                ],
-                            )?;
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
-                            ctx.var("prt_curse").set(Val::from(2))?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.var("prt_curse").get()? == 2 {
-                                ctx.lines_as(
-                                    "Busy-Looking Boy",
-                                    args![
-                                        "Oh, hello again.",
-                                        "Sorry, but I'm trying to",
-                                        "concentrate here. Gonna...",
-                                        "Summon all my courage...",
-                                        "and b-board that Airship!",
-                                        "Argh! No, I can't do it!"
-                                    ],
-                                )?;
-                                ctx.call(Function::Emotion, vec![ctx.constant("ET_THINK")?])?;
-                                ctx.next()?;
-                                busy_boy_prt_run(ctx, BusyBoyPrtStep::SGetBooks, vec![])?;
-                                ctx.lines_as(
-                                    "Busy-Looking Boy",
-                                    args![
-                                        "^333333*Sob...*^000000",
-                                        "What am I gonna do?",
-                                        "That guy's been waiting",
-                                        "for me to deliver his books",
-                                        "for quite a while now..."
-                                    ],
-                                )?;
-                                ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("prt_curse").get()? == 3 {
-                                    ctx.lines_as(
-                                        "Busy-Looking Boy",
-                                        args![
-                                            "Oh, please deliver",
-                                            "those books I gave",
-                                            "you to ^FF0000Mr. Karlomoff^000000, who",
-                                            "should be waiting around",
-                                            "the Juno Library. Thanks",
-                                            "again for your help~"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
                         }
+                        ctx.next()?;
+                        let choice = runtime::select_values(ctx, &[Val::from("Well, I, um...")])?;
+                        ctx.var("@menu").set(choice)?;
+                        ctx.mes("[Busy-Looking Boy]")?;
+                        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                            ctx.lines(args![
+                                "Yeah... A real",
+                                "man wouldn't have",
+                                "ditched back then",
+                                "without helping me.",
+                                "You're a real creepo,",
+                                "you know that?"
+                            ])?;
+                        } else {
+                            ctx.lines(args![
+                                "Yeah... If you were",
+                                "a graceful and considerate",
+                                "lady, you woulda helped me",
+                                "out before. I'm right, huh?"
+                            ])?;
+                        }
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^3355FFYou instinctively",
+                            "kick over one of the",
+                            "piles of books next",
+                            "to the young boy.",
+                            "You couldn't help it:",
+                            "it was a natural reflex!^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HITDARK")?])?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
+                        ctx.mes("^3355FF*BAM!*^000000")?;
+                        ctx.next()?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args!["Ack! Those books...!", "It took me so long to", "stack all of those!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args![
+                                "Oh no, what a mess!",
+                                "Here, let me help you",
+                                "arrange these nicely",
+                                "out of the bottom of",
+                                "my freakin' heart."
+                            ],
+                        )?;
+                        ctx.call(
+                            Function::Emotion,
+                            vec![
+                                ctx.constant("ET_THROB")?,
+                                Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Busy-Looking Boy", args!["...", "......", "........."])?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_THINK")?])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args!["Huh...?", "Oh, thanks for", "helping me out here.", "I really appreciate it."],
+                        )?;
+                        ctx.next()?;
+                        let choice = runtime::select_values(ctx, &[Val::from("Are these all yours?")])?;
+                        ctx.var("@menu").set(choice)?;
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "These? Oh, I'm supposed",
+                                "to deliver these for my job.",
+                                "I need to take these to Juno",
+                                "from the Prontera Library",
+                                "for a client. However, um..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "Well...",
+                                "I get motion sick really",
+                                "easily, so it scares me to",
+                                "death to ride the Airship",
+                                "all the way to Juno."
+                            ],
+                        )?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_THINK")?])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "Now I'm in trouble!",
+                                "I'm never late, but this",
+                                "time I just can't help it.",
+                                "There's nothing I can do!",
+                                "Oh, I'm gonna lose this job!"
+                            ],
+                        )?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "Wait... You adventurers",
+                                "do a lot of traveling, right?",
+                                "If you're traveling to Juno,",
+                                "would you please deliver this",
+                                "for me? I'll be in real trouble",
+                                "if I don't send these books..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        busy_boy_prt_run(ctx, BusyBoyPrtStep::SGetBooks, vec![])?;
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "I-I understand.",
+                                "It's none of your ",
+                                "business, I know, but",
+                                "I'm just so desperate..."
+                            ],
+                        )?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
+                        ctx.var("prt_curse").set(Val::from(2))?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("prt_curse").get()? == 2 {
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "Oh, hello again.",
+                                "Sorry, but I'm trying to",
+                                "concentrate here. Gonna...",
+                                "Summon all my courage...",
+                                "and b-board that Airship!",
+                                "Argh! No, I can't do it!"
+                            ],
+                        )?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_THINK")?])?;
+                        ctx.next()?;
+                        busy_boy_prt_run(ctx, BusyBoyPrtStep::SGetBooks, vec![])?;
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "^333333*Sob...*^000000",
+                                "What am I gonna do?",
+                                "That guy's been waiting",
+                                "for me to deliver his books",
+                                "for quite a while now..."
+                            ],
+                        )?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("prt_curse").get()? == 3 {
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "Oh, please deliver",
+                                "those books I gave",
+                                "you to ^FF0000Mr. Karlomoff^000000, who",
+                                "should be waiting around",
+                                "the Juno Library. Thanks",
+                                "again for your help~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                     ctx.lines_as(
                         "Busy-Looking Boy",
@@ -700,22 +694,20 @@ fn busy_boy_prt_run(ctx: &Ctx, mut step: BusyBoyPrtStep, args: Vec<Val>) -> Resu
                         ctx.var("prt_curse").set(Val::from(2))?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("prt_curse").get()? == 3 {
-                            ctx.lines_as(
-                                "Busy-Looking Boy",
-                                args![
-                                    "Oh, please deliver",
-                                    "those books I gave",
-                                    "you to ^FF0000Mr. Karlomoff^000000, who",
-                                    "should be waiting around",
-                                    "the Juno Library. Thanks",
-                                    "again for your help~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                    } else if ctx.var("prt_curse").get()? == 3 {
+                        ctx.lines_as(
+                            "Busy-Looking Boy",
+                            args![
+                                "Oh, please deliver",
+                                "those books I gave",
+                                "you to ^FF0000Mr. Karlomoff^000000, who",
+                                "should be waiting around",
+                                "the Juno Library. Thanks",
+                                "again for your help~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
                 return Err(Stop::End);
@@ -974,164 +966,267 @@ fn historian_prt01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.call(Function::DelItem, vec![Val::from(7431), Val::from(1)])?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("prt_curse").get()? == 4 {
+        } else if ctx.var("prt_curse").get()? == 4 {
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Ah, that glass of",
+                    "water was just what",
+                    "I needed to refresh",
+                    "myself. Let me tell you",
+                    "a little bit about my work."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "I might have it mentioned before, but my name is Karlomoff and",
+                    "I work in the Rekenber Historical Research as its 1st scholar. We",
+                    "recently finished our project on the Schwarzwald Republic."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Now, we're trying to learn",
+                    "more about the Rune-Midgarts",
+                    "Kingdom's history. We believe",
+                    "it's linked to our Schwarzwald",
+                    "Republic because they share the",
+                    "continent. Makes sense, right?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Ultimately, we hope that",
+                    "new information from our",
+                    "research of Rune-Midgarts will",
+                    "shed some new light on our",
+                    "current understanding of the",
+                    "Schwarzwald Republic's past."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Including myself, there are",
+                    "^3131FF3 members of the Rekenber",
+                    "Historical Research Group^000000",
+                    "that are studying the Rune-",
+                    "Midgarts Kingdom's history."
+                ],
+            )?;
+            ctx.next()?;
+            let choice = runtime::select_values(ctx, &[Val::from("Rekenber Historical Research Group?")])?;
+            ctx.var("@menu").set(choice)?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "You adventurers from Rune-",
+                    "Midgarts may not know it, but",
+                    "the Rekenber Corporation has",
+                    "unofficial control over our",
+                    "Schwarzwald Republic. Some",
+                    "hate it, others don't care."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Anyway, Rekenber has its own",
+                    "Historical Research Group since",
+                    "rediscovering ancient technologies has been key to its success, well,",
+                    "so far as I can tell. Personally, I enjoy the pursuit of knowledge."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Oh, here's an interesting",
+                    "fact! Did you know that the",
+                    "title of ruler of Rune-Midgarts",
+                    "isn't always passed down",
+                    "through the same family?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Actually, there are several",
+                    "royal families that hold a",
+                    "special competition to decide",
+                    "which prince becomes the",
+                    "next king. Fascinating..."
+                ],
+            )?;
+            ctx.next()?;
+            let choice = runtime::select_values(ctx, &[Val::from("Several royal families?")])?;
+            ctx.var("@menu").set(choice)?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Yes, I'll try to explain it",
+                    "briefly. There are a total",
+                    "of 7 royal families. Each",
+                    "family is descended from one",
+                    "of the 7 warriors that founded",
+                    "the Rune-Midgarts Kingdom."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "According to the records,",
+                    "Jormungand, the snake of the",
+                    "earth, appeared and brought",
+                    "chaos to the entire continent.",
+                    "7 warriors appeared and drove the serpent away, saving the world."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "With the return of peace,",
+                    "the 7 warriors established",
+                    "the Rune-Midgarts Kingdom,",
+                    "choosing Tristram Geoborg III",
+                    "as the kingdom's first ruler. "
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Knowing that their descendents",
+                    "may not always be deserving of",
+                    "ruling the kingdom, the 7 warriors agreed to hold a contest amongst",
+                    "their families each generation to prevent royal corruption."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_PROFUSELY_SWEAT")?])?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Oh... Not too excited",
+                    "about history, huh? Well,",
+                    "maybe if I sing the ancient",
+                    "song of this myth, you'd be",
+                    "better able to understand..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "^FF0000*The great serpent*^000000",
+                    "^FF0000*swallowed the sea.*^000000",
+                    "^FF0000*The eagle of the rainbow*^000000",
+                    "^FF0000*swallowed the serpent.*^000000",
+                    "^FF0000*Then the eagle built its nest.*^000000",
+                    "^FF0000*A nest upon the swallowed sea.*^000000"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "^333333*Ahem*^000000 As you see, I'm",
+                    "quite tone deaf. But the",
+                    "point is that people still",
+                    "praise the 7 warriors' exploits",
+                    "through this song. Isn't that",
+                    "interesting to know about?"
+                ],
+            )?;
+            ctx.var("prt_curse").set(Val::from(5))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("prt_curse").get()? == 5 {
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "I'm sorry that I let my",
+                    "mouth run while talking at",
+                    "great length about Rune-",
+                    "Midgart's history. Still,",
+                    "I hope you found that tale",
+                    "at least a little enjoyable."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Oh! Will you be returning to",
+                    "the Rune-Midgarts Kingdom?",
+                    "If so, then I have a favor to",
+                    "ask you. Would you please",
+                    "deliver this report I've written to my colleague in Morocc?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "It would be a great help",
+                    "to me if you could get this",
+                    "report to her right away.",
+                    "Ah, her name is Rodafrian.",
+                    "I'm certain you can find her",
+                    "somewhere in that desert town."
+                ],
+            )?;
+            ctx.var("prt_curse").set(Val::from(6))?;
+            ctx.call(Function::GetItem, vec![Val::from(7342), Val::from(1)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("prt_curse").get()? == 6 {
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Please find my colleague,",
+                    "Rodafrian, in Morocc and",
+                    "deliver my report to her.",
+                    "You should be able to find",
+                    "her there doing research."
+                ],
+            )?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("I will:Can I listen to that song again?")],
+            )?) == 1
+            {
                 ctx.lines_as(
                     "Historian",
                     args![
-                        "Ah, that glass of",
-                        "water was just what",
-                        "I needed to refresh",
-                        "myself. Let me tell you",
-                        "a little bit about my work."
+                        "Once again, thank",
+                        "you for your help.",
+                        "It will really speed the",
+                        "progress of my research,",
+                        "especially since those books",
+                        "were delivered fairly late..."
                     ],
                 )?;
-                ctx.next()?;
+            } else {
                 ctx.lines_as(
                     "Historian",
                     args![
-                        "I might have it mentioned before, but my name is Karlomoff and",
-                        "I work in the Rekenber Historical Research as its 1st scholar. We",
-                        "recently finished our project on the Schwarzwald Republic."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "Now, we're trying to learn",
-                        "more about the Rune-Midgarts",
-                        "Kingdom's history. We believe",
-                        "it's linked to our Schwarzwald",
-                        "Republic because they share the",
-                        "continent. Makes sense, right?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "Ultimately, we hope that",
-                        "new information from our",
-                        "research of Rune-Midgarts will",
-                        "shed some new light on our",
-                        "current understanding of the",
-                        "Schwarzwald Republic's past."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "Including myself, there are",
-                        "^3131FF3 members of the Rekenber",
-                        "Historical Research Group^000000",
-                        "that are studying the Rune-",
-                        "Midgarts Kingdom's history."
-                    ],
-                )?;
-                ctx.next()?;
-                let choice = runtime::select_values(ctx, &[Val::from("Rekenber Historical Research Group?")])?;
-                ctx.var("@menu").set(choice)?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "You adventurers from Rune-",
-                        "Midgarts may not know it, but",
-                        "the Rekenber Corporation has",
-                        "unofficial control over our",
-                        "Schwarzwald Republic. Some",
-                        "hate it, others don't care."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "Anyway, Rekenber has its own",
-                        "Historical Research Group since",
-                        "rediscovering ancient technologies has been key to its success, well,",
-                        "so far as I can tell. Personally, I enjoy the pursuit of knowledge."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "Oh, here's an interesting",
-                        "fact! Did you know that the",
-                        "title of ruler of Rune-Midgarts",
-                        "isn't always passed down",
-                        "through the same family?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "Actually, there are several",
-                        "royal families that hold a",
-                        "special competition to decide",
-                        "which prince becomes the",
-                        "next king. Fascinating..."
-                    ],
-                )?;
-                ctx.next()?;
-                let choice = runtime::select_values(ctx, &[Val::from("Several royal families?")])?;
-                ctx.var("@menu").set(choice)?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "Yes, I'll try to explain it",
-                        "briefly. There are a total",
-                        "of 7 royal families. Each",
-                        "family is descended from one",
-                        "of the 7 warriors that founded",
-                        "the Rune-Midgarts Kingdom."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "According to the records,",
-                        "Jormungand, the snake of the",
-                        "earth, appeared and brought",
-                        "chaos to the entire continent.",
-                        "7 warriors appeared and drove the serpent away, saving the world."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "With the return of peace,",
-                        "the 7 warriors established",
-                        "the Rune-Midgarts Kingdom,",
-                        "choosing Tristram Geoborg III",
-                        "as the kingdom's first ruler. "
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "Knowing that their descendents",
-                        "may not always be deserving of",
-                        "ruling the kingdom, the 7 warriors agreed to hold a contest amongst",
-                        "their families each generation to prevent royal corruption."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.call(Function::Emotion, vec![ctx.constant("ET_PROFUSELY_SWEAT")?])?;
-                ctx.lines_as(
-                    "Historian",
-                    args![
-                        "Oh... Not too excited",
-                        "about history, huh? Well,",
-                        "maybe if I sing the ancient",
-                        "song of this myth, you'd be",
-                        "better able to understand..."
+                        "Song? Oh, you mean the",
+                        "one praising the 7 who",
+                        "founded the Rune-Midgarts",
+                        "Kingdom? Sure, let's see now..."
                     ],
                 )?;
                 ctx.next()?;
@@ -1150,158 +1245,47 @@ fn historian_prt01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.lines_as(
                     "Historian",
                     args![
-                        "^333333*Ahem*^000000 As you see, I'm",
-                        "quite tone deaf. But the",
-                        "point is that people still",
-                        "praise the 7 warriors' exploits",
-                        "through this song. Isn't that",
-                        "interesting to know about?"
+                        "You must be more interested",
+                        "in history than I suspected.",
+                        "If you'd like, I'll write you a",
+                        "letter or recommendation",
+                        "for the Rekenber Historical",
+                        "Research Group. Ha ha ha~"
                     ],
                 )?;
-                ctx.var("prt_curse").set(Val::from(5))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("prt_curse").get()? == 5 {
-                    ctx.lines_as(
-                        "Historian",
-                        args![
-                            "I'm sorry that I let my",
-                            "mouth run while talking at",
-                            "great length about Rune-",
-                            "Midgart's history. Still,",
-                            "I hope you found that tale",
-                            "at least a little enjoyable."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Historian",
-                        args![
-                            "Oh! Will you be returning to",
-                            "the Rune-Midgarts Kingdom?",
-                            "If so, then I have a favor to",
-                            "ask you. Would you please",
-                            "deliver this report I've written to my colleague in Morocc?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Historian",
-                        args![
-                            "It would be a great help",
-                            "to me if you could get this",
-                            "report to her right away.",
-                            "Ah, her name is Rodafrian.",
-                            "I'm certain you can find her",
-                            "somewhere in that desert town."
-                        ],
-                    )?;
-                    ctx.var("prt_curse").set(Val::from(6))?;
-                    ctx.call(Function::GetItem, vec![Val::from(7342), Val::from(1)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("prt_curse").get()? == 6 {
-                        ctx.lines_as(
-                            "Historian",
-                            args![
-                                "Please find my colleague,",
-                                "Rodafrian, in Morocc and",
-                                "deliver my report to her.",
-                                "You should be able to find",
-                                "her there doing research."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("I will:Can I listen to that song again?")],
-                        )?) == 1
-                        {
-                            ctx.lines_as(
-                                "Historian",
-                                args![
-                                    "Once again, thank",
-                                    "you for your help.",
-                                    "It will really speed the",
-                                    "progress of my research,",
-                                    "especially since those books",
-                                    "were delivered fairly late..."
-                                ],
-                            )?;
-                        } else {
-                            ctx.lines_as(
-                                "Historian",
-                                args![
-                                    "Song? Oh, you mean the",
-                                    "one praising the 7 who",
-                                    "founded the Rune-Midgarts",
-                                    "Kingdom? Sure, let's see now..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian",
-                                args![
-                                    "^FF0000*The great serpent*^000000",
-                                    "^FF0000*swallowed the sea.*^000000",
-                                    "^FF0000*The eagle of the rainbow*^000000",
-                                    "^FF0000*swallowed the serpent.*^000000",
-                                    "^FF0000*Then the eagle built its nest.*^000000",
-                                    "^FF0000*A nest upon the swallowed sea.*^000000"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian",
-                                args![
-                                    "You must be more interested",
-                                    "in history than I suspected.",
-                                    "If you'd like, I'll write you a",
-                                    "letter or recommendation",
-                                    "for the Rekenber Historical",
-                                    "Research Group. Ha ha ha~"
-                                ],
-                            )?;
-                        }
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("prt_curse").get()?.number()? > 55 {
-                            ctx.lines_as(
-                                "Historian",
-                                args![
-                                    "Ah, it's been a while",
-                                    "since the last time I saw",
-                                    "you. Rodafrian actually came",
-                                    "to visit me a few days ago.",
-                                    "I believe she came here",
-                                    "to gloat or threaten me..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian",
-                                args![
-                                    "It was very surreal.",
-                                    "She kept raving about",
-                                    "some incredible revelation,",
-                                    "and about finally putting me",
-                                    "in my place. I didn't know she",
-                                    "could be so competitive!"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as("Historian", args!["ZzzzZZz....", "ZzzzZZz....ZZZzzzz..."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
             }
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("prt_curse").get()?.number()? > 55 {
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "Ah, it's been a while",
+                    "since the last time I saw",
+                    "you. Rodafrian actually came",
+                    "to visit me a few days ago.",
+                    "I believe she came here",
+                    "to gloat or threaten me..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Historian",
+                args![
+                    "It was very surreal.",
+                    "She kept raving about",
+                    "some incredible revelation,",
+                    "and about finally putting me",
+                    "in my place. I didn't know she",
+                    "could be so competitive!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Historian", args!["ZzzzZZz....", "ZzzzZZz....ZZZzzzz..."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
 }
@@ -1671,239 +1655,231 @@ fn historian_prt02_run(ctx: &Ctx, mut step: HistorianPrt02Step, args: Vec<Val>) 
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (ctx.var("prt_curse").get()? == 30 || ctx.var("prt_curse").get()? == 55) {
-                                ctx.lines_as(
-                                    "Historian Rodafrian",
-                                    args![
-                                        "Oh, you've returned.",
-                                        "Have you met with Mondo",
-                                        "and figured out the lyrics of",
-                                        "that song I was looking for?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args![
-                                        "^FF0000*The great serpent*^000000",
-                                        "^FF0000*swallowed the sea.*^000000",
-                                        "^FF0000*The eagle of the rainbow*^000000",
-                                        "^FF0000*swallowed the serpent.*^000000",
-                                        "^FF0000*Then snake scales grew on*^000000",
-                                        "^FF0000*the eagle, and it slowly died.*^000000"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Historian Rodafrian",
-                                    args![
-                                        "Oh, yes!",
-                                        "Yes, that was it! Now",
-                                        "I remember, thank you",
-                                        "so much! Ah, back to work..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args![
-                                        "^333333(As a historian, Rodafrian",
-                                        "might be able to help me in",
-                                        "investigating the curse of the",
-                                        "Geoborgs. The priests told me",
-                                        "not to tell anybody, though.",
-                                        "Should I take this risk?)^000000"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                if Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from("Tell her about Jormungand's curse:Don't tell her")],
-                                )?) == 1
-                                {
-                                    ctx.lines(args![
-                                        "^3355FFYou explain everything",
-                                        "that you have learned to",
-                                        "Rodafrian, choosing not",
-                                        "to withhold any secrets.^000000"
-                                    ])?;
-                                    ctx.call(Function::Emotion, vec![ctx.constant("ET_AHA")?])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Historian Rodafrian", args![".....................!"])?;
-                                    ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Historian Rodafrian",
-                                        args![
-                                            "Thank you for sharing that",
-                                            "with me. I hope you realize",
-                                            "how precious that information",
-                                            "is. I had no idea the royal",
-                                            "family was keeping that kind",
-                                            "of secret. Goodness, me..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Historian Rodafrian",
-                                        args![
-                                            "You know, I don't really",
-                                            "know much about poison, but",
-                                            "I do know that, aside from our",
-                                            "own Assassins, there are poison",
-                                            "experts living in some strange",
-                                            "land located to the west."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Historian Rodafrian",
-                                        args![
-                                            "Anyway, your report about",
-                                            "the Geoborg family will be",
-                                            "greatly appreciated by the",
-                                            "Rekenber Historical Research",
-                                            "Group. But first, I need to",
-                                            "finish this Morocc project..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Historian Rodafrian",
-                                        args![
-                                            "Anyway, keep this information",
-                                            "a secret between me and you",
-                                            "for now. Then, when I reveal the secret curse of the Geoborg royal",
-                                            "family, I'll finally outshine that Karlomoff! Bwahahahahaha!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args![
-                                            "^333333(Drat, she didn't give me",
-                                            "any help... All I did was",
-                                            "reveal a huge secret to her",
-                                            "that she might spread around!",
-                                            "Oh well, I guess I better head",
-                                            "back to the priests...)^000000"
-                                        ],
-                                    )?;
-                                    if ctx.var("prt_curse").get()? == 30 {
-                                        ctx.var("prt_curse").set(Val::from(31))?;
-                                    } else {
-                                        ctx.var("prt_curse").set(Val::from(60))?;
-                                    }
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                ctx.lines_as(
-                                    "Historian Rodafrian",
-                                    args![
-                                        "Oh, let me thank you",
-                                        "once again for going",
-                                        "through the trouble of",
-                                        "getting that lyric for me~",
-                                        "I put my assistant through",
-                                        "enough trouble already..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Historian Rodafrian",
-                                    args![
-                                        "I also better not forget",
-                                        "to go through Karlomoff's",
-                                        "report. I'll have to have a",
-                                        "debate with him sooner or",
-                                        "later, and I really want to",
-                                        "put that guy in his place!"
-                                    ],
-                                )?;
-                                ctx.next()?;
+                        } else if (ctx.var("prt_curse").get()? == 30 || ctx.var("prt_curse").get()? == 55) {
+                            ctx.lines_as(
+                                "Historian Rodafrian",
+                                args![
+                                    "Oh, you've returned.",
+                                    "Have you met with Mondo",
+                                    "and figured out the lyrics of",
+                                    "that song I was looking for?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args![
+                                    "^FF0000*The great serpent*^000000",
+                                    "^FF0000*swallowed the sea.*^000000",
+                                    "^FF0000*The eagle of the rainbow*^000000",
+                                    "^FF0000*swallowed the serpent.*^000000",
+                                    "^FF0000*Then snake scales grew on*^000000",
+                                    "^FF0000*the eagle, and it slowly died.*^000000"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Historian Rodafrian",
+                                args![
+                                    "Oh, yes!",
+                                    "Yes, that was it! Now",
+                                    "I remember, thank you",
+                                    "so much! Ah, back to work..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args![
+                                    "^333333(As a historian, Rodafrian",
+                                    "might be able to help me in",
+                                    "investigating the curse of the",
+                                    "Geoborgs. The priests told me",
+                                    "not to tell anybody, though.",
+                                    "Should I take this risk?)^000000"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            if Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Tell her about Jormungand's curse:Don't tell her")],
+                            )?) == 1
+                            {
                                 ctx.lines(args![
-                                    "^3355FFRodafrian seemed very",
-                                    "happy and began to read",
-                                    "through Karlomoff's report.",
-                                    "For now, it would be best",
-                                    "to return to Father Bamph.^000000"
+                                    "^3355FFYou explain everything",
+                                    "that you have learned to",
+                                    "Rodafrian, choosing not",
+                                    "to withhold any secrets.^000000"
                                 ])?;
+                                ctx.call(Function::Emotion, vec![ctx.constant("ET_AHA")?])?;
+                                ctx.next()?;
+                                ctx.lines_as("Historian Rodafrian", args![".....................!"])?;
+                                ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Historian Rodafrian",
+                                    args![
+                                        "Thank you for sharing that",
+                                        "with me. I hope you realize",
+                                        "how precious that information",
+                                        "is. I had no idea the royal",
+                                        "family was keeping that kind",
+                                        "of secret. Goodness, me..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Historian Rodafrian",
+                                    args![
+                                        "You know, I don't really",
+                                        "know much about poison, but",
+                                        "I do know that, aside from our",
+                                        "own Assassins, there are poison",
+                                        "experts living in some strange",
+                                        "land located to the west."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Historian Rodafrian",
+                                    args![
+                                        "Anyway, your report about",
+                                        "the Geoborg family will be",
+                                        "greatly appreciated by the",
+                                        "Rekenber Historical Research",
+                                        "Group. But first, I need to",
+                                        "finish this Morocc project..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Historian Rodafrian",
+                                    args![
+                                        "Anyway, keep this information",
+                                        "a secret between me and you",
+                                        "for now. Then, when I reveal the secret curse of the Geoborg royal",
+                                        "family, I'll finally outshine that Karlomoff! Bwahahahahaha!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    args![
+                                        "^333333(Drat, she didn't give me",
+                                        "any help... All I did was",
+                                        "reveal a huge secret to her",
+                                        "that she might spread around!",
+                                        "Oh well, I guess I better head",
+                                        "back to the priests...)^000000"
+                                    ],
+                                )?;
                                 if ctx.var("prt_curse").get()? == 30 {
-                                    ctx.var("prt_curse").set(Val::from(40))?;
+                                    ctx.var("prt_curse").set(Val::from(31))?;
                                 } else {
-                                    ctx.var("prt_curse").set(Val::from(56))?;
+                                    ctx.var("prt_curse").set(Val::from(60))?;
                                 }
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if (ctx.var("prt_curse").get()? == 31 || ctx.var("prt_curse").get()? == 40) {
-                                    ctx.lines(args![
-                                        "^3355FFRodafrian seemed very",
-                                        "happy and began to read",
-                                        "through Karlomoff's report.",
-                                        "For now, it would be best",
-                                        "to return to Father Bamph.^000000"
-                                    ])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("prt_curse").get()? == 56 {
-                                        ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
-                                        ctx.lines_as(
-                                            "Historian Rodafrian",
-                                            args![
-                                                "I just paid a visit to",
-                                                "Karlomoff and gave him",
-                                                "a piece of my mind! I think...",
-                                                "I think I put him in his place.",
-                                                "But I can never really tell",
-                                                "with that sneaky guy..."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("prt_curse").get()? == 60 {
-                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
-                                            ctx.lines_as(
-                                                "Historian Rodafrian",
-                                                args![
-                                                    "I just aid a visit to",
-                                                    "Karlomoff and gave him",
-                                                    "a piece of my mind! I think...",
-                                                    "I think I put him in his place.",
-                                                    "But I can never really tell",
-                                                    "with that sneaky guy..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines(args![
-                                                "It doesn't look like",
-                                                "Rodafrian can offer you",
-                                                "any more information. For",
-                                                "now, it would be best to",
-                                                "go to ^3355FFProntera Church.^000000"
-                                            ])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            ctx.lines_as(
-                                                "Historian Rodafrian",
-                                                args![
-                                                    "I'm sorry, but I'm",
-                                                    "really very busy with my",
-                                                    "research at the moment.",
-                                                    "Perhaps we can talk later",
-                                                    "once I've completed this?"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
-                                }
                             }
+                            ctx.lines_as(
+                                "Historian Rodafrian",
+                                args![
+                                    "Oh, let me thank you",
+                                    "once again for going",
+                                    "through the trouble of",
+                                    "getting that lyric for me~",
+                                    "I put my assistant through",
+                                    "enough trouble already..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Historian Rodafrian",
+                                args![
+                                    "I also better not forget",
+                                    "to go through Karlomoff's",
+                                    "report. I'll have to have a",
+                                    "debate with him sooner or",
+                                    "later, and I really want to",
+                                    "put that guy in his place!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^3355FFRodafrian seemed very",
+                                "happy and began to read",
+                                "through Karlomoff's report.",
+                                "For now, it would be best",
+                                "to return to Father Bamph.^000000"
+                            ])?;
+                            if ctx.var("prt_curse").get()? == 30 {
+                                ctx.var("prt_curse").set(Val::from(40))?;
+                            } else {
+                                ctx.var("prt_curse").set(Val::from(56))?;
+                            }
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("prt_curse").get()? == 31 || ctx.var("prt_curse").get()? == 40) {
+                            ctx.lines(args![
+                                "^3355FFRodafrian seemed very",
+                                "happy and began to read",
+                                "through Karlomoff's report.",
+                                "For now, it would be best",
+                                "to return to Father Bamph.^000000"
+                            ])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("prt_curse").get()? == 56 {
+                            ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
+                            ctx.lines_as(
+                                "Historian Rodafrian",
+                                args![
+                                    "I just paid a visit to",
+                                    "Karlomoff and gave him",
+                                    "a piece of my mind! I think...",
+                                    "I think I put him in his place.",
+                                    "But I can never really tell",
+                                    "with that sneaky guy..."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("prt_curse").get()? == 60 {
+                            ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
+                            ctx.lines_as(
+                                "Historian Rodafrian",
+                                args![
+                                    "I just aid a visit to",
+                                    "Karlomoff and gave him",
+                                    "a piece of my mind! I think...",
+                                    "I think I put him in his place.",
+                                    "But I can never really tell",
+                                    "with that sneaky guy..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "It doesn't look like",
+                                "Rodafrian can offer you",
+                                "any more information. For",
+                                "now, it would be best to",
+                                "go to ^3355FFProntera Church.^000000"
+                            ])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.lines_as(
+                                "Historian Rodafrian",
+                                args![
+                                    "I'm sorry, but I'm",
+                                    "really very busy with my",
+                                    "research at the moment.",
+                                    "Perhaps we can talk later",
+                                    "once I've completed this?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -2082,120 +2058,116 @@ fn historian_prt03_run(ctx: &Ctx, mut step: HistorianPrt03Step, args: Vec<Val>) 
                     )?;
                     ctx.next()?;
                     historian_prt03_run(ctx, HistorianPrt03Step::SSong, vec![])?;
+                } else if ctx.var("prt_curse").get()? == 9 {
+                    ctx.lines_as(
+                        "Historian Mondo",
+                        args![
+                            "Ah, would you tell me",
+                            "the lyrics of the version of",
+                            "the Rune-Midgarts Kingdom",
+                            "founding myth song that",
+                            "you happened to hear?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    historian_prt03_run(ctx, HistorianPrt03Step::SSong, vec![])?;
+                } else if ctx.var("prt_curse").get()? == 10 {
+                    ctx.lines_as(
+                        "Historian Mondo",
+                        args![
+                            "Interesting...",
+                            "The version you heard",
+                            "from Karlomoff is different",
+                            "than the one I know. It's",
+                            "possible that his version",
+                            "is the most authentic."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Mondo",
+                        args![
+                            "After all, I learned",
+                            "the version I know",
+                            "by listening to a",
+                            "little kid sing it."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    let choice = runtime::select_values(ctx, &[Val::from("A kid?")])?;
+                    ctx.var("@menu").set(choice)?;
+                    ctx.lines_as(
+                        "Historian Mondo",
+                        args![
+                            "Yeah. My guess? The version",
+                            "that the kid sang might have",
+                            "changed as it was transmitted",
+                            "by mouth through the generations. If you want to learn more, you",
+                            "should probably find that kid."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Mondo",
+                        args![
+                            "Anyway, Karlomoff may have",
+                            "the most accurate version of",
+                            "the song since he's very good",
+                            "at procuring and authenticating",
+                            "historical written records and",
+                            "documents. It's his specialty."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Mondo",
+                        args![
+                            "Ah, if you want to learn more,",
+                            "then you should try to find the",
+                            "kid that was singing the song.",
+                            "Hmm, he might be around ^3131DDthe",
+                            "river near here^000000. Hopefully it",
+                            "won't be too hard to find him."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Mondo",
+                        args![
+                            "Once you're able to talk",
+                            "to that kid, go ahead and",
+                            "report back to Rodafrian.",
+                            "She probably needs to know",
+                            "soon, and I can talk to that",
+                            "little kid at my leisure, so..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Historian Mondo",
+                        args![
+                            "Well then, I hope you",
+                            "find what you're looking",
+                            "for. Good luck in your",
+                            "travels, adventurer."
+                        ],
+                    )?;
+                    ctx.var("prt_curse").set(Val::from(11))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if ctx.var("prt_curse").get()? == 9 {
-                        ctx.lines_as(
-                            "Historian Mondo",
-                            args![
-                                "Ah, would you tell me",
-                                "the lyrics of the version of",
-                                "the Rune-Midgarts Kingdom",
-                                "founding myth song that",
-                                "you happened to hear?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        historian_prt03_run(ctx, HistorianPrt03Step::SSong, vec![])?;
-                    } else {
-                        if ctx.var("prt_curse").get()? == 10 {
-                            ctx.lines_as(
-                                "Historian Mondo",
-                                args![
-                                    "Interesting...",
-                                    "The version you heard",
-                                    "from Karlomoff is different",
-                                    "than the one I know. It's",
-                                    "possible that his version",
-                                    "is the most authentic."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Mondo",
-                                args![
-                                    "After all, I learned",
-                                    "the version I know",
-                                    "by listening to a",
-                                    "little kid sing it."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            let choice = runtime::select_values(ctx, &[Val::from("A kid?")])?;
-                            ctx.var("@menu").set(choice)?;
-                            ctx.lines_as(
-                                "Historian Mondo",
-                                args![
-                                    "Yeah. My guess? The version",
-                                    "that the kid sang might have",
-                                    "changed as it was transmitted",
-                                    "by mouth through the generations. If you want to learn more, you",
-                                    "should probably find that kid."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Mondo",
-                                args![
-                                    "Anyway, Karlomoff may have",
-                                    "the most accurate version of",
-                                    "the song since he's very good",
-                                    "at procuring and authenticating",
-                                    "historical written records and",
-                                    "documents. It's his specialty."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Mondo",
-                                args![
-                                    "Ah, if you want to learn more,",
-                                    "then you should try to find the",
-                                    "kid that was singing the song.",
-                                    "Hmm, he might be around ^3131DDthe",
-                                    "river near here^000000. Hopefully it",
-                                    "won't be too hard to find him."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Mondo",
-                                args![
-                                    "Once you're able to talk",
-                                    "to that kid, go ahead and",
-                                    "report back to Rodafrian.",
-                                    "She probably needs to know",
-                                    "soon, and I can talk to that",
-                                    "little kid at my leisure, so..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Historian Mondo",
-                                args![
-                                    "Well then, I hope you",
-                                    "find what you're looking",
-                                    "for. Good luck in your",
-                                    "travels, adventurer."
-                                ],
-                            )?;
-                            ctx.var("prt_curse").set(Val::from(11))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "Historian Mondo",
-                                args![
-                                    "Isn't this such",
-                                    "a beautiful place?",
-                                    "It's no wonder that",
-                                    "ancient peoples chose",
-                                    "to live around here..."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
+                    ctx.lines_as(
+                        "Historian Mondo",
+                        args![
+                            "Isn't this such",
+                            "a beautiful place?",
+                            "It's no wonder that",
+                            "ancient peoples chose",
+                            "to live around here..."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 step = HistorianPrt03Step::SSong;
                 continue 'machine;
@@ -2570,53 +2542,47 @@ fn dazed_boy_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Absent-Minded Boy", args!["...", "......", "........."])?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("prt_curse").get()? == 36 {
+        ctx.lines(args![
+            "^3355FFThe little boy looked",
+            "very worn and weary of",
+            "life, a look that is very",
+            "unsettling on the face",
+            "of a young child.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("prt_curse").get()? == 45 {
+        ctx.lines(args![
+            "^3355FFThe little boy still",
+            "won't talk to you, but",
+            "he acknowledges your",
+            "presense by making eye",
+            "contact and smiling.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("prt_curse").get()?.number()? > 54 {
+        ctx.lines(args![
+            "^3355FFThe little boy still",
+            "won't talk to you, but he",
+            "make you feel welcome",
+            "by giving you a warm smile.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("prt_curse").get()? == 36 {
-            ctx.lines(args![
-                "^3355FFThe little boy looked",
-                "very worn and weary of",
-                "life, a look that is very",
-                "unsettling on the face",
-                "of a young child.^000000"
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("prt_curse").get()? == 45 {
-                ctx.lines(args![
-                    "^3355FFThe little boy still",
-                    "won't talk to you, but",
-                    "he acknowledges your",
-                    "presense by making eye",
-                    "contact and smiling.^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("prt_curse").get()?.number()? > 54 {
-                    ctx.lines(args![
-                        "^3355FFThe little boy still",
-                        "won't talk to you, but he",
-                        "make you feel welcome",
-                        "by giving you a warm smile.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as("Absent-Minded Boy", args!["...", "......", "........."])?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^3355FFYou find it difficult",
-                        "to ignore the little boy's",
-                        "probing, wary eyes directed",
-                        "at you. It's very clear that",
-                        "he doesn't trust you.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
-        }
+        ctx.lines_as("Absent-Minded Boy", args!["...", "......", "........."])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou find it difficult",
+            "to ignore the little boy's",
+            "probing, wary eyes directed",
+            "at you. It's very clear that",
+            "he doesn't trust you.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -3055,163 +3021,153 @@ fn exhausted_looking_woman_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                         ])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ((ctx.var("prt_curse").get()? == 35 || ctx.var("prt_curse").get()? == 44) || ctx.var("prt_curse").get()? == 54) {
-                            ctx.lines(args![
-                                "^3355FFYou tell Bonnie Imbullea",
-                                "that the deaths of the princes",
-                                "were not her fault and that the exorcism was probably sabotaged.",
-                                "However, you keep specifics, like the use of poison, to yourself.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Bonnie Imbullea",
-                                args![
-                                    "Is that really true...?",
-                                    "Oh, I'm so happy! I really",
-                                    "thought I'd have to live the",
-                                    "rest of my in seclusion with",
-                                    "this horrible shame. Oh, thank",
-                                    "you so much for your help!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Bonnie Imbullea",
-                                args![
-                                    "Kaanu will be able to",
-                                    "meet other kids his own",
-                                    "age... We can finally live",
-                                    "a normal life. How wonderful..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Bonnie Imbullea",
-                                args![
-                                    "But wait...",
-                                    "How exactly did the",
-                                    "princes die, then?",
-                                    "There weren't any",
-                                    "wounds on the bodies",
-                                    "from what I remember..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args![
-                                    "Well, um, I wouldn't know",
-                                    "anything about that, but",
-                                    "Father Bamph and Father",
-                                    "Biscuss are handling the",
-                                    "investigation, and they're",
-                                    "doing their best to find out."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Bonnie Imbullea",
-                                args![
-                                    "I see. Well, I believe in",
-                                    "them: they're great priests,",
-                                    "after all. Although I may be",
-                                    "forgiven for my failure, I still fear for the royal family...",
-                                    "All I can do for now is pray."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Bonnie Imbullea",
-                                args![
-                                    "Anyway, I promise that",
-                                    "I won't reveal what I know",
-                                    "about this incident to the",
-                                    "public. And if you ever come",
-                                    "by the mountain again, I hope",
-                                    "you stop by to visit us."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Bonnie Imbullea",
-                                args![
-                                    "You don't understand",
-                                    "how much the news you've",
-                                    "brought really means to me.",
-                                    "I can finally free myself from",
-                                    "this burdensome guilt...",
-                                    "Thank you, kind adventurer~"
-                                ],
-                            )?;
-                            if ctx.var("prt_curse").get()? == 35 {
-                                ctx.var("prt_curse").set(Val::from(36))?;
-                            } else {
-                                if ctx.var("prt_curse").get()? == 44 {
-                                    ctx.var("prt_curse").set(Val::from(45))?;
-                                } else {
-                                    ctx.next()?;
-                                    ctx.lines(args![
-                                        "^3355FFNow, you can return to",
-                                        "Rodafrian, the historian",
-                                        "stationed in Morocc.^000000"
-                                    ])?;
-                                    ctx.var("prt_curse").set(Val::from(55))?;
-                                }
-                            }
-                            ctx.close_window()?;
-                            return Err(Stop::End);
+                    } else if ((ctx.var("prt_curse").get()? == 35 || ctx.var("prt_curse").get()? == 44) || ctx.var("prt_curse").get()? == 54) {
+                        ctx.lines(args![
+                            "^3355FFYou tell Bonnie Imbullea",
+                            "that the deaths of the princes",
+                            "were not her fault and that the exorcism was probably sabotaged.",
+                            "However, you keep specifics, like the use of poison, to yourself.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Bonnie Imbullea",
+                            args![
+                                "Is that really true...?",
+                                "Oh, I'm so happy! I really",
+                                "thought I'd have to live the",
+                                "rest of my in seclusion with",
+                                "this horrible shame. Oh, thank",
+                                "you so much for your help!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Bonnie Imbullea",
+                            args![
+                                "Kaanu will be able to",
+                                "meet other kids his own",
+                                "age... We can finally live",
+                                "a normal life. How wonderful..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Bonnie Imbullea",
+                            args![
+                                "But wait...",
+                                "How exactly did the",
+                                "princes die, then?",
+                                "There weren't any",
+                                "wounds on the bodies",
+                                "from what I remember..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args![
+                                "Well, um, I wouldn't know",
+                                "anything about that, but",
+                                "Father Bamph and Father",
+                                "Biscuss are handling the",
+                                "investigation, and they're",
+                                "doing their best to find out."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Bonnie Imbullea",
+                            args![
+                                "I see. Well, I believe in",
+                                "them: they're great priests,",
+                                "after all. Although I may be",
+                                "forgiven for my failure, I still fear for the royal family...",
+                                "All I can do for now is pray."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Bonnie Imbullea",
+                            args![
+                                "Anyway, I promise that",
+                                "I won't reveal what I know",
+                                "about this incident to the",
+                                "public. And if you ever come",
+                                "by the mountain again, I hope",
+                                "you stop by to visit us."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Bonnie Imbullea",
+                            args![
+                                "You don't understand",
+                                "how much the news you've",
+                                "brought really means to me.",
+                                "I can finally free myself from",
+                                "this burdensome guilt...",
+                                "Thank you, kind adventurer~"
+                            ],
+                        )?;
+                        if ctx.var("prt_curse").get()? == 35 {
+                            ctx.var("prt_curse").set(Val::from(36))?;
+                        } else if ctx.var("prt_curse").get()? == 44 {
+                            ctx.var("prt_curse").set(Val::from(45))?;
                         } else {
-                            if ctx.var("prt_curse").get()? == 36 {
-                                ctx.lines_as(
-                                    "Bonnie Imbullea",
-                                    args![
-                                        "By your grace and mercy,",
-                                        "please pity the poor souls",
-                                        "and protect the royal family...",
-                                        "Bless us with your light and",
-                                        "may your wisdom guide us..."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("prt_curse").get()? == 45 {
-                                    ctx.lines_as(
-                                        "Bonnie Imbullea",
-                                        args![
-                                            "I guess we've gotten",
-                                            "too used to the peace",
-                                            "and serenity of Mount",
-                                            "Mjolnir. It won't be easy",
-                                            "to leave, even if we're welcome to return to Prontera..."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("prt_curse").get()?.number()? > 54 {
-                                        ctx.lines_as(
-                                            "Bonnie Imbullea",
-                                            args![
-                                                "Thank you so much",
-                                                "for helping out in the",
-                                                "investigation of the",
-                                                "princes. I'd never know",
-                                                "happiness again if it",
-                                                "weren't for your efforts."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as("Bonnie Imbullea", args!["^333333*Sigh...*^000000"])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^3355FFNow, you can return to",
+                                "Rodafrian, the historian",
+                                "stationed in Morocc.^000000"
+                            ])?;
+                            ctx.var("prt_curse").set(Val::from(55))?;
                         }
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("prt_curse").get()? == 36 {
+                        ctx.lines_as(
+                            "Bonnie Imbullea",
+                            args![
+                                "By your grace and mercy,",
+                                "please pity the poor souls",
+                                "and protect the royal family...",
+                                "Bless us with your light and",
+                                "may your wisdom guide us..."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("prt_curse").get()? == 45 {
+                        ctx.lines_as(
+                            "Bonnie Imbullea",
+                            args![
+                                "I guess we've gotten",
+                                "too used to the peace",
+                                "and serenity of Mount",
+                                "Mjolnir. It won't be easy",
+                                "to leave, even if we're welcome to return to Prontera..."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("prt_curse").get()?.number()? > 54 {
+                        ctx.lines_as(
+                            "Bonnie Imbullea",
+                            args![
+                                "Thank you so much",
+                                "for helping out in the",
+                                "investigation of the",
+                                "princes. I'd never know",
+                                "happiness again if it",
+                                "weren't for your efforts."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as("Bonnie Imbullea", args!["^333333*Sigh...*^000000"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -4197,137 +4153,129 @@ fn father_bamph_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                         )?;
                                                                                         ctx.close_window()?;
                                                                                         return Err(Stop::End);
-                                                                                    } else {
-                                                                                        if ctx.var("aru_monas").get()? == 4 {
+                                                                                    } else if ctx.var("aru_monas").get()? == 4 {
+                                                                                        ctx.lines_as(
+                                                                                            "Father Bamph",
+                                                                                            args![
+                                                                                                "Ah, so you found Larjes?",
+                                                                                                "How has your investigation of",
+                                                                                                "that official's disappearance",
+                                                                                                "progressing? I hope that he",
+                                                                                                "is still safe and sound",
+                                                                                                "when you find him."
+                                                                                            ],
+                                                                                        )?;
+                                                                                        ctx.next()?;
+                                                                                        let choice = runtime::select_values(
+                                                                                            ctx,
+                                                                                            &[Val::from("Tell him what Larjes said.")],
+                                                                                        )?;
+                                                                                        ctx.var("@menu").set(choice)?;
+                                                                                        ctx.lines_as(
+                                                                                            "Father Bamph",
+                                                                                            args![
+                                                                                                "I see. We've detected some",
+                                                                                                "disquieting activity from",
+                                                                                                "Arunafeltz lately, but I didn't",
+                                                                                                "think they would make",
+                                                                                                "their move so soon. Hmm...",
+                                                                                                "Give me a moment to think."
+                                                                                            ],
+                                                                                        )?;
+                                                                                        ctx.var("aru_monas").set(Val::from(5))?;
+                                                                                        ctx.close_window()?;
+                                                                                        return Err(Stop::End);
+                                                                                    } else if ctx.var("aru_monas").get()? == 5 {
+                                                                                        if ctx.call(
+                                                                                            Function::Rand,
+                                                                                            vec![Val::from(1), Val::from(5)],
+                                                                                        )? == 4
+                                                                                        {
                                                                                             ctx.lines_as(
                                                                                                 "Father Bamph",
                                                                                                 args![
-                                                                                                    "Ah, so you found Larjes?",
-                                                                                                    "How has your investigation of",
-                                                                                                    "that official's disappearance",
-                                                                                                    "progressing? I hope that he",
-                                                                                                    "is still safe and sound",
-                                                                                                    "when you find him."
+                                                                                                    "Well, I've considered all",
+                                                                                                    "possible scenarios. I think",
+                                                                                                    "it would work best if you",
+                                                                                                    "continue your investigation",
+                                                                                                    "on our behalf. That is, if",
+                                                                                                    "you're willing to do it."
                                                                                                 ],
                                                                                             )?;
                                                                                             ctx.next()?;
-                                                                                            let choice = runtime::select_values(
+                                                                                            ctx.lines_as("Father Bamph", args!["We don't want to provoke", "an international conflict", "with our official involvement,", "but I also can't force you to", "work for us. Whether you", "can help is your choice."])?;
+                                                                                            ctx.next()?;
+                                                                                            if Val::from(runtime::select_values(
                                                                                                 ctx,
-                                                                                                &[Val::from("Tell him what Larjes said.")],
+                                                                                                &[Val::from(
+                                                                                                    "Let me think about it.:Of course, I'll help.",
+                                                                                                )],
+                                                                                            )?) == 1
+                                                                                            {
+                                                                                                ctx.lines_as("Father Bamph", args!["I hope that you decide", "to help us. The safety of", "our nation depends on the", "success of this investigation.", "We could really use your help."])?;
+                                                                                                ctx.close_window()?;
+                                                                                                return Err(Stop::End);
+                                                                                            }
+                                                                                            ctx.lines_as("Father Bamph", args!["Thank you. I'm glad to hear", "that you'll help us. You may", "take the airship in Izlude to", "travel to Arunafeltz, where you", "must continue your investigation."])?;
+                                                                                            ctx.next()?;
+                                                                                            ctx.lines_as("Father Bamph", args!["I believe that you should", "be able to learn more if you", "investigate the city of ^9370DBRachel^000000.", "Please accept this money", "to cover your Airship fee.", "Thank you, and good luck."])?;
+                                                                                            ctx.var("aru_monas")
+                                                                                                .set(Val::from(6))?;
+                                                                                            ctx.var("Zeny").set(
+                                                                                                (ctx.var("Zeny").get()?
+                                                                                                    + Val::from(1500)),
                                                                                             )?;
-                                                                                            ctx.var("@menu").set(choice)?;
-                                                                                            ctx.lines_as(
-                                                                                                "Father Bamph",
-                                                                                                args![
-                                                                                                    "I see. We've detected some",
-                                                                                                    "disquieting activity from",
-                                                                                                    "Arunafeltz lately, but I didn't",
-                                                                                                    "think they would make",
-                                                                                                    "their move so soon. Hmm...",
-                                                                                                    "Give me a moment to think."
-                                                                                                ],
-                                                                                            )?;
-                                                                                            ctx.var("aru_monas").set(Val::from(5))?;
                                                                                             ctx.close_window()?;
                                                                                             return Err(Stop::End);
                                                                                         } else {
-                                                                                            if ctx.var("aru_monas").get()? == 5 {
-                                                                                                if ctx.call(
-                                                                                                    Function::Rand,
-                                                                                                    vec![Val::from(1), Val::from(5)],
-                                                                                                )? == 4
-                                                                                                {
-                                                                                                    ctx.lines_as(
-                                                                                                        "Father Bamph",
-                                                                                                        args![
-                                                                                                            "Well, I've considered all",
-                                                                                                            "possible scenarios. I think",
-                                                                                                            "it would work best if you",
-                                                                                                            "continue your investigation",
-                                                                                                            "on our behalf. That is, if",
-                                                                                                            "you're willing to do it."
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.next()?;
-                                                                                                    ctx.lines_as("Father Bamph", args!["We don't want to provoke", "an international conflict", "with our official involvement,", "but I also can't force you to", "work for us. Whether you", "can help is your choice."])?;
-                                                                                                    ctx.next()?;
-                                                                                                    if Val::from(runtime::select_values(
-                                                                                                        ctx,
-                                                                                                        &[Val::from(
-                                                                                                            "Let me think about it.:Of course, I'll help.",
-                                                                                                        )],
-                                                                                                    )?) == 1
-                                                                                                    {
-                                                                                                        ctx.lines_as("Father Bamph", args!["I hope that you decide", "to help us. The safety of", "our nation depends on the", "success of this investigation.", "We could really use your help."])?;
-                                                                                                        ctx.close_window()?;
-                                                                                                        return Err(Stop::End);
-                                                                                                    }
-                                                                                                    ctx.lines_as("Father Bamph", args!["Thank you. I'm glad to hear", "that you'll help us. You may", "take the airship in Izlude to", "travel to Arunafeltz, where you", "must continue your investigation."])?;
-                                                                                                    ctx.next()?;
-                                                                                                    ctx.lines_as("Father Bamph", args!["I believe that you should", "be able to learn more if you", "investigate the city of ^9370DBRachel^000000.", "Please accept this money", "to cover your Airship fee.", "Thank you, and good luck."])?;
-                                                                                                    ctx.var("aru_monas")
-                                                                                                        .set(Val::from(6))?;
-                                                                                                    ctx.var("Zeny").set(
-                                                                                                        (ctx.var("Zeny").get()?
-                                                                                                            + Val::from(1500)),
-                                                                                                    )?;
-                                                                                                    ctx.close_window()?;
-                                                                                                    return Err(Stop::End);
-                                                                                                } else {
-                                                                                                    ctx.lines_as(
-                                                                                                        "Father Bamph",
-                                                                                                        args![
-                                                                                                            "Hmm... What's the best way",
-                                                                                                            "for us to handle this? Let",
-                                                                                                            "me think about our options.",
-                                                                                                            "We can--no. That wouldn't",
-                                                                                                            "work. This will be difficult."
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.close_window()?;
-                                                                                                    return Err(Stop::End);
-                                                                                                }
-                                                                                            } else {
-                                                                                                if ctx.var("aru_monas").get()? == 6 {
-                                                                                                    ctx.lines_as("Father Bamph", args!["You might have problems", "in Rachel since the culture", "there is much different than", "our own. Their ways of doing", "things, their government...", "Everything is tied to religion."])?;
-                                                                                                    ctx.close_window()?;
-                                                                                                    return Err(Stop::End);
-                                                                                                } else {
-                                                                                                    if (ctx
-                                                                                                        .var("aru_monas")
-                                                                                                        .get()?
-                                                                                                        .number()?
-                                                                                                        > 6
-                                                                                                        && ctx
-                                                                                                            .var("aru_monas")
-                                                                                                            .get()?
-                                                                                                            .number()?
-                                                                                                            < 25)
-                                                                                                    {
-                                                                                                        ctx.lines_as("Father Bamph", args!["Thank you so much for all", "of your hard work. Our agents", "will contact you whenever they", "uncover any new information.", "Remember that no one can", "know what we've been doing."])?;
-                                                                                                        ctx.close_window()?;
-                                                                                                        return Err(Stop::End);
-                                                                                                    } else {
-                                                                                                        if (ctx.var("aru_monas").get()?
-                                                                                                            == 25
-                                                                                                            || ctx
-                                                                                                                .var("aru_monas")
-                                                                                                                .get()?
-                                                                                                                == 26)
-                                                                                                        {
-                                                                                                            ctx.lines_as("Father Bamph", args!["Thank you for bring us such", "important information. With", "your help, we were able to", "clear a few unsolved cases.", "We expected something like", "this, but not this soon."])?;
-                                                                                                            ctx.next()?;
-                                                                                                            ctx.lines_as("Father Bamph", args!["I fear that the Royal Court", "has been bickering over their", "own selfish needs. I pray that", "it does not grow worse, devolve", "into chaos. ^666666*Sigh*^000000 We'll see..."])?;
-                                                                                                            ctx.close_window()?;
-                                                                                                            return Err(Stop::End);
-                                                                                                        } else {
-                                                                                                            ctx.lines_as("Father Bamph", args!["It's upsetting to me that", "Arunafeltz has been so quiet", "lately. You know the expression", "about there being a quiet lull", "before a raging storm, right?"])?;
-                                                                                                            ctx.close_window()?;
-                                                                                                            return Err(Stop::End);
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                            }
+                                                                                            ctx.lines_as(
+                                                                                                "Father Bamph",
+                                                                                                args![
+                                                                                                    "Hmm... What's the best way",
+                                                                                                    "for us to handle this? Let",
+                                                                                                    "me think about our options.",
+                                                                                                    "We can--no. That wouldn't",
+                                                                                                    "work. This will be difficult."
+                                                                                                ],
+                                                                                            )?;
+                                                                                            ctx.close_window()?;
+                                                                                            return Err(Stop::End);
+                                                                                        }
+                                                                                    } else {
+                                                                                        if ctx.var("aru_monas").get()? == 6 {
+                                                                                            ctx.lines_as("Father Bamph", args!["You might have problems", "in Rachel since the culture", "there is much different than", "our own. Their ways of doing", "things, their government...", "Everything is tied to religion."])?;
+                                                                                            ctx.close_window()?;
+                                                                                            return Err(Stop::End);
+                                                                                        } else if (ctx
+                                                                                            .var("aru_monas")
+                                                                                            .get()?
+                                                                                            .number()?
+                                                                                            > 6
+                                                                                            && ctx
+                                                                                                .var("aru_monas")
+                                                                                                .get()?
+                                                                                                .number()?
+                                                                                                < 25)
+                                                                                        {
+                                                                                            ctx.lines_as("Father Bamph", args!["Thank you so much for all", "of your hard work. Our agents", "will contact you whenever they", "uncover any new information.", "Remember that no one can", "know what we've been doing."])?;
+                                                                                            ctx.close_window()?;
+                                                                                            return Err(Stop::End);
+                                                                                        } else if (ctx.var("aru_monas").get()?
+                                                                                            == 25
+                                                                                            || ctx
+                                                                                                .var("aru_monas")
+                                                                                                .get()?
+                                                                                                == 26)
+                                                                                        {
+                                                                                            ctx.lines_as("Father Bamph", args!["Thank you for bring us such", "important information. With", "your help, we were able to", "clear a few unsolved cases.", "We expected something like", "this, but not this soon."])?;
+                                                                                            ctx.next()?;
+                                                                                            ctx.lines_as("Father Bamph", args!["I fear that the Royal Court", "has been bickering over their", "own selfish needs. I pray that", "it does not grow worse, devolve", "into chaos. ^666666*Sigh*^000000 We'll see..."])?;
+                                                                                            ctx.close_window()?;
+                                                                                            return Err(Stop::End);
+                                                                                        } else {
+                                                                                            ctx.lines_as("Father Bamph", args!["It's upsetting to me that", "Arunafeltz has been so quiet", "lately. You know the expression", "about there being a quiet lull", "before a raging storm, right?"])?;
+                                                                                            ctx.close_window()?;
+                                                                                            return Err(Stop::End);
                                                                                         }
                                                                                     }
                                                                                 }
@@ -4384,92 +4332,88 @@ fn father_biscuss_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("prt_curse").get()? == 35 {
+        ctx.lines_as(
+            "Father Biscuss",
+            args![
+                "I've never seen Father",
+                "Bamph this way before, but",
+                "I can understand how he feels.",
+                "As one of the leaders of this",
+                "church, he feels responsible",
+                "for these princes' deaths."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Father Biscuss",
+            args![
+                "I'm sure he'll feel",
+                "better in a few days,",
+                "but right now, he's in no",
+                "condition to compile the",
+                "valuable info that you've",
+                "provided, so I'll do it."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Father Biscuss",
+            args![
+                "Personally, I feel that",
+                "what happened was tragic,",
+                "but it should be avenged.",
+                "Perhaps that why I've held",
+                "a grudge against Imbullea",
+                "for all this time. Anyway..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Father Biscuss",
+            args![
+                "Although we can't",
+                "acknowledge it publicly,",
+                "on behalf of the Prontera",
+                "Church, I want to thank",
+                "you for all of your help."
+            ],
+        )?;
+        ctx.var("prt_curse").set(Val::from(36))?;
+        ctx.call(Function::GetExperience, vec![Val::from(1600000), Val::from(0)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("prt_curse").get()? == 36 {
+        ctx.lines_as(
+            "Father Biscuss",
+            args![
+                "No one can know light",
+                "without experiencing",
+                "darkness. Peace has",
+                "no meaning until it is",
+                "contrasted with chaos."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Father Biscuss",
+            args![
+                "Religion becomes even",
+                "more important during times",
+                "of chaos, and times of need.",
+                "I must remain calm, especially",
+                "when Father Bamph feels so bad about this whole incident..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("prt_curse").get()? == 35 {
-            ctx.lines_as(
-                "Father Biscuss",
-                args![
-                    "I've never seen Father",
-                    "Bamph this way before, but",
-                    "I can understand how he feels.",
-                    "As one of the leaders of this",
-                    "church, he feels responsible",
-                    "for these princes' deaths."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Father Biscuss",
-                args![
-                    "I'm sure he'll feel",
-                    "better in a few days,",
-                    "but right now, he's in no",
-                    "condition to compile the",
-                    "valuable info that you've",
-                    "provided, so I'll do it."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Father Biscuss",
-                args![
-                    "Personally, I feel that",
-                    "what happened was tragic,",
-                    "but it should be avenged.",
-                    "Perhaps that why I've held",
-                    "a grudge against Imbullea",
-                    "for all this time. Anyway..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Father Biscuss",
-                args![
-                    "Although we can't",
-                    "acknowledge it publicly,",
-                    "on behalf of the Prontera",
-                    "Church, I want to thank",
-                    "you for all of your help."
-                ],
-            )?;
-            ctx.var("prt_curse").set(Val::from(36))?;
-            ctx.call(Function::GetExperience, vec![Val::from(1600000), Val::from(0)])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("prt_curse").get()? == 36 {
-                ctx.lines_as(
-                    "Father Biscuss",
-                    args![
-                        "No one can know light",
-                        "without experiencing",
-                        "darkness. Peace has",
-                        "no meaning until it is",
-                        "contrasted with chaos."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Father Biscuss",
-                    args![
-                        "Religion becomes even",
-                        "more important during times",
-                        "of chaos, and times of need.",
-                        "I must remain calm, especially",
-                        "when Father Bamph feels so bad about this whole incident..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Father Biscuss",
-                    args!["Please observe", "silence within the", "Priest Room. Thank", "you for cooperating."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
+        ctx.lines_as(
+            "Father Biscuss",
+            args!["Please observe", "silence within the", "Priest Room. Thank", "you for cooperating."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -4567,85 +4511,75 @@ fn father_bamph_tomb_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.lines_as("Father Bamph", args!["Now...", "Now we should", "examine the third prince."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("prt_curse").get()? == 22 {
-                        ctx.lines_as(
-                            "Father Bamph",
-                            args![
-                                "Let's go upstairs where we",
-                                "can continue this conversation.",
-                                "Ah, you might want to ask",
-                                "Father Biscuss to lead you."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
+                } else if ctx.var("prt_curse").get()? == 22 {
+                    ctx.lines_as(
+                        "Father Bamph",
+                        args![
+                            "Let's go upstairs where we",
+                            "can continue this conversation.",
+                            "Ah, you might want to ask",
+                            "Father Biscuss to lead you."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ((ctx.var("prt_curse").get()? == 32 || ctx.var("prt_curse").get()? == 41) || ctx.var("prt_curse").get()? == 51) {
+                    ctx.lines_as(
+                        "Father Bamph",
+                        args![
+                            "Do you have a ^3131FFYellow",
+                            "Gemstone^000000 and ^3131FFGreen Potion^000000",
+                            "ready? If so, you should begin",
+                            "testing on the body of the third prince before the others."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ((ctx.var("prt_curse").get()? == 33 || ctx.var("prt_curse").get()? == 42)
+                    || ctx.var("prt_curse").get()? == 52)
+                {
+                    ctx.lines_as(
+                        "Father Bamph",
+                        args![
+                            "The mark disappeared?",
+                            "Oh, this is just horrible!",
+                            "That would mean that poison",
+                            "was used to murder the other",
+                            "princes! I almost... can't..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Father Bamph",
+                        args![
+                            "I... I need some time",
+                            "to recover from the shock",
+                            "and to think about all of",
+                            "this carefully. For now,",
+                            "let's go back upstairs."
+                        ],
+                    )?;
+                    if ctx.var("prt_curse").get()? == 33 {
+                        ctx.var("prt_curse").set(Val::from(34))?;
+                    } else if ctx.var("prt_curse").get()? == 42 {
+                        ctx.var("prt_curse").set(Val::from(43))?;
                     } else {
-                        if ((ctx.var("prt_curse").get()? == 32 || ctx.var("prt_curse").get()? == 41) || ctx.var("prt_curse").get()? == 51) {
-                            ctx.lines_as(
-                                "Father Bamph",
-                                args![
-                                    "Do you have a ^3131FFYellow",
-                                    "Gemstone^000000 and ^3131FFGreen Potion^000000",
-                                    "ready? If so, you should begin",
-                                    "testing on the body of the third prince before the others."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ((ctx.var("prt_curse").get()? == 33 || ctx.var("prt_curse").get()? == 42)
-                                || ctx.var("prt_curse").get()? == 52)
-                            {
-                                ctx.lines_as(
-                                    "Father Bamph",
-                                    args![
-                                        "The mark disappeared?",
-                                        "Oh, this is just horrible!",
-                                        "That would mean that poison",
-                                        "was used to murder the other",
-                                        "princes! I almost... can't..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Father Bamph",
-                                    args![
-                                        "I... I need some time",
-                                        "to recover from the shock",
-                                        "and to think about all of",
-                                        "this carefully. For now,",
-                                        "let's go back upstairs."
-                                    ],
-                                )?;
-                                if ctx.var("prt_curse").get()? == 33 {
-                                    ctx.var("prt_curse").set(Val::from(34))?;
-                                } else {
-                                    if ctx.var("prt_curse").get()? == 42 {
-                                        ctx.var("prt_curse").set(Val::from(43))?;
-                                    } else {
-                                        ctx.var("prt_curse").set(Val::from(53))?;
-                                    }
-                                }
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("prt_curse").get()? == 43 || ctx.var("prt_curse").get()? == 53) {
-                                    ctx.lines_as(
-                                        "Father Bamph",
-                                        args![
-                                            "We've disturbed the",
-                                            "bodies of these poor",
-                                            "souls enough. We should",
-                                            "go back upstairs now..."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
+                        ctx.var("prt_curse").set(Val::from(53))?;
                     }
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if (ctx.var("prt_curse").get()? == 43 || ctx.var("prt_curse").get()? == 53) {
+                    ctx.lines_as(
+                        "Father Bamph",
+                        args![
+                            "We've disturbed the",
+                            "bodies of these poor",
+                            "souls enough. We should",
+                            "go back upstairs now..."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -4682,30 +4616,28 @@ fn prince1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("prt_curse").set(Val::from(20))?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ((ctx.var("prt_curse").get()? == 33
+        || (ctx.var("prt_curse").get()?.number()? > 41 && ctx.var("prt_curse").get()?.number()? < 51))
+        || ctx.var("prt_curse").get()? == 52)
+    {
+        ctx.lines(args![
+            "^3355FFYou poured a little bit",
+            "of the solution made from",
+            "Yellow Gemstone and Green",
+            "Potion on the mark on the skin.",
+            "You waited a while, but there was no reaction from the solution.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ((ctx.var("prt_curse").get()? == 33
-            || (ctx.var("prt_curse").get()?.number()? > 41 && ctx.var("prt_curse").get()?.number()? < 51))
-            || ctx.var("prt_curse").get()? == 52)
-        {
-            ctx.lines(args![
-                "^3355FFYou poured a little bit",
-                "of the solution made from",
-                "Yellow Gemstone and Green",
-                "Potion on the mark on the skin.",
-                "You waited a while, but there was no reaction from the solution.^000000"
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines(args![
-                "^3355FFIt's the body of a male",
-                "dressed in luxurious robes.",
-                "Although deceased, the color",
-                "of life has not yet left the body. "
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines(args![
+            "^3355FFIt's the body of a male",
+            "dressed in luxurious robes.",
+            "Although deceased, the color",
+            "of life has not yet left the body. "
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -4780,34 +4712,32 @@ fn prince2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("prt_curse").set(Val::from(21))?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ((ctx.var("prt_curse").get()? == 33
+        || (ctx.var("prt_curse").get()?.number()? > 41 && ctx.var("prt_curse").get()?.number()? < 51))
+        || ctx.var("prt_curse").get()? == 52)
+    {
+        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONATTACK")?])?;
+        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONHIT")?])?;
+        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BUBBLE")?])?;
+        ctx.lines(args![
+            "^3355FFYou poured a little of the",
+            "solution made from Green",
+            "Potion and Yellow Gemstone",
+            "on the body's scale marks. The",
+            "scale marks grow fainter and",
+            "the solution bubbles on contact. "
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ((ctx.var("prt_curse").get()? == 33
-            || (ctx.var("prt_curse").get()?.number()? > 41 && ctx.var("prt_curse").get()?.number()? < 51))
-            || ctx.var("prt_curse").get()? == 52)
-        {
-            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONATTACK")?])?;
-            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONHIT")?])?;
-            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BUBBLE")?])?;
-            ctx.lines(args![
-                "^3355FFYou poured a little of the",
-                "solution made from Green",
-                "Potion and Yellow Gemstone",
-                "on the body's scale marks. The",
-                "scale marks grow fainter and",
-                "the solution bubbles on contact. "
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines(args![
-                "^3355FFIt's the body of a male",
-                "dressed in luxurious robes.",
-                "Although deceased, the color",
-                "of life has not yet left the body. "
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines(args![
+            "^3355FFIt's the body of a male",
+            "dressed in luxurious robes.",
+            "Although deceased, the color",
+            "of life has not yet left the body. "
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -4898,92 +4828,84 @@ fn prince3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("prt_curse").set(Val::from(22))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("prt_curse").get()? == 22 {
-            ctx.lines_as(
-                "Father Bamph",
-                args![
-                    "Let's go upstairs where we",
-                    "can continue this conversation.",
-                    "Ah, you might want to ask",
-                    "Father Biscuss to lead you."
-                ],
-            )?;
+    } else if ctx.var("prt_curse").get()? == 22 {
+        ctx.lines_as(
+            "Father Bamph",
+            args![
+                "Let's go upstairs where we",
+                "can continue this conversation.",
+                "Ah, you might want to ask",
+                "Father Biscuss to lead you."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ((ctx.var("prt_curse").get()? == 32 || ctx.var("prt_curse").get()? == 41) || ctx.var("prt_curse").get()? == 51) {
+        if (ctx.call(Function::CountItem, vec![Val::from(506)])?.number()? > 0
+            && ctx.call(Function::CountItem, vec![Val::from(715)])?.number()? > 0)
+        {
+            ctx.lines(args![
+                "^3355FFYou open a bottle of",
+                "Green Potion and insert a",
+                "Yellow Gemstone. The gem",
+                "quickly dissolves, conveniently",
+                "forming a solution to test for the presense of poison. You pour",
+                "it on the prince's scale marks.^000000"
+            ])?;
+            ctx.next()?;
+            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONATTACK")?])?;
+            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONHIT")?])?;
+            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BUBBLE")?])?;
+            ctx.mes("^3355FF*Pssssssssh*^000000")?;
+            ctx.next()?;
+            ctx.lines(args![
+                "^3355FFThe solution bubbles",
+                "once it touches the skin,",
+                "and the serpent scale marks",
+                "on the prince's body slowly",
+                "fade until they disappear.^000000"
+            ])?;
+            ctx.call(Function::DelItem, vec![Val::from(506), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(715), Val::from(1)])?;
+            if ctx.var("prt_curse").get()? == 32 {
+                ctx.var("prt_curse").set(Val::from(33))?;
+            } else if ctx.var("prt_curse").get()? == 41 {
+                ctx.var("prt_curse").set(Val::from(42))?;
+            } else {
+                ctx.var("prt_curse").set(Val::from(52))?;
+            }
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ((ctx.var("prt_curse").get()? == 32 || ctx.var("prt_curse").get()? == 41) || ctx.var("prt_curse").get()? == 51) {
-                if (ctx.call(Function::CountItem, vec![Val::from(506)])?.number()? > 0
-                    && ctx.call(Function::CountItem, vec![Val::from(715)])?.number()? > 0)
-                {
-                    ctx.lines(args![
-                        "^3355FFYou open a bottle of",
-                        "Green Potion and insert a",
-                        "Yellow Gemstone. The gem",
-                        "quickly dissolves, conveniently",
-                        "forming a solution to test for the presense of poison. You pour",
-                        "it on the prince's scale marks.^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONATTACK")?])?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONHIT")?])?;
-                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BUBBLE")?])?;
-                    ctx.mes("^3355FF*Pssssssssh*^000000")?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^3355FFThe solution bubbles",
-                        "once it touches the skin,",
-                        "and the serpent scale marks",
-                        "on the prince's body slowly",
-                        "fade until they disappear.^000000"
-                    ])?;
-                    ctx.call(Function::DelItem, vec![Val::from(506), Val::from(1)])?;
-                    ctx.call(Function::DelItem, vec![Val::from(715), Val::from(1)])?;
-                    if ctx.var("prt_curse").get()? == 32 {
-                        ctx.var("prt_curse").set(Val::from(33))?;
-                    } else {
-                        if ctx.var("prt_curse").get()? == 41 {
-                            ctx.var("prt_curse").set(Val::from(42))?;
-                        } else {
-                            ctx.var("prt_curse").set(Val::from(52))?;
-                        }
-                    }
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                ctx.lines(args![
-                    "^3355FFYou'll need to have",
-                    "a Green Potion and",
-                    "a Yellow Gemstone in",
-                    "order to test and confirm",
-                    "whether poison killed the",
-                    "second and third princes.^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ((ctx.var("prt_curse").get()? == 33 || ctx.var("prt_curse").get()? == 42) || ctx.var("prt_curse").get()? == 52) {
-                    ctx.lines(args![
-                        "^3355FFThe serpent scale marks",
-                        "on this prince's body have",
-                        "vanished after you applied",
-                        "the Green Potion and Yellow",
-                        "Gemstone solution to the skin.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines(args![
-                        "^3355FFIt's the body of a male",
-                        "dressed in luxurious robes.",
-                        "Although deceased, the color",
-                        "of life has not yet left the body. "
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
         }
+        ctx.lines(args![
+            "^3355FFYou'll need to have",
+            "a Green Potion and",
+            "a Yellow Gemstone in",
+            "order to test and confirm",
+            "whether poison killed the",
+            "second and third princes.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ((ctx.var("prt_curse").get()? == 33 || ctx.var("prt_curse").get()? == 42) || ctx.var("prt_curse").get()? == 52) {
+        ctx.lines(args![
+            "^3355FFThe serpent scale marks",
+            "on this prince's body have",
+            "vanished after you applied",
+            "the Green Potion and Yellow",
+            "Gemstone solution to the skin.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args![
+            "^3355FFIt's the body of a male",
+            "dressed in luxurious robes.",
+            "Although deceased, the color",
+            "of life has not yet left the body. "
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 

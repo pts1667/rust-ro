@@ -3427,12 +3427,10 @@ fn force_06start_pri_run(ctx: &Ctx, mut step: Force06startPriStep, args: Vec<Val
                 ctx.call(Function::DoNpcEvent, vec![Val::from("force_06ex#pri::OnEnable")])?;
                 if ctx.var("BaseLevel").get()?.number()? < 70 {
                     ctx.call(Function::DoNpcEvent, vec![Val::from("force_06mob#pri::OnOn1")])?;
+                } else if ctx.var("BaseLevel").get()?.number()? < 80 {
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("force_06mob#pri::OnOn2")])?;
                 } else {
-                    if ctx.var("BaseLevel").get()?.number()? < 80 {
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("force_06mob#pri::OnOn2")])?;
-                    } else {
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("force_06mob#pri::OnOn3")])?;
-                    }
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("force_06mob#pri::OnOn3")])?;
                 }
                 ctx.call(Function::DisableNpc, vec![Val::from("force_06start#pri")])?;
                 return Err(Stop::End);
@@ -3780,16 +3778,12 @@ fn force_09start_pri_run(ctx: &Ctx, mut step: Force09startPriStep, args: Vec<Val
                 ctx.call(Function::DoNpcEvent, vec![Val::from("Trocco#aco2::On09_Start")])?;
                 if ctx.var("BaseLevel").get()?.number()? < 70 {
                     ctx.call(Function::DoNpcEvent, vec![Val::from("force_09mob#pri::OnOn4")])?;
+                } else if ctx.var("BaseLevel").get()?.number()? < 80 {
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("force_09mob#pri::OnOn1")])?;
+                } else if ctx.var("BaseLevel").get()?.number()? < 90 {
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("force_09mob#pri::OnOn2")])?;
                 } else {
-                    if ctx.var("BaseLevel").get()?.number()? < 80 {
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("force_09mob#pri::OnOn1")])?;
-                    } else {
-                        if ctx.var("BaseLevel").get()?.number()? < 90 {
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("force_09mob#pri::OnOn2")])?;
-                        } else {
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("force_09mob#pri::OnOn3")])?;
-                        }
-                    }
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("force_09mob#pri::OnOn3")])?;
                 }
                 ctx.call(Function::DisableNpc, vec![Val::from("force_09start#pri")])?;
                 return Err(Stop::End);
@@ -4176,24 +4170,18 @@ fn staff_aco_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
             l_acotop_t = ctx.var("$arn_acotop").get()?;
             l_acotop_n_s = ctx.var("$arn_acotopn$").get()?;
+        } else if ctx.var("BaseLevel").get()?.number()? < 70 {
+            l_acotop_t = ctx.var("$arn_pritop60").get()?;
+            l_acotop_n_s = ctx.var("$arn_pritopn60$").get()?;
+        } else if ctx.var("BaseLevel").get()?.number()? < 80 {
+            l_acotop_t = ctx.var("$arn_pritop70").get()?;
+            l_acotop_n_s = ctx.var("$arn_pritopn70$").get()?;
+        } else if ctx.var("BaseLevel").get()?.number()? < 90 {
+            l_acotop_t = ctx.var("$arn_pritop80").get()?;
+            l_acotop_n_s = ctx.var("$arn_pritopn80$").get()?;
         } else {
-            if ctx.var("BaseLevel").get()?.number()? < 70 {
-                l_acotop_t = ctx.var("$arn_pritop60").get()?;
-                l_acotop_n_s = ctx.var("$arn_pritopn60$").get()?;
-            } else {
-                if ctx.var("BaseLevel").get()?.number()? < 80 {
-                    l_acotop_t = ctx.var("$arn_pritop70").get()?;
-                    l_acotop_n_s = ctx.var("$arn_pritopn70$").get()?;
-                } else {
-                    if ctx.var("BaseLevel").get()?.number()? < 90 {
-                        l_acotop_t = ctx.var("$arn_pritop80").get()?;
-                        l_acotop_n_s = ctx.var("$arn_pritopn80$").get()?;
-                    } else {
-                        l_acotop_t = ctx.var("$arn_pritop90").get()?;
-                        l_acotop_n_s = ctx.var("$arn_pritopn90$").get()?;
-                    }
-                }
-            }
+            l_acotop_t = ctx.var("$arn_pritop90").get()?;
+            l_acotop_n_s = ctx.var("$arn_pritopn90$").get()?;
         }
         l_topbunaco = ((l_acotop_t.clone().try_rem(Val::from(3600))?).try_div(Val::from(60))?);
         l_topchoaco = (l_acotop_t.clone().try_rem(Val::from(60))?);
@@ -4254,22 +4242,18 @@ fn staff_aco_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.var("$arn_pritop60").set(l_record_timeaco.clone())?;
                     ctx.var("$arn_pritopn60$")
                         .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
+                } else if ctx.var("BaseLevel").get()?.number()? < 80 {
+                    ctx.var("$arn_pritop70").set(l_record_timeaco.clone())?;
+                    ctx.var("$arn_pritopn70$")
+                        .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
+                } else if ctx.var("BaseLevel").get()?.number()? < 90 {
+                    ctx.var("$arn_pritop80").set(l_record_timeaco.clone())?;
+                    ctx.var("$arn_pritopn80$")
+                        .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
                 } else {
-                    if ctx.var("BaseLevel").get()?.number()? < 80 {
-                        ctx.var("$arn_pritop70").set(l_record_timeaco.clone())?;
-                        ctx.var("$arn_pritopn70$")
-                            .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
-                    } else {
-                        if ctx.var("BaseLevel").get()?.number()? < 90 {
-                            ctx.var("$arn_pritop80").set(l_record_timeaco.clone())?;
-                            ctx.var("$arn_pritopn80$")
-                                .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
-                        } else {
-                            ctx.var("$arn_pritop90").set(l_record_timeaco.clone())?;
-                            ctx.var("$arn_pritopn90$")
-                                .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
-                        }
-                    }
+                    ctx.var("$arn_pritop90").set(l_record_timeaco.clone())?;
+                    ctx.var("$arn_pritopn90$")
+                        .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
                 }
                 ctx.call(Function::DoNpcEvent, vec![Val::from("Vendigos::OnLineRec_pri")])?;
             }
@@ -4297,56 +4281,54 @@ fn staff_aco_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.close_window()?;
+            } else if ctx.var("arena_point").get()?.number()? > 29950 {
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Let me reward you with some",
+                        "Arena Points. This time, you'll",
+                        "be getting more points since",
+                        "you set a new record. Please",
+                        "talk with ^3131FFVendigos^000000 in the lobby",
+                        "to check your new point total."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Well, I hope you",
+                        "enjoyed your battle.",
+                        "Now let me guide you",
+                        "back to the Arena Lobby..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                ctx.var("arena_point").set(Val::from(30000))?;
             } else {
-                if ctx.var("arena_point").get()?.number()? > 29950 {
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Let me reward you with some",
-                            "Arena Points. This time, you'll",
-                            "be getting more points since",
-                            "you set a new record. Please",
-                            "talk with ^3131FFVendigos^000000 in the lobby",
-                            "to check your new point total."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Well, I hope you",
-                            "enjoyed your battle.",
-                            "Now let me guide you",
-                            "back to the Arena Lobby..."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.var("arena_point").set(Val::from(30000))?;
-                } else {
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Let me reward you with some",
-                            "Arena Points. This time, you'll",
-                            "be getting more points since",
-                            "you set a new record. Please",
-                            "talk with ^3131FFVendigos^000000 in the lobby",
-                            "to check your new point total."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Well, I hope you",
-                            "enjoyed your battle.",
-                            "Now let me guide you",
-                            "back to the Arena Lobby..."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.var("arena_point").set((ctx.var("arena_point").get()? + Val::from(50)))?;
-                }
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Let me reward you with some",
+                        "Arena Points. This time, you'll",
+                        "be getting more points since",
+                        "you set a new record. Please",
+                        "talk with ^3131FFVendigos^000000 in the lobby",
+                        "to check your new point total."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Well, I hope you",
+                        "enjoyed your battle.",
+                        "Now let me guide you",
+                        "back to the Arena Lobby..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                ctx.var("arena_point").set((ctx.var("arena_point").get()? + Val::from(50)))?;
             }
             ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_EXIT")?])?;
             ctx.call(Function::Warp, vec![Val::from("arena_room"), Val::from(100), Val::from(75)])?;
@@ -4389,56 +4371,54 @@ fn staff_aco_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.close_window()?;
+            } else if ctx.var("arena_point").get()?.number()? > 29980 {
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Let me reward you",
+                        "with some Arena Points.",
+                        "Please check your new",
+                        "Arena Point total in the",
+                        "Arena Lobby by speaking",
+                        "to the friendly ^3131FFVendigos.^000000"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Well, I hope you",
+                        "enjoyed your battle.",
+                        "Now let me guide you",
+                        "back to the Arena Lobby..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                ctx.var("arena_point").set(Val::from(30000))?;
             } else {
-                if ctx.var("arena_point").get()?.number()? > 29980 {
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Let me reward you",
-                            "with some Arena Points.",
-                            "Please check your new",
-                            "Arena Point total in the",
-                            "Arena Lobby by speaking",
-                            "to the friendly ^3131FFVendigos.^000000"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Well, I hope you",
-                            "enjoyed your battle.",
-                            "Now let me guide you",
-                            "back to the Arena Lobby..."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.var("arena_point").set(Val::from(30000))?;
-                } else {
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Let me reward you",
-                            "with some Arena Points.",
-                            "Please check your new",
-                            "Arena Point total in the",
-                            "Arena Lobby by speaking",
-                            "to the friendly ^3131FFVendigos.^000000"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Well, I hope you",
-                            "enjoyed your battle.",
-                            "Now let me guide you",
-                            "back to the Arena Lobby..."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.var("arena_point").set((ctx.var("arena_point").get()? + Val::from(20)))?;
-                }
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Let me reward you",
+                        "with some Arena Points.",
+                        "Please check your new",
+                        "Arena Point total in the",
+                        "Arena Lobby by speaking",
+                        "to the friendly ^3131FFVendigos.^000000"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Well, I hope you",
+                        "enjoyed your battle.",
+                        "Now let me guide you",
+                        "back to the Arena Lobby..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                ctx.var("arena_point").set((ctx.var("arena_point").get()? + Val::from(20)))?;
             }
             ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_EXIT")?])?;
             ctx.call(Function::Warp, vec![Val::from("arena_room"), Val::from(100), Val::from(75)])?;
@@ -4465,32 +4445,26 @@ fn staff_aco_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.var("$arn_acotop").set(l_record_timeaco.clone())?;
                 ctx.var("$arn_acotopn$").set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
                 ctx.call(Function::DoNpcEvent, vec![Val::from("#Vendigos::OnLineRec_aco")])?;
+            } else if ctx.var("BaseLevel").get()?.number()? < 70 {
+                ctx.var("$arn_pritop60").set(l_record_timeaco.clone())?;
+                ctx.var("$arn_pritopn60$")
+                    .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("#Vendigos::OnLineRec_pri60")])?;
+            } else if ctx.var("BaseLevel").get()?.number()? < 80 {
+                ctx.var("$arn_pritop70").set(l_record_timeaco.clone())?;
+                ctx.var("$arn_pritopn70$")
+                    .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("#Vendigos::OnLineRec_pri70")])?;
+            } else if ctx.var("BaseLevel").get()?.number()? < 90 {
+                ctx.var("$arn_pritop80").set(l_record_timeaco.clone())?;
+                ctx.var("$arn_pritopn80$")
+                    .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("#Vendigos::OnLineRec_pri80")])?;
             } else {
-                if ctx.var("BaseLevel").get()?.number()? < 70 {
-                    ctx.var("$arn_pritop60").set(l_record_timeaco.clone())?;
-                    ctx.var("$arn_pritopn60$")
-                        .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
-                    ctx.call(Function::DoNpcEvent, vec![Val::from("#Vendigos::OnLineRec_pri60")])?;
-                } else {
-                    if ctx.var("BaseLevel").get()?.number()? < 80 {
-                        ctx.var("$arn_pritop70").set(l_record_timeaco.clone())?;
-                        ctx.var("$arn_pritopn70$")
-                            .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("#Vendigos::OnLineRec_pri70")])?;
-                    } else {
-                        if ctx.var("BaseLevel").get()?.number()? < 90 {
-                            ctx.var("$arn_pritop80").set(l_record_timeaco.clone())?;
-                            ctx.var("$arn_pritopn80$")
-                                .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("#Vendigos::OnLineRec_pri80")])?;
-                        } else {
-                            ctx.var("$arn_pritop90").set(l_record_timeaco.clone())?;
-                            ctx.var("$arn_pritopn90$")
-                                .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("#Vendigos::OnLineRec_pri90")])?;
-                        }
-                    }
-                }
+                ctx.var("$arn_pritop90").set(l_record_timeaco.clone())?;
+                ctx.var("$arn_pritopn90$")
+                    .set(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("#Vendigos::OnLineRec_pri90")])?;
             }
             ctx.next()?;
             if ctx.var("arena_point").get()? == 30000 {
@@ -4516,56 +4490,54 @@ fn staff_aco_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.close_window()?;
+            } else if ctx.var("arena_point").get()?.number()? > 29980 {
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Let me reward you with some",
+                        "Arena Points. This time, you'll",
+                        "be getting more points since",
+                        "you set a new record. Please",
+                        "talk with ^3131FFVendigos^000000 in the lobby",
+                        "to check your new point total."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Well, I hope you",
+                        "enjoyed your battle.",
+                        "Now let me guide you",
+                        "back to the Arena Lobby..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                ctx.var("arena_point").set(Val::from(30000))?;
             } else {
-                if ctx.var("arena_point").get()?.number()? > 29980 {
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Let me reward you with some",
-                            "Arena Points. This time, you'll",
-                            "be getting more points since",
-                            "you set a new record. Please",
-                            "talk with ^3131FFVendigos^000000 in the lobby",
-                            "to check your new point total."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Well, I hope you",
-                            "enjoyed your battle.",
-                            "Now let me guide you",
-                            "back to the Arena Lobby..."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.var("arena_point").set(Val::from(30000))?;
-                } else {
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Let me reward you with some",
-                            "Arena Points. This time, you'll",
-                            "be getting more points since",
-                            "you set a new record. Please",
-                            "talk with ^3131FFVendigos^000000 in the lobby",
-                            "to check your new point total."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Staff",
-                        args![
-                            "Well, I hope you",
-                            "enjoyed your battle.",
-                            "Now let me guide you",
-                            "back to the Arena Lobby..."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.var("arena_point").set((ctx.var("arena_point").get()? + Val::from(20)))?;
-                }
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Let me reward you with some",
+                        "Arena Points. This time, you'll",
+                        "be getting more points since",
+                        "you set a new record. Please",
+                        "talk with ^3131FFVendigos^000000 in the lobby",
+                        "to check your new point total."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Staff",
+                    args![
+                        "Well, I hope you",
+                        "enjoyed your battle.",
+                        "Now let me guide you",
+                        "back to the Arena Lobby..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                ctx.var("arena_point").set((ctx.var("arena_point").get()? + Val::from(20)))?;
             }
             ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_EXIT")?])?;
             ctx.call(Function::Warp, vec![Val::from("arena_room"), Val::from(100), Val::from(75)])?;
@@ -5210,84 +5182,82 @@ fn log_on_aco_arena_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.mes("^3355FFIncorrect Password.^000000")?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if l_i.clone() == 0 {
+        return Err(Stop::End);
     } else {
-        if l_i.clone() == 0 {
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "!!CAUTION!!",
-                args![
-                    "^3355FFThe following menu",
-                    "the record for that",
-                    "particular mode in the",
-                    "Arena Acolyte Class Mode.^000000"
-                ],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[(Val::from("Cancel:Acolyte:~level 70:~level 80:~level 90:~level ") + Val::from("99"))],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3))
-                    && !subject1.loosely_equals(&Val::from(4))
-                    && !subject1.loosely_equals(&Val::from(5))
-                    && !subject1.loosely_equals(&Val::from(6));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args!["^3355FFCommand has", "been canceled.^000000"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.var("$arn_acotop").set(Val::from(480))?;
-                    ctx.var("$arn_acotopn$").set(Val::from("Default"))?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.var("$arn_pritop60").set(Val::from(480))?;
-                    ctx.var("$arn_pritopn60$").set(Val::from("Default"))?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.var("$arn_pritop70").set(Val::from(480))?;
-                    ctx.var("$arn_pritopn70$").set(Val::from("Default"))?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.var("$arn_pritop80").set(Val::from(480))?;
-                    ctx.var("$arn_pritopn80$").set(Val::from("Default"))?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.var("$arn_pritop90").set(Val::from(480))?;
-                    ctx.var("$arn_pritopn90$").set(Val::from("Default"))?;
-                    break 'b1;
-                }
+        ctx.lines_as(
+            "!!CAUTION!!",
+            args![
+                "^3355FFThe following menu",
+                "the record for that",
+                "particular mode in the",
+                "Arena Acolyte Class Mode.^000000"
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[(Val::from("Cancel:Acolyte:~level 70:~level 80:~level 90:~level ") + Val::from("99"))],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3))
+                && !subject1.loosely_equals(&Val::from(4))
+                && !subject1.loosely_equals(&Val::from(5))
+                && !subject1.loosely_equals(&Val::from(6));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-            ctx.close_window()?;
-            return Err(Stop::End);
+            if matched1 {
+                ctx.lines(args!["^3355FFCommand has", "been canceled.^000000"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.var("$arn_acotop").set(Val::from(480))?;
+                ctx.var("$arn_acotopn$").set(Val::from("Default"))?;
+                break 'b1;
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.var("$arn_pritop60").set(Val::from(480))?;
+                ctx.var("$arn_pritopn60$").set(Val::from("Default"))?;
+                break 'b1;
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.var("$arn_pritop70").set(Val::from(480))?;
+                ctx.var("$arn_pritopn70$").set(Val::from("Default"))?;
+                break 'b1;
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(5)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.var("$arn_pritop80").set(Val::from(480))?;
+                ctx.var("$arn_pritopn80$").set(Val::from("Default"))?;
+                break 'b1;
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(6)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.var("$arn_pritop90").set(Val::from(480))?;
+                ctx.var("$arn_pritopn90$").set(Val::from("Default"))?;
+                break 'b1;
+            }
         }
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -5302,50 +5272,48 @@ fn acolink_arena_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines(args!["Command has", "been canceled."])?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if l_i.clone() == 0 {
+        return Err(Stop::End);
     } else {
-        if l_i.clone() == 0 {
-            return Err(Stop::End);
-        } else {
-            ctx.lines(args![
-                "This NPC opens and",
-                "closes the Warp Portal",
-                "to the Arena's Acolyte",
-                "Class Mode. Choose",
-                "an option from the menu."
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Cancel:Warp ON:Warp OFF")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args!["Command has", "been canceled."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.call(Function::EnableNpc, vec![Val::from("onlyaco#arena")])?;
-                    ctx.lines(args!["The Warp Portal", "will be opened shortly."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.call(Function::DisableNpc, vec![Val::from("onlyaco#arena")])?;
-                    ctx.lines(args!["The Warp Portal", "will be closed shortly."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+        ctx.lines(args![
+            "This NPC opens and",
+            "closes the Warp Portal",
+            "to the Arena's Acolyte",
+            "Class Mode. Choose",
+            "an option from the menu."
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Cancel:Warp ON:Warp OFF")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["Command has", "been canceled."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.call(Function::EnableNpc, vec![Val::from("onlyaco#arena")])?;
+                ctx.lines(args!["The Warp Portal", "will be opened shortly."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.call(Function::DisableNpc, vec![Val::from("onlyaco#arena")])?;
+                ctx.lines(args!["The Warp Portal", "will be closed shortly."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }

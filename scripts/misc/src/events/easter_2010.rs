@@ -159,38 +159,35 @@ fn rina_easter_run(ctx: &Ctx, mut step: RinaEasterStep, args: Vec<Val>) -> Resul
                     if l_quest1 == 0 || l_quest1 == 1 {
                         step = RinaEasterStep::HuntingInfo;
                         continue 'machine;
-                    } else {
-                        if l_quest1 == 2 {
-                            if ((ctx.quests().check(9118)? < 2 || ctx.quests().check(9119)? < 2) || ctx.quests().check(9120)? < 2)
-                                || ctx.quests().check(9121)? < 2
-                            {
-                                if ((ctx.call(Function::CheckQuest, args![9118, constants::HUNTING])? == 2
-                                    || ctx.call(Function::CheckQuest, args![9119, constants::HUNTING])? == 2)
-                                    || ctx.call(Function::CheckQuest, args![9120, constants::HUNTING])? == 2)
-                                    || ctx.call(Function::CheckQuest, args![9121, constants::HUNTING])? == 2
-                                {
-                                    ctx.lines_as(
-                                        "Rina",
-                                        args!["You did it.", "I can feel that my body is recovering.", "But it is not enough."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Rina",
-                                        args!["^006400You have one more thing to do.^000000", "Let me know when you're ready."],
-                                    )?;
-                                    ctx.close_window()?;
-                                    ctx.quests().complete(9118)?;
-                                    ctx.quests().complete(9119)?;
-                                    ctx.quests().complete(9120)?;
-                                    ctx.quests().complete(9121)?;
-                                    ctx.quests().start(9122)?;
-                                } else {
-                                    step = RinaEasterStep::HuntingInfo;
-                                    continue 'machine;
-                                }
-                                return Err(Stop::End);
-                            }
+                    } else if l_quest1 == 2
+                        && (((ctx.quests().check(9118)? < 2 || ctx.quests().check(9119)? < 2) || ctx.quests().check(9120)? < 2)
+                            || ctx.quests().check(9121)? < 2)
+                    {
+                        if ((ctx.call(Function::CheckQuest, args![9118, constants::HUNTING])? == 2
+                            || ctx.call(Function::CheckQuest, args![9119, constants::HUNTING])? == 2)
+                            || ctx.call(Function::CheckQuest, args![9120, constants::HUNTING])? == 2)
+                            || ctx.call(Function::CheckQuest, args![9121, constants::HUNTING])? == 2
+                        {
+                            ctx.lines_as(
+                                "Rina",
+                                args!["You did it.", "I can feel that my body is recovering.", "But it is not enough."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Rina",
+                                args!["^006400You have one more thing to do.^000000", "Let me know when you're ready."],
+                            )?;
+                            ctx.close_window()?;
+                            ctx.quests().complete(9118)?;
+                            ctx.quests().complete(9119)?;
+                            ctx.quests().complete(9120)?;
+                            ctx.quests().complete(9121)?;
+                            ctx.quests().start(9122)?;
+                        } else {
+                            step = RinaEasterStep::HuntingInfo;
+                            continue 'machine;
                         }
+                        return Err(Stop::End);
                     }
                     step = RinaEasterStep::AfterHunting;
                     continue 'machine;
@@ -276,57 +273,51 @@ fn rina_easter_run(ctx: &Ctx, mut step: RinaEasterStep, args: Vec<Val>) -> Resul
                     {
                         if ctx.var("oversea_event2").get()? == 520 {
                             ctx.call(Function::PlayBgm, args!["13.mp3"])?;
+                        } else if ctx.var("oversea_event3").get()? == 270 {
+                            ctx.call(Function::PlayBgm, args!["59.mp3"])?;
+                        } else if ctx.var("oversea_event6").get()? == 245 {
+                            ctx.call(Function::PlayBgm, args!["70.mp3"])?;
+                        } else if ctx.var("oversea_event9").get()? == 197 {
+                            ctx.call(Function::PlayBgm, args!["94.mp3"])?;
                         } else {
-                            if ctx.var("oversea_event3").get()? == 270 {
-                                ctx.call(Function::PlayBgm, args!["59.mp3"])?;
-                            } else {
-                                if ctx.var("oversea_event6").get()? == 245 {
+                            'b1: {
+                                let subject1 = ctx.call(Function::Rand, args![1, 4])?;
+                                let mut matched1 = false;
+                                let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                                    && !subject1.loosely_equals(&Val::from(2))
+                                    && !subject1.loosely_equals(&Val::from(3))
+                                    && !subject1.loosely_equals(&Val::from(4));
+                                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                                    matched1 = true;
+                                }
+                                if matched1 {
+                                    ctx.call(Function::PlayBgm, args!["13.mp3"])?;
+                                    ctx.var("oversea_event2").set(Val::from(520))?;
+                                    break 'b1;
+                                }
+                                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                                    matched1 = true;
+                                }
+                                if matched1 {
+                                    ctx.call(Function::PlayBgm, args!["59.mp3"])?;
+                                    ctx.var("oversea_event3").set(Val::from(270))?;
+                                    break 'b1;
+                                }
+                                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                                    matched1 = true;
+                                }
+                                if matched1 {
                                     ctx.call(Function::PlayBgm, args!["70.mp3"])?;
-                                } else {
-                                    if ctx.var("oversea_event9").get()? == 197 {
-                                        ctx.call(Function::PlayBgm, args!["94.mp3"])?;
-                                    } else {
-                                        'b1: {
-                                            let subject1 = ctx.call(Function::Rand, args![1, 4])?;
-                                            let mut matched1 = false;
-                                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                                && !subject1.loosely_equals(&Val::from(2))
-                                                && !subject1.loosely_equals(&Val::from(3))
-                                                && !subject1.loosely_equals(&Val::from(4));
-                                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                                matched1 = true;
-                                            }
-                                            if matched1 {
-                                                ctx.call(Function::PlayBgm, args!["13.mp3"])?;
-                                                ctx.var("oversea_event2").set(Val::from(520))?;
-                                                break 'b1;
-                                            }
-                                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                                matched1 = true;
-                                            }
-                                            if matched1 {
-                                                ctx.call(Function::PlayBgm, args!["59.mp3"])?;
-                                                ctx.var("oversea_event3").set(Val::from(270))?;
-                                                break 'b1;
-                                            }
-                                            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                                matched1 = true;
-                                            }
-                                            if matched1 {
-                                                ctx.call(Function::PlayBgm, args!["70.mp3"])?;
-                                                ctx.var("oversea_event6").set(Val::from(245))?;
-                                                break 'b1;
-                                            }
-                                            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                                                matched1 = true;
-                                            }
-                                            if matched1 {
-                                                ctx.call(Function::PlayBgm, args!["94.mp3"])?;
-                                                ctx.var("oversea_event9").set(Val::from(197))?;
-                                                break 'b1;
-                                            }
-                                        }
-                                    }
+                                    ctx.var("oversea_event6").set(Val::from(245))?;
+                                    break 'b1;
+                                }
+                                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+                                    matched1 = true;
+                                }
+                                if matched1 {
+                                    ctx.call(Function::PlayBgm, args!["94.mp3"])?;
+                                    ctx.var("oversea_event9").set(Val::from(197))?;
+                                    break 'b1;
                                 }
                             }
                         }
@@ -404,35 +395,27 @@ fn rina_easter_run(ctx: &Ctx, mut step: RinaEasterStep, args: Vec<Val>) -> Resul
                                         l_nbaseexp = (l_baseexp.clone()
                                             + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
                                                 .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(20))?))?));
+                                    } else if ctx.player().base_level()? < 70 {
+                                        l_nbaseexp = (l_baseexp.clone()
+                                            + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(10))?))?));
+                                    } else if ctx.player().base_level()? < 80 {
+                                        l_nbaseexp = (l_baseexp.clone()
+                                            + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(5))?))?));
+                                    } else if ctx.player().base_level()? < 90 {
+                                        l_nbaseexp = (l_baseexp.clone()
+                                            + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(3))?))?));
+                                    } else if ctx.player().base_level()? < 99 {
+                                        l_nbaseexp = (l_baseexp.clone()
+                                            + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(2))?))?));
                                     } else {
-                                        if ctx.player().base_level()? < 70 {
-                                            l_nbaseexp = (l_baseexp.clone()
-                                                + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
-                                                    .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(10))?))?));
-                                        } else {
-                                            if ctx.player().base_level()? < 80 {
-                                                l_nbaseexp = (l_baseexp.clone()
-                                                    + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
-                                                        .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(5))?))?));
-                                            } else {
-                                                if ctx.player().base_level()? < 90 {
-                                                    l_nbaseexp = (l_baseexp.clone()
-                                                        + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
-                                                            .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(3))?))?));
-                                                } else {
-                                                    if ctx.player().base_level()? < 99 {
-                                                        l_nbaseexp = (l_baseexp.clone()
-                                                            + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
-                                                                .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(2))?))?));
-                                                    } else {
-                                                        l_nbaseexp = (l_baseexp.clone()
-                                                            + (((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
-                                                                .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(2))?))?)
-                                                            .try_mul(Val::from(2))?));
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        l_nbaseexp = (l_baseexp.clone()
+                                            + (((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(2))?))?)
+                                            .try_mul(Val::from(2))?));
                                     }
                                 }
                             }
@@ -459,38 +442,27 @@ fn rina_easter_run(ctx: &Ctx, mut step: RinaEasterStep, args: Vec<Val>) -> Resul
                                             l_nbaseexp = (l_baseexp.clone()
                                                 + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
                                                     .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(10))?))?));
+                                        } else if ctx.player().base_level()? < 70 {
+                                            l_nbaseexp = (l_baseexp.clone()
+                                                + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                    .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(5))?))?));
+                                        } else if ctx.player().base_level()? < 80 {
+                                            l_nbaseexp = (l_baseexp.clone()
+                                                + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                    .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(3))?))?));
+                                        } else if ctx.player().base_level()? < 90 {
+                                            l_nbaseexp = (l_baseexp.clone()
+                                                + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                    .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(2))?))?));
+                                        } else if ctx.player().base_level()? < 98 {
+                                            l_nbaseexp = (l_baseexp.clone()
+                                                + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                    .try_mul(ctx.var("BaseLevel").get()?)?));
                                         } else {
-                                            if ctx.player().base_level()? < 70 {
-                                                l_nbaseexp = (l_baseexp.clone()
-                                                    + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
-                                                        .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(5))?))?));
-                                            } else {
-                                                if ctx.player().base_level()? < 80 {
-                                                    l_nbaseexp = (l_baseexp.clone()
-                                                        + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
-                                                            .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(3))?))?));
-                                                } else {
-                                                    if ctx.player().base_level()? < 90 {
-                                                        l_nbaseexp = (l_baseexp.clone()
-                                                            + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
-                                                                .try_mul((ctx.var("BaseLevel").get()?.try_div(Val::from(2))?))?));
-                                                    } else {
-                                                        if ctx.player().base_level()? < 98 {
-                                                            l_nbaseexp = (l_baseexp.clone()
-                                                                + ((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
-                                                                    .try_mul(ctx.var("BaseLevel").get()?)?));
-                                                        } else {
-                                                            l_nbaseexp = (l_baseexp.clone()
-                                                                + (((ctx
-                                                                    .var("BaseLevel")
-                                                                    .get()?
-                                                                    .try_mul(ctx.var("BaseLevel").get()?)?)
-                                                                .try_mul(ctx.var("BaseLevel").get()?)?)
-                                                                .try_mul(Val::from(2))?));
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                            l_nbaseexp = (l_baseexp.clone()
+                                                + (((ctx.var("BaseLevel").get()?.try_mul(ctx.var("BaseLevel").get()?)?)
+                                                    .try_mul(ctx.var("BaseLevel").get()?)?)
+                                                .try_mul(Val::from(2))?));
                                         }
                                     }
                                 }
@@ -650,12 +622,10 @@ pub fn rina_s_little_friend(ctx: &Ctx) -> Script {
                 if ctx.var("advjob").get()? == 0 {
                     if ctx.player().base_level()? < 70 {
                         l_ncharge = Val::from(400000);
+                    } else if ctx.player().base_level()? < 90 {
+                        l_ncharge = Val::from(450000);
                     } else {
-                        if ctx.player().base_level()? < 90 {
-                            l_ncharge = Val::from(450000);
-                        } else {
-                            l_ncharge = Val::from(480000);
-                        }
+                        l_ncharge = Val::from(480000);
                     }
                 } else {
                     l_ncharge = Val::from(500000);
@@ -701,69 +671,61 @@ pub fn rina_s_little_friend(ctx: &Ctx) -> Script {
                     )?;
                     if l_npercentage.number()? <= 12 {
                         ctx.items().give(9003, 1)?;
+                    } else if l_npercentage.number()? <= 24 {
+                        ctx.items().give(9005, 1)?;
+                    } else if l_npercentage.number()? <= 36 {
+                        ctx.items().give(9009, 1)?;
                     } else {
-                        if l_npercentage.number()? <= 24 {
-                            ctx.items().give(9005, 1)?;
-                        } else {
-                            if l_npercentage.number()? <= 36 {
-                                ctx.items().give(9009, 1)?;
-                            } else {
-                                ctx.items().give(9023, 1)?;
-                            }
-                        }
+                        ctx.items().give(9023, 1)?;
                     }
                     ctx.close_window()?;
                     ctx.call(Function::Emotion, args![constants::ET_SLEEPY])?;
                     return ctx.end();
-                } else {
-                    if l_npercentage.number()? <= 60 {
-                        if l_npercentage.number()? >= 42 && l_npercentage.number()? <= 45 {
-                            ctx.items().give(5852, 1)?;
-                        } else {
-                            ctx.items().give(12019, 5)?;
-                        }
-                        ctx.lines_as(
-                            "Rina's Little Friend",
-                            args![
-                                "It seems that you have quite interesting things.",
-                                "I need to take some rest.",
-                                "Good bye~!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Emotion, args![constants::ET_SLEEPY])?;
-                        return ctx.end();
+                } else if l_npercentage.number()? <= 60 {
+                    if l_npercentage.number()? >= 42 && l_npercentage.number()? <= 45 {
+                        ctx.items().give(5852, 1)?;
                     } else {
-                        if l_npercentage.number()? <= 85 {
-                            if l_npercentage.number()? >= 61 && l_npercentage.number()? <= 75 {
-                                ctx.items().give(1001, 20)?;
-                                ctx.items().give(607, 1)?;
-                            } else {
-                                ctx.items().give(574, 1)?;
-                                ctx.items().give(608, 2)?;
-                            }
-                            ctx.lines_as(
-                                "Rina's Little Friend",
-                                args![
-                                    "There was no change.",
-                                    "I didn't mean to do it,",
-                                    "but I'm sorry...",
-                                    "I hope to see you again, my friend."
-                                ],
-                            )?;
-                            ctx.call(Function::Emotion, args![constants::ET_HUM])?;
-                            return ctx.close();
-                        } else {
-                            ctx.items().give(12093, 2)?;
-                            ctx.lines_as(
-                                "Rina's Little Friend",
-                                args!["Hmm.", "It became a dish.", "Looks delicious.", "Then, good bye~!"],
-                            )?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Emotion, args![constants::ET_HUNGRY])?;
-                            return ctx.end();
-                        }
+                        ctx.items().give(12019, 5)?;
                     }
+                    ctx.lines_as(
+                        "Rina's Little Friend",
+                        args![
+                            "It seems that you have quite interesting things.",
+                            "I need to take some rest.",
+                            "Good bye~!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Emotion, args![constants::ET_SLEEPY])?;
+                    return ctx.end();
+                } else if l_npercentage.number()? <= 85 {
+                    if l_npercentage.number()? >= 61 && l_npercentage.number()? <= 75 {
+                        ctx.items().give(1001, 20)?;
+                        ctx.items().give(607, 1)?;
+                    } else {
+                        ctx.items().give(574, 1)?;
+                        ctx.items().give(608, 2)?;
+                    }
+                    ctx.lines_as(
+                        "Rina's Little Friend",
+                        args![
+                            "There was no change.",
+                            "I didn't mean to do it,",
+                            "but I'm sorry...",
+                            "I hope to see you again, my friend."
+                        ],
+                    )?;
+                    ctx.call(Function::Emotion, args![constants::ET_HUM])?;
+                    return ctx.close();
+                } else {
+                    ctx.items().give(12093, 2)?;
+                    ctx.lines_as(
+                        "Rina's Little Friend",
+                        args!["Hmm.", "It became a dish.", "Looks delicious.", "Then, good bye~!"],
+                    )?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Emotion, args![constants::ET_HUNGRY])?;
+                    return ctx.end();
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -843,12 +805,10 @@ pub fn rina_s_little_friend(ctx: &Ctx) -> Script {
                 if ctx.var("advjob").get()? == 0 {
                     if ctx.player().base_level()? < 70 {
                         ctx.mes("^B8860B400,000 Zeny.")?;
+                    } else if ctx.player().base_level()? < 90 {
+                        ctx.mes("^B8860B450,000 Zeny^000000.")?;
                     } else {
-                        if ctx.player().base_level()? < 90 {
-                            ctx.mes("^B8860B450,000 Zeny^000000.")?;
-                        } else {
-                            ctx.mes("^B8860B480,000 Zeny^000000.")?;
-                        }
+                        ctx.mes("^B8860B480,000 Zeny^000000.")?;
                     }
                 } else {
                     ctx.mes("^B8860B500,000 Zeny^000000.")?;

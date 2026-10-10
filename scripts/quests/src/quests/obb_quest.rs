@@ -301,8 +301,51 @@ fn tourist_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.lines_as("Tourist", args!["Ah...thanks! Thank you so much!"])?;
                         ctx.call(Function::DelItem, vec![Val::from(517), Val::from(10)])?;
                         ctx.next()?;
-                    } else {
-                        if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? < 10 {
+                    } else if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? < 10 {
+                        ctx.lines_as(
+                            "Tourist",
+                            args![
+                                "I appreciate that you're",
+                                "helping me out of the",
+                                "goodness of your heart,",
+                                "but..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Tourist",
+                            args![
+                                "What are you...",
+                                "Cheap?! You can feed",
+                                "a starving man more",
+                                "than this...bring me",
+                                "more Meat!"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? > 10 {
+                        ctx.lines_as("Tourist", args!["I appreciate you bringing", "all this for me but..."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Tourist",
+                            args![
+                                "Geez, you want I should",
+                                "choke myself to death?",
+                                "I can't eat all of this!",
+                                "Bring me less Meat, yeah?"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                } else {
+                    if (l_th_rand.clone().number()? > 11 && l_th_rand.clone().number()? < 80) {
+                        if ctx.call(Function::CountItem, vec![Val::from(517)])? == 20 {
+                            ctx.lines_as("Tourist", args!["Ah...thanks! Thank you so much!"])?;
+                            ctx.call(Function::DelItem, vec![Val::from(517), Val::from(20)])?;
+                            ctx.next()?;
+                        } else if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? < 20 {
                             ctx.lines_as(
                                 "Tourist",
                                 args![
@@ -325,116 +368,61 @@ fn tourist_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? > 10 {
-                                ctx.lines_as("Tourist", args!["I appreciate you bringing", "all this for me but..."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Tourist",
-                                    args![
-                                        "Geez, you want I should",
-                                        "choke myself to death?",
-                                        "I can't eat all of this!",
-                                        "Bring me less Meat, yeah?"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
-                } else {
-                    if (l_th_rand.clone().number()? > 11 && l_th_rand.clone().number()? < 80) {
-                        if ctx.call(Function::CountItem, vec![Val::from(517)])? == 20 {
-                            ctx.lines_as("Tourist", args!["Ah...thanks! Thank you so much!"])?;
-                            ctx.call(Function::DelItem, vec![Val::from(517), Val::from(20)])?;
+                        } else if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? > 20 {
+                            ctx.lines_as("Tourist", args!["I appreciate you bringing", "all this for me but..."])?;
                             ctx.next()?;
-                        } else {
-                            if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? < 20 {
-                                ctx.lines_as(
-                                    "Tourist",
-                                    args![
-                                        "I appreciate that you're",
-                                        "helping me out of the",
-                                        "goodness of your heart,",
-                                        "but..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Tourist",
-                                    args![
-                                        "What are you...",
-                                        "Cheap?! You can feed",
-                                        "a starving man more",
-                                        "than this...bring me",
-                                        "more Meat!"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? > 20 {
-                                    ctx.lines_as("Tourist", args!["I appreciate you bringing", "all this for me but..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Tourist",
-                                        args![
-                                            "Geez, you want I should",
-                                            "choke myself to death?",
-                                            "I can't eat all of this!",
-                                            "Bring me less Meat, yeah?"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
+                            ctx.lines_as(
+                                "Tourist",
+                                args![
+                                    "Geez, you want I should",
+                                    "choke myself to death?",
+                                    "I can't eat all of this!",
+                                    "Bring me less Meat, yeah?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     } else {
                         if ctx.call(Function::CountItem, vec![Val::from(517)])? == 40 {
                             ctx.lines_as("Tourist", args!["Ah...thanks! Thank you so much!"])?;
                             ctx.call(Function::DelItem, vec![Val::from(517), Val::from(40)])?;
                             ctx.next()?;
-                        } else {
-                            if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? < 40 {
-                                ctx.lines_as(
-                                    "Tourist",
-                                    args![
-                                        "I appreciate that you're",
-                                        "helping me out of the",
-                                        "goodness of your heart,",
-                                        "but..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Tourist",
-                                    args![
-                                        "What are you...",
-                                        "Cheap?! You can feed",
-                                        "a starving man more",
-                                        "than this...bring me",
-                                        "more Meat!"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? > 40 {
-                                    ctx.lines_as(
-                                        "Tourist",
-                                        args![
-                                            "Geez, you want I should",
-                                            "choke myself to death?",
-                                            "I can't eat all of this!",
-                                            "Bring me less Meat, yeah?"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
+                        } else if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? < 40 {
+                            ctx.lines_as(
+                                "Tourist",
+                                args![
+                                    "I appreciate that you're",
+                                    "helping me out of the",
+                                    "goodness of your heart,",
+                                    "but..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Tourist",
+                                args![
+                                    "What are you...",
+                                    "Cheap?! You can feed",
+                                    "a starving man more",
+                                    "than this...bring me",
+                                    "more Meat!"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.call(Function::CountItem, vec![Val::from(517)])?.number()? > 40 {
+                            ctx.lines_as(
+                                "Tourist",
+                                args![
+                                    "Geez, you want I should",
+                                    "choke myself to death?",
+                                    "I can't eat all of this!",
+                                    "Bring me less Meat, yeah?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -684,237 +672,235 @@ fn tourist_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("thai_head").get()?.number()? > 5 {
-            'b3: {
-                let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                    && !subject3.loosely_equals(&Val::from(2))
-                    && !subject3.loosely_equals(&Val::from(3));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "Hey, thanks a bunch for your",
-                            "help. Anyways...now I remember",
-                            "I gotta go back through the",
-                            "desert again...*Sigh*",
-                            "Yeah, I better get back..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "...no matter how hard it is.",
-                            "But...yeah. It's gonna be pretty",
-                            "hard. Crossing the desert...",
-                            "alone. By myself...crud."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "Hey, thanks a bunch for your",
-                            "help....I ain't sure if I",
-                            "can make it back to Morocc",
-                            "in one piece..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "But I better go back",
-                            "to my girlfriend. That's",
-                            "the point of me coming",
-                            "here in the first place,",
-                            "anyway."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "Hey, thanks a bunch for your",
-                            "help. Man...Morocc is a long",
-                            "way off, isn't it? Aw nuts...",
-                            "I guess if I was crazy",
-                            "enough to come here because",
-                            "of my girlfriend..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "I'm crazy enough to walk all",
-                            "way back to Morocc...",
-                            "...",
-                            "...unless...",
-                            "You'll gimme a piggy-back ride?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "...kidding. I'm not that",
-                            "big of a jerk, I guess.",
-                            "Try not to look so",
-                            "surprised!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("thai_head").get()?.number()? > 5 {
+        'b3: {
+            let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+            let mut matched3 = false;
+            let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                && !subject3.loosely_equals(&Val::from(2))
+                && !subject3.loosely_equals(&Val::from(3));
+            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                matched3 = true;
             }
-        } else {
-            if ctx.var("JobLevel").get()?.number()? < 36 {
-                ctx.lines_as("Tourist", args!["Where am I...?", "...Who am I?"])?;
-                ctx.next()?;
-                ctx.lines_as("Tourist", args!["........."])?;
-                ctx.next()?;
-                ctx.lines_as("Tourist", args!["....."])?;
-                ctx.next()?;
-                ctx.lines_as("Tourist", args!["........."])?;
-                ctx.next()?;
-                ctx.lines_as("Tourist", args!["Mahahahahahaha!!"])?;
-                ctx.next()?;
-                ctx.lines_as("Tourist", args!["*Drools*...I love chocolate!"])?;
+            if matched3 {
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "Hey, thanks a bunch for your",
+                        "help. Anyways...now I remember",
+                        "I gotta go back through the",
+                        "desert again...*Sigh*",
+                        "Yeah, I better get back..."
+                    ],
+                )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Tourist",
                     args![
-                        "Wait...",
-                        "I have a girlfriend...",
-                        "and...and...",
-                        "cookies...?",
-                        "I feel sooo lost..."
+                        "...no matter how hard it is.",
+                        "But...yeah. It's gonna be pretty",
+                        "hard. Crossing the desert...",
+                        "alone. By myself...crud."
                     ],
                 )?;
-                ctx.next()?;
-                ctx.mes("^3355FFWe don't talk to crazy people~^000000")?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "Hey, thanks a bunch for your",
+                        "help....I ain't sure if I",
+                        "can make it back to Morocc",
+                        "in one piece..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "But I better go back",
+                        "to my girlfriend. That's",
+                        "the point of me coming",
+                        "here in the first place,",
+                        "anyway."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "Hey, thanks a bunch for your",
+                        "help. Man...Morocc is a long",
+                        "way off, isn't it? Aw nuts...",
+                        "I guess if I was crazy",
+                        "enough to come here because",
+                        "of my girlfriend..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "I'm crazy enough to walk all",
+                        "way back to Morocc...",
+                        "...",
+                        "...unless...",
+                        "You'll gimme a piggy-back ride?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "...kidding. I'm not that",
+                        "big of a jerk, I guess.",
+                        "Try not to look so",
+                        "surprised!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else {
+        if ctx.var("JobLevel").get()?.number()? < 36 {
+            ctx.lines_as("Tourist", args!["Where am I...?", "...Who am I?"])?;
+            ctx.next()?;
+            ctx.lines_as("Tourist", args!["........."])?;
+            ctx.next()?;
+            ctx.lines_as("Tourist", args!["....."])?;
+            ctx.next()?;
+            ctx.lines_as("Tourist", args!["........."])?;
+            ctx.next()?;
+            ctx.lines_as("Tourist", args!["Mahahahahahaha!!"])?;
+            ctx.next()?;
+            ctx.lines_as("Tourist", args!["*Drools*...I love chocolate!"])?;
+            ctx.next()?;
             ctx.lines_as(
                 "Tourist",
-                args!["Where am I?", "*Sob*...I guess I got lost...", "Hey, where is this!?"],
+                args![
+                    "Wait...",
+                    "I have a girlfriend...",
+                    "and...and...",
+                    "cookies...?",
+                    "I feel sooo lost..."
+                ],
             )?;
             ctx.next()?;
-            'b4: {
-                let subject4 = Val::from(runtime::select_values(
+            ctx.mes("^3355FFWe don't talk to crazy people~^000000")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Tourist",
+            args!["Where am I?", "*Sob*...I guess I got lost...", "Hey, where is this!?"],
+        )?;
+        ctx.next()?;
+        'b4: {
+            let subject4 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Ignore him.:This is Alberta.:This is Al De Baran.")],
+            )?);
+            let mut matched4 = false;
+            let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                && !subject4.loosely_equals(&Val::from(2))
+                && !subject4.loosely_equals(&Val::from(3));
+            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                matched4 = true;
+            }
+            if matched4 {
+                ctx.lines_as("Tourist", args![".........."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                matched4 = true;
+            }
+            if matched4 {
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "Ah...I see. So this is",
+                        "Alberta...crud. I'm",
+                        "supposed to go to ^0000FFLutie^000000..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "Hey, thanks for letting me know.",
+                        "Now at least I know where I am.",
+                        "Geez...they got boats here",
+                        "that go everywhere, yeah?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Tourist", args!["Oh right, everywhere...but Lutie.", "Man, this stinks."])?;
+                ctx.close_window()?;
+                ctx.var("thai_head").set(Val::from(2))?;
+                return Err(Stop::End);
+            }
+            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                matched4 = true;
+            }
+            if matched4 {
+                ctx.lines_as(
+                    "Tourist",
+                    args!["Oh...oh right!", "Yeah, Al De Baran...", "Guess I'm not lost", "after all."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "I was told that I can see a ^FF0000Clock Tower^000000 in Al De Baran.",
+                        "Can you tell me where I can find the ^FF0000Clock Tower^000000?"
+                    ],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
                     ctx,
-                    &[Val::from("Ignore him.:This is Alberta.:This is Al De Baran.")],
-                )?);
-                let mut matched4 = false;
-                let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                    && !subject4.loosely_equals(&Val::from(2))
-                    && !subject4.loosely_equals(&Val::from(3));
-                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines_as("Tourist", args![".........."])?;
+                    &[Val::from(
+                        "It's in the center of the town.:Eh, I think I gave you the wrong town name.",
+                    )],
+                )?) == 1
+                {
+                    ctx.lines_as(
+                        "Tourist",
+                        args![
+                            "..............",
+                            "You know, I'm beginning",
+                            "to feel like...",
+                            "you're pullin' my",
+                            "chain..."
+                        ],
+                    )?;
+                    ctx.var("thai_head").set(Val::from(1))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "Ah...I see. So this is",
-                            "Alberta...crud. I'm",
-                            "supposed to go to ^0000FFLutie^000000..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "Hey, thanks for letting me know.",
-                            "Now at least I know where I am.",
-                            "Geez...they got boats here",
-                            "that go everywhere, yeah?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Tourist", args!["Oh right, everywhere...but Lutie.", "Man, this stinks."])?;
-                    ctx.close_window()?;
-                    ctx.var("thai_head").set(Val::from(2))?;
-                    return Err(Stop::End);
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines_as(
-                        "Tourist",
-                        args!["Oh...oh right!", "Yeah, Al De Baran...", "Guess I'm not lost", "after all."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "I was told that I can see a ^FF0000Clock Tower^000000 in Al De Baran.",
-                            "Can you tell me where I can find the ^FF0000Clock Tower^000000?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "It's in the center of the town.:Eh, I think I gave you the wrong town name.",
-                        )],
-                    )?) == 1
-                    {
-                        ctx.lines_as(
-                            "Tourist",
-                            args![
-                                "..............",
-                                "You know, I'm beginning",
-                                "to feel like...",
-                                "you're pullin' my",
-                                "chain..."
-                            ],
-                        )?;
-                        ctx.var("thai_head").set(Val::from(1))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as(
-                        "Tourist",
-                        args![
-                            "Hah~!...I knew it! Well, it's",
-                            "pretty hard to admit when",
-                            "you do something wrong.",
-                            "Thanks for being honest, pal."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+                ctx.lines_as(
+                    "Tourist",
+                    args![
+                        "Hah~!...I knew it! Well, it's",
+                        "pretty hard to admit when",
+                        "you do something wrong.",
+                        "Thanks for being honest, pal."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -1478,44 +1464,42 @@ fn jacob_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.var("thai_head").set(Val::from(11))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
+                } else if (l_rem.clone().number()? > 1 && l_remrem.clone().number()? < 7) {
+                    ctx.lines_as(
+                        "Jacob",
+                        args![
+                            "Respect your parents when they're",
+                            "still alive. It's too late to be sorry after you've lost them."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["(Hmmm...I just know that there's more that this guy can tell me...)"],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if (l_rem.clone().number()? > 1 && l_remrem.clone().number()? < 7) {
-                        ctx.lines_as(
-                            "Jacob",
-                            args![
-                                "Respect your parents when they're",
-                                "still alive. It's too late to be sorry after you've lost them."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["(Hmmm...I just know that there's more that this guy can tell me...)"],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Jacob",
-                            args!["When you have a kid,", "don't forget to teach them", "this one thing:"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jacob",
-                            args![
-                                "'^0000FFBe good to other people.^000000'",
-                                "'^0000FFTry to be in someone else's shoes before judging that person.^000000'",
-                                "Do you understand?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["(There's more this guy can tell me, I just know it...)"],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.lines_as(
+                        "Jacob",
+                        args!["When you have a kid,", "don't forget to teach them", "this one thing:"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Jacob",
+                        args![
+                            "'^0000FFBe good to other people.^000000'",
+                            "'^0000FFTry to be in someone else's shoes before judging that person.^000000'",
+                            "Do you understand?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["(There's more this guy can tell me, I just know it...)"],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(11)) {
@@ -1538,49 +1522,47 @@ fn jacob_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
+    } else if ctx.var("thai_head").get()?.number()? > 11 {
+        ctx.lines_as(
+            "Jacob",
+            args![
+                "Thank you for the favour you did",
+                "for me...although we couldn't",
+                "catch a Munak in the end..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Jacob",
+            args![
+                "It seems he learned something",
+                "through the experience.",
+                "He no longer demands something",
+                "I cannot do for him, or",
+                "misbehaves."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Jacob",
+            args!["That was another favor you did for me, even if you didn't mean to. Thank you."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("thai_head").get()?.number()? > 11 {
-            ctx.lines_as(
-                "Jacob",
-                args![
-                    "Thank you for the favour you did",
-                    "for me...although we couldn't",
-                    "catch a Munak in the end..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Jacob",
-                args![
-                    "It seems he learned something",
-                    "through the experience.",
-                    "He no longer demands something",
-                    "I cannot do for him, or",
-                    "misbehaves."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Jacob",
-                args!["That was another favor you did for me, even if you didn't mean to. Thank you."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "Jacob",
-                args![
-                    "*Yawns*....",
-                    "Today is such a boring day~.",
-                    "I guess I'd better go take a walk",
-                    "with my son. Do you want to walk with me?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Jacob's son", args!["I'm happy to hear that, daddy~"])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as(
+            "Jacob",
+            args![
+                "*Yawns*....",
+                "Today is such a boring day~.",
+                "I guess I'd better go take a walk",
+                "with my son. Do you want to walk with me?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Jacob's son", args!["I'm happy to hear that, daddy~"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -2286,368 +2268,37 @@ fn old_man_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("thai_head").get()?.number()? > 15 {
-            ctx.lines_as(
-                "Elder Creek",
-                args![
-                    "Feel free to come back anytime...",
-                    "And if you need advice, I am more than willing to help you."
-                ],
-            )?;
+    } else if ctx.var("thai_head").get()?.number()? > 15 {
+        ctx.lines_as(
+            "Elder Creek",
+            args![
+                "Feel free to come back anytime...",
+                "And if you need advice, I am more than willing to help you."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Elder Creek", args!["Do you wish for me to give you advice, adventurer?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 1 {
+            ctx.lines_as("Elder Creek", args!["Now, tell me what bothers you at the moment."])?;
             ctx.next()?;
-            ctx.lines_as("Elder Creek", args!["Do you wish for me to give you advice, adventurer?"])?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 1 {
-                ctx.lines_as("Elder Creek", args!["Now, tell me what bothers you at the moment."])?;
-                ctx.next()?;
-                'b5: {
-                    let subject5 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "Boy/girlfriend issue.:Financial problem.:Bored to death.:Career issue.:Give me items, old man.",
-                        )],
-                    )?);
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                        && !subject5.loosely_equals(&Val::from(2))
-                        && !subject5.loosely_equals(&Val::from(3))
-                        && !subject5.loosely_equals(&Val::from(4))
-                        && !subject5.loosely_equals(&Val::from(5));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "I'm envious of you! Still, young",
-                                "folk like you are lucky to",
-                                "have such problems...sadly,",
-                                "no one but yourself can really",
-                                "help you in those kinds of",
-                                "situations..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "However, the advice I can give you",
-                                "is this: Be honest with your",
-                                "beloved. One lie leads to",
-                                "another lie in no time."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "If you treat the person you love",
-                                "as special to you, that person",
-                                "will eventually come to",
-                                "understand your feelings..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "And, remember this...",
-                                "Everyone has a different way of showing that they love someone.",
-                                "So...don't be discouraged if your feelings aren't returned."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args!["But still, I believe being honest", "is the best way to gain your", "true love."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "....well, that is all I can tell",
-                                "you. I hope you will be happy",
-                                "with that nugget of wisdom."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "...yes, everybody has their own",
-                                "financial problems. However, think of it in this way:"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args!["Money is important to make", "a living, but it's not what life is all about."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "Some may have the life goal of",
-                                "making fortunes, but I don't think it's the happiest way of living."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "As you see, there are powerful",
-                                "people in this world who can control our lives. But oftentimes..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "They are too greedy to be in that",
-                                "position and they don't have",
-                                "their priorities straight.",
-                                "Instead of improving the world, they use their power to only help themselves."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args!["If I were them, I wouldn't want to", "rule the world in that way."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args!["Don't you think we need somebody who can change this world??"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                ".....I apologize for being short",
-                                "tempered. I just wanted to let",
-                                "you know that money is not everything. But, it is something you need to live."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "I'm aware that greedy people",
-                                "ridicule this belief, saying",
-                                "that it is a poor man's effort",
-                                "to protect his pride."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "But, I still believe I am right.",
-                                "After all...I am a Sage.",
-                                "I hope you will be happy with my wise advice."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "Yes, we always need to be",
-                                "entertained. But...it seems",
-                                "you may not be satisfied",
-                                "with anything."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "It's all about the various tastes",
-                                "and interests people will have.",
-                                "Things other people enjoy might",
-                                "displease you. Also, if your",
-                                "mind is unwilling to be happy,",
-                                "you will not enjoy life."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "Here's an example of having",
-                                "the right frame of mind.",
-                                "Let's say we're cleaning",
-                                "the street for the town,",
-                                "which can be hard, grueling work..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "You're always covered in dust.",
-                                "In the summer, your body is",
-                                "sticky with sweat...",
-                                "In the winter, you'll be",
-                                "be out in the freezing cold..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args!["However, even so, it will be different to someone with a different perspective."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "Ideally, we should try",
-                                "to find joy in making",
-                                "other people happy.",
-                                "By cleaning the street, we can",
-                                "give others a reason to smile."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "Tourists passing through the",
-                                "street can enjoy its",
-                                "cleanliness...",
-                                "Overall, it makes the entire community look good."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "If your parents see you cleaning",
-                                "the street, they will be proud of",
-                                "their child.",
-                                "...But now, I think I'm beginning to make no sense."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "Oh well, I apologize.",
-                                "Just try to think positively.",
-                                "With the right attitude, eventually you will find something to enjoy."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "Haha~ I can see you're just",
-                                "clicking the 'next' button on",
-                                "these windows, because you're sick and tired of this NPC conversation."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args!["....anyway, that is all.", "I hope you will be happy", "with my wise advice."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "That's an agonizing thought for every young person.",
-                                "But you have a lot time to think about what you want to do in the future."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "Experience more in many different",
-                                "places, and read as many books",
-                                "as you can. Focus on broadening your perspective."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Elder Creek",
-                            args![
-                                "Then, you will realize what you really want to do.",
-                                "....that's all I can say.",
-                                "I hope you will be happy with my wise advice."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.lines_as("Elder Creek", args!["You rascal!"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Elder Creek", args!["Get out of my sight immediately! I don't talk to trash!"])?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("comodo"), Val::from(196), Val::from(255)])?;
-                        return Err(Stop::End);
-                    }
-                }
-            }
-            ctx.lines_as(
-                "Elder Creek",
-                args!["I hope you will enjoy your life. Remember, time flies and you live only once."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "Elder Creek",
-                args!["I have been helping people by giving them advice to improve their lives."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Elder Creek",
-                args!["Since you need my help as well, I shall endeavor to impart some wisdom."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Elder Creek", args!["Now tell me, what bothers you right now?"])?;
-            ctx.next()?;
-            'b6: {
-                let subject6 = Val::from(runtime::select_values(
+            'b5: {
+                let subject5 = Val::from(runtime::select_values(
                     ctx,
                     &[Val::from(
                         "Boy/girlfriend issue.:Financial problem.:Bored to death.:Career issue.:Give me items, old man.",
                     )],
                 )?);
-                let mut matched6 = false;
-                let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                    && !subject6.loosely_equals(&Val::from(2))
-                    && !subject6.loosely_equals(&Val::from(3))
-                    && !subject6.loosely_equals(&Val::from(4))
-                    && !subject6.loosely_equals(&Val::from(5));
-                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                    matched6 = true;
+                let mut matched5 = false;
+                let no_case5 = !subject5.loosely_equals(&Val::from(1))
+                    && !subject5.loosely_equals(&Val::from(2))
+                    && !subject5.loosely_equals(&Val::from(3))
+                    && !subject5.loosely_equals(&Val::from(4))
+                    && !subject5.loosely_equals(&Val::from(5));
+                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                    matched5 = true;
                 }
-                if matched6 {
+                if matched5 {
                     ctx.lines_as(
                         "Elder Creek",
                         args![
@@ -2705,10 +2356,10 @@ fn old_man_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                    matched6 = true;
+                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                    matched5 = true;
                 }
-                if matched6 {
+                if matched5 {
                     ctx.lines_as(
                         "Elder Creek",
                         args![
@@ -2788,10 +2439,10 @@ fn old_man_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                    matched6 = true;
+                if !matched5 && subject5.loosely_equals(&Val::from(3)) {
+                    matched5 = true;
                 }
-                if matched6 {
+                if matched5 {
                     ctx.lines_as(
                         "Elder Creek",
                         args![
@@ -2897,10 +2548,10 @@ fn old_man_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(4)) {
-                    matched6 = true;
+                if !matched5 && subject5.loosely_equals(&Val::from(4)) {
+                    matched5 = true;
                 }
-                if matched6 {
+                if matched5 {
                     ctx.lines_as(
                         "Elder Creek",
                         args![
@@ -2929,10 +2580,10 @@ fn old_man_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(5)) {
-                    matched6 = true;
+                if !matched5 && subject5.loosely_equals(&Val::from(5)) {
+                    matched5 = true;
                 }
-                if matched6 {
+                if matched5 {
                     ctx.lines_as("Elder Creek", args!["You rascal!"])?;
                     ctx.next()?;
                     ctx.lines_as("Elder Creek", args!["Get out of my sight immediately! I don't talk to trash!"])?;
@@ -2940,6 +2591,335 @@ fn old_man_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.call(Function::Warp, vec![Val::from("comodo"), Val::from(196), Val::from(255)])?;
                     return Err(Stop::End);
                 }
+            }
+        }
+        ctx.lines_as(
+            "Elder Creek",
+            args!["I hope you will enjoy your life. Remember, time flies and you live only once."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Elder Creek",
+            args!["I have been helping people by giving them advice to improve their lives."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Elder Creek",
+            args!["Since you need my help as well, I shall endeavor to impart some wisdom."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Elder Creek", args!["Now tell me, what bothers you right now?"])?;
+        ctx.next()?;
+        'b6: {
+            let subject6 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "Boy/girlfriend issue.:Financial problem.:Bored to death.:Career issue.:Give me items, old man.",
+                )],
+            )?);
+            let mut matched6 = false;
+            let no_case6 = !subject6.loosely_equals(&Val::from(1))
+                && !subject6.loosely_equals(&Val::from(2))
+                && !subject6.loosely_equals(&Val::from(3))
+                && !subject6.loosely_equals(&Val::from(4))
+                && !subject6.loosely_equals(&Val::from(5));
+            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "I'm envious of you! Still, young",
+                        "folk like you are lucky to",
+                        "have such problems...sadly,",
+                        "no one but yourself can really",
+                        "help you in those kinds of",
+                        "situations..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "However, the advice I can give you",
+                        "is this: Be honest with your",
+                        "beloved. One lie leads to",
+                        "another lie in no time."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "If you treat the person you love",
+                        "as special to you, that person",
+                        "will eventually come to",
+                        "understand your feelings..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "And, remember this...",
+                        "Everyone has a different way of showing that they love someone.",
+                        "So...don't be discouraged if your feelings aren't returned."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args!["But still, I believe being honest", "is the best way to gain your", "true love."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "....well, that is all I can tell",
+                        "you. I hope you will be happy",
+                        "with that nugget of wisdom."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "...yes, everybody has their own",
+                        "financial problems. However, think of it in this way:"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args!["Money is important to make", "a living, but it's not what life is all about."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "Some may have the life goal of",
+                        "making fortunes, but I don't think it's the happiest way of living."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "As you see, there are powerful",
+                        "people in this world who can control our lives. But oftentimes..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "They are too greedy to be in that",
+                        "position and they don't have",
+                        "their priorities straight.",
+                        "Instead of improving the world, they use their power to only help themselves."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args!["If I were them, I wouldn't want to", "rule the world in that way."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args!["Don't you think we need somebody who can change this world??"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        ".....I apologize for being short",
+                        "tempered. I just wanted to let",
+                        "you know that money is not everything. But, it is something you need to live."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "I'm aware that greedy people",
+                        "ridicule this belief, saying",
+                        "that it is a poor man's effort",
+                        "to protect his pride."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "But, I still believe I am right.",
+                        "After all...I am a Sage.",
+                        "I hope you will be happy with my wise advice."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "Yes, we always need to be",
+                        "entertained. But...it seems",
+                        "you may not be satisfied",
+                        "with anything."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "It's all about the various tastes",
+                        "and interests people will have.",
+                        "Things other people enjoy might",
+                        "displease you. Also, if your",
+                        "mind is unwilling to be happy,",
+                        "you will not enjoy life."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "Here's an example of having",
+                        "the right frame of mind.",
+                        "Let's say we're cleaning",
+                        "the street for the town,",
+                        "which can be hard, grueling work..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "You're always covered in dust.",
+                        "In the summer, your body is",
+                        "sticky with sweat...",
+                        "In the winter, you'll be",
+                        "be out in the freezing cold..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args!["However, even so, it will be different to someone with a different perspective."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "Ideally, we should try",
+                        "to find joy in making",
+                        "other people happy.",
+                        "By cleaning the street, we can",
+                        "give others a reason to smile."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "Tourists passing through the",
+                        "street can enjoy its",
+                        "cleanliness...",
+                        "Overall, it makes the entire community look good."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "If your parents see you cleaning",
+                        "the street, they will be proud of",
+                        "their child.",
+                        "...But now, I think I'm beginning to make no sense."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "Oh well, I apologize.",
+                        "Just try to think positively.",
+                        "With the right attitude, eventually you will find something to enjoy."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "Haha~ I can see you're just",
+                        "clicking the 'next' button on",
+                        "these windows, because you're sick and tired of this NPC conversation."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args!["....anyway, that is all.", "I hope you will be happy", "with my wise advice."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched6 && subject6.loosely_equals(&Val::from(4)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "That's an agonizing thought for every young person.",
+                        "But you have a lot time to think about what you want to do in the future."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "Experience more in many different",
+                        "places, and read as many books",
+                        "as you can. Focus on broadening your perspective."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Elder Creek",
+                    args![
+                        "Then, you will realize what you really want to do.",
+                        "....that's all I can say.",
+                        "I hope you will be happy with my wise advice."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched6 && subject6.loosely_equals(&Val::from(5)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as("Elder Creek", args!["You rascal!"])?;
+                ctx.next()?;
+                ctx.lines_as("Elder Creek", args!["Get out of my sight immediately! I don't talk to trash!"])?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("comodo"), Val::from(196), Val::from(255)])?;
+                return Err(Stop::End);
             }
         }
     }
@@ -3055,40 +3035,38 @@ fn tommy_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
+    } else if ctx.var("thai_head").get()?.number()? > 11 {
+        ctx.lines_as("Tommy", args!["Daddy...I won't ask you for something that's too hard for you."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Tommy",
+            args![
+                "I saw you're huffing and puffing when we went to catch a Munak.",
+                "I'm so sorry that I gave you a hard time, daddy..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Tommy",
+            args!["I will be good from now on.", "I will be nice to my Daddy, to you and to anyone."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Tommy",
+            args!["My dad told me that I will be a good kid if I don't behave bad sometimes."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("thai_head").get()?.number()? > 11 {
-            ctx.lines_as("Tommy", args!["Daddy...I won't ask you for something that's too hard for you."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Tommy",
-                args![
-                    "I saw you're huffing and puffing when we went to catch a Munak.",
-                    "I'm so sorry that I gave you a hard time, daddy..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Tommy",
-                args!["I will be good from now on.", "I will be nice to my Daddy, to you and to anyone."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Tommy",
-                args!["My dad told me that I will be a good kid if I don't behave bad sometimes."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "Tommy",
-                args![
-                    "I hate to see my daddy resting in his room all day in the weekends.",
-                    "But I am so happy today because my daddy and I will take a walk together!!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as(
+            "Tommy",
+            args![
+                "I hate to see my daddy resting in his room all day in the weekends.",
+                "But I am so happy today because my daddy and I will take a walk together!!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }

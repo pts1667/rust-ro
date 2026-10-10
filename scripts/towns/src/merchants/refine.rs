@@ -160,13 +160,11 @@ pub fn christopher_1(ctx: &Ctx) -> Script {
                             if l_input == 0 {
                                 ctx.lines_as("Christopher Guillenrow", args!["Aye, the deal is canceled. Fare ye well."])?;
                                 return ctx.close();
+                            } else if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
+                                ctx.lines_as("Christopher Guillenrow", args!["Ye can buy 500, er less."])?;
+                                ctx.next()?;
                             } else {
-                                if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
-                                    ctx.lines_as("Christopher Guillenrow", args!["Ye can buy 500, er less."])?;
-                                    ctx.next()?;
-                                } else {
-                                    break 'l4;
-                                }
+                                break 'l4;
                             }
                         }
                     }
@@ -293,13 +291,11 @@ pub fn christopher_1(ctx: &Ctx) -> Script {
                             if l_input == 0 {
                                 ctx.lines_as("Christopher Guillenrow", args!["Deal has", "been canceled.", "Fare ye well."])?;
                                 return ctx.close();
+                            } else if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
+                                ctx.lines_as("Christopher Guillenrow", args!["Ye can buy 500, er less."])?;
+                                ctx.next()?;
                             } else {
-                                if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
-                                    ctx.lines_as("Christopher Guillenrow", args!["Ye can buy 500, er less."])?;
-                                    ctx.next()?;
-                                } else {
-                                    break 'l6;
-                                }
+                                break 'l6;
                             }
                         }
                     }
@@ -336,13 +332,11 @@ pub fn christopher_1(ctx: &Ctx) -> Script {
                             if l_input == 0 {
                                 ctx.lines_as("Christopher Guillenrow", args!["Deal has", "been canceled.", "Fare ye well."])?;
                                 return ctx.close();
+                            } else if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
+                                ctx.lines_as("Christopher Guillenrow", args!["Ye can buy 500, er less."])?;
+                                ctx.next()?;
                             } else {
-                                if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
-                                    ctx.lines_as("Christopher Guillenrow", args!["Ye can buy 500, er less."])?;
-                                    ctx.next()?;
-                                } else {
-                                    break 'l7;
-                                }
+                                break 'l7;
                             }
                         }
                     }
@@ -688,13 +682,11 @@ pub fn paul_spanner(ctx: &Ctx) -> Script {
                             args!["You have canceled the trade. If you need anything, just let me know."],
                         )?;
                         return ctx.close();
+                    } else if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
+                        ctx.lines_as("Paul Spanner", args!["You can only buy 500 or less at a time."])?;
+                        ctx.next()?;
                     } else {
-                        if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
-                            ctx.lines_as("Paul Spanner", args!["You can only buy 500 or less at a time."])?;
-                            ctx.next()?;
-                        } else {
-                            break 'l4;
-                        }
+                        break 'l4;
                     }
                 }
             }
@@ -778,13 +770,11 @@ pub fn paul_spanner(ctx: &Ctx) -> Script {
                             args!["The trade has been canceled. If you need anything, just let me know."],
                         )?;
                         return ctx.close();
+                    } else if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
+                        ctx.lines_as("Paul Spanner", args!["You can buy 500 or less at a time."])?;
+                        ctx.next()?;
                     } else {
-                        if l_input.clone().number()? < 0 || l_input.clone().number()? > 500 {
-                            ctx.lines_as("Paul Spanner", args!["You can buy 500 or less at a time."])?;
-                            ctx.next()?;
-                        } else {
-                            break 'l6;
-                        }
+                        break 'l6;
                     }
                 }
             }

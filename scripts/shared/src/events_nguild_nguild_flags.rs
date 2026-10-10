@@ -34,20 +34,19 @@ pub fn f_flags(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.call(Function::GetCharacterId, args![2])?.loosely_equals(&gid) && runtime::arg(&args, 4, Val::from(0)) == 1 {
         ctx.lines(args!["Brave ones...", "Do you wish to return to your honorable place?"])?;
         ctx.next()?;
-        if ctx.menu(&["Return to the guild castle.", "Quit."])? == 0 {
-            if ctx
+        if ctx.menu(&["Return to the guild castle.", "Quit."])? == 0
+            && ctx
                 .call(Function::GetCharacterId, args![2])?
                 .loosely_equals(&ctx.call(Function::GetCastleData, args![runtime::arg(&args, 1, Val::from(0)), 1])?)
-            {
-                ctx.call(
-                    Function::Warp,
-                    args![
-                        runtime::arg(&args, 1, Val::from(0)),
-                        runtime::arg(&args, 2, Val::from(0)),
-                        runtime::arg(&args, 3, Val::from(0))
-                    ],
-                )?;
-            }
+        {
+            ctx.call(
+                Function::Warp,
+                args![
+                    runtime::arg(&args, 1, Val::from(0)),
+                    runtime::arg(&args, 2, Val::from(0)),
+                    runtime::arg(&args, 3, Val::from(0))
+                ],
+            )?;
         }
         return Ok(Val::from(0));
     }

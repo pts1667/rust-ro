@@ -640,169 +640,163 @@ fn stylish_merchant_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::GetItem, vec![Val::from(5042), Val::from(1)])?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if (ctx.call(Function::CountItem, vec![Val::from(5041)])?.number()? > 0
+        && ctx.call(Function::CountItem, vec![Val::from(999)])?.number()? > 9)
+    {
+        ctx.lines_as("Zic", args!["Alright alright! Gosh, your Crescent Hairpin will be ready in a bit, but I can't concentrate my work if you keep rushing me like this!"])?;
+        ctx.next()?;
+        ctx.lines(args!["^3355FF*Thud! Thud!*", "*Ah! Kek! Smash!*", "*Boom Boom!*^000000"])?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(5041), Val::from(1)])?;
+        ctx.call(Function::DelItem, vec![Val::from(999), Val::from(10)])?;
+        ctx.lines_as(
+            "Zic",
+            args!["Phew!", "It's done~!", "Now wear it and", "look pretty or", "something, yeah?"],
+        )?;
+        ctx.call(Function::GetItem, vec![Val::from(5048), Val::from(1)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (ctx.call(Function::CountItem, vec![Val::from(2271)])?.number()? > 0
+        && ctx.call(Function::CountItem, vec![Val::from(975)])?.number()? > 0)
+    {
+        ctx.lines_as("Zic", args!["Yeah yeah, you came for your Fashionable Glasses. Just don't rush me, or I won't be able to concentrate on my work, alright?"])?;
+        ctx.next()?;
+        ctx.lines(args!["^3355FF*Thud! Thud!*", "*Ah! Kek! Smash!*", "*Boom Boom!*^000000"])?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(2271), Val::from(1)])?;
+        ctx.call(Function::DelItem, vec![Val::from(975), Val::from(1)])?;
+        ctx.lines_as(
+            "Zic",
+            args![
+                "Phew, it's done!",
+                "Now go wear these and look, well, as fashionable as these glasses, I guess."
+            ],
+        )?;
+        ctx.call(Function::GetItem, vec![Val::from(5047), Val::from(1)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.call(Function::CountItem, vec![Val::from(7013)])?.number()? > 1199 {
+        ctx.lines_as("Zic", args!["Okay okay, you want your Heart hairpin, I'm working on it. Yeesh, I can't concentrate at all if you try to rush me, you know?"])?;
+        ctx.next()?;
+        ctx.lines(args!["^3355FF*Thud! Thud!*", "*Ah! Kek! Smash!*", "*Boom Boom!*^000000"])?;
+        ctx.next()?;
+        ctx.call(Function::DelItem, vec![Val::from(7013), Val::from(1200)])?;
+        ctx.lines_as(
+            "Zic",
+            args!["Phew~!", "Finally, it's done!", "Make me happy and", "wear it with pride~"],
+        )?;
+        ctx.call(Function::GetItem, vec![Val::from(5041), Val::from(1)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if (ctx.call(Function::CountItem, vec![Val::from(5041)])?.number()? > 0
-            && ctx.call(Function::CountItem, vec![Val::from(999)])?.number()? > 9)
-        {
-            ctx.lines_as("Zic", args!["Alright alright! Gosh, your Crescent Hairpin will be ready in a bit, but I can't concentrate my work if you keep rushing me like this!"])?;
-            ctx.next()?;
-            ctx.lines(args!["^3355FF*Thud! Thud!*", "*Ah! Kek! Smash!*", "*Boom Boom!*^000000"])?;
-            ctx.next()?;
-            ctx.call(Function::DelItem, vec![Val::from(5041), Val::from(1)])?;
-            ctx.call(Function::DelItem, vec![Val::from(999), Val::from(10)])?;
-            ctx.lines_as(
-                "Zic",
-                args!["Phew!", "It's done~!", "Now wear it and", "look pretty or", "something, yeah?"],
-            )?;
-            ctx.call(Function::GetItem, vec![Val::from(5048), Val::from(1)])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if (ctx.call(Function::CountItem, vec![Val::from(2271)])?.number()? > 0
-                && ctx.call(Function::CountItem, vec![Val::from(975)])?.number()? > 0)
-            {
-                ctx.lines_as("Zic", args!["Yeah yeah, you came for your Fashionable Glasses. Just don't rush me, or I won't be able to concentrate on my work, alright?"])?;
+        ctx.lines_as("Zic", args!["Yay, this cool", "breeze is great!", "I love the sea!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zic",
+            args![
+                "...Hm?",
+                "Awww man. Can't you tell I'm on vacation? All I wanted was some peaceful rest."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zic",
+            args!["Okay okay, you win. Once again, my reputation as a master craftsman precedes me."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zic",
+            args!["Let me know what item you're interested in, and maybe I'll make it for you..."],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Bao Bao:Cresent Hairpin:Fashionable Glasses:Heart Hairpin")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3))
+                && !subject1.loosely_equals(&Val::from(4));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Zic",
+                    args!["Sooo...", "You want me to make you a Bao Bao, huh? Alright, alright..."],
+                )?;
                 ctx.next()?;
-                ctx.lines(args!["^3355FF*Thud! Thud!*", "*Ah! Kek! Smash!*", "*Boom Boom!*^000000"])?;
-                ctx.next()?;
-                ctx.call(Function::DelItem, vec![Val::from(2271), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(975), Val::from(1)])?;
                 ctx.lines_as(
                     "Zic",
                     args![
-                        "Phew, it's done!",
-                        "Now go wear these and look, well, as fashionable as these glasses, I guess."
+                        "Let's see, I'll need...",
+                        "1 ^0000FFSilk Ribbon^000000",
+                        "50 ^0000FFHeroic Emblem^000000",
+                        "...Did you know this already?"
                     ],
                 )?;
-                ctx.call(Function::GetItem, vec![Val::from(5047), Val::from(1)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if ctx.call(Function::CountItem, vec![Val::from(7013)])?.number()? > 1199 {
-                    ctx.lines_as("Zic", args!["Okay okay, you want your Heart hairpin, I'm working on it. Yeesh, I can't concentrate at all if you try to rush me, you know?"])?;
-                    ctx.next()?;
-                    ctx.lines(args!["^3355FF*Thud! Thud!*", "*Ah! Kek! Smash!*", "*Boom Boom!*^000000"])?;
-                    ctx.next()?;
-                    ctx.call(Function::DelItem, vec![Val::from(7013), Val::from(1200)])?;
-                    ctx.lines_as(
-                        "Zic",
-                        args!["Phew~!", "Finally, it's done!", "Make me happy and", "wear it with pride~"],
-                    )?;
-                    ctx.call(Function::GetItem, vec![Val::from(5041), Val::from(1)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as("Zic", args!["Yay, this cool", "breeze is great!", "I love the sea!"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Zic",
-                        args![
-                            "...Hm?",
-                            "Awww man. Can't you tell I'm on vacation? All I wanted was some peaceful rest."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Zic",
-                        args!["Okay okay, you win. Once again, my reputation as a master craftsman precedes me."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Zic",
-                        args!["Let me know what item you're interested in, and maybe I'll make it for you..."],
-                    )?;
-                    ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Bao Bao:Cresent Hairpin:Fashionable Glasses:Heart Hairpin")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3))
-                            && !subject1.loosely_equals(&Val::from(4));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                "Zic",
-                                args!["Sooo...", "You want me to make you a Bao Bao, huh? Alright, alright..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zic",
-                                args![
-                                    "Let's see, I'll need...",
-                                    "1 ^0000FFSilk Ribbon^000000",
-                                    "50 ^0000FFHeroic Emblem^000000",
-                                    "...Did you know this already?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                "Zic",
-                                args!["So you want a Crescent Hairpin, huh? Man, I guess these things are pretty high in demand."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zic",
-                                args![
-                                    "Okay, I'll need...",
-                                    "1 ^0000FFHeart Hairpin^000000",
-                                    "10 ^0000FFSteel^000000",
-                                    "...Did you know this already?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                "Zic",
-                                args!["Weird. How'd you know I make Fashionable Glasses? I guess I must be more famous that I thought."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zic",
-                                args![
-                                    "I need to have...",
-                                    "1 ^0000FFJack be Dandy^000000",
-                                    "1 ^0000FFScarlet Dyestuffs^000000",
-                                    "...Did you know this already?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as(
-                                "Zic",
-                                args!["You want a heart hairpin, eh? Okay, I think I can work something out for you..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zic",
-                                args!["Just gimmie...", "1200 ^0000FFCoral Reef^000000.", "...Did you know this already?"],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Zic",
+                    args!["So you want a Crescent Hairpin, huh? Man, I guess these things are pretty high in demand."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Zic",
+                    args![
+                        "Okay, I'll need...",
+                        "1 ^0000FFHeart Hairpin^000000",
+                        "10 ^0000FFSteel^000000",
+                        "...Did you know this already?"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Zic",
+                    args!["Weird. How'd you know I make Fashionable Glasses? I guess I must be more famous that I thought."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Zic",
+                    args![
+                        "I need to have...",
+                        "1 ^0000FFJack be Dandy^000000",
+                        "1 ^0000FFScarlet Dyestuffs^000000",
+                        "...Did you know this already?"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Zic",
+                    args!["You want a heart hairpin, eh? Okay, I think I can work something out for you..."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Zic",
+                    args!["Just gimmie...", "1200 ^0000FFCoral Reef^000000.", "...Did you know this already?"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }

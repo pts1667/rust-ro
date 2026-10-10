@@ -397,342 +397,334 @@ fn rebarev_doug_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             break 'b3;
                         }
                     }
-                } else {
-                    if (ctx.var("god_eremes").get()?.number()? > 0 && ctx.var("god_eremes").get()?.number()? < 4) {
-                        if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()? == 2)
-                        {
-                            ctx.lines_as(
-                                "Rebarev Doug",
-                                args![
-                                    "I wonder how my old",
-                                    "comrades are doing now.",
-                                    "I can't even remember",
-                                    "the last time I saw them..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Rebarev Doug", args!["Hmm...?", "Haven't you left", "to search for them yet?"])?;
-                            ctx.next()?;
-                            'b5: {
-                                let subject5 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from(
-                                        "Where should I go?:I am about to leave.:What do you mean by final mission?",
-                                    )],
-                                )?);
-                                let mut matched5 = false;
-                                let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                                    && !subject5.loosely_equals(&Val::from(2))
-                                    && !subject5.loosely_equals(&Val::from(3));
-                                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.lines_as(
-                                        "Rebarev Doug",
-                                        args![
-                                            "Well...",
-                                            "You should be able",
-                                            "find some clue as to",
-                                            "where to find them through",
-                                            "^0000FFThe Platoon Records^000000 in",
-                                            "the Prontera Library."
-                                        ],
-                                    )?;
-                                    break 'b5;
-                                }
-                                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.lines_as(
-                                        "Rebarev Doug",
-                                        args![
-                                            "Oh, you are...",
-                                            "I wonder what they",
-                                            "have been doing since",
-                                            "our ^0000FFfinal mission^000000..."
-                                        ],
-                                    )?;
-                                    break 'b5;
-                                }
-                                if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
-                                    ctx.lines_as(
-                                        "Rebarev Doug",
-                                        args![
-                                            "Final mission...?",
-                                            "Well, I can't recall",
-                                            "everything at the moment,",
-                                            "but it was the reason why",
-                                            "our squad broke up."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Rebarev Doug",
-                                        args![
-                                            "We were a great team.",
-                                            "But in the military system,",
-                                            "you need to follow the orders",
-                                            "of your superiors..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rebarev Doug", args!["If only...", "^660000He^000000 hadn't interfered..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rebarev Doug", args!["..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rebarev Doug", args!["...", "......"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rebarev Doug", args!["Let's not talk about that. What's important that our squad was disbanded because of we failed our final mission. Now, will you please go find ^0000FFThe 3rd Platoon Records^000000 in the Prontera Library for me?"])?;
-                                    ctx.var("god_eremes").set(Val::from(3))?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rebarev Doug", args!["Remember, it might be helpful to ask the librarian for the file with a record on ^660000the 1st squad's final mission^000000."])?;
-                                    break 'b5;
-                                }
+                } else if (ctx.var("god_eremes").get()?.number()? > 0 && ctx.var("god_eremes").get()?.number()? < 4) {
+                    if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()? == 2)
+                    {
+                        ctx.lines_as(
+                            "Rebarev Doug",
+                            args![
+                                "I wonder how my old",
+                                "comrades are doing now.",
+                                "I can't even remember",
+                                "the last time I saw them..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Rebarev Doug", args!["Hmm...?", "Haven't you left", "to search for them yet?"])?;
+                        ctx.next()?;
+                        'b5: {
+                            let subject5 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from(
+                                    "Where should I go?:I am about to leave.:What do you mean by final mission?",
+                                )],
+                            )?);
+                            let mut matched5 = false;
+                            let no_case5 = !subject5.loosely_equals(&Val::from(1))
+                                && !subject5.loosely_equals(&Val::from(2))
+                                && !subject5.loosely_equals(&Val::from(3));
+                            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                                matched5 = true;
                             }
-                        } else {
-                            ctx.lines_as(
-                                "Rebarev Doug",
-                                args![
-                                    "I wonder how my old",
-                                    "comrades are doing now.",
-                                    "I can't even remember",
-                                    "the last time I saw them..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Rebarev Doug", args!["Hmm...?", "Haven't you left", "to search for them yet?"])?;
-                            ctx.next()?;
-                            'b6: {
-                                let subject6 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from("Where should I go?:I am about to leave.")],
-                                )?);
-                                let mut matched6 = false;
-                                let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                    matched6 = true;
-                                }
-                                if matched6 {
-                                    ctx.lines_as(
-                                        "Rebarev Doug",
-                                        args![
-                                            "Well...",
-                                            "You should be able",
-                                            "find some clue as to",
-                                            "where to find them through",
-                                            "^0000FFThe 3rd Platoon Records^000000 in",
-                                            "the Prontera Library."
-                                        ],
-                                    )?;
-                                    break 'b6;
-                                }
-                                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                    matched6 = true;
-                                }
-                                if matched6 {
-                                    ctx.lines_as(
-                                        "Rebarev Doug",
-                                        args![
-                                            "Oh, you are...",
-                                            "I wonder what they",
-                                            "have been doing since",
-                                            "our ^0000FFfinal mission^000000..."
-                                        ],
-                                    )?;
-                                    ctx.var("god_eremes").set(Val::from(2))?;
-                                    break 'b6;
-                                }
+                            if matched5 {
+                                ctx.lines_as(
+                                    "Rebarev Doug",
+                                    args![
+                                        "Well...",
+                                        "You should be able",
+                                        "find some clue as to",
+                                        "where to find them through",
+                                        "^0000FFThe Platoon Records^000000 in",
+                                        "the Prontera Library."
+                                    ],
+                                )?;
+                                break 'b5;
+                            }
+                            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                                matched5 = true;
+                            }
+                            if matched5 {
+                                ctx.lines_as(
+                                    "Rebarev Doug",
+                                    args![
+                                        "Oh, you are...",
+                                        "I wonder what they",
+                                        "have been doing since",
+                                        "our ^0000FFfinal mission^000000..."
+                                    ],
+                                )?;
+                                break 'b5;
+                            }
+                            if !matched5 && subject5.loosely_equals(&Val::from(3)) {
+                                matched5 = true;
+                            }
+                            if matched5 {
+                                ctx.lines_as(
+                                    "Rebarev Doug",
+                                    args![
+                                        "Final mission...?",
+                                        "Well, I can't recall",
+                                        "everything at the moment,",
+                                        "but it was the reason why",
+                                        "our squad broke up."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Rebarev Doug",
+                                    args![
+                                        "We were a great team.",
+                                        "But in the military system,",
+                                        "you need to follow the orders",
+                                        "of your superiors..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Rebarev Doug", args!["If only...", "^660000He^000000 hadn't interfered..."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Rebarev Doug", args!["..."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Rebarev Doug", args!["...", "......"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Rebarev Doug", args!["Let's not talk about that. What's important that our squad was disbanded because of we failed our final mission. Now, will you please go find ^0000FFThe 3rd Platoon Records^000000 in the Prontera Library for me?"])?;
+                                ctx.var("god_eremes").set(Val::from(3))?;
+                                ctx.next()?;
+                                ctx.lines_as("Rebarev Doug", args!["Remember, it might be helpful to ask the librarian for the file with a record on ^660000the 1st squad's final mission^000000."])?;
+                                break 'b5;
                             }
                         }
                     } else {
-                        if (ctx.var("god_eremes").get()?.number()? > 3 && ctx.var("god_eremes").get()?.number()? < 18) {
-                            ctx.lines_as(
-                                "Rebarev Doug",
-                                args!["Huh...?", "The librarian", "didn't let you", "read the records?"],
-                            )?;
+                        ctx.lines_as(
+                            "Rebarev Doug",
+                            args![
+                                "I wonder how my old",
+                                "comrades are doing now.",
+                                "I can't even remember",
+                                "the last time I saw them..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Rebarev Doug", args!["Hmm...?", "Haven't you left", "to search for them yet?"])?;
+                        ctx.next()?;
+                        'b6: {
+                            let subject6 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Where should I go?:I am about to leave.")],
+                            )?);
+                            let mut matched6 = false;
+                            let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
+                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                                matched6 = true;
+                            }
+                            if matched6 {
+                                ctx.lines_as(
+                                    "Rebarev Doug",
+                                    args![
+                                        "Well...",
+                                        "You should be able",
+                                        "find some clue as to",
+                                        "where to find them through",
+                                        "^0000FFThe 3rd Platoon Records^000000 in",
+                                        "the Prontera Library."
+                                    ],
+                                )?;
+                                break 'b6;
+                            }
+                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                                matched6 = true;
+                            }
+                            if matched6 {
+                                ctx.lines_as(
+                                    "Rebarev Doug",
+                                    args![
+                                        "Oh, you are...",
+                                        "I wonder what they",
+                                        "have been doing since",
+                                        "our ^0000FFfinal mission^000000..."
+                                    ],
+                                )?;
+                                ctx.var("god_eremes").set(Val::from(2))?;
+                                break 'b6;
+                            }
+                        }
+                    }
+                } else {
+                    if (ctx.var("god_eremes").get()?.number()? > 3 && ctx.var("god_eremes").get()?.number()? < 18) {
+                        ctx.lines_as(
+                            "Rebarev Doug",
+                            args!["Huh...?", "The librarian", "didn't let you", "read the records?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Rebarev Doug", args!["He may have responsibility,", "but at the end of the day, he's just like you and me. You can find some way to convince him to help you, I'm sure."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Rebarev Doug",
+                            args![
+                                "Please, I beg you,",
+                                "would you find out",
+                                "what happened to the",
+                                "rest of the 1st Squad?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Rebarev Doug", args!["Oh...", "It might be helpful to know that we were the ^660000Crusader Third Company, Third Platoon, First Squad^000000."])?;
+                    } else if (ctx.var("god_eremes").get()?.number()? > 17 && ctx.var("god_eremes").get()?.number()? < 20) {
+                        if (((((ctx.var("god_megin_1").get()?.number()? > 0 || ctx.var("god_megin_2").get()?.number()? > 0)
+                            || ctx.var("god_megin_3").get()?.number()? > 0)
+                            || ctx.var("god_megin_4").get()?.number()? > 0)
+                            || ctx.var("god_megin_5").get()?.number()? > 0)
+                            || ctx.var("god_megin_6").get()?.number()? > 0)
+                        {
+                            ctx.lines_as("Rebarev Doug", args!["Oh...", "So did you meet them?", "Are they all okay?"])?;
                             ctx.next()?;
-                            ctx.lines_as("Rebarev Doug", args!["He may have responsibility,", "but at the end of the day, he's just like you and me. You can find some way to convince him to help you, I'm sure."])?;
+                            ctx.lines(args![
+                                "^3355FFYou tell Rebarev Doug",
+                                "that although they are",
+                                "suffering from migraines",
+                                "and memory loss, the rest",
+                                "of the 1st Squad is fine."
+                            ])?;
+                        } else {
+                            ctx.lines(args![
+                                "^3355FFYou tell Rebarev Doug",
+                                "that you have read the",
+                                "3rd Platoon records and",
+                                "explain what you have",
+                                "managed to learn.^000000"
+                            ])?;
                             ctx.next()?;
                             ctx.lines_as(
                                 "Rebarev Doug",
                                 args![
-                                    "Please, I beg you,",
-                                    "would you find out",
-                                    "what happened to the",
-                                    "rest of the 1st Squad?"
+                                    "Oh, I'm glad to hear that",
+                                    "you were able to read the",
+                                    "records! But I don't trust",
+                                    "what's written on paper.",
+                                    "After all, it may be",
+                                    "out of date..."
                                 ],
                             )?;
                             ctx.next()?;
-                            ctx.lines_as("Rebarev Doug", args!["Oh...", "It might be helpful to know that we were the ^660000Crusader Third Company, Third Platoon, First Squad^000000."])?;
-                        } else {
-                            if (ctx.var("god_eremes").get()?.number()? > 17 && ctx.var("god_eremes").get()?.number()? < 20) {
-                                if (((((ctx.var("god_megin_1").get()?.number()? > 0 || ctx.var("god_megin_2").get()?.number()? > 0)
-                                    || ctx.var("god_megin_3").get()?.number()? > 0)
-                                    || ctx.var("god_megin_4").get()?.number()? > 0)
-                                    || ctx.var("god_megin_5").get()?.number()? > 0)
-                                    || ctx.var("god_megin_6").get()?.number()? > 0)
-                                {
-                                    ctx.lines_as("Rebarev Doug", args!["Oh...", "So did you meet them?", "Are they all okay?"])?;
-                                    ctx.next()?;
-                                    ctx.lines(args![
-                                        "^3355FFYou tell Rebarev Doug",
-                                        "that although they are",
-                                        "suffering from migraines",
-                                        "and memory loss, the rest",
-                                        "of the 1st Squad is fine."
-                                    ])?;
-                                } else {
-                                    ctx.lines(args![
-                                        "^3355FFYou tell Rebarev Doug",
-                                        "that you have read the",
-                                        "3rd Platoon records and",
-                                        "explain what you have",
-                                        "managed to learn.^000000"
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Rebarev Doug",
-                                        args![
-                                            "Oh, I'm glad to hear that",
-                                            "you were able to read the",
-                                            "records! But I don't trust",
-                                            "what's written on paper.",
-                                            "After all, it may be",
-                                            "out of date..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Rebarev Doug", args!["If it's possible, I hope you can meet the rest of the 1st Squad face to face, so I can know for sure that they're all alright."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Rebarev Doug",
-                                        args![
-                                            "A man's life is too",
-                                            "short and his friends",
-                                            "are too few. Please find",
-                                            "out how my old comrades",
-                                            "are doing for me."
-                                        ],
-                                    )?;
+                            ctx.lines_as("Rebarev Doug", args!["If it's possible, I hope you can meet the rest of the 1st Squad face to face, so I can know for sure that they're all alright."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Rebarev Doug",
+                                args![
+                                    "A man's life is too",
+                                    "short and his friends",
+                                    "are too few. Please find",
+                                    "out how my old comrades",
+                                    "are doing for me."
+                                ],
+                            )?;
+                        }
+                    } else {
+                        if (ctx.var("god_eremes").get()?.number()? > 19 && ctx.var("god_eremes").get()?.number()? < 23) {
+                            ctx.lines_as(
+                                "Rebarev Doug",
+                                args![
+                                    "Welcome back~",
+                                    "It's been a while since I've last seen you. Have you met the rest",
+                                    "of the 1st Squad?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Rebarev Doug", args!["Hm...?", "What's that", "strange look for?"])?;
+                            ctx.next()?;
+                            'b7: {
+                                let subject7 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("Confront Rebarev Doug.:Act unsuspicious.")],
+                                )?);
+                                let mut matched7 = false;
+                                let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
+                                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                                    matched7 = true;
                                 }
-                            } else {
-                                if (ctx.var("god_eremes").get()?.number()? > 19 && ctx.var("god_eremes").get()?.number()? < 23) {
+                                if matched7 {
+                                    ctx.mes("^3355FFYou confront Rebarev Doug about the memory problems and migraines of the 1st Squad...^000000")?;
+                                    ctx.next()?;
+                                    ctx.mes("^3355FFThinking about Royal Myst's story and the mentions of Egnigem begin to jumble your thoughts...^000000")?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Rebarev Doug", args!["What are you talking about? I don't understand, you're talking about lots of different things at once!"])?;
+                                    ctx.next()?;
                                     ctx.lines_as(
                                         "Rebarev Doug",
                                         args![
-                                            "Welcome back~",
-                                            "It's been a while since I've last seen you. Have you met the rest",
-                                            "of the 1st Squad?"
+                                            "Don't look at me like that. If you're done speaking, please",
+                                            "excuse me and tell me your news some other time."
                                         ],
                                     )?;
                                     ctx.next()?;
-                                    ctx.lines_as("Rebarev Doug", args!["Hm...?", "What's that", "strange look for?"])?;
+                                    ctx.lines_as(
+                                        "Rebarev Doug",
+                                        args![
+                                            "I appreciate that you've delivered news of my old comrades to me.",
+                                            "Now, I need to continue my research under the command of his Majesty."
+                                        ],
+                                    )?;
+                                    ctx.var("god_eremes").set(Val::from(21))?;
+                                    break 'b7;
+                                }
+                                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                                    matched7 = true;
+                                }
+                                if matched7 {
+                                    ctx.lines(args![
+                                        "^3355FFYou keep your suspicions to yourself and tell Rebarev Doug about the members of",
+                                        "the 1st Squad.^000000"
+                                    ])?;
                                     ctx.next()?;
-                                    'b7: {
-                                        let subject7 = Val::from(runtime::select_values(
-                                            ctx,
-                                            &[Val::from("Confront Rebarev Doug.:Act unsuspicious.")],
-                                        )?);
-                                        let mut matched7 = false;
-                                        let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                            matched7 = true;
-                                        }
-                                        if matched7 {
-                                            ctx.mes("^3355FFYou confront Rebarev Doug about the memory problems and migraines of the 1st Squad...^000000")?;
-                                            ctx.next()?;
-                                            ctx.mes("^3355FFThinking about Royal Myst's story and the mentions of Egnigem begin to jumble your thoughts...^000000")?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Rebarev Doug", args!["What are you talking about? I don't understand, you're talking about lots of different things at once!"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Rebarev Doug",
-                                                args![
-                                                    "Don't look at me like that. If you're done speaking, please",
-                                                    "excuse me and tell me your news some other time."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Rebarev Doug",
-                                                args![
-                                                    "I appreciate that you've delivered news of my old comrades to me.",
-                                                    "Now, I need to continue my research under the command of his Majesty."
-                                                ],
-                                            )?;
-                                            ctx.var("god_eremes").set(Val::from(21))?;
-                                            break 'b7;
-                                        }
-                                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                            matched7 = true;
-                                        }
-                                        if matched7 {
-                                            ctx.lines(args![
-                                                "^3355FFYou keep your suspicions to yourself and tell Rebarev Doug about the members of",
-                                                "the 1st Squad.^000000"
-                                            ])?;
-                                            ctx.next()?;
-                                            ctx.mes("^3355FFOf course, you withhold some details and only tell him what he seems to want to hear.^000000.")?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Rebarev Doug",
-                                                args!["Great!", "I'm glad to hear", "they're doing so well!", "Ha ha! Hahahahahahaahah!"],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Rebarev Doug", args!["I appreciate that you've delivered news of my old comrades to me.", "Now, I need to continue my research under the command of his Majesty. Once again, thank you for your help."])?;
-                                            ctx.var("god_eremes").set(Val::from(22))?;
-                                            break 'b7;
-                                        }
-                                    }
-                                } else {
-                                    if (ctx.var("god_eremes").get()?.number()? > 22 && ctx.var("god_eremes").get()?.number()? < 25) {
-                                        ctx.lines(args![
-                                            "^3355FFYou confront",
-                                            "Rebarev Doug with the",
-                                            "information you learned",
-                                            "from Egnigem.^000000"
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines(args![
-                                            "^3355FFHowever, he didn't",
-                                            "seem the least bit agitated. In fact, he exuded a calmness that makes you feel nervous.^000000"
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Rebarev Doug", args!["It's far too late to talk about that, though I feel sorry for you for knowing too much. At this point, there's nothing you can prove."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Rebarev Doug", args!["Don't you get it?", "The elite and powerful rule this world. I am untouchable! And the weak and the lowly can rot in hell! Heh heh!"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Rebarev Doug",
-                                            args!["Do you hate me?", "Do you really hate me?", "Take a look at this face."],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Rebarev Doug", args!["This is the", "face of authority!", "Go ahead and report me to the judge in charge of all military crimes! He's right behind me!"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Rebarev Doug",
-                                            args![
-                                                "If at least 100 people report the same crime, then maybe he'll hold",
-                                                "a trial. But do you really want to reveal this to the public?"
-                                            ],
-                                        )?;
-                                    } else {
-                                        if (ctx.var("god_eremes").get()?.number()? > 23 && ctx.var("god_eremes").get()?.number()? < 26) {
-                                            ctx.lines_as(
-                                                "Rebarev Doug",
-                                                args!["I didn't think", "you'd actually do it.", "But you'll be sorry later..."],
-                                            )?;
-                                        } else {
-                                            ctx.lines_as("Rebarev Doug", args!["Don't you get it?", "The elite and powerful rule this world. I am untouchable! And the weak and the lowly can rot in hell! Heh heh!"])?;
-                                        }
-                                    }
+                                    ctx.mes("^3355FFOf course, you withhold some details and only tell him what he seems to want to hear.^000000.")?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Rebarev Doug",
+                                        args!["Great!", "I'm glad to hear", "they're doing so well!", "Ha ha! Hahahahahahaahah!"],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Rebarev Doug", args!["I appreciate that you've delivered news of my old comrades to me.", "Now, I need to continue my research under the command of his Majesty. Once again, thank you for your help."])?;
+                                    ctx.var("god_eremes").set(Val::from(22))?;
+                                    break 'b7;
                                 }
                             }
+                        } else if (ctx.var("god_eremes").get()?.number()? > 22 && ctx.var("god_eremes").get()?.number()? < 25) {
+                            ctx.lines(args![
+                                "^3355FFYou confront",
+                                "Rebarev Doug with the",
+                                "information you learned",
+                                "from Egnigem.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^3355FFHowever, he didn't",
+                                "seem the least bit agitated. In fact, he exuded a calmness that makes you feel nervous.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines_as("Rebarev Doug", args!["It's far too late to talk about that, though I feel sorry for you for knowing too much. At this point, there's nothing you can prove."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Rebarev Doug", args!["Don't you get it?", "The elite and powerful rule this world. I am untouchable! And the weak and the lowly can rot in hell! Heh heh!"])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Rebarev Doug",
+                                args!["Do you hate me?", "Do you really hate me?", "Take a look at this face."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Rebarev Doug", args!["This is the", "face of authority!", "Go ahead and report me to the judge in charge of all military crimes! He's right behind me!"])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Rebarev Doug",
+                                args![
+                                    "If at least 100 people report the same crime, then maybe he'll hold",
+                                    "a trial. But do you really want to reveal this to the public?"
+                                ],
+                            )?;
+                        } else if (ctx.var("god_eremes").get()?.number()? > 23 && ctx.var("god_eremes").get()?.number()? < 26) {
+                            ctx.lines_as(
+                                "Rebarev Doug",
+                                args!["I didn't think", "you'd actually do it.", "But you'll be sorry later..."],
+                            )?;
+                        } else {
+                            ctx.lines_as("Rebarev Doug", args!["Don't you get it?", "The elite and powerful rule this world. I am untouchable! And the weak and the lowly can rot in hell! Heh heh!"])?;
                         }
                     }
                 }
@@ -815,74 +807,68 @@ fn crusader_god_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     Function::Announce,
                     vec![Val::from("The 2nd seal of [Megingjard] has appeared."), ctx.constant("BC_ALL")?],
                 )?;
-            } else {
-                if ctx.var("$god2").get()?.loosely_equals(&ctx.var("$@god_check2").get()?) {
-                    if (((ctx.var("$god1").get()?.loosely_equals(&ctx.var("$@god_check2").get()?)
-                        && ctx.var("$god2").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
-                        && ctx.var("$god3").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
-                        && ctx.var("$god4").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
-                    {
-                        ctx.call(
-                            Function::Announce,
-                            vec![
-                                Val::from("Four seals have been released at the same time with the seal of [Megingjard]."),
-                                ctx.constant("BC_ALL")?,
-                            ],
-                        )?;
-                    } else {
-                        ctx.call(
-                            Function::Announce,
-                            vec![
-                                Val::from("The 2nd seal of [Megingjard] has been released."),
-                                ctx.constant("BC_ALL")?,
-                            ],
-                        )?;
-                    }
+            } else if ctx.var("$god2").get()?.loosely_equals(&ctx.var("$@god_check2").get()?) {
+                if (((ctx.var("$god1").get()?.loosely_equals(&ctx.var("$@god_check2").get()?)
+                    && ctx.var("$god2").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
+                    && ctx.var("$god3").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
+                    && ctx.var("$god4").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
+                {
+                    ctx.call(
+                        Function::Announce,
+                        vec![
+                            Val::from("Four seals have been released at the same time with the seal of [Megingjard]."),
+                            ctx.constant("BC_ALL")?,
+                        ],
+                    )?;
+                } else {
+                    ctx.call(
+                        Function::Announce,
+                        vec![
+                            Val::from("The 2nd seal of [Megingjard] has been released."),
+                            ctx.constant("BC_ALL")?,
+                        ],
+                    )?;
                 }
             }
             if ctx.var("god_eremes").get()? == 23 {
                 ctx.var("god_eremes").set(Val::from(25))?;
-            } else {
-                if ctx.var("god_eremes").get()? == 24 {
-                    ctx.var("god_eremes").set(Val::from(26))?;
-                }
+            } else if ctx.var("god_eremes").get()? == 24 {
+                ctx.var("god_eremes").set(Val::from(26))?;
             }
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if ctx.var("god_eremes").get()?.number()? > 26 {
+            ctx.lines_as(
+                "Max Von Shedough",
+                args!["Unfortunately, I'm not sure if it's possible to hold a trial against Rebarev Doug."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Max Von Shedough", args!["Regrettably, it seems that he still has too much influence. Still, let me assure you that I'll do everything I can..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Max Von Shedough",
+                args!["But count on me,", "I'll be doing my", "best to get him indicted."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("god_eremes").get()?.number()? > 26 {
-                ctx.lines_as(
-                    "Max Von Shedough",
-                    args!["Unfortunately, I'm not sure if it's possible to hold a trial against Rebarev Doug."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Max Von Shedough", args!["Regrettably, it seems that he still has too much influence. Still, let me assure you that I'll do everything I can..."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Max Von Shedough",
-                    args!["But count on me,", "I'll be doing my", "best to get him indicted."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Max Von Shedough",
-                    args![
-                        "Welcome, friend!",
-                        "Here in the Prontera Castle, we Crusaders are busily preparing for the Holy War that is to come."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Max Von Shedough",
-                    args![
-                        "Let me introduce myself.",
-                        "My name is Max Von Shedough, the military judge! Sadly, even we Crusaders are not immune to corruption..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines_as(
+                "Max Von Shedough",
+                args![
+                    "Welcome, friend!",
+                    "Here in the Prontera Castle, we Crusaders are busily preparing for the Holy War that is to come."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Max Von Shedough",
+                args![
+                    "Let me introduce myself.",
+                    "My name is Max Von Shedough, the military judge! Sadly, even we Crusaders are not immune to corruption..."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines_as(
@@ -915,39 +901,37 @@ fn a_file_megin1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines(args!["^3355FFYou have found", "^660000The 3rd Platoon Records^3355FF!^000000"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
-            if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.close_window()?;
-            }
+    } else if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
+        if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("god_eremes").get()?.number()? < 7 {
-                ctx.lines_as(
-                    "Librarian Jekan",
-                    args![
-                        ((Val::from("I'm sorry ")
-                            + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                Val::from("sir")
-                            } else {
-                                Val::from("ma'am")
-                            }))
-                            + Val::from(",")),
-                        "but special authorization is required to browse that section. Otherwise, it's off limits."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.close_window()?;
+        }
+    } else {
+        if ctx.var("god_eremes").get()?.number()? < 7 {
+            ctx.lines_as(
+                "Librarian Jekan",
+                args![
+                    ((Val::from("I'm sorry ")
+                        + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                            Val::from("sir")
+                        } else {
+                            Val::from("ma'am")
+                        }))
+                        + Val::from(",")),
+                    "but special authorization is required to browse that section. Otherwise, it's off limits."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     Ok(Val::from(0))
@@ -962,28 +946,26 @@ fn a_file_megin2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.mes("You have found ^0000FFThe 3rd Platoon Records^000000!")?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
-            if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
+        if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("god_eremes").get()?.number()? < 7 {
-                ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    } else {
+        if ctx.var("god_eremes").get()?.number()? < 7 {
+            ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
 }
@@ -997,28 +979,26 @@ fn a_file_megin3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines(args!["You have found", "^0000FFThe 3rd Platoon Records^000000!"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
-            if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
+        if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("god_eremes").get()?.number()? < 7 {
-                ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    } else {
+        if ctx.var("god_eremes").get()?.number()? < 7 {
+            ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
 }
@@ -1032,28 +1012,26 @@ fn a_file_megin4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.mes("You have found ^0000FFThe 3rd Platoon Records^000000!")?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
-            if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
+        if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("god_eremes").get()?.number()? < 7 {
-                ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    } else {
+        if ctx.var("god_eremes").get()?.number()? < 7 {
+            ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
 }
@@ -1067,28 +1045,26 @@ fn a_file_megin5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines(args!["You have found", "^0000FFThe 3rd Platoon Records^000000!"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
-            if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if (ctx.var("god_eremes").get()?.number()? > 6 && ctx.var("god_eremes").get()?.number()? < 12) {
+        if (ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 6 && ctx.var("god_eremes").get()?.number()? > 6) {
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.var("god_eremes").set((ctx.var("god_eremes").get()? + Val::from(1)))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("god_eremes").get()?.number()? < 7 {
-                ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("^3355FFYou see a shelf filled with many files. You begin searching through them, one by one.^000000")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    } else {
+        if ctx.var("god_eremes").get()?.number()? < 7 {
+            ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Librarian Jekan", args!["W-wait...!", "That section", "is off limits!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
 }
@@ -1202,17 +1178,13 @@ fn librarian_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 vec![Val::from(1041), ctx.call(Function::CountItem, vec![Val::from(1041)])?],
                                             )?;
                                             ctx.call(Function::DelItem, vec![Val::from(2203), Val::from(1)])?;
-                                        } else {
-                                            if ctx.call(Function::CountItem, vec![Val::from(2203)])?.is_true() {
-                                                ctx.call(Function::DelItem, vec![Val::from(2203), Val::from(1)])?;
-                                            } else {
-                                                if ctx.call(Function::CountItem, vec![Val::from(1041)])?.is_true() {
-                                                    ctx.call(
-                                                        Function::DelItem,
-                                                        vec![Val::from(1041), ctx.call(Function::CountItem, vec![Val::from(1041)])?],
-                                                    )?;
-                                                }
-                                            }
+                                        } else if ctx.call(Function::CountItem, vec![Val::from(2203)])?.is_true() {
+                                            ctx.call(Function::DelItem, vec![Val::from(2203), Val::from(1)])?;
+                                        } else if ctx.call(Function::CountItem, vec![Val::from(1041)])?.is_true() {
+                                            ctx.call(
+                                                Function::DelItem,
+                                                vec![Val::from(1041), ctx.call(Function::CountItem, vec![Val::from(1041)])?],
+                                            )?;
                                         }
                                         ctx.var("god_eremes").set(Val::from(6))?;
                                         ctx.next()?;
@@ -1229,20 +1201,18 @@ fn librarian_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         return Err(Stop::End);
                                     }
                                 }
-                            } else {
-                                if ctx.var("god_eremes").get()?.number()? > 5 {
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Librarian Jekan",
-                                        args![
-                                            "Thank you...",
-                                            "The stuff you let",
-                                            "me borrow will really",
-                                            "help me in looking for",
-                                            "all of those files..."
-                                        ],
-                                    )?;
-                                }
+                            } else if ctx.var("god_eremes").get()?.number()? > 5 {
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Librarian Jekan",
+                                    args![
+                                        "Thank you...",
+                                        "The stuff you let",
+                                        "me borrow will really",
+                                        "help me in looking for",
+                                        "all of those files..."
+                                    ],
+                                )?;
                             }
                             break 'b2;
                         }
@@ -1300,29 +1270,27 @@ fn librarian_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.next()?;
                                 ctx.lines_as("Librarian Jekan", args!["Damn, my eyes are sore.", "Working as a government official is easy except for the times when the beaucrats make you do stuff like this."])?;
                                 ctx.var("god_eremes").set(Val::from(5))?;
+                            } else if ctx.var("god_eremes").get()?.number()? > 4 {
+                                ctx.lines_as(
+                                    "Librarian Jekan",
+                                    args!["I think I'm going to go", "insane looking for this file...!"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Librarian Jekan",
+                                    args!["Huh...?", "Did you just say", "that you wanted to", "help me? I-I'd appreciate it."],
+                                )?;
                             } else {
-                                if ctx.var("god_eremes").get()?.number()? > 4 {
-                                    ctx.lines_as(
-                                        "Librarian Jekan",
-                                        args!["I think I'm going to go", "insane looking for this file...!"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Librarian Jekan",
-                                        args!["Huh...?", "Did you just say", "that you wanted to", "help me? I-I'd appreciate it."],
-                                    )?;
-                                } else {
-                                    ctx.lines_as(
-                                        "Librarian Jekan",
-                                        args![
-                                            "Um, you're not even",
-                                            "supposed to know what",
-                                            "kind of file I'm looking for. Even if you did, I'm not allowed to show you what's inside!"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
+                                ctx.lines_as(
+                                    "Librarian Jekan",
+                                    args![
+                                        "Um, you're not even",
+                                        "supposed to know what",
+                                        "kind of file I'm looking for. Even if you did, I'm not allowed to show you what's inside!"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                             break 'b2;
                         }
@@ -1694,47 +1662,41 @@ fn librarian_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                         ctx.close_window()?;
                                                                     }
                                                                 }
+                                                            } else if runtime::compare(&l_input_s.clone(), &Val::from("3rd_platoon")) == 1 {
+                                                                ctx.lines(args![
+                                                                    ((Val::from("^663300[Keyword: ^996633") + l_input_s.clone())
+                                                                        + Val::from("^663300]")),
+                                                                    "Each Company consists",
+                                                                    "of 4 Platoons. Please",
+                                                                    "specify Company.^000000"
+                                                                ])?;
+                                                                ctx.next()?;
+                                                                ctx.close_window()?;
+                                                            } else if runtime::compare(&l_input_s.clone(), &Val::from("1st_squad")) == 1 {
+                                                                ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "The 1st Squad : Crusaders.", "Each platoon consists of 4 squads. Please specify Company and Platoon for information on a specific squad.^000000"])?;
+                                                                ctx.close_window()?;
+                                                            } else if runtime::compare(&l_input_s.clone(), &Val::from("record")) == 1 {
+                                                                ctx.lines(args![
+                                                                    ((Val::from("^663300[Keyword: ^996633")
+                                                                        + l_input_s.clone())
+                                                                        + Val::from("^663300]")),
+                                                                    "- No result has been found.-"
+                                                                ])?;
+                                                                ctx.close_window()?;
                                                             } else {
-                                                                if runtime::compare(&l_input_s.clone(), &Val::from("3rd_platoon")) == 1 {
-                                                                    ctx.lines(args![
-                                                                        ((Val::from("^663300[Keyword: ^996633") + l_input_s.clone())
-                                                                            + Val::from("^663300]")),
-                                                                        "Each Company consists",
-                                                                        "of 4 Platoons. Please",
-                                                                        "specify Company.^000000"
-                                                                    ])?;
-                                                                    ctx.next()?;
-                                                                    ctx.close_window()?;
-                                                                } else {
-                                                                    if runtime::compare(&l_input_s.clone(), &Val::from("1st_squad")) == 1 {
-                                                                        ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "The 1st Squad : Crusaders.", "Each platoon consists of 4 squads. Please specify Company and Platoon for information on a specific squad.^000000"])?;
-                                                                        ctx.close_window()?;
-                                                                    } else {
-                                                                        if runtime::compare(&l_input_s.clone(), &Val::from("record")) == 1 {
-                                                                            ctx.lines(args![
-                                                                                ((Val::from("^663300[Keyword: ^996633")
-                                                                                    + l_input_s.clone())
-                                                                                    + Val::from("^663300]")),
-                                                                                "- No result has been found.-"
-                                                                            ])?;
-                                                                            ctx.close_window()?;
-                                                                        } else {
-                                                                            ctx.lines(args![
-                                                                                ((Val::from("^663300[Keyword: ^996633")
-                                                                                    + l_input_s.clone())
-                                                                                    + Val::from("^663300]")),
-                                                                                ((Val::from("^663300[Keyword: ^996633")
-                                                                                    + l_input_s.clone())
-                                                                                    + Val::from("^663300]")),
-                                                                                ((Val::from("-search with a keyword : ")
-                                                                                    + l_input_s.clone())
-                                                                                    + Val::from(" -")),
-                                                                                "- No result has been found.-"
-                                                                            ])?;
-                                                                            ctx.close_window()?;
-                                                                        }
-                                                                    }
-                                                                }
+                                                                ctx.lines(args![
+                                                                    ((Val::from("^663300[Keyword: ^996633")
+                                                                        + l_input_s.clone())
+                                                                        + Val::from("^663300]")),
+                                                                    ((Val::from("^663300[Keyword: ^996633")
+                                                                        + l_input_s.clone())
+                                                                        + Val::from("^663300]")),
+                                                                    ((Val::from("-search with a keyword : ")
+                                                                        + l_input_s.clone())
+                                                                        + Val::from(" -")),
+                                                                    "- No result has been found.-"
+                                                                ])?;
+                                                                ctx.close_window()?;
                                                             }
                                                         } else {
                                                             if runtime::compare(&l_input_s.clone(), &Val::from("3rd_company")) == 1 {
@@ -1890,76 +1852,68 @@ fn librarian_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                                 "^996633Inn, Morocc^663300.^000000"
                                                                                             ])?;
                                                                                             ctx.close_window()?;
+                                                                                        } else if runtime::compare(
+                                                                                            &l_input_s.clone(),
+                                                                                            &Val::from("jack_o"),
+                                                                                        ) == 1
+                                                                                        {
+                                                                                            ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Former member of", "3rd Company, 3rd Platoon", "1st Squad. Serving as recruiting officer since disbanding of 1st Squad."])?;
+                                                                                            ctx.next()?;
+                                                                                            ctx.lines(args![
+                                                                                                ((Val::from(
+                                                                                                    "^663300[Keyword: ^996633"
+                                                                                                ) + l_input_s.clone())
+                                                                                                    + Val::from("^663300]")),
+                                                                                                "Current location:",
+                                                                                                "^996633Alberta Port^663300.^000000"
+                                                                                            ])?;
+                                                                                            ctx.close_window()?;
+                                                                                        } else if runtime::compare(
+                                                                                            &l_input_s.clone(),
+                                                                                            &Val::from("emma_searth"),
+                                                                                        ) == 1
+                                                                                        {
+                                                                                            ctx.lines(args![
+                                                                                                ((Val::from(
+                                                                                                    "^663300[Keyword: ^996633"
+                                                                                                ) + l_input_s.clone())
+                                                                                                    + Val::from("^663300]")),
+                                                                                                "Former member of",
+                                                                                                "3rd Company, 3rd Platoon",
+                                                                                                "1st Squad. Retired since",
+                                                                                                "disbanding of 1st Squad."
+                                                                                            ])?;
+                                                                                            ctx.next()?;
+                                                                                            ctx.lines(args![
+                                                                                                ((Val::from(
+                                                                                                    "^663300[Keyword: ^996633"
+                                                                                                ) + l_input_s.clone())
+                                                                                                    + Val::from("^663300]")),
+                                                                                                "Current location:",
+                                                                                                "^996633Al De Baran^663300.^000000"
+                                                                                            ])?;
+                                                                                            ctx.close_window()?;
+                                                                                        } else if runtime::compare(
+                                                                                            &l_input_s.clone(),
+                                                                                            &Val::from("royal_myst"),
+                                                                                        ) == 1
+                                                                                        {
+                                                                                            ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Former member of", "3rd Company, 3rd Platoon", "1st Squad. Current duty is unknown."])?;
+                                                                                            ctx.next()?;
+                                                                                            ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Current location:", "^996633Casino, Comodo^663300.^000000"])?;
+                                                                                            ctx.close_window()?;
+                                                                                        } else if runtime::compare(
+                                                                                            &l_input_s.clone(),
+                                                                                            &Val::from("the_nineball"),
+                                                                                        ) == 1
+                                                                                        {
+                                                                                            ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Former member of", "3rd Company, 3rd Platoon", "1st Squad. Serves as security officer since disbanding of 1st Squad."])?;
+                                                                                            ctx.next()?;
+                                                                                            ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Current location:", "^996633Tavern, Jawaii^663300.^000000"])?;
+                                                                                            ctx.close_window()?;
                                                                                         } else {
-                                                                                            if runtime::compare(
-                                                                                                &l_input_s.clone(),
-                                                                                                &Val::from("jack_o"),
-                                                                                            ) == 1
-                                                                                            {
-                                                                                                ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Former member of", "3rd Company, 3rd Platoon", "1st Squad. Serving as recruiting officer since disbanding of 1st Squad."])?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.lines(args![
-                                                                                                    ((Val::from(
-                                                                                                        "^663300[Keyword: ^996633"
-                                                                                                    ) + l_input_s.clone())
-                                                                                                        + Val::from("^663300]")),
-                                                                                                    "Current location:",
-                                                                                                    "^996633Alberta Port^663300.^000000"
-                                                                                                ])?;
-                                                                                                ctx.close_window()?;
-                                                                                            } else {
-                                                                                                if runtime::compare(
-                                                                                                    &l_input_s.clone(),
-                                                                                                    &Val::from("emma_searth"),
-                                                                                                ) == 1
-                                                                                                {
-                                                                                                    ctx.lines(args![
-                                                                                                        ((Val::from(
-                                                                                                            "^663300[Keyword: ^996633"
-                                                                                                        ) + l_input_s.clone())
-                                                                                                            + Val::from("^663300]")),
-                                                                                                        "Former member of",
-                                                                                                        "3rd Company, 3rd Platoon",
-                                                                                                        "1st Squad. Retired since",
-                                                                                                        "disbanding of 1st Squad."
-                                                                                                    ])?;
-                                                                                                    ctx.next()?;
-                                                                                                    ctx.lines(args![
-                                                                                                        ((Val::from(
-                                                                                                            "^663300[Keyword: ^996633"
-                                                                                                        ) + l_input_s.clone())
-                                                                                                            + Val::from("^663300]")),
-                                                                                                        "Current location:",
-                                                                                                        "^996633Al De Baran^663300.^000000"
-                                                                                                    ])?;
-                                                                                                    ctx.close_window()?;
-                                                                                                } else {
-                                                                                                    if runtime::compare(
-                                                                                                        &l_input_s.clone(),
-                                                                                                        &Val::from("royal_myst"),
-                                                                                                    ) == 1
-                                                                                                    {
-                                                                                                        ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Former member of", "3rd Company, 3rd Platoon", "1st Squad. Current duty is unknown."])?;
-                                                                                                        ctx.next()?;
-                                                                                                        ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Current location:", "^996633Casino, Comodo^663300.^000000"])?;
-                                                                                                        ctx.close_window()?;
-                                                                                                    } else {
-                                                                                                        if runtime::compare(
-                                                                                                            &l_input_s.clone(),
-                                                                                                            &Val::from("the_nineball"),
-                                                                                                        ) == 1
-                                                                                                        {
-                                                                                                            ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Former member of", "3rd Company, 3rd Platoon", "1st Squad. Serves as security officer since disbanding of 1st Squad."])?;
-                                                                                                            ctx.next()?;
-                                                                                                            ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "Current location:", "^996633Tavern, Jawaii^663300.^000000"])?;
-                                                                                                            ctx.close_window()?;
-                                                                                                        } else {
-                                                                                                            ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), ((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), ((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "No result has been found."])?;
-                                                                                                            ctx.close_window()?;
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                            }
+                                                                                            ctx.lines(args![((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), ((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), ((Val::from("^663300[Keyword: ^996633") + l_input_s.clone()) + Val::from("^663300]")), "No result has been found."])?;
+                                                                                            ctx.close_window()?;
                                                                                         }
                                                                                     }
                                                                                 }
@@ -2187,50 +2141,48 @@ fn crusader_god1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.mes("^3355FFYou tell Zan about Rebarev Doug, and about how he is now an instructor for Crusader Boot Camp. He seems to be absorbed in his thoughts of the past.^000000")?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("god_eremes").get()?.number()? > 18 {
-                            ctx.lines_as(
-                                "Zan.Huadoku",
-                                args!["Yeah, I was a member of the 1st Squad in the 3rd Platoon a long time ago. How did you know that?"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zan.Huadoku",
-                                args!["I miss the guys back in the squad. I wonder how our leader's been doing recently..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.mes("^3355FFYou tell Zan about Rebarev Doug, and about how he is now an instructor for Crusader Boot Camp. He seems to be absorbed in his thoughts of the past.^000000")?;
-                            ctx.next()?;
-                            ctx.lines_as("Zan.Huadoku", args!["...", "......"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Zan.Huadoku", args!["Before we went out on our last mission, the seven of us were like brothers and sisters. If ^FF0000he^000000 didn't disobey the order, we'd still be together today."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zan.Huadoku",
-                                args![
-                                    "Wait...",
-                                    "What was his name...?",
-                                    "There's no way I could forget something like that..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zan.Huadoku",
-                                args!["H-how can I not", "remember his name!", "He's the reason", "my life is...!"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zan.Huadoku",
-                                args!["^333333*Groan...*^000000", "I.... My head...", "My head hurts..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Zan.Huadoku", args!["^3355FFZan looks very confused and his eyes begin to glaze with a dazed look. You try speaking to him again, but he doesn't respond at all.^000000"])?;
-                            if !(ctx.var("god_megin_1").get()?.is_true()) {
-                                ctx.var("god_megin_1").set(Val::from(1))?;
-                            }
-                            ctx.close_window()?;
-                            return Err(Stop::End);
+                    } else if ctx.var("god_eremes").get()?.number()? > 18 {
+                        ctx.lines_as(
+                            "Zan.Huadoku",
+                            args!["Yeah, I was a member of the 1st Squad in the 3rd Platoon a long time ago. How did you know that?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Zan.Huadoku",
+                            args!["I miss the guys back in the squad. I wonder how our leader's been doing recently..."],
+                        )?;
+                        ctx.next()?;
+                        ctx.mes("^3355FFYou tell Zan about Rebarev Doug, and about how he is now an instructor for Crusader Boot Camp. He seems to be absorbed in his thoughts of the past.^000000")?;
+                        ctx.next()?;
+                        ctx.lines_as("Zan.Huadoku", args!["...", "......"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Zan.Huadoku", args!["Before we went out on our last mission, the seven of us were like brothers and sisters. If ^FF0000he^000000 didn't disobey the order, we'd still be together today."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Zan.Huadoku",
+                            args![
+                                "Wait...",
+                                "What was his name...?",
+                                "There's no way I could forget something like that..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Zan.Huadoku",
+                            args!["H-how can I not", "remember his name!", "He's the reason", "my life is...!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Zan.Huadoku",
+                            args!["^333333*Groan...*^000000", "I.... My head...", "My head hurts..."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Zan.Huadoku", args!["^3355FFZan looks very confused and his eyes begin to glaze with a dazed look. You try speaking to him again, but he doesn't respond at all.^000000"])?;
+                        if !(ctx.var("god_megin_1").get()?.is_true()) {
+                            ctx.var("god_megin_1").set(Val::from(1))?;
                         }
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
                 if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -2272,110 +2224,104 @@ fn crusader_god1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.mes("^3355FFZan seems to be having a very difficult time recalling that specific memory of his past.^000000")?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if (ctx.var("god_eremes").get()?.number()? > 18 && ctx.var("god_megin_1").get()?.number()? > 0) {
-                            ctx.lines_as("Zan.Huadoku", args!["The last mission..."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zan.Huadoku",
-                                args![
-                                    "Umm...",
-                                    "Huh. I don't",
-                                    "remember anything.",
-                                    "That's weird. Maybe",
-                                    "I need a bit of a clue?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines(args!["^3355FFZan.Huadoku seemed to", "have a hard time remembering what had happened in the past. You begin to share with him what you had read in the library about the 1st Squad...^000000"])?;
-                            ctx.next()?;
-                            ctx.mes("...")?;
-                            ctx.next()?;
-                            ctx.lines(args!["...", "......"])?;
-                            ctx.next()?;
-                            ctx.mes(".....")?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zan.Huadoku",
-                                args!["Y-yeah that's right! And then three days after we started the mission, we found some kind of..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Zan.Huadoku", args!["Well, I'm not sure what it was. But we found an ^0000FFunknown fragment^000000 that was a sign from God! And then...!"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Zan.Huadoku", args!["And then...", "Oh. Oh God.", "I can't remember..."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Zan.Huadoku", args!["I can't think about anything further than that. I can't even remember what we found. But I'm sure it was damned important."])?;
-                            ctx.next()?;
-                            ctx.mes("^3355FFZan stood still in silence, with a pained look on his face.^000000")?;
-                            if ctx.var("god_megin_1").get()? == 1 {
-                                ctx.var("god_megin_1").set(Val::from(2))?;
-                            }
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as("Zan.Huadoku", args!["The last mission..."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Zan.Huadoku",
-                                args![
-                                    "Umm...",
-                                    "Huh. I don't",
-                                    "remember anything.",
-                                    "That's weird. Maybe",
-                                    "I need a bit of a clue?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
+                    } else if (ctx.var("god_eremes").get()?.number()? > 18 && ctx.var("god_megin_1").get()?.number()? > 0) {
+                        ctx.lines_as("Zan.Huadoku", args!["The last mission..."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Zan.Huadoku",
+                            args![
+                                "Umm...",
+                                "Huh. I don't",
+                                "remember anything.",
+                                "That's weird. Maybe",
+                                "I need a bit of a clue?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args!["^3355FFZan.Huadoku seemed to", "have a hard time remembering what had happened in the past. You begin to share with him what you had read in the library about the 1st Squad...^000000"])?;
+                        ctx.next()?;
+                        ctx.mes("...")?;
+                        ctx.next()?;
+                        ctx.lines(args!["...", "......"])?;
+                        ctx.next()?;
+                        ctx.mes(".....")?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Zan.Huadoku",
+                            args!["Y-yeah that's right! And then three days after we started the mission, we found some kind of..."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Zan.Huadoku", args!["Well, I'm not sure what it was. But we found an ^0000FFunknown fragment^000000 that was a sign from God! And then...!"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Zan.Huadoku", args!["And then...", "Oh. Oh God.", "I can't remember..."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Zan.Huadoku", args!["I can't think about anything further than that. I can't even remember what we found. But I'm sure it was damned important."])?;
+                        ctx.next()?;
+                        ctx.mes("^3355FFZan stood still in silence, with a pained look on his face.^000000")?;
+                        if ctx.var("god_megin_1").get()? == 1 {
+                            ctx.var("god_megin_1").set(Val::from(2))?;
                         }
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as("Zan.Huadoku", args!["The last mission..."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Zan.Huadoku",
+                            args![
+                                "Umm...",
+                                "Huh. I don't",
+                                "remember anything.",
+                                "That's weird. Maybe",
+                                "I need a bit of a clue?"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
+        } else if (ctx.var("god_megin_1").get()?.number()? > 1 && ctx.var("god_megin_1").get()?.number()? < 3) {
+            ctx.mes("...")?;
+            ctx.next()?;
+            ctx.lines(args!["...", "....."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Zan.Huadoku",
+                args!["Y-yeah that's right! And then three days after we started the mission, we found some kind of..."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Zan.Huadoku", args!["Well, I'm not sure what it was. But we found an ^0000FFunknown fragment^000000 that was a sign from God! And then...!"])?;
+            ctx.next()?;
+            ctx.lines_as("Zan.Huadoku", args!["And then...", "Oh. Oh God.", "I can't remember..."])?;
+            ctx.next()?;
+            ctx.lines_as("Zan.Huadoku", args!["I can't think about anything further than that. I can't even remember what we found. Three months after that all happened, I've had these head problems..."])?;
+            ctx.next()?;
+            ctx.mes("^3355FFZan stood still in silence, with a pained look on his face.^000000")?;
+            ctx.var("god_megin_1").set(Val::from(3))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("god_megin_1").get()?.number()? > 2 {
+            ctx.lines(args![
+                "^3355FFGrabbing his head,",
+                "tearing his hair and writhing in Agony, Zan kept repeating the same words over and over again...^000000"
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Zan.Huadoku",
+                args![
+                    "3 days later!",
+                    "We f-found some ^0000FFfragment^000000!",
+                    "It was G-God's sign! But why",
+                    "can't I remember?! Why?!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if (ctx.var("god_megin_1").get()?.number()? > 1 && ctx.var("god_megin_1").get()?.number()? < 3) {
-                ctx.mes("...")?;
-                ctx.next()?;
-                ctx.lines(args!["...", "....."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zan.Huadoku",
-                    args!["Y-yeah that's right! And then three days after we started the mission, we found some kind of..."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Zan.Huadoku", args!["Well, I'm not sure what it was. But we found an ^0000FFunknown fragment^000000 that was a sign from God! And then...!"])?;
-                ctx.next()?;
-                ctx.lines_as("Zan.Huadoku", args!["And then...", "Oh. Oh God.", "I can't remember..."])?;
-                ctx.next()?;
-                ctx.lines_as("Zan.Huadoku", args!["I can't think about anything further than that. I can't even remember what we found. Three months after that all happened, I've had these head problems..."])?;
-                ctx.next()?;
-                ctx.mes("^3355FFZan stood still in silence, with a pained look on his face.^000000")?;
-                ctx.var("god_megin_1").set(Val::from(3))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("god_megin_1").get()?.number()? > 2 {
-                    ctx.lines(args![
-                        "^3355FFGrabbing his head,",
-                        "tearing his hair and writhing in Agony, Zan kept repeating the same words over and over again...^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Zan.Huadoku",
-                        args![
-                            "3 days later!",
-                            "We f-found some ^0000FFfragment^000000!",
-                            "It was G-God's sign! But why",
-                            "can't I remember?! Why?!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as("Zan.Huadoku", args!["Hey yo.", "Can I help you?"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
+            ctx.lines_as("Zan.Huadoku", args!["Hey yo.", "Can I help you?"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines_as("Zan.Huadoku", args!["Good day!", "Do you know the", "importance of supply?"])?;
@@ -2485,195 +2431,193 @@ fn employee_megin1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("god_eremes").get()?.number()? > 18 {
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFOnce you said that name, she immediately drew closer to you",
-                            "and began speaking in a low, threatening tone.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Scary Inn Employee",
-                            args![
-                                "Who the hell are you?",
-                                "If you try anything funny,",
-                                "I'll rip your heart out!",
-                                "Why are you so curious?!",
-                                "Are you one of them?!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        'b1: {
-                            let subject1 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Rebarev Doug sent me!:Wait, is he in hiding?:Just... curious.")],
-                            )?);
-                            let mut matched1 = false;
-                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                && !subject1.loosely_equals(&Val::from(2))
-                                && !subject1.loosely_equals(&Val::from(3));
-                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                matched1 = true;
+                } else if ctx.var("god_eremes").get()?.number()? > 18 {
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFOnce you said that name, she immediately drew closer to you",
+                        "and began speaking in a low, threatening tone.^000000"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Scary Inn Employee",
+                        args![
+                            "Who the hell are you?",
+                            "If you try anything funny,",
+                            "I'll rip your heart out!",
+                            "Why are you so curious?!",
+                            "Are you one of them?!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    'b1: {
+                        let subject1 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Rebarev Doug sent me!:Wait, is he in hiding?:Just... curious.")],
+                        )?);
+                        let mut matched1 = false;
+                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                            && !subject1.loosely_equals(&Val::from(2))
+                            && !subject1.loosely_equals(&Val::from(3));
+                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 3 {
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "Rebarev Doug...?!",
+                                        "That old coot must be afraid",
+                                        "of the rumors we're spreading around. Is already deperate enough to send his men?!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args!["But...", "I'm not in the mood", "to guide you over to", "Cuaque Donon..."],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines(args!["^3355FFThe Inn Employee", "knocks you out~^000000"])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
+                                return Err(Stop::End);
+                            } else {
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "Rebarev Doug...?!",
+                                        "That old coot must be afraid",
+                                        "of the rumors we're spreading around. Is already deperate enough to send his men?!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Ms. Scary Inn Employee", args!["Hmm...", "It might not be a bad idea to let someone like you talk to Cuaque Donon. You don't seem like the bad sort..."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "But you only get a hint,",
+                                        "and I'm saying it just once...",
+                                        "^0000FFAragham never hoarded",
+                                        "upgrade items.^000000"
+                                    ],
+                                )?;
+                                ctx.var("god_megin_2").set(Val::from(1))?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
-                            if matched1 {
-                                if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 3 {
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "Rebarev Doug...?!",
-                                            "That old coot must be afraid",
-                                            "of the rumors we're spreading around. Is already deperate enough to send his men?!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args!["But...", "I'm not in the mood", "to guide you over to", "Cuaque Donon..."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines(args!["^3355FFThe Inn Employee", "knocks you out~^000000"])?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "Rebarev Doug...?!",
-                                            "That old coot must be afraid",
-                                            "of the rumors we're spreading around. Is already deperate enough to send his men?!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Ms. Scary Inn Employee", args!["Hmm...", "It might not be a bad idea to let someone like you talk to Cuaque Donon. You don't seem like the bad sort..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "But you only get a hint,",
-                                            "and I'm saying it just once...",
-                                            "^0000FFAragham never hoarded",
-                                            "upgrade items.^000000"
-                                        ],
-                                    )?;
-                                    ctx.var("god_megin_2").set(Val::from(1))?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
+                        }
+                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 4 {
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "Right.",
+                                        "If you're here",
+                                        "looking for him,",
+                                        "you definitely know",
+                                        "why he's hiding."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args!["How dare you...", "How dare you play", "dumb with me?!"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines(args!["^3355FFThe Inn Employee", "knocks you out~^000000"])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
+                            } else {
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "Right.",
+                                        "If you're here",
+                                        "looking for him,",
+                                        "you definitely know",
+                                        "why he's hiding."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "Well, maybe not.",
+                                        "Who knows what kind",
+                                        "of friends Cuaque made",
+                                        "when he was a Crusader.",
+                                        "Alright, but listen..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "I'm only giving",
+                                        "you this hint once...",
+                                        "^0000FFAragham never hoarded",
+                                        "upgrade items.^000000"
+                                    ],
+                                )?;
+                                ctx.var("god_megin_2").set(Val::from(1))?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
-                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 4 {
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "Right.",
-                                            "If you're here",
-                                            "looking for him,",
-                                            "you definitely know",
-                                            "why he's hiding."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args!["How dare you...", "How dare you play", "dumb with me?!"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines(args!["^3355FFThe Inn Employee", "knocks you out~^000000"])?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
-                                } else {
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "Right.",
-                                            "If you're here",
-                                            "looking for him,",
-                                            "you definitely know",
-                                            "why he's hiding."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "Well, maybe not.",
-                                            "Who knows what kind",
-                                            "of friends Cuaque made",
-                                            "when he was a Crusader.",
-                                            "Alright, but listen..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "I'm only giving",
-                                            "you this hint once...",
-                                            "^0000FFAragham never hoarded",
-                                            "upgrade items.^000000"
-                                        ],
-                                    )?;
-                                    ctx.var("god_megin_2").set(Val::from(1))?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 3 {
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "Just curious?",
-                                            "Huh. You've got a lot of nerve, don't you? I'm sorry to tell you this but..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args!["I'm not in the mood", "to guide you over to", "Cuaque Donon...", "Heh heh heh..."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines(args!["^3355FFThe Inn Employee", "knocks you out~^000000"])?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "Just curious?",
-                                            "Huh. You've got a lot of nerve, don't you? I'm sorry to tell you this but..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args![
-                                            "I can't really tell",
-                                            "you exactly where he",
-                                            "is. The most I can do",
-                                            "is give you a small hint.",
-                                            "Listen carefully now...",
-                                            "I'll only say it once."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Ms. Scary Inn Employee",
-                                        args!["^0000FFAragham never", "hoarded upgrade items.^000000", "Now, don't forget!"],
-                                    )?;
-                                    ctx.var("god_megin_2").set(Val::from(1))?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
+                        }
+                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? > 3 {
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "Just curious?",
+                                        "Huh. You've got a lot of nerve, don't you? I'm sorry to tell you this but..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args!["I'm not in the mood", "to guide you over to", "Cuaque Donon...", "Heh heh heh..."],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines(args!["^3355FFThe Inn Employee", "knocks you out~^000000"])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
+                                return Err(Stop::End);
+                            } else {
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "Just curious?",
+                                        "Huh. You've got a lot of nerve, don't you? I'm sorry to tell you this but..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args![
+                                        "I can't really tell",
+                                        "you exactly where he",
+                                        "is. The most I can do",
+                                        "is give you a small hint.",
+                                        "Listen carefully now...",
+                                        "I'll only say it once."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Ms. Scary Inn Employee",
+                                    args!["^0000FFAragham never", "hoarded upgrade items.^000000", "Now, don't forget!"],
+                                )?;
+                                ctx.var("god_megin_2").set(Val::from(1))?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         }
                     }
@@ -2685,38 +2629,36 @@ fn employee_megin1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 )?;
                 ctx.close_window()?;
             }
+        } else if ctx.var("god_megin_2").get()?.number()? > 0 {
+            ctx.lines_as(
+                "Inn Employee",
+                args![
+                    "Welcome to the Inn.",
+                    "When you move to the entrance, you can also enter a PvP zone though a PvP doorman."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Inn Employee", args!["Usually, you can visit inns in big towns. If you want to take a rest or compete with others, an Inn is the place to go."])?;
+            ctx.next()?;
+            ctx.lines(args![
+                "^3355FFShe welcomed you",
+                "very professionally,",
+                "as if nothing",
+                "had happened.^000000"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("god_megin_2").get()?.number()? > 0 {
-                ctx.lines_as(
-                    "Inn Employee",
-                    args![
-                        "Welcome to the Inn.",
-                        "When you move to the entrance, you can also enter a PvP zone though a PvP doorman."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Inn Employee", args!["Usually, you can visit inns in big towns. If you want to take a rest or compete with others, an Inn is the place to go."])?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^3355FFShe welcomed you",
-                    "very professionally,",
-                    "as if nothing",
-                    "had happened.^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Inn Employee",
-                    args![
-                        "Welcome to the Inn.",
-                        "When you move to the entrance, you can also enter a PvP zone though a PvP doorman."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Inn Employee", args!["Usually, you can visit inns in big towns. If you want to take a rest or compete with others, an Inn is the place to go."])?;
-                ctx.close_window()?;
-            }
+            ctx.lines_as(
+                "Inn Employee",
+                args![
+                    "Welcome to the Inn.",
+                    "When you move to the entrance, you can also enter a PvP zone though a PvP doorman."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Inn Employee", args!["Usually, you can visit inns in big towns. If you want to take a rest or compete with others, an Inn is the place to go."])?;
+            ctx.close_window()?;
         }
     } else {
         ctx.lines_as(
@@ -2808,24 +2750,16 @@ fn suspicious_man_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         } else {
                                             if ctx.call(Function::CountItem, vec![Val::from(751)])?.number()? > 0 {
                                                 l_toy_s = Val::from("Osiris Doll");
+                                            } else if ctx.call(Function::CountItem, vec![Val::from(752)])?.number()? > 0 {
+                                                l_toy_s = Val::from("Rocker Doll");
+                                            } else if ctx.call(Function::CountItem, vec![Val::from(753)])?.number()? > 0 {
+                                                l_toy_s = Val::from("Yoyo Doll");
+                                            } else if ctx.call(Function::CountItem, vec![Val::from(754)])?.number()? > 0 {
+                                                l_toy_s = Val::from("Racoon Doll");
+                                            } else if ctx.call(Function::CountItem, vec![Val::from(7206)])?.number()? > 0 {
+                                                l_toy_s = Val::from("Black Cat Doll");
                                             } else {
-                                                if ctx.call(Function::CountItem, vec![Val::from(752)])?.number()? > 0 {
-                                                    l_toy_s = Val::from("Rocker Doll");
-                                                } else {
-                                                    if ctx.call(Function::CountItem, vec![Val::from(753)])?.number()? > 0 {
-                                                        l_toy_s = Val::from("Yoyo Doll");
-                                                    } else {
-                                                        if ctx.call(Function::CountItem, vec![Val::from(754)])?.number()? > 0 {
-                                                            l_toy_s = Val::from("Racoon Doll");
-                                                        } else {
-                                                            if ctx.call(Function::CountItem, vec![Val::from(7206)])?.number()? > 0 {
-                                                                l_toy_s = Val::from("Black Cat Doll");
-                                                            } else {
-                                                                l_toy_s = Val::from("Hung Doll");
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                                                l_toy_s = Val::from("Hung Doll");
                                             }
                                         }
                                     }
@@ -3085,30 +3019,28 @@ fn suspicious_man_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                         }
                     }
+                } else if ctx.var("god_megin_2").get()? == 4 {
+                    ctx.lines_as("Cuaque Donon", args!["I remember after we found Megingjard. One of us in the squad had a argument with our old leader. I was keeping night watch and happened to hear it. I think our leader was out of line..."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Cuaque Donon", args!["Ergh...", "I can't remember", "more than that..."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Cuaque Donon",
+                        args!["I'm getting sleepy", "and my head hurts.", "Let me rest now..."],
+                    )?;
+                    ctx.close_window()?;
                 } else {
-                    if ctx.var("god_megin_2").get()? == 4 {
-                        ctx.lines_as("Cuaque Donon", args!["I remember after we found Megingjard. One of us in the squad had a argument with our old leader. I was keeping night watch and happened to hear it. I think our leader was out of line..."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Cuaque Donon", args!["Ergh...", "I can't remember", "more than that..."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Cuaque Donon",
-                            args!["I'm getting sleepy", "and my head hurts.", "Let me rest now..."],
-                        )?;
-                        ctx.close_window()?;
-                    } else {
-                        ctx.lines_as(
-                            "Cuaque Donon",
-                            args![
-                                "Wh-who are you?!",
-                                "How the hell did",
-                                "you get in here?!",
-                                "Get away from me!",
-                                "Geeeet awwwway!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                    }
+                    ctx.lines_as(
+                        "Cuaque Donon",
+                        args![
+                            "Wh-who are you?!",
+                            "How the hell did",
+                            "you get in here?!",
+                            "Get away from me!",
+                            "Geeeet awwwway!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
                 }
             }
         }
@@ -3198,179 +3130,175 @@ fn crusader_megin2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if ctx.var("god_eremes").get()?.number()? > 18 {
-                if (ctx.var("god_megin_3").get()? == 0 || ctx.var("god_megin_3").get()? == 1) {
-                    ctx.lines_as(
-                        "Jack O",
-                        args![
-                            "^333333*Yawn...*^000000",
-                            "It's quiet and boring, as per usual. Let's see if there's any Swordmen I can recruit today."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Jack O", args!["Eh...?"])?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "Ask him about Rebarev Doug.:Ask him how he's been doing.:Ask about 1st Squad's final mission.",
-                            )],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            if ctx.var("god_megin_3").get()? == 1 {
-                                ctx.lines_as(
-                                    "Jack O",
-                                    args![
-                                        "Ah right. Our old leader.",
-                                        "Now I remember: He was",
-                                        "a pretty self righteous jerk",
-                                        "now that I think about it!"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Jack O", args!["Can you believe he used to say that ^0000FFno one is more religious than him in this world^000000?! That's egoism right there. And maybe insanity."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Jack O",
-                                    args![
-                                        "Anyway, everyone in the squad",
-                                        "took pride in their faith. When",
-                                        "you're having a rough time in the",
-                                        "real world, you depend on religion, you know?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Jack O", args!["Anyways, in the records about", "our squad, it says that one of us was punished for insubordination, rebelling or something. That's", "a complete lie."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Jack O", args!["During our final mission,", "our old leader had a huge argument with one us over something we found. I remember it being some kind of godly artifact, but I can't clearly remember what it was."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Jack O",
-                                    args![
-                                        "Although there was an obvious dispute, I think it was our squad leader who was out of line.",
-                                        "I... I can't really say..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Jack O",
-                                    args![
-                                        "I can't for the life of me",
-                                        "remember how the guy who",
-                                        "argued with the squad leader",
-                                        "looked like. The higher-ups",
-                                        "musta did something to me..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Jack O", args!["Anyway, I know for sure that whatever that guy did, it wasn't insubordination. In fact, I think he might've been right!"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Jack O",
-                                    args![
-                                        "That's all I can remember.",
-                                        "I better take some Green Herbs now. My head throbs like crazy whenever I think about that time."
-                                    ],
-                                )?;
-                                ctx.var("god_megin_3").set(Val::from(2))?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    "Jack O",
-                                    args![
-                                        "Ah! Yeah, our old leader back in the 1st Squad. Heh. I haven't seen him since we were disbanded."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+        } else if ctx.var("god_eremes").get()?.number()? > 18 {
+            if (ctx.var("god_megin_3").get()? == 0 || ctx.var("god_megin_3").get()? == 1) {
+                ctx.lines_as(
+                    "Jack O",
+                    args![
+                        "^333333*Yawn...*^000000",
+                        "It's quiet and boring, as per usual. Let's see if there's any Swordmen I can recruit today."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Jack O", args!["Eh...?"])?;
+                ctx.next()?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from(
+                            "Ask him about Rebarev Doug.:Ask him how he's been doing.:Ask about 1st Squad's final mission.",
+                        )],
+                    )?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                        && !subject2.loosely_equals(&Val::from(2))
+                        && !subject2.loosely_equals(&Val::from(3));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        if ctx.var("god_megin_3").get()? == 1 {
                             ctx.lines_as(
                                 "Jack O",
                                 args![
-                                    "Me? Yeah, I'm not doing so bad. Keeping busy recruiting future Crusaders. We welcome all",
-                                    "Swordmen if they show potential~"
+                                    "Ah right. Our old leader.",
+                                    "Now I remember: He was",
+                                    "a pretty self righteous jerk",
+                                    "now that I think about it!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Jack O", args!["Can you believe he used to say that ^0000FFno one is more religious than him in this world^000000?! That's egoism right there. And maybe insanity."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Jack O",
+                                args![
+                                    "Anyway, everyone in the squad",
+                                    "took pride in their faith. When",
+                                    "you're having a rough time in the",
+                                    "real world, you depend on religion, you know?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Jack O", args!["Anyways, in the records about", "our squad, it says that one of us was punished for insubordination, rebelling or something. That's", "a complete lie."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Jack O", args!["During our final mission,", "our old leader had a huge argument with one us over something we found. I remember it being some kind of godly artifact, but I can't clearly remember what it was."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Jack O",
+                                args![
+                                    "Although there was an obvious dispute, I think it was our squad leader who was out of line.",
+                                    "I... I can't really say..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Jack O",
+                                args![
+                                    "I can't for the life of me",
+                                    "remember how the guy who",
+                                    "argued with the squad leader",
+                                    "looked like. The higher-ups",
+                                    "musta did something to me..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Jack O", args!["Anyway, I know for sure that whatever that guy did, it wasn't insubordination. In fact, I think he might've been right!"])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Jack O",
+                                args![
+                                    "That's all I can remember.",
+                                    "I better take some Green Herbs now. My head throbs like crazy whenever I think about that time."
+                                ],
+                            )?;
+                            ctx.var("god_megin_3").set(Val::from(2))?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.lines_as(
+                                "Jack O",
+                                args![
+                                    "Ah! Yeah, our old leader back in the 1st Squad. Heh. I haven't seen him since we were disbanded."
                                 ],
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as("Jack O", args!["Huh...?", "Why would", "you want to know?"])?;
-                            ctx.next()?;
-                            ctx.mes("^3355FFYou tell him what you've read in the records for the 1st Squad. Afterwards, Jack O looks a little confused.^000000")?;
-                            ctx.next()?;
-                            ctx.lines_as("Jack O", args!["Huh...?", "I might not be able to remember", "a whole lot from back then, but the part about ^0000FFinsubordination^000000 can't be right. I'm sure of that."])?;
-                            if ctx.var("god_megin_3").get()? == 0 {
-                                ctx.var("god_megin_3").set(Val::from(1))?;
-                            }
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
                     }
-                } else {
-                    if ctx.var("god_megin_3").get()? == 2 {
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
                         ctx.lines_as(
                             "Jack O",
                             args![
-                                "Our old leader was",
-                                "so arrogant to the point",
-                                "of being a little off his rocker."
+                                "Me? Yeah, I'm not doing so bad. Keeping busy recruiting future Crusaders. We welcome all",
+                                "Swordmen if they show potential~"
                             ],
                         )?;
-                        ctx.next()?;
-                        ctx.lines_as("Jack O", args!["I mean, normal people", "don't say things like '^0000FFI am the most religious man in the universe! Kneel before me!^000000' Yeah. Not a normal thing to say."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Jack O", args!["Anyway, if the squad", "leader punished anyone for insubordination, I'm sure that it was unwarranted. I don't remember too much, but I'm sure of that."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jack O",
-                            args![
-                                "Excuse me, I need to take some Green Herbs. Taking these seems",
-                                "to be the only thing that works for my headache."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFJack O busily chewed",
-                            "on some Green Herbs.",
-                            "It seemed to greatly relieve him from the pain of his headaches.^000000"
-                        ])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Jack O",
-                            args![
-                                "^333333*Yawn...*^000000",
-                                "It's quiet and boring, as per usual. Let's see if there's any Swordmen I can recruit today."
-                            ],
-                        )?;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines_as("Jack O", args!["Huh...?", "Why would", "you want to know?"])?;
+                        ctx.next()?;
+                        ctx.mes("^3355FFYou tell him what you've read in the records for the 1st Squad. Afterwards, Jack O looks a little confused.^000000")?;
+                        ctx.next()?;
+                        ctx.lines_as("Jack O", args!["Huh...?", "I might not be able to remember", "a whole lot from back then, but the part about ^0000FFinsubordination^000000 can't be right. I'm sure of that."])?;
+                        if ctx.var("god_megin_3").get()? == 0 {
+                            ctx.var("god_megin_3").set(Val::from(1))?;
+                        }
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
                 }
-            } else {
-                ctx.lines_as("Jack O", args!["Hey kid!", "Ever think about", "bein' a Crusader?"])?;
+            } else if ctx.var("god_megin_3").get()? == 2 {
+                ctx.lines_as(
+                    "Jack O",
+                    args![
+                        "Our old leader was",
+                        "so arrogant to the point",
+                        "of being a little off his rocker."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Jack O", args!["I mean, normal people", "don't say things like '^0000FFI am the most religious man in the universe! Kneel before me!^000000' Yeah. Not a normal thing to say."])?;
+                ctx.next()?;
+                ctx.lines_as("Jack O", args!["Anyway, if the squad", "leader punished anyone for insubordination, I'm sure that it was unwarranted. I don't remember too much, but I'm sure of that."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Jack O",
+                    args![
+                        "Excuse me, I need to take some Green Herbs. Taking these seems",
+                        "to be the only thing that works for my headache."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines(args![
+                    "^3355FFJack O busily chewed",
+                    "on some Green Herbs.",
+                    "It seemed to greatly relieve him from the pain of his headaches.^000000"
+                ])?;
                 ctx.close_window()?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as(
+                    "Jack O",
+                    args![
+                        "^333333*Yawn...*^000000",
+                        "It's quiet and boring, as per usual. Let's see if there's any Swordmen I can recruit today."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
+        } else {
+            ctx.lines_as("Jack O", args!["Hey kid!", "Ever think about", "bein' a Crusader?"])?;
+            ctx.close_window()?;
         }
     } else {
         if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?) {
@@ -3655,27 +3583,25 @@ fn lady_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             }
                         }
                     }
+                } else if ctx.var("god_megin_4").get()?.number()? > 1 {
+                    ctx.lines_as(
+                        "Emma Searth",
+                        args![
+                            "^0000FFJack O, The Nineball, Zan.Huadoku, Cuaque Donon, Egnigem.^000000 Oh, I really miss those guys..."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if ctx.var("god_megin_4").get()?.number()? > 1 {
-                        ctx.lines_as(
-                            "Emma Searth",
-                            args![
-                                "^0000FFJack O, The Nineball, Zan.Huadoku, Cuaque Donon, Egnigem.^000000 Oh, I really miss those guys..."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Emma Searth",
-                            args![
-                                "^333333*Sigh...*^000000 I haven't gotten any response from them. I don't know",
-                                "if I can wait much longer to join the Kafra Corporation."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.lines_as(
+                        "Emma Searth",
+                        args![
+                            "^333333*Sigh...*^000000 I haven't gotten any response from them. I don't know",
+                            "if I can wait much longer to join the Kafra Corporation."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             } else {
                 if ctx.var("god_eremes").get()? == 25 {
@@ -3717,30 +3643,22 @@ fn lady_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     } else {
                                         if (ctx.var("BaseLevel").get()?.number()? > 65 && ctx.var("BaseLevel").get()?.number()? < 71) {
                                             ctx.call(Function::GetExperience, vec![Val::from(82233), Val::from(0)])?;
+                                        } else if (ctx.var("BaseLevel").get()?.number()? > 70 && ctx.var("BaseLevel").get()?.number()? < 76) {
+                                            ctx.call(Function::GetExperience, vec![Val::from(212271), Val::from(0)])?;
+                                        } else if (ctx.var("BaseLevel").get()?.number()? > 75
+                                            && ctx.var("BaseLevel").get()?.number()? < 81)
+                                        {
+                                            ctx.call(Function::GetExperience, vec![Val::from(390738), Val::from(0)])?;
+                                        } else if (ctx.var("BaseLevel").get()?.number()? > 80
+                                            && ctx.var("BaseLevel").get()?.number()? < 86)
+                                        {
+                                            ctx.call(Function::GetExperience, vec![Val::from(451020), Val::from(0)])?;
+                                        } else if (ctx.var("BaseLevel").get()?.number()? > 85
+                                            && ctx.var("BaseLevel").get()?.number()? < 91)
+                                        {
+                                            ctx.call(Function::GetExperience, vec![Val::from(546156), Val::from(0)])?;
                                         } else {
-                                            if (ctx.var("BaseLevel").get()?.number()? > 70 && ctx.var("BaseLevel").get()?.number()? < 76) {
-                                                ctx.call(Function::GetExperience, vec![Val::from(212271), Val::from(0)])?;
-                                            } else {
-                                                if (ctx.var("BaseLevel").get()?.number()? > 75
-                                                    && ctx.var("BaseLevel").get()?.number()? < 81)
-                                                {
-                                                    ctx.call(Function::GetExperience, vec![Val::from(390738), Val::from(0)])?;
-                                                } else {
-                                                    if (ctx.var("BaseLevel").get()?.number()? > 80
-                                                        && ctx.var("BaseLevel").get()?.number()? < 86)
-                                                    {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(451020), Val::from(0)])?;
-                                                    } else {
-                                                        if (ctx.var("BaseLevel").get()?.number()? > 85
-                                                            && ctx.var("BaseLevel").get()?.number()? < 91)
-                                                        {
-                                                            ctx.call(Function::GetExperience, vec![Val::from(546156), Val::from(0)])?;
-                                                        } else {
-                                                            ctx.call(Function::GetExperience, vec![Val::from(1220358), Val::from(0)])?;
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                            ctx.call(Function::GetExperience, vec![Val::from(1220358), Val::from(0)])?;
                                         }
                                     }
                                 }
@@ -3748,27 +3666,25 @@ fn lady_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         }
                         ctx.close_window()?;
                         return Err(Stop::End);
+                    } else if ctx.var("god_eremes").get()? == 28 {
+                        ctx.lines_as(
+                            "Emma Searth",
+                            args!["Egnigem...", "That name makes", "me so sad. I'm not", "quite sure why, but..."],
+                        )?;
+                        ctx.next()?;
+                        ctx.mes("^3355FFEmma turns away before you can see her cry. Still, her shoulders heave with each sob as you imagine the hardship she's had to endure.^000000")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     } else {
-                        if ctx.var("god_eremes").get()? == 28 {
-                            ctx.lines_as(
-                                "Emma Searth",
-                                args!["Egnigem...", "That name makes", "me so sad. I'm not", "quite sure why, but..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.mes("^3355FFEmma turns away before you can see her cry. Still, her shoulders heave with each sob as you imagine the hardship she's had to endure.^000000")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "Emma Searth",
-                                args![
-                                    "^333333*Sigh...*^000000 I haven't gotten any response from them. I don't know",
-                                    "if I can wait much longer to join the Kafra Corporation."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                        ctx.lines_as(
+                            "Emma Searth",
+                            args![
+                                "^333333*Sigh...*^000000 I haven't gotten any response from them. I don't know",
+                                "if I can wait much longer to join the Kafra Corporation."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -3876,221 +3792,205 @@ fn man_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if (ctx.var("god_eremes").get()?.number()? > 18 && ctx.var("god_eremes").get()?.number()? < 21) {
-                if (((((ctx.var("god_megin_6").get()? == 0 && ctx.var("god_megin_5").get()?.number()? > 4)
-                    && ctx.var("god_megin_4").get()?.number()? > 1)
-                    && ctx.var("god_megin_3").get()?.number()? > 1)
-                    && ctx.var("god_megin_2").get()?.number()? > 3)
-                    && ctx.var("god_megin_1").get()?.number()? > 2)
-                {
-                    ctx.lines_as("Royal Myst", args!["Wha...?", "You wanna talk?"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Royal Myst",
-                        args![
-                            "What am I, your personal psychiatrist?! Lemme alone,",
-                            "I'm busy here! Awright, now",
-                            "which one do I bet on...?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                } else {
-                    if ctx.var("god_megin_6").get()?.number()? > 0 {
-                        ctx.lines_as("Royal Myst", args!["Hmm?", "What's up?"])?;
-                        ctx.next()?;
-                    } else {
-                        ctx.lines_as("Royal Myst", args!["Wha...?", "You wanna talk?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Royal Myst",
-                            args![
-                                "What am I, your personal psychiatrist?! Lemme alone,",
-                                "I'm busy here! Awright, now",
-                                "which one do I bet on...?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-                if ctx.var("god_megin_6").get()?.number()? < 16 {
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[
-                                Val::from("Speak of Rebarev Doug."),
-                                Val::from("Speak of the 3rd squad."),
-                                Val::from("Talk about gambling."),
-                                Val::from("Discuss hobbies."),
-                            ],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3))
-                            && !subject2.loosely_equals(&Val::from(4));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            if ctx.var("god_megin_6").get()? == 0 {
-                                ctx.lines_as("Royal Myst", args!["Huh? What's that old geezer want this time? Tell 'em I'm fine, dandy even! Why the hell does he keep sending people..."])?;
-                                ctx.var("god_megin_6").set(Val::from(1))?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("god_megin_6").get()?.number()? > 0 && ctx.var("god_megin_6").get()?.number()? < 15) {
-                                    ctx.lines_as("Royal Myst", args!["What the hell!? Stop talking about him! I never wanna see his face again! Tell him to leave me the hell alone!"])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("god_megin_6").get()?.number()? > 14 {
-                                        ctx.lines_as("Royal Myst", args!["Damn geezer...", "How much is he being paid for studying what we all found?! Eh, somehow, I don't care as long as", "he pays me..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Royal Myst", args!["Yeah...", "I just don't", "care anymore."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            if ctx.var("god_megin_6").get()?.number()? < 15 {
-                                ctx.lines_as(
-                                    "Royal Myst",
-                                    args![
-                                        "1st Squad? Yeah, I used to be in that. All of us in the squad used to be real good buddies too."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Royal Myst",
-                                    args![
-                                        "Zan.Huadoku, Cuaque Donon,",
-                                        "Jack O, Emma Searth and The Nineball. Yeah... I wonder what they're all up to?"
-                                    ],
-                                )?;
-                            } else {
-                                if ctx.var("god_megin_6").get()?.number()? > 14 {
-                                    ctx.lines_as(
-                                        "Royal Myst",
-                                        args!["1st Squad?", "Don't know, don't care~", "Do I look like a stupid Crusader?"],
-                                    )?;
-                                }
-                            }
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            if ctx.var("god_megin_6").get()?.number()? < 15 {
-                                ctx.lines_as(
-                                    "Royal Myst",
-                                    args![
-                                        "Gambling? ! Oh man...",
-                                        "I love gambling, you know!",
-                                        "Heh, but I haven't been lucky enough to win yet. Hahaha~!"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("god_megin_6").get()?.number()? > 14 {
-                                    ctx.lines_as(
-                                        "Royal Myst",
-                                        args![
-                                            "Gambling...!",
-                                            "Heh heh! Some risks you take,",
-                                            "and others you really shouldn't.",
-                                            "I can't help but feel sorry for that guy, E--"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Royal Myst", args!["Ergh...?", "Damn, I can never remember his name. You'd think I wouldn't forget the guy whose rap I'm taking but... Eh, I'll remember once I sober up."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Royal Myst", args!["Hey, what do you think happens to Crusaders when they're framed and killed, huh? Where exactly do they go? Niflheim, Vahalla...?"])?;
-                                    ctx.var("god_eremes").set(Val::from(20))?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            if ctx.var("god_megin_6").get()? == 0 {
-                                ctx.lines(args!["Hobbies?", "What, you comin'", "on to me?"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Royal Myst",
-                                    args![
-                                        "A man's hobby is drinking, or didn't you know that? I happen to be real good at it too! Mwahahaha!"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("god_megin_6").get()?.number()? > 0 && ctx.var("god_megin_6").get()?.number()? < 15) {
-                                    if ctx.call(Function::CountItem, vec![Val::from(970)])?.number()? > 0 {
-                                        ctx.lines_as(
-                                            "Royal Myst",
-                                            args![
-                                                "Speaking of which,",
-                                                "I haven't had a drink",
-                                                "for a looong time. Almost",
-                                                "a couple hours now."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Royal Myst",
-                                            args!["Oooh, looks like you've got a tasty beverage I can enjoy. Bwahahaha! Gimmie~!"],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines(args![
-                                            "^3355FFBefore you can even think,",
-                                            "Royal Myst dips his hand into your inventory and helps himself to an Alcohol.^000000"
-                                        ])?;
-                                        ctx.call(Function::DelItem, vec![Val::from(970), Val::from(1)])?;
-                                        ctx.var("god_megin_6").set((ctx.var("god_megin_6").get()? + Val::from(2)))?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as("Royal Myst", args!["Why mention it? You gonna bring me something I'll like? Cuz I'm more than willing to take it! Bwahahaha!"])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                } else {
-                                    if ctx.var("god_megin_6").get()?.number()? > 14 {
-                                        ctx.lines_as("Royal Myst", args!["^333333*Hiccup*^000000 Oh yeah, this is the stuff. Not like that imitation junk they've been serving at the Bars nowadays..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Royal Myst",
-                                            args![
-                                                "Hey! There anything you wanna",
-                                                "know about me? You did me a favor, so I'll tell you anything! Eeeeeverythiiing~~!!"
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+        } else if (ctx.var("god_eremes").get()?.number()? > 18 && ctx.var("god_eremes").get()?.number()? < 21) {
+            if (((((ctx.var("god_megin_6").get()? == 0 && ctx.var("god_megin_5").get()?.number()? > 4)
+                && ctx.var("god_megin_4").get()?.number()? > 1)
+                && ctx.var("god_megin_3").get()?.number()? > 1)
+                && ctx.var("god_megin_2").get()?.number()? > 3)
+                && ctx.var("god_megin_1").get()?.number()? > 2)
+            {
+                ctx.lines_as("Royal Myst", args!["Wha...?", "You wanna talk?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Royal Myst",
+                    args![
+                        "What am I, your personal psychiatrist?! Lemme alone,",
+                        "I'm busy here! Awright, now",
+                        "which one do I bet on...?"
+                    ],
+                )?;
+                ctx.next()?;
+            } else if ctx.var("god_megin_6").get()?.number()? > 0 {
+                ctx.lines_as("Royal Myst", args!["Hmm?", "What's up?"])?;
+                ctx.next()?;
             } else {
-                ctx.lines_as("Royal Myst", args!["Eh heh heh~", "I just know", "I'm gonna win", "this time!"])?;
+                ctx.lines_as("Royal Myst", args!["Wha...?", "You wanna talk?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Royal Myst",
+                    args![
+                        "What am I, your personal psychiatrist?! Lemme alone,",
+                        "I'm busy here! Awright, now",
+                        "which one do I bet on...?"
+                    ],
+                )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            if ctx.var("god_megin_6").get()?.number()? < 16 {
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(
+                        ctx,
+                        &[
+                            Val::from("Speak of Rebarev Doug."),
+                            Val::from("Speak of the 3rd squad."),
+                            Val::from("Talk about gambling."),
+                            Val::from("Discuss hobbies."),
+                        ],
+                    )?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                        && !subject2.loosely_equals(&Val::from(2))
+                        && !subject2.loosely_equals(&Val::from(3))
+                        && !subject2.loosely_equals(&Val::from(4));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        if ctx.var("god_megin_6").get()? == 0 {
+                            ctx.lines_as("Royal Myst", args!["Huh? What's that old geezer want this time? Tell 'em I'm fine, dandy even! Why the hell does he keep sending people..."])?;
+                            ctx.var("god_megin_6").set(Val::from(1))?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("god_megin_6").get()?.number()? > 0 && ctx.var("god_megin_6").get()?.number()? < 15) {
+                            ctx.lines_as("Royal Myst", args!["What the hell!? Stop talking about him! I never wanna see his face again! Tell him to leave me the hell alone!"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("god_megin_6").get()?.number()? > 14 {
+                            ctx.lines_as("Royal Myst", args!["Damn geezer...", "How much is he being paid for studying what we all found?! Eh, somehow, I don't care as long as", "he pays me..."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Royal Myst", args!["Yeah...", "I just don't", "care anymore."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        if ctx.var("god_megin_6").get()?.number()? < 15 {
+                            ctx.lines_as(
+                                "Royal Myst",
+                                args![
+                                    "1st Squad? Yeah, I used to be in that. All of us in the squad used to be real good buddies too."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Royal Myst",
+                                args![
+                                    "Zan.Huadoku, Cuaque Donon,",
+                                    "Jack O, Emma Searth and The Nineball. Yeah... I wonder what they're all up to?"
+                                ],
+                            )?;
+                        } else if ctx.var("god_megin_6").get()?.number()? > 14 {
+                            ctx.lines_as(
+                                "Royal Myst",
+                                args!["1st Squad?", "Don't know, don't care~", "Do I look like a stupid Crusader?"],
+                            )?;
+                        }
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        if ctx.var("god_megin_6").get()?.number()? < 15 {
+                            ctx.lines_as(
+                                "Royal Myst",
+                                args![
+                                    "Gambling? ! Oh man...",
+                                    "I love gambling, you know!",
+                                    "Heh, but I haven't been lucky enough to win yet. Hahaha~!"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("god_megin_6").get()?.number()? > 14 {
+                            ctx.lines_as(
+                                "Royal Myst",
+                                args![
+                                    "Gambling...!",
+                                    "Heh heh! Some risks you take,",
+                                    "and others you really shouldn't.",
+                                    "I can't help but feel sorry for that guy, E--"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Royal Myst", args!["Ergh...?", "Damn, I can never remember his name. You'd think I wouldn't forget the guy whose rap I'm taking but... Eh, I'll remember once I sober up."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Royal Myst", args!["Hey, what do you think happens to Crusaders when they're framed and killed, huh? Where exactly do they go? Niflheim, Vahalla...?"])?;
+                            ctx.var("god_eremes").set(Val::from(20))?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        if ctx.var("god_megin_6").get()? == 0 {
+                            ctx.lines(args!["Hobbies?", "What, you comin'", "on to me?"])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Royal Myst",
+                                args![
+                                    "A man's hobby is drinking, or didn't you know that? I happen to be real good at it too! Mwahahaha!"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if (ctx.var("god_megin_6").get()?.number()? > 0 && ctx.var("god_megin_6").get()?.number()? < 15) {
+                            if ctx.call(Function::CountItem, vec![Val::from(970)])?.number()? > 0 {
+                                ctx.lines_as(
+                                    "Royal Myst",
+                                    args![
+                                        "Speaking of which,",
+                                        "I haven't had a drink",
+                                        "for a looong time. Almost",
+                                        "a couple hours now."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Royal Myst",
+                                    args!["Oooh, looks like you've got a tasty beverage I can enjoy. Bwahahaha! Gimmie~!"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines(args![
+                                    "^3355FFBefore you can even think,",
+                                    "Royal Myst dips his hand into your inventory and helps himself to an Alcohol.^000000"
+                                ])?;
+                                ctx.call(Function::DelItem, vec![Val::from(970), Val::from(1)])?;
+                                ctx.var("god_megin_6").set((ctx.var("god_megin_6").get()? + Val::from(2)))?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
+                                ctx.lines_as("Royal Myst", args!["Why mention it? You gonna bring me something I'll like? Cuz I'm more than willing to take it! Bwahahaha!"])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        } else if ctx.var("god_megin_6").get()?.number()? > 14 {
+                            ctx.lines_as("Royal Myst", args!["^333333*Hiccup*^000000 Oh yeah, this is the stuff. Not like that imitation junk they've been serving at the Bars nowadays..."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Royal Myst",
+                                args![
+                                    "Hey! There anything you wanna",
+                                    "know about me? You did me a favor, so I'll tell you anything! Eeeeeverythiiing~~!!"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    }
+                }
+            }
+        } else {
+            ctx.lines_as("Royal Myst", args!["Eh heh heh~", "I just know", "I'm gonna win", "this time!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines_as("Royal Myst", args!["Wha...?", "You wanna talk?"])?;
@@ -4132,31 +4032,27 @@ fn security_officer_megin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("god_eremes").get()?.number()? > 18 {
-                if ctx.var("god_megin_5").get()?.number()? < 5 {
-                    ctx.lines_as("The Nineball", args!["Welcome to Jawaii,", "the paradise resort!"])?;
-                    ctx.next()?;
-                    ctx.lines_as("The Nineball", args!["I'm the 'The Nineball, the security officer of Jawaii! If you encounter any trouble, or find any Singles, please don't hesitate to report to me as soon as you can~"])?;
-                    ctx.next()?;
-                    ctx.lines_as("The Nineball", args!["I've been told that there have", "been many unruly drunkards here lately, but it is in our best interest to make your experience here as enjoyable as possible."])?;
-                    ctx.var("god_megin_5").set((ctx.var("god_megin_5").get()? + Val::from(1)))?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("god_megin_5").get()? == 5 {
-                        ctx.mes("^3355FFHe acted very bright and friendly, but for a fleeting moment, you were able to glimpse a hint of sadness in his eyes.^000000")?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFIt doesn't seem that",
-                            "you'll be able to get him",
-                            "to talk about what exactly",
-                            "happened in the 1st Squad...^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+        } else if ctx.var("god_eremes").get()?.number()? > 18 {
+            if ctx.var("god_megin_5").get()?.number()? < 5 {
+                ctx.lines_as("The Nineball", args!["Welcome to Jawaii,", "the paradise resort!"])?;
+                ctx.next()?;
+                ctx.lines_as("The Nineball", args!["I'm the 'The Nineball, the security officer of Jawaii! If you encounter any trouble, or find any Singles, please don't hesitate to report to me as soon as you can~"])?;
+                ctx.next()?;
+                ctx.lines_as("The Nineball", args!["I've been told that there have", "been many unruly drunkards here lately, but it is in our best interest to make your experience here as enjoyable as possible."])?;
+                ctx.var("god_megin_5").set((ctx.var("god_megin_5").get()? + Val::from(1)))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("god_megin_5").get()? == 5 {
+                ctx.mes("^3355FFHe acted very bright and friendly, but for a fleeting moment, you were able to glimpse a hint of sadness in his eyes.^000000")?;
+                ctx.next()?;
+                ctx.lines(args![
+                    "^3355FFIt doesn't seem that",
+                    "you'll be able to get him",
+                    "to talk about what exactly",
+                    "happened in the 1st Squad...^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     } else {
@@ -4409,10 +4305,8 @@ fn egnigem_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.lines_as("Egnigem", args!["Thank you for", "listening to me..."])?;
                                 if ctx.var("god_eremes").get()? == 21 {
                                     ctx.var("god_eremes").set(Val::from(23))?;
-                                } else {
-                                    if ctx.var("god_eremes").get()? == 22 {
-                                        ctx.var("god_eremes").set(Val::from(24))?;
-                                    }
+                                } else if ctx.var("god_eremes").get()? == 22 {
+                                    ctx.var("god_eremes").set(Val::from(24))?;
                                 }
                                 ctx.close_window()?;
                                 return Err(Stop::End);
@@ -4483,26 +4377,18 @@ fn egnigem_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             } else {
                                 if (ctx.var("BaseLevel").get()?.number()? > 65 && ctx.var("BaseLevel").get()?.number()? < 71) {
                                     ctx.call(Function::GetExperience, vec![Val::from(82233), Val::from(0)])?;
+                                } else if (ctx.var("BaseLevel").get()?.number()? > 70 && ctx.var("BaseLevel").get()?.number()? < 76) {
+                                    ctx.call(Function::GetExperience, vec![Val::from(212271), Val::from(0)])?;
+                                } else if (ctx.var("BaseLevel").get()?.number()? > 75 && ctx.var("BaseLevel").get()?.number()? < 81) {
+                                    ctx.call(Function::GetExperience, vec![Val::from(390738), Val::from(0)])?;
+                                } else if (ctx.var("BaseLevel").get()?.number()? > 80 && ctx.var("BaseLevel").get()?.number()? < 86) {
+                                    ctx.call(Function::GetExperience, vec![Val::from(451020), Val::from(0)])?;
+                                } else if (ctx.var("BaseLevel").get()?.number()? > 85
+                                    && ctx.var("BaseLevel").get()?.number()? < 91)
+                                {
+                                    ctx.call(Function::GetExperience, vec![Val::from(546156), Val::from(0)])?;
                                 } else {
-                                    if (ctx.var("BaseLevel").get()?.number()? > 70 && ctx.var("BaseLevel").get()?.number()? < 76) {
-                                        ctx.call(Function::GetExperience, vec![Val::from(212271), Val::from(0)])?;
-                                    } else {
-                                        if (ctx.var("BaseLevel").get()?.number()? > 75 && ctx.var("BaseLevel").get()?.number()? < 81) {
-                                            ctx.call(Function::GetExperience, vec![Val::from(390738), Val::from(0)])?;
-                                        } else {
-                                            if (ctx.var("BaseLevel").get()?.number()? > 80 && ctx.var("BaseLevel").get()?.number()? < 86) {
-                                                ctx.call(Function::GetExperience, vec![Val::from(451020), Val::from(0)])?;
-                                            } else {
-                                                if (ctx.var("BaseLevel").get()?.number()? > 85
-                                                    && ctx.var("BaseLevel").get()?.number()? < 91)
-                                                {
-                                                    ctx.call(Function::GetExperience, vec![Val::from(546156), Val::from(0)])?;
-                                                } else {
-                                                    ctx.call(Function::GetExperience, vec![Val::from(1220358), Val::from(0)])?;
-                                                }
-                                            }
-                                        }
-                                    }
+                                    ctx.call(Function::GetExperience, vec![Val::from(1220358), Val::from(0)])?;
                                 }
                             }
                         }
@@ -4572,28 +4458,20 @@ fn egnigem_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 } else {
                                     if (ctx.var("BaseLevel").get()?.number()? > 65 && ctx.var("BaseLevel").get()?.number()? < 71) {
                                         ctx.call(Function::GetExperience, vec![Val::from(82233), Val::from(0)])?;
+                                    } else if (ctx.var("BaseLevel").get()?.number()? > 70 && ctx.var("BaseLevel").get()?.number()? < 76) {
+                                        ctx.call(Function::GetExperience, vec![Val::from(212271), Val::from(0)])?;
+                                    } else if (ctx.var("BaseLevel").get()?.number()? > 75 && ctx.var("BaseLevel").get()?.number()? < 81) {
+                                        ctx.call(Function::GetExperience, vec![Val::from(390738), Val::from(0)])?;
+                                    } else if (ctx.var("BaseLevel").get()?.number()? > 80
+                                        && ctx.var("BaseLevel").get()?.number()? < 86)
+                                    {
+                                        ctx.call(Function::GetExperience, vec![Val::from(451020), Val::from(0)])?;
+                                    } else if (ctx.var("BaseLevel").get()?.number()? > 85
+                                        && ctx.var("BaseLevel").get()?.number()? < 91)
+                                    {
+                                        ctx.call(Function::GetExperience, vec![Val::from(546156), Val::from(0)])?;
                                     } else {
-                                        if (ctx.var("BaseLevel").get()?.number()? > 70 && ctx.var("BaseLevel").get()?.number()? < 76) {
-                                            ctx.call(Function::GetExperience, vec![Val::from(212271), Val::from(0)])?;
-                                        } else {
-                                            if (ctx.var("BaseLevel").get()?.number()? > 75 && ctx.var("BaseLevel").get()?.number()? < 81) {
-                                                ctx.call(Function::GetExperience, vec![Val::from(390738), Val::from(0)])?;
-                                            } else {
-                                                if (ctx.var("BaseLevel").get()?.number()? > 80
-                                                    && ctx.var("BaseLevel").get()?.number()? < 86)
-                                                {
-                                                    ctx.call(Function::GetExperience, vec![Val::from(451020), Val::from(0)])?;
-                                                } else {
-                                                    if (ctx.var("BaseLevel").get()?.number()? > 85
-                                                        && ctx.var("BaseLevel").get()?.number()? < 91)
-                                                    {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(546156), Val::from(0)])?;
-                                                    } else {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(1220358), Val::from(0)])?;
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        ctx.call(Function::GetExperience, vec![Val::from(1220358), Val::from(0)])?;
                                     }
                                 }
                             }
@@ -4601,173 +4479,171 @@ fn egnigem_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     }
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("god_eremes").get()?.number()? < 20 {
-                        ctx.lines_as("Egnigem", args!["Were you betrayed by fate as well, or are you simply a wanderer that's stumbled into this land of darkness?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Egnigem",
-                            args![
-                                "Hmm, the living don't deserve",
-                                "to be in this realm of cold and suffering. But I can only help you escape by telling you what little",
-                                "I know."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Ask him about buildings.:Remove marks on mini-map.:Cancel.")],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.lines_as("Egnigem", args!["I see. If you better understand Niflheim's layout, you have a greater chance of surviving and escaping."])?;
-                                ctx.next()?;
-                                'b4: {
-                                    let subject4 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("Witch's Castle:Tool Shop:Weapon Shop:Tavern:Cancel")],
-                                    )?);
-                                    let mut matched4 = false;
-                                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                        && !subject4.loosely_equals(&Val::from(2))
-                                        && !subject4.loosely_equals(&Val::from(3))
-                                        && !subject4.loosely_equals(&Val::from(4))
-                                        && !subject4.loosely_equals(&Val::from(5));
-                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as(
-                                            "Egnigem",
-                                            args![
-                                                "The witch of Niflheim...",
-                                                "You can find her castle at the ^FF3355+^000000 mark I've made on your mini-map."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Egnigem", args!["Hrrrm...", "It seems that the living who wind up in Niflheim are seeking out the witch. But I don't quite understand what's so important about her."])?;
-                                        ctx.call(
-                                            Function::ViewPoint,
-                                            vec![Val::from(1), Val::from(253), Val::from(191), Val::from(2), Val::from(16777011)],
-                                        )?;
-                                        break 'b4;
-                                    }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as(
-                                            "Egnigem",
-                                            args![
-                                                "The Tool shop? Here in Niflheim, they sell some unique items that",
-                                                "you can't buy anywhere else."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Egnigem",
-                                            args![
-                                                "You might want to see their",
-                                                "wares for yourself. I've drawn",
-                                                "a ^CE6300+^000000 on your mini-map to mark",
-                                                "its location."
-                                            ],
-                                        )?;
-                                        ctx.call(
-                                            Function::ViewPoint,
-                                            vec![Val::from(1), Val::from(217), Val::from(196), Val::from(3), Val::from(16764515)],
-                                        )?;
-                                        break 'b4;
-                                    }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as("Egnigem", args!["I've marked the location of the Weapon Shop at ^55FF33+^000000. There's nothing too special over there, though."])?;
-                                        ctx.call(
-                                            Function::ViewPoint,
-                                            vec![Val::from(1), Val::from(216), Val::from(171), Val::from(4), Val::from(16733695)],
-                                        )?;
-                                        break 'b4;
-                                    }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as(
-                                            "Egnigem",
-                                            args!["Tavern is at ^3355FF+^000000. They only sell drinks to the dead, though..."],
-                                        )?;
-                                        ctx.call(
-                                            Function::ViewPoint,
-                                            vec![Val::from(1), Val::from(189), Val::from(207), Val::from(5), Val::from(16724821)],
-                                        )?;
-                                        break 'b4;
-                                    }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as("Egnigem", args!["Choose 'Remove marks on mini-map' from the menu to remove all the building location marks I've made."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(
-                                    Function::ViewPoint,
-                                    vec![Val::from(2), Val::from(253), Val::from(191), Val::from(2), Val::from(16711935)],
-                                )?;
-                                ctx.call(
-                                    Function::ViewPoint,
-                                    vec![Val::from(2), Val::from(217), Val::from(196), Val::from(3), Val::from(16711935)],
-                                )?;
-                                ctx.call(
-                                    Function::ViewPoint,
-                                    vec![Val::from(2), Val::from(216), Val::from(171), Val::from(4), Val::from(16711935)],
-                                )?;
-                                ctx.call(
-                                    Function::ViewPoint,
-                                    vec![Val::from(2), Val::from(189), Val::from(207), Val::from(5), Val::from(16711935)],
-                                )?;
-                                ctx.lines_as("Egnigem", args!["Alright, all the marks I've made have been removed from your mini-map. If you want to check the locations in Niflheim again, go ahead and ask me."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.lines_as("Egnigem", args!["You're gonna explore this place on your own? Pretty brave, aren't you? Just be careful: here in Niflheim, darkness reigns supreme."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                } else if ctx.var("god_eremes").get()?.number()? < 20 {
+                    ctx.lines_as("Egnigem", args!["Were you betrayed by fate as well, or are you simply a wanderer that's stumbled into this land of darkness?"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Egnigem",
+                        args![
+                            "Hmm, the living don't deserve",
+                            "to be in this realm of cold and suffering. But I can only help you escape by telling you what little",
+                            "I know."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    'b3: {
+                        let subject3 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Ask him about buildings.:Remove marks on mini-map.:Cancel.")],
+                        )?);
+                        let mut matched3 = false;
+                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                            && !subject3.loosely_equals(&Val::from(2))
+                            && !subject3.loosely_equals(&Val::from(3));
+                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                            matched3 = true;
                         }
-                    } else {
-                        ctx.lines_as("Egnigem", args!["I really wish that", "Emma Searth could", "remember me..."])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFHis eyes seemed",
-                            "to moisten with sadness.",
-                            "Is it really possible for the",
-                            "dead to shed tears?^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
+                        if matched3 {
+                            ctx.lines_as("Egnigem", args!["I see. If you better understand Niflheim's layout, you have a greater chance of surviving and escaping."])?;
+                            ctx.next()?;
+                            'b4: {
+                                let subject4 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("Witch's Castle:Tool Shop:Weapon Shop:Tavern:Cancel")],
+                                )?);
+                                let mut matched4 = false;
+                                let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                                    && !subject4.loosely_equals(&Val::from(2))
+                                    && !subject4.loosely_equals(&Val::from(3))
+                                    && !subject4.loosely_equals(&Val::from(4))
+                                    && !subject4.loosely_equals(&Val::from(5));
+                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    ctx.lines_as(
+                                        "Egnigem",
+                                        args![
+                                            "The witch of Niflheim...",
+                                            "You can find her castle at the ^FF3355+^000000 mark I've made on your mini-map."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Egnigem", args!["Hrrrm...", "It seems that the living who wind up in Niflheim are seeking out the witch. But I don't quite understand what's so important about her."])?;
+                                    ctx.call(
+                                        Function::ViewPoint,
+                                        vec![Val::from(1), Val::from(253), Val::from(191), Val::from(2), Val::from(16777011)],
+                                    )?;
+                                    break 'b4;
+                                }
+                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    ctx.lines_as(
+                                        "Egnigem",
+                                        args![
+                                            "The Tool shop? Here in Niflheim, they sell some unique items that",
+                                            "you can't buy anywhere else."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Egnigem",
+                                        args![
+                                            "You might want to see their",
+                                            "wares for yourself. I've drawn",
+                                            "a ^CE6300+^000000 on your mini-map to mark",
+                                            "its location."
+                                        ],
+                                    )?;
+                                    ctx.call(
+                                        Function::ViewPoint,
+                                        vec![Val::from(1), Val::from(217), Val::from(196), Val::from(3), Val::from(16764515)],
+                                    )?;
+                                    break 'b4;
+                                }
+                                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    ctx.lines_as("Egnigem", args!["I've marked the location of the Weapon Shop at ^55FF33+^000000. There's nothing too special over there, though."])?;
+                                    ctx.call(
+                                        Function::ViewPoint,
+                                        vec![Val::from(1), Val::from(216), Val::from(171), Val::from(4), Val::from(16733695)],
+                                    )?;
+                                    break 'b4;
+                                }
+                                if !matched4 && subject4.loosely_equals(&Val::from(4)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    ctx.lines_as(
+                                        "Egnigem",
+                                        args!["Tavern is at ^3355FF+^000000. They only sell drinks to the dead, though..."],
+                                    )?;
+                                    ctx.call(
+                                        Function::ViewPoint,
+                                        vec![Val::from(1), Val::from(189), Val::from(207), Val::from(5), Val::from(16724821)],
+                                    )?;
+                                    break 'b4;
+                                }
+                                if !matched4 && subject4.loosely_equals(&Val::from(5)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    ctx.lines_as("Egnigem", args!["Choose 'Remove marks on mini-map' from the menu to remove all the building location marks I've made."])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.call(
+                                Function::ViewPoint,
+                                vec![Val::from(2), Val::from(253), Val::from(191), Val::from(2), Val::from(16711935)],
+                            )?;
+                            ctx.call(
+                                Function::ViewPoint,
+                                vec![Val::from(2), Val::from(217), Val::from(196), Val::from(3), Val::from(16711935)],
+                            )?;
+                            ctx.call(
+                                Function::ViewPoint,
+                                vec![Val::from(2), Val::from(216), Val::from(171), Val::from(4), Val::from(16711935)],
+                            )?;
+                            ctx.call(
+                                Function::ViewPoint,
+                                vec![Val::from(2), Val::from(189), Val::from(207), Val::from(5), Val::from(16711935)],
+                            )?;
+                            ctx.lines_as("Egnigem", args!["Alright, all the marks I've made have been removed from your mini-map. If you want to check the locations in Niflheim again, go ahead and ask me."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.lines_as("Egnigem", args!["You're gonna explore this place on your own? Pretty brave, aren't you? Just be careful: here in Niflheim, darkness reigns supreme."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
                     }
+                } else {
+                    ctx.lines_as("Egnigem", args!["I really wish that", "Emma Searth could", "remember me..."])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFHis eyes seemed",
+                        "to moisten with sadness.",
+                        "Is it really possible for the",
+                        "dead to shed tears?^000000"
+                    ])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }

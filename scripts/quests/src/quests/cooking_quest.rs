@@ -488,114 +488,106 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                 )?;
                                 step = CharlesOrleansCookStep::LEnd;
                                 continue 'machine;
-                            } else {
-                                if l_cook_m1.clone() == 2 {
-                                    ctx.var("cooking_q").set(Val::from(2))?;
-                                    ctx.lines_as(
-                                        "Charles Orleans",
-                                        args![
-                                            "Ah, I've got it!",
-                                            "Let's make ''Grape Juice",
-                                            "Herbal Tea.'' The weather",
-                                            "is perfect right now for",
-                                            "a cool, refreshing drink."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Charles Orleans",
-                                        args![
-                                            "Please bring",
-                                            "^4D4DFF3 Grapes^000000, and",
-                                            "^4D4DFF2 Red Potions^000000",
-                                            "so that we can",
-                                            "begin the lesson~"
-                                        ],
-                                    )?;
-                                    step = CharlesOrleansCookStep::LEnd;
-                                    continue 'machine;
-                                } else {
-                                    if l_cook_m1.clone() == 3 {
-                                        ctx.var("cooking_q").set(Val::from(3))?;
-                                        ctx.lines_as(
-                                            "Charles Orleans",
-                                            args![
-                                                "I've got it~",
-                                                "We can make",
-                                                "''Honey Grape Juice.''",
-                                                "Please bring me the",
-                                                "following ingredients so",
-                                                "that we can begin the lesson."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Charles Orleans",
-                                            args![
-                                                "^4D4DFF1 Honey^000000,",
-                                                "^4D4DFF2 Grapes^000000, and",
-                                                "^4D4DFF1 Red Potion^000000."
-                                            ],
-                                        )?;
-                                        step = CharlesOrleansCookStep::LEnd;
-                                        continue 'machine;
-                                    } else {
-                                        if l_cook_m1.clone() == 4 {
-                                            ctx.var("cooking_q").set(Val::from(4))?;
-                                            ctx.lines_as(
-                                                "Charles Orleans",
-                                                args![
-                                                    "Mmm, why don't we",
-                                                    "make ''Frog Egg and",
-                                                    "Squid Ink Soup?'' Those",
-                                                    "bereft of gourmet taste may",
-                                                    "think it's disgusting, but it's",
-                                                    "actually quite scrumptious."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Charles Orleans",
-                                                args![
-                                                    "Well then,",
-                                                    "please bring me",
-                                                    "^4D4DFF1 Bag of Grain^000000,",
-                                                    "^4D4DFF10 Spawns^000000, and",
-                                                    "^4D4DFF1 Squid Ink^000000."
-                                                ],
-                                            )?;
-                                            step = CharlesOrleansCookStep::LEnd;
-                                            continue 'machine;
-                                        } else {
-                                            if l_cook_m1.clone() == 5 {
-                                                ctx.var("cooking_q").set(Val::from(5))?;
-                                                ctx.lines_as(
-                                                    "Charles Orleans",
-                                                    args![
-                                                        "Ah, I know what",
-                                                        "would be perfect right",
-                                                        "now. ''Steamed Crab",
-                                                        "Nippers.'' Now, please",
-                                                        "bring these ingredients",
-                                                        "so we can make this soup."
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Charles Orleans",
-                                                    args![
-                                                        "We'll need",
-                                                        "^4D4DFF10 Green Herbs^000000,",
-                                                        "^4D4DFF10 Nippers^000000, and",
-                                                        "^4D4DFF1 Yellow Potion^000000."
-                                                    ],
-                                                )?;
-                                                step = CharlesOrleansCookStep::LEnd;
-                                                continue 'machine;
-                                            }
-                                        }
-                                    }
-                                }
+                            } else if l_cook_m1.clone() == 2 {
+                                ctx.var("cooking_q").set(Val::from(2))?;
+                                ctx.lines_as(
+                                    "Charles Orleans",
+                                    args![
+                                        "Ah, I've got it!",
+                                        "Let's make ''Grape Juice",
+                                        "Herbal Tea.'' The weather",
+                                        "is perfect right now for",
+                                        "a cool, refreshing drink."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Charles Orleans",
+                                    args![
+                                        "Please bring",
+                                        "^4D4DFF3 Grapes^000000, and",
+                                        "^4D4DFF2 Red Potions^000000",
+                                        "so that we can",
+                                        "begin the lesson~"
+                                    ],
+                                )?;
+                                step = CharlesOrleansCookStep::LEnd;
+                                continue 'machine;
+                            } else if l_cook_m1.clone() == 3 {
+                                ctx.var("cooking_q").set(Val::from(3))?;
+                                ctx.lines_as(
+                                    "Charles Orleans",
+                                    args![
+                                        "I've got it~",
+                                        "We can make",
+                                        "''Honey Grape Juice.''",
+                                        "Please bring me the",
+                                        "following ingredients so",
+                                        "that we can begin the lesson."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Charles Orleans",
+                                    args![
+                                        "^4D4DFF1 Honey^000000,",
+                                        "^4D4DFF2 Grapes^000000, and",
+                                        "^4D4DFF1 Red Potion^000000."
+                                    ],
+                                )?;
+                                step = CharlesOrleansCookStep::LEnd;
+                                continue 'machine;
+                            } else if l_cook_m1.clone() == 4 {
+                                ctx.var("cooking_q").set(Val::from(4))?;
+                                ctx.lines_as(
+                                    "Charles Orleans",
+                                    args![
+                                        "Mmm, why don't we",
+                                        "make ''Frog Egg and",
+                                        "Squid Ink Soup?'' Those",
+                                        "bereft of gourmet taste may",
+                                        "think it's disgusting, but it's",
+                                        "actually quite scrumptious."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Charles Orleans",
+                                    args![
+                                        "Well then,",
+                                        "please bring me",
+                                        "^4D4DFF1 Bag of Grain^000000,",
+                                        "^4D4DFF10 Spawns^000000, and",
+                                        "^4D4DFF1 Squid Ink^000000."
+                                    ],
+                                )?;
+                                step = CharlesOrleansCookStep::LEnd;
+                                continue 'machine;
+                            } else if l_cook_m1.clone() == 5 {
+                                ctx.var("cooking_q").set(Val::from(5))?;
+                                ctx.lines_as(
+                                    "Charles Orleans",
+                                    args![
+                                        "Ah, I know what",
+                                        "would be perfect right",
+                                        "now. ''Steamed Crab",
+                                        "Nippers.'' Now, please",
+                                        "bring these ingredients",
+                                        "so we can make this soup."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Charles Orleans",
+                                    args![
+                                        "We'll need",
+                                        "^4D4DFF10 Green Herbs^000000,",
+                                        "^4D4DFF10 Nippers^000000, and",
+                                        "^4D4DFF1 Yellow Potion^000000."
+                                    ],
+                                )?;
+                                step = CharlesOrleansCookStep::LEnd;
+                                continue 'machine;
                             }
                             ctx.var("cooking_q").set(Val::from(6))?;
                             ctx.lines_as(
@@ -1775,25 +1767,23 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                                     )?;
                                                                                     step = CharlesOrleansCookStep::LEnd;
                                                                                     continue 'machine;
-                                                                                } else {
-                                                                                    if l_new_book.clone() == 0 {
-                                                                                        ctx.call(
-                                                                                            Function::Cutin,
-                                                                                            vec![Val::from("orleans_5"), Val::from(0)],
-                                                                                        )?;
-                                                                                        ctx.lines_as(
-                                                                                            "Charles Orleans",
-                                                                                            args![
-                                                                                                "So you changed your mind?",
-                                                                                                "It would be a good idea to",
-                                                                                                "study the recipes that you",
-                                                                                                "have right now before trying",
-                                                                                                "something new, I suppose."
-                                                                                            ],
-                                                                                        )?;
-                                                                                        step = CharlesOrleansCookStep::LEnd;
-                                                                                        continue 'machine;
-                                                                                    }
+                                                                                } else if l_new_book.clone() == 0 {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![Val::from("orleans_5"), Val::from(0)],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Charles Orleans",
+                                                                                        args![
+                                                                                            "So you changed your mind?",
+                                                                                            "It would be a good idea to",
+                                                                                            "study the recipes that you",
+                                                                                            "have right now before trying",
+                                                                                            "something new, I suppose."
+                                                                                        ],
+                                                                                    )?;
+                                                                                    step = CharlesOrleansCookStep::LEnd;
+                                                                                    continue 'machine;
                                                                                 }
                                                                                 ctx.lines_as(
                                                                                     "Charles Orleans",
@@ -1826,171 +1816,167 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                                     )?;
                                                                                     step = CharlesOrleansCookStep::LEnd;
                                                                                     continue 'machine;
+                                                                                } else if l_old_book.clone() == 0 {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![Val::from("orleans_5"), Val::from(0)],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Charles Orleans",
+                                                                                        args![
+                                                                                            "So you changed your mind?",
+                                                                                            "It would be a good idea to",
+                                                                                            "study the recipes that you",
+                                                                                            "have right now before trying",
+                                                                                            "something new, I suppose."
+                                                                                        ],
+                                                                                    )?;
+                                                                                    step = CharlesOrleansCookStep::LEnd;
+                                                                                    continue 'machine;
+                                                                                } else if l_old_book
+                                                                                    .clone()
+                                                                                    .loosely_equals(&l_new_book.clone())
+                                                                                {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![Val::from("orleans_4"), Val::from(0)],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Charles Orleans",
+                                                                                        args![
+                                                                                            "Wait, wait...",
+                                                                                            "Why do you want to",
+                                                                                            "borrow a copy of the",
+                                                                                            "cookbook that you already",
+                                                                                            "have? I guess you made",
+                                                                                            "some sort of mistake?"
+                                                                                        ],
+                                                                                    )?;
+                                                                                    step = CharlesOrleansCookStep::LEnd;
+                                                                                    continue 'machine;
                                                                                 } else {
-                                                                                    if l_old_book.clone() == 0 {
-                                                                                        ctx.call(
-                                                                                            Function::Cutin,
-                                                                                            vec![Val::from("orleans_5"), Val::from(0)],
-                                                                                        )?;
+                                                                                    if ctx
+                                                                                        .call(
+                                                                                            Function::CountItem,
+                                                                                            vec![
+                                                                                                (Val::from(7471)
+                                                                                                    + l_old_book.clone()),
+                                                                                            ],
+                                                                                        )?
+                                                                                        .number()?
+                                                                                        < 1
+                                                                                    {
                                                                                         ctx.lines_as(
                                                                                             "Charles Orleans",
                                                                                             args![
-                                                                                                "So you changed your mind?",
-                                                                                                "It would be a good idea to",
-                                                                                                "study the recipes that you",
-                                                                                                "have right now before trying",
-                                                                                                "something new, I suppose."
+                                                                                                "Wait, wait...",
+                                                                                                "Why don't you have",
+                                                                                                "the book that you said",
+                                                                                                "that you'd return to me?",
+                                                                                                "Find it first, and then I can",
+                                                                                                "lend another cookbook to you."
                                                                                             ],
                                                                                         )?;
                                                                                         step = CharlesOrleansCookStep::LEnd;
                                                                                         continue 'machine;
-                                                                                    } else {
-                                                                                        if l_old_book
-                                                                                            .clone()
-                                                                                            .loosely_equals(&l_new_book.clone())
+                                                                                    }
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![Val::from("orleans_2"), Val::from(0)],
+                                                                                    )?;
+                                                                                    ctx.mes("[Charles Orleans]")?;
+                                                                                    'b5: {
+                                                                                        let subject5 = l_old_book.clone();
+                                                                                        let mut matched5 = false;
+                                                                                        let no_case5 = !subject5
+                                                                                            .loosely_equals(&Val::from(1))
+                                                                                            && !subject5
+                                                                                                .loosely_equals(&Val::from(2))
+                                                                                            && !subject5
+                                                                                                .loosely_equals(&Val::from(3))
+                                                                                            && !subject5
+                                                                                                .loosely_equals(&Val::from(4))
+                                                                                            && !subject5
+                                                                                                .loosely_equals(&Val::from(5));
+                                                                                        if !matched5
+                                                                                            && subject5
+                                                                                                .loosely_equals(&Val::from(1))
                                                                                         {
-                                                                                            ctx.call(
-                                                                                                Function::Cutin,
-                                                                                                vec![Val::from("orleans_4"), Val::from(0)],
-                                                                                            )?;
-                                                                                            ctx.lines_as(
-                                                                                                "Charles Orleans",
-                                                                                                args![
-                                                                                                    "Wait, wait...",
-                                                                                                    "Why do you want to",
-                                                                                                    "borrow a copy of the",
-                                                                                                    "cookbook that you already",
-                                                                                                    "have? I guess you made",
-                                                                                                    "some sort of mistake?"
-                                                                                                ],
-                                                                                            )?;
-                                                                                            step = CharlesOrleansCookStep::LEnd;
-                                                                                            continue 'machine;
-                                                                                        } else {
-                                                                                            if ctx
-                                                                                                .call(
-                                                                                                    Function::CountItem,
-                                                                                                    vec![
-                                                                                                        (Val::from(7471)
-                                                                                                            + l_old_book.clone()),
-                                                                                                    ],
-                                                                                                )?
-                                                                                                .number()?
-                                                                                                < 1
-                                                                                            {
-                                                                                                ctx.lines_as(
-                                                                                                    "Charles Orleans",
-                                                                                                    args![
-                                                                                                        "Wait, wait...",
-                                                                                                        "Why don't you have",
-                                                                                                        "the book that you said",
-                                                                                                        "that you'd return to me?",
-                                                                                                        "Find it first, and then I can",
-                                                                                                        "lend another cookbook to you."
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                step = CharlesOrleansCookStep::LEnd;
-                                                                                                continue 'machine;
-                                                                                            }
-                                                                                            ctx.call(
-                                                                                                Function::Cutin,
-                                                                                                vec![Val::from("orleans_2"), Val::from(0)],
-                                                                                            )?;
-                                                                                            ctx.mes("[Charles Orleans]")?;
-                                                                                            'b5: {
-                                                                                                let subject5 = l_old_book.clone();
-                                                                                                let mut matched5 = false;
-                                                                                                let no_case5 = !subject5
-                                                                                                    .loosely_equals(&Val::from(1))
-                                                                                                    && !subject5
-                                                                                                        .loosely_equals(&Val::from(2))
-                                                                                                    && !subject5
-                                                                                                        .loosely_equals(&Val::from(3))
-                                                                                                    && !subject5
-                                                                                                        .loosely_equals(&Val::from(4))
-                                                                                                    && !subject5
-                                                                                                        .loosely_equals(&Val::from(5));
-                                                                                                if !matched5
-                                                                                                    && subject5
-                                                                                                        .loosely_equals(&Val::from(1))
-                                                                                                {
-                                                                                                    matched5 = true;
-                                                                                                }
-                                                                                                if matched5 {
-                                                                                                    ctx.lines(args![
-                                                                                                        "Ah, so you're done",
-                                                                                                        "with the Level 1 Cookbook.",
-                                                                                                        "That's good, that means you're",
-                                                                                                        "ready to graduate from the most",
-                                                                                                        "basic of basics. From now on,",
-                                                                                                        "the recipes will be harder..."
-                                                                                                    ])?;
-                                                                                                    break 'b5;
-                                                                                                }
-                                                                                                if !matched5
-                                                                                                    && subject5
-                                                                                                        .loosely_equals(&Val::from(2))
-                                                                                                {
-                                                                                                    matched5 = true;
-                                                                                                }
-                                                                                                if matched5 {
-                                                                                                    ctx.lines(args![
-                                                                                                        "Ah, so what did you",
-                                                                                                        "think of the recipes in",
-                                                                                                        "the Level 2 Cookbook?",
-                                                                                                        "Homestyle cooking may be",
-                                                                                                        "simple, but it should never",
-                                                                                                        "be neglected by chefs."
-                                                                                                    ])?;
-                                                                                                    break 'b5;
-                                                                                                }
-                                                                                                if !matched5
-                                                                                                    && subject5
-                                                                                                        .loosely_equals(&Val::from(3))
-                                                                                                {
-                                                                                                    matched5 = true;
-                                                                                                }
-                                                                                                if matched5 {
-                                                                                                    ctx.lines(args!["Ah, done with the Level 3", "Cookbook already? The recipes", "in there are really good when you're cooking romantic dinners.", "They'll come in handy someday,", "if you know what I mean."])?;
-                                                                                                    break 'b5;
-                                                                                                }
-                                                                                                if !matched5
-                                                                                                    && subject5
-                                                                                                        .loosely_equals(&Val::from(4))
-                                                                                                {
-                                                                                                    matched5 = true;
-                                                                                                }
-                                                                                                if matched5 {
-                                                                                                    ctx.lines(args![
-                                                                                                        "So you've finished the",
-                                                                                                        "Level 4 Cookbook. That's",
-                                                                                                        "no small feat! You've got to",
-                                                                                                        "use very strange ingredients",
-                                                                                                        "to create delicious cuisine!"
-                                                                                                    ])?;
-                                                                                                    break 'b5;
-                                                                                                }
-                                                                                                if !matched5
-                                                                                                    && subject5
-                                                                                                        .loosely_equals(&Val::from(5))
-                                                                                                {
-                                                                                                    matched5 = true;
-                                                                                                }
-                                                                                                if matched5 {
-                                                                                                    ctx.lines(args![
-                                                                                                        "You're done with the",
-                                                                                                        "Level 5 Cookbook? Good",
-                                                                                                        "work: most beginners don't",
-                                                                                                        "even get this far. I suppose",
-                                                                                                        "you'll want to review some",
-                                                                                                        "of the easier recipes now~"
-                                                                                                    ])?;
-                                                                                                    break 'b5;
-                                                                                                }
-                                                                                            }
-                                                                                            ctx.next()?;
+                                                                                            matched5 = true;
+                                                                                        }
+                                                                                        if matched5 {
+                                                                                            ctx.lines(args![
+                                                                                                "Ah, so you're done",
+                                                                                                "with the Level 1 Cookbook.",
+                                                                                                "That's good, that means you're",
+                                                                                                "ready to graduate from the most",
+                                                                                                "basic of basics. From now on,",
+                                                                                                "the recipes will be harder..."
+                                                                                            ])?;
+                                                                                            break 'b5;
+                                                                                        }
+                                                                                        if !matched5
+                                                                                            && subject5
+                                                                                                .loosely_equals(&Val::from(2))
+                                                                                        {
+                                                                                            matched5 = true;
+                                                                                        }
+                                                                                        if matched5 {
+                                                                                            ctx.lines(args![
+                                                                                                "Ah, so what did you",
+                                                                                                "think of the recipes in",
+                                                                                                "the Level 2 Cookbook?",
+                                                                                                "Homestyle cooking may be",
+                                                                                                "simple, but it should never",
+                                                                                                "be neglected by chefs."
+                                                                                            ])?;
+                                                                                            break 'b5;
+                                                                                        }
+                                                                                        if !matched5
+                                                                                            && subject5
+                                                                                                .loosely_equals(&Val::from(3))
+                                                                                        {
+                                                                                            matched5 = true;
+                                                                                        }
+                                                                                        if matched5 {
+                                                                                            ctx.lines(args!["Ah, done with the Level 3", "Cookbook already? The recipes", "in there are really good when you're cooking romantic dinners.", "They'll come in handy someday,", "if you know what I mean."])?;
+                                                                                            break 'b5;
+                                                                                        }
+                                                                                        if !matched5
+                                                                                            && subject5
+                                                                                                .loosely_equals(&Val::from(4))
+                                                                                        {
+                                                                                            matched5 = true;
+                                                                                        }
+                                                                                        if matched5 {
+                                                                                            ctx.lines(args![
+                                                                                                "So you've finished the",
+                                                                                                "Level 4 Cookbook. That's",
+                                                                                                "no small feat! You've got to",
+                                                                                                "use very strange ingredients",
+                                                                                                "to create delicious cuisine!"
+                                                                                            ])?;
+                                                                                            break 'b5;
+                                                                                        }
+                                                                                        if !matched5
+                                                                                            && subject5
+                                                                                                .loosely_equals(&Val::from(5))
+                                                                                        {
+                                                                                            matched5 = true;
+                                                                                        }
+                                                                                        if matched5 {
+                                                                                            ctx.lines(args![
+                                                                                                "You're done with the",
+                                                                                                "Level 5 Cookbook? Good",
+                                                                                                "work: most beginners don't",
+                                                                                                "even get this far. I suppose",
+                                                                                                "you'll want to review some",
+                                                                                                "of the easier recipes now~"
+                                                                                            ])?;
+                                                                                            break 'b5;
                                                                                         }
                                                                                     }
+                                                                                    ctx.next()?;
                                                                                 }
                                                                                 ctx.call(
                                                                                     Function::Cutin,
@@ -2087,237 +2073,229 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                                         step = CharlesOrleansCookStep::LEnd;
                                                                                         continue 'machine;
                                                                                     }
-                                                                                } else {
-                                                                                    if l_new_book.clone() == 2 {
-                                                                                        ctx.call(
-                                                                                            Function::Cutin,
-                                                                                            vec![Val::from("orleans_7"), Val::from(0)],
-                                                                                        )?;
-                                                                                        ctx.lines_as(
-                                                                                            "Charles Orleans",
-                                                                                            args![
-                                                                                                "Today, I have a craving",
-                                                                                                "for a cup of tea. Of course,",
-                                                                                                "you cannot enjoy tea without",
-                                                                                                "crackers or cookies. Please",
-                                                                                                "bring me 5 Well-Baked Cookies",
-                                                                                                "to borrow my Level 2 Cookbook."
-                                                                                            ],
-                                                                                        )?;
-                                                                                        if ctx
-                                                                                            .call(
-                                                                                                Function::CountItem,
-                                                                                                vec![Val::from(538)],
-                                                                                            )?
-                                                                                            .number()?
-                                                                                            > 4
+                                                                                } else if l_new_book.clone() == 2 {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![Val::from("orleans_7"), Val::from(0)],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Charles Orleans",
+                                                                                        args![
+                                                                                            "Today, I have a craving",
+                                                                                            "for a cup of tea. Of course,",
+                                                                                            "you cannot enjoy tea without",
+                                                                                            "crackers or cookies. Please",
+                                                                                            "bring me 5 Well-Baked Cookies",
+                                                                                            "to borrow my Level 2 Cookbook."
+                                                                                        ],
+                                                                                    )?;
+                                                                                    if ctx
+                                                                                        .call(
+                                                                                            Function::CountItem,
+                                                                                            vec![Val::from(538)],
+                                                                                        )?
+                                                                                        .number()?
+                                                                                        > 4
+                                                                                    {
+                                                                                        ctx.next()?;
+                                                                                        if Val::from(runtime::select_values(
+                                                                                            ctx,
+                                                                                            &[Val::from(
+                                                                                                "Give Cookies and Current Cookbook:Cancel",
+                                                                                            )],
+                                                                                        )?) == 1
                                                                                         {
-                                                                                            ctx.next()?;
-                                                                                            if Val::from(runtime::select_values(
-                                                                                                ctx,
-                                                                                                &[Val::from(
-                                                                                                    "Give Cookies and Current Cookbook:Cancel",
-                                                                                                )],
-                                                                                            )?) == 1
-                                                                                            {
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("orleans_6"),
-                                                                                                        Val::from(0),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Charles Orleans",
-                                                                                                    args![
-                                                                                                        "Oh, you brought these",
-                                                                                                        "cookies much quicker",
-                                                                                                        "than I had expected!",
-                                                                                                        "Great, now I can put",
-                                                                                                        "the tea on, relax, then",
-                                                                                                        "enjoy a delicious snack~"
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.next()?;
-                                                                                            } else {
-                                                                                                ctx.lines_as(
-                                                                                                    "Charles Orleans",
-                                                                                                    args![
-                                                                                                        "Ohh...",
-                                                                                                        "I must have some tea",
-                                                                                                        "soon... But the experience",
-                                                                                                        "isn't complete without any",
-                                                                                                        "Well-Baked Cookies to munch~"
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                step = CharlesOrleansCookStep::LEnd;
-                                                                                                continue 'machine;
-                                                                                            }
-                                                                                        } else {
-                                                                                            step = CharlesOrleansCookStep::LEnd;
-                                                                                            continue 'machine;
-                                                                                        }
-                                                                                    } else {
-                                                                                        if l_new_book.clone() == 3 {
                                                                                             ctx.call(
                                                                                                 Function::Cutin,
-                                                                                                vec![Val::from("orleans_7"), Val::from(0)],
+                                                                                                vec![
+                                                                                                    Val::from("orleans_6"),
+                                                                                                    Val::from(0),
+                                                                                                ],
                                                                                             )?;
                                                                                             ctx.lines_as(
                                                                                                 "Charles Orleans",
                                                                                                 args![
-                                                                                                    "You know that specialty",
-                                                                                                    "dish from Amatsu? I've",
-                                                                                                    "been craving that lately.",
-                                                                                                    "Please bring me 5 Sushi,",
-                                                                                                    "and I'll let you borrow a",
-                                                                                                    "Level 3 Cookbook, okay?"
+                                                                                                    "Oh, you brought these",
+                                                                                                    "cookies much quicker",
+                                                                                                    "than I had expected!",
+                                                                                                    "Great, now I can put",
+                                                                                                    "the tea on, relax, then",
+                                                                                                    "enjoy a delicious snack~"
                                                                                                 ],
                                                                                             )?;
-                                                                                            if ctx
-                                                                                                .call(
-                                                                                                    Function::CountItem,
-                                                                                                    vec![Val::from(551)],
-                                                                                                )?
-                                                                                                .number()?
-                                                                                                > 4
-                                                                                            {
-                                                                                                ctx.next()?;
-                                                                                                if Val::from(runtime::select_values(ctx, &[Val::from("Give Sushi and Current Cookbook:Cancel")])?).is_true() {
-                                                                                                ctx.call(Function::Cutin, vec![Val::from("orleans_6"), Val::from(0)])?;
-                                                                                                ctx.lines_as("Charles Orleans", args!["Ooh, these look so fresh!", "And the presentation is also", "wonderful! These must have", "been prepared by a skilled chef! "])?;
-                                                                                                ctx.next()?;
-                                                                                            } else {
-                                                                                                ctx.lines_as("Charles Orleans", args!["Ahhh, Sushi...", "It's one of the few", "things I don't know", "how to make extremely", "well. Can you believe that?"])?;
-                                                                                                step = CharlesOrleansCookStep::LEnd;
-                                                                                                continue 'machine;
-                                                                                            }
-                                                                                            } else {
-                                                                                                step = CharlesOrleansCookStep::LEnd;
-                                                                                                continue 'machine;
-                                                                                            }
+                                                                                            ctx.next()?;
                                                                                         } else {
-                                                                                            if l_new_book.clone() == 4 {
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("orleans_7"),
-                                                                                                        Val::from(0),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Charles Orleans",
-                                                                                                    args![
-                                                                                                        "Oh, I'm in the mood for",
-                                                                                                        "some cuisine from Kunlun.",
-                                                                                                        "Would you bring me some of",
-                                                                                                        "that delicious Bao? 5 would",
-                                                                                                        "be perfect. Then, I'll let you",
-                                                                                                        "borrow my Level 4 Cookbook."
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                if ctx
-                                                                                                    .call(
-                                                                                                        Function::CountItem,
-                                                                                                        vec![Val::from(553)],
-                                                                                                    )?
-                                                                                                    .number()?
-                                                                                                    > 4
-                                                                                                {
-                                                                                                    ctx.next()?;
-                                                                                                    if Val::from(runtime::select_values(
-                                                                                                        ctx,
-                                                                                                        &[Val::from(
-                                                                                                            "Give Bao and Current Cookbook:Cancel",
-                                                                                                        )],
-                                                                                                    )?) == 1
-                                                                                                    {
-                                                                                                        ctx.call(
-                                                                                                            Function::Cutin,
-                                                                                                            vec![
-                                                                                                                Val::from("orleans_6"),
-                                                                                                                Val::from(0),
-                                                                                                            ],
-                                                                                                        )?;
-                                                                                                        ctx.lines_as(
-                                                                                                            "Charles Orleans",
-                                                                                                            args![
-                                                                                                                "Great, you actually",
-                                                                                                                "brought them! These",
-                                                                                                                "Bao look especially",
-                                                                                                                "scrumptious! I can't",
-                                                                                                                "wait to have a taste!"
-                                                                                                            ],
-                                                                                                        )?;
-                                                                                                        ctx.next()?;
-                                                                                                    } else {
-                                                                                                        ctx.lines_as(
-                                                                                                            "Charles Orleans",
-                                                                                                            args![
-                                                                                                                "Oh...",
-                                                                                                                "It's been so long",
-                                                                                                                "since I've had a taste",
-                                                                                                                "of that delicious Bao.",
-                                                                                                                "I'd cook it myself, but",
-                                                                                                                "I don't know the secret!"
-                                                                                                            ],
-                                                                                                        )?;
-                                                                                                        step = CharlesOrleansCookStep::LEnd;
-                                                                                                        continue 'machine;
-                                                                                                    }
-                                                                                                } else {
-                                                                                                    step = CharlesOrleansCookStep::LEnd;
-                                                                                                    continue 'machine;
-                                                                                                }
-                                                                                            } else {
-                                                                                                if l_new_book.clone() == 5 {
-                                                                                                    ctx.call(
-                                                                                                        Function::Cutin,
-                                                                                                        vec![
-                                                                                                            Val::from("orleans_7"),
-                                                                                                            Val::from(0),
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.lines_as("Charles Orleans", args!["Lately, my pantry has been", "in some dire need of Shoots.", "They're a tasty ingredient with", "unignorable health value. Bring", "me 10 of those, and you can", "borrow a Level 5 Cookbook."])?;
-                                                                                                    if ctx
-                                                                                                        .call(
-                                                                                                            Function::CountItem,
-                                                                                                            vec![Val::from(711)],
-                                                                                                        )?
-                                                                                                        .number()?
-                                                                                                        > 9
-                                                                                                    {
-                                                                                                        ctx.next()?;
-                                                                                                        if Val::from(
-                                                                                                            runtime::select_values(
-                                                                                                                ctx,
-                                                                                                                &[Val::from(
-                                                                                                                    "Give Shoots and Current Cookbook:Quit",
-                                                                                                                )],
-                                                                                                            )?,
-                                                                                                        ) == 1
-                                                                                                        {
-                                                                                                            ctx.call(
-                                                                                                                Function::Cutin,
-                                                                                                                vec![
-                                                                                                                    Val::from("orleans_6"),
-                                                                                                                    Val::from(0),
-                                                                                                                ],
-                                                                                                            )?;
-                                                                                                            ctx.lines_as("Charles Orleans", args!["Goodness, these are", "some high quality Shoots!", "These look so good, I'm", "sure that you you can", "even eat them raw!"])?;
-                                                                                                            ctx.next()?;
-                                                                                                        } else {
-                                                                                                            ctx.lines_as("Charles Orleans", args!["I'm going to need to", "cook with those Shoots", "soon, so I'd appreciate it", "if you'd do this little favor~"])?;
-                                                                                                            step = CharlesOrleansCookStep::LEnd;
-                                                                                                            continue 'machine;
-                                                                                                        }
-                                                                                                    } else {
-                                                                                                        step = CharlesOrleansCookStep::LEnd;
-                                                                                                        continue 'machine;
-                                                                                                    }
-                                                                                                }
-                                                                                            }
+                                                                                            ctx.lines_as(
+                                                                                                "Charles Orleans",
+                                                                                                args![
+                                                                                                    "Ohh...",
+                                                                                                    "I must have some tea",
+                                                                                                    "soon... But the experience",
+                                                                                                    "isn't complete without any",
+                                                                                                    "Well-Baked Cookies to munch~"
+                                                                                                ],
+                                                                                            )?;
+                                                                                            step = CharlesOrleansCookStep::LEnd;
+                                                                                            continue 'machine;
                                                                                         }
+                                                                                    } else {
+                                                                                        step = CharlesOrleansCookStep::LEnd;
+                                                                                        continue 'machine;
+                                                                                    }
+                                                                                } else if l_new_book.clone() == 3 {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![Val::from("orleans_7"), Val::from(0)],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Charles Orleans",
+                                                                                        args![
+                                                                                            "You know that specialty",
+                                                                                            "dish from Amatsu? I've",
+                                                                                            "been craving that lately.",
+                                                                                            "Please bring me 5 Sushi,",
+                                                                                            "and I'll let you borrow a",
+                                                                                            "Level 3 Cookbook, okay?"
+                                                                                        ],
+                                                                                    )?;
+                                                                                    if ctx
+                                                                                        .call(
+                                                                                            Function::CountItem,
+                                                                                            vec![Val::from(551)],
+                                                                                        )?
+                                                                                        .number()?
+                                                                                        > 4
+                                                                                    {
+                                                                                        ctx.next()?;
+                                                                                        if Val::from(runtime::select_values(ctx, &[Val::from("Give Sushi and Current Cookbook:Cancel")])?).is_true() {
+                                                                                        ctx.call(Function::Cutin, vec![Val::from("orleans_6"), Val::from(0)])?;
+                                                                                        ctx.lines_as("Charles Orleans", args!["Ooh, these look so fresh!", "And the presentation is also", "wonderful! These must have", "been prepared by a skilled chef! "])?;
+                                                                                        ctx.next()?;
+                                                                                    } else {
+                                                                                        ctx.lines_as("Charles Orleans", args!["Ahhh, Sushi...", "It's one of the few", "things I don't know", "how to make extremely", "well. Can you believe that?"])?;
+                                                                                        step = CharlesOrleansCookStep::LEnd;
+                                                                                        continue 'machine;
+                                                                                    }
+                                                                                    } else {
+                                                                                        step = CharlesOrleansCookStep::LEnd;
+                                                                                        continue 'machine;
+                                                                                    }
+                                                                                } else if l_new_book.clone() == 4 {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![
+                                                                                            Val::from("orleans_7"),
+                                                                                            Val::from(0),
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.lines_as(
+                                                                                        "Charles Orleans",
+                                                                                        args![
+                                                                                            "Oh, I'm in the mood for",
+                                                                                            "some cuisine from Kunlun.",
+                                                                                            "Would you bring me some of",
+                                                                                            "that delicious Bao? 5 would",
+                                                                                            "be perfect. Then, I'll let you",
+                                                                                            "borrow my Level 4 Cookbook."
+                                                                                        ],
+                                                                                    )?;
+                                                                                    if ctx
+                                                                                        .call(
+                                                                                            Function::CountItem,
+                                                                                            vec![Val::from(553)],
+                                                                                        )?
+                                                                                        .number()?
+                                                                                        > 4
+                                                                                    {
+                                                                                        ctx.next()?;
+                                                                                        if Val::from(runtime::select_values(
+                                                                                            ctx,
+                                                                                            &[Val::from(
+                                                                                                "Give Bao and Current Cookbook:Cancel",
+                                                                                            )],
+                                                                                        )?) == 1
+                                                                                        {
+                                                                                            ctx.call(
+                                                                                                Function::Cutin,
+                                                                                                vec![
+                                                                                                    Val::from("orleans_6"),
+                                                                                                    Val::from(0),
+                                                                                                ],
+                                                                                            )?;
+                                                                                            ctx.lines_as(
+                                                                                                "Charles Orleans",
+                                                                                                args![
+                                                                                                    "Great, you actually",
+                                                                                                    "brought them! These",
+                                                                                                    "Bao look especially",
+                                                                                                    "scrumptious! I can't",
+                                                                                                    "wait to have a taste!"
+                                                                                                ],
+                                                                                            )?;
+                                                                                            ctx.next()?;
+                                                                                        } else {
+                                                                                            ctx.lines_as(
+                                                                                                "Charles Orleans",
+                                                                                                args![
+                                                                                                    "Oh...",
+                                                                                                    "It's been so long",
+                                                                                                    "since I've had a taste",
+                                                                                                    "of that delicious Bao.",
+                                                                                                    "I'd cook it myself, but",
+                                                                                                    "I don't know the secret!"
+                                                                                                ],
+                                                                                            )?;
+                                                                                            step = CharlesOrleansCookStep::LEnd;
+                                                                                            continue 'machine;
+                                                                                        }
+                                                                                    } else {
+                                                                                        step = CharlesOrleansCookStep::LEnd;
+                                                                                        continue 'machine;
+                                                                                    }
+                                                                                } else if l_new_book.clone() == 5 {
+                                                                                    ctx.call(
+                                                                                        Function::Cutin,
+                                                                                        vec![
+                                                                                            Val::from("orleans_7"),
+                                                                                            Val::from(0),
+                                                                                        ],
+                                                                                    )?;
+                                                                                    ctx.lines_as("Charles Orleans", args!["Lately, my pantry has been", "in some dire need of Shoots.", "They're a tasty ingredient with", "unignorable health value. Bring", "me 10 of those, and you can", "borrow a Level 5 Cookbook."])?;
+                                                                                    if ctx
+                                                                                        .call(
+                                                                                            Function::CountItem,
+                                                                                            vec![Val::from(711)],
+                                                                                        )?
+                                                                                        .number()?
+                                                                                        > 9
+                                                                                    {
+                                                                                        ctx.next()?;
+                                                                                        if Val::from(
+                                                                                            runtime::select_values(
+                                                                                                ctx,
+                                                                                                &[Val::from(
+                                                                                                    "Give Shoots and Current Cookbook:Quit",
+                                                                                                )],
+                                                                                            )?,
+                                                                                        ) == 1
+                                                                                        {
+                                                                                            ctx.call(
+                                                                                                Function::Cutin,
+                                                                                                vec![
+                                                                                                    Val::from("orleans_6"),
+                                                                                                    Val::from(0),
+                                                                                                ],
+                                                                                            )?;
+                                                                                            ctx.lines_as("Charles Orleans", args!["Goodness, these are", "some high quality Shoots!", "These look so good, I'm", "sure that you you can", "even eat them raw!"])?;
+                                                                                            ctx.next()?;
+                                                                                        } else {
+                                                                                            ctx.lines_as("Charles Orleans", args!["I'm going to need to", "cook with those Shoots", "soon, so I'd appreciate it", "if you'd do this little favor~"])?;
+                                                                                            step = CharlesOrleansCookStep::LEnd;
+                                                                                            continue 'machine;
+                                                                                        }
+                                                                                    } else {
+                                                                                        step = CharlesOrleansCookStep::LEnd;
+                                                                                        continue 'machine;
                                                                                     }
                                                                                 }
                                                                                 if l_old_book.clone() == 1 {
@@ -2325,34 +2303,26 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                                         Function::DelItem,
                                                                                         vec![Val::from(7472), Val::from(1)],
                                                                                     )?;
-                                                                                } else {
-                                                                                    if l_old_book.clone() == 2 {
-                                                                                        ctx.call(
-                                                                                            Function::DelItem,
-                                                                                            vec![Val::from(7473), Val::from(1)],
-                                                                                        )?;
-                                                                                    } else {
-                                                                                        if l_old_book.clone() == 3 {
-                                                                                            ctx.call(
-                                                                                                Function::DelItem,
-                                                                                                vec![Val::from(7474), Val::from(1)],
-                                                                                            )?;
-                                                                                        } else {
-                                                                                            if l_old_book.clone() == 4 {
-                                                                                                ctx.call(
-                                                                                                    Function::DelItem,
-                                                                                                    vec![Val::from(7475), Val::from(1)],
-                                                                                                )?;
-                                                                                            } else {
-                                                                                                if l_old_book.clone() == 5 {
-                                                                                                    ctx.call(
-                                                                                                        Function::DelItem,
-                                                                                                        vec![Val::from(7476), Val::from(1)],
-                                                                                                    )?;
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
+                                                                                } else if l_old_book.clone() == 2 {
+                                                                                    ctx.call(
+                                                                                        Function::DelItem,
+                                                                                        vec![Val::from(7473), Val::from(1)],
+                                                                                    )?;
+                                                                                } else if l_old_book.clone() == 3 {
+                                                                                    ctx.call(
+                                                                                        Function::DelItem,
+                                                                                        vec![Val::from(7474), Val::from(1)],
+                                                                                    )?;
+                                                                                } else if l_old_book.clone() == 4 {
+                                                                                    ctx.call(
+                                                                                        Function::DelItem,
+                                                                                        vec![Val::from(7475), Val::from(1)],
+                                                                                    )?;
+                                                                                } else if l_old_book.clone() == 5 {
+                                                                                    ctx.call(
+                                                                                        Function::DelItem,
+                                                                                        vec![Val::from(7476), Val::from(1)],
+                                                                                    )?;
                                                                                 }
                                                                                 if l_new_book.clone() == 1 {
                                                                                     ctx.call(
@@ -2363,50 +2333,42 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                                         Function::GetItem,
                                                                                         vec![Val::from(7472), Val::from(1)],
                                                                                     )?;
-                                                                                } else {
-                                                                                    if l_new_book.clone() == 2 {
-                                                                                        ctx.call(
-                                                                                            Function::DelItem,
-                                                                                            vec![Val::from(538), Val::from(5)],
-                                                                                        )?;
-                                                                                        ctx.call(
-                                                                                            Function::GetItem,
-                                                                                            vec![Val::from(7473), Val::from(1)],
-                                                                                        )?;
-                                                                                    } else {
-                                                                                        if l_new_book.clone() == 3 {
-                                                                                            ctx.call(
-                                                                                                Function::DelItem,
-                                                                                                vec![Val::from(551), Val::from(5)],
-                                                                                            )?;
-                                                                                            ctx.call(
-                                                                                                Function::GetItem,
-                                                                                                vec![Val::from(7474), Val::from(1)],
-                                                                                            )?;
-                                                                                        } else {
-                                                                                            if l_new_book.clone() == 4 {
-                                                                                                ctx.call(
-                                                                                                    Function::DelItem,
-                                                                                                    vec![Val::from(553), Val::from(5)],
-                                                                                                )?;
-                                                                                                ctx.call(
-                                                                                                    Function::GetItem,
-                                                                                                    vec![Val::from(7475), Val::from(1)],
-                                                                                                )?;
-                                                                                            } else {
-                                                                                                if l_new_book.clone() == 5 {
-                                                                                                    ctx.call(
-                                                                                                        Function::DelItem,
-                                                                                                        vec![Val::from(711), Val::from(10)],
-                                                                                                    )?;
-                                                                                                    ctx.call(
-                                                                                                        Function::GetItem,
-                                                                                                        vec![Val::from(7476), Val::from(1)],
-                                                                                                    )?;
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
+                                                                                } else if l_new_book.clone() == 2 {
+                                                                                    ctx.call(
+                                                                                        Function::DelItem,
+                                                                                        vec![Val::from(538), Val::from(5)],
+                                                                                    )?;
+                                                                                    ctx.call(
+                                                                                        Function::GetItem,
+                                                                                        vec![Val::from(7473), Val::from(1)],
+                                                                                    )?;
+                                                                                } else if l_new_book.clone() == 3 {
+                                                                                    ctx.call(
+                                                                                        Function::DelItem,
+                                                                                        vec![Val::from(551), Val::from(5)],
+                                                                                    )?;
+                                                                                    ctx.call(
+                                                                                        Function::GetItem,
+                                                                                        vec![Val::from(7474), Val::from(1)],
+                                                                                    )?;
+                                                                                } else if l_new_book.clone() == 4 {
+                                                                                    ctx.call(
+                                                                                        Function::DelItem,
+                                                                                        vec![Val::from(553), Val::from(5)],
+                                                                                    )?;
+                                                                                    ctx.call(
+                                                                                        Function::GetItem,
+                                                                                        vec![Val::from(7475), Val::from(1)],
+                                                                                    )?;
+                                                                                } else if l_new_book.clone() == 5 {
+                                                                                    ctx.call(
+                                                                                        Function::DelItem,
+                                                                                        vec![Val::from(711), Val::from(10)],
+                                                                                    )?;
+                                                                                    ctx.call(
+                                                                                        Function::GetItem,
+                                                                                        vec![Val::from(7476), Val::from(1)],
+                                                                                    )?;
                                                                                 }
                                                                                 ctx.lines_as(
                                                                                     "Charles Orleans",
@@ -2930,75 +2892,482 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                             ctx.call(Function::GetItem, vec![Val::from(12125), Val::from(10)])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.var("cooking_q").get()? == 8 {
+                        } else if ctx.var("cooking_q").get()? == 8 {
+                            ctx.lines_as(
+                                "Madeleine Chu",
+                                args![
+                                    "So how has your cooking",
+                                    "been coming along? You'll",
+                                    "need to practice to develop",
+                                    "your culinary skills. Now,",
+                                    "can I help you with anything?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            'b3: {
+                                let subject3 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from(
+                                        "I need some Cooking Kits.:Will you try the food I cooked?:How does the food I cooked look?",
+                                    )],
+                                )?);
+                                let mut matched3 = false;
+                                let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                    && !subject3.loosely_equals(&Val::from(2))
+                                    && !subject3.loosely_equals(&Val::from(3));
+                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.lines_as("Madeleine Chu", args!["Sure, which kind", "of Cooking Kits", "did you need?"])?;
+                                    ctx.next()?;
+                                    'b4: {
+                                        let subject4 = Val::from(runtime::select_values(
+                                            ctx,
+                                            &[Val::from("Outdoor Cooking Kit - 500z:Home Cooking Kit - 1,000z:Quit")],
+                                        )?);
+                                        let mut matched4 = false;
+                                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                                            && !subject4.loosely_equals(&Val::from(2))
+                                            && !subject4.loosely_equals(&Val::from(3));
+                                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                            matched4 = true;
+                                        }
+                                        if matched4 {
+                                            madeleine_chu_cook_run(ctx, MadeleineChuCookStep::SSellSets, vec![Val::from(12125)])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                            matched4 = true;
+                                        }
+                                        if matched4 {
+                                            ctx.lines_as(
+                                                "Madeleine Chu",
+                                                args![
+                                                    "Oh, I'm sorry, but you",
+                                                    "don't have enough skills",
+                                                    "to use a Home Cooking Kit.",
+                                                    "Please practice some more",
+                                                    "with the Outdoor Cooking",
+                                                    "Kits first, alright?"
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                                            matched4 = true;
+                                        }
+                                        if matched4 {
+                                            ctx.lines_as(
+                                                "Madeleine Chu",
+                                                args![
+                                                    "Please come back and",
+                                                    "let me know if you need",
+                                                    "to purchase any Cooking",
+                                                    "Kits, alright? See you later~"
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                    }
+                                }
+                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    if (((((ctx.call(Function::CountItem, vec![Val::from(12041)])?.number()? > 0
+                                        && ctx.call(Function::CountItem, vec![Val::from(12046)])?.number()? > 0)
+                                        && ctx.call(Function::CountItem, vec![Val::from(12061)])?.number()? > 0)
+                                        && ctx.call(Function::CountItem, vec![Val::from(12056)])?.number()? > 0)
+                                        && ctx.call(Function::CountItem, vec![Val::from(12051)])?.number()? > 0)
+                                        && ctx.call(Function::CountItem, vec![Val::from(12066)])?.number()? > 0)
+                                    {
+                                        ctx.lines_as(
+                                            "Madeleine Chu",
+                                            args![
+                                                "Oh, you've made a sample",
+                                                "of every recipe detailed in",
+                                                "that basic cookbook, did you?",
+                                                "That must have been very good training for your culinary skills."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Madeleine Chu",
+                                            args![
+                                                "I'd love to taste your",
+                                                "food and give my opinion,",
+                                                "but do you mind if I ask",
+                                                "you a favor first? I have",
+                                                "a friend in Payon who used",
+                                                "to study cooking in Prontera."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Madeleine Chu",
+                                            args![
+                                                "However, he became frustrated",
+                                                "with the culinary classes and",
+                                                "moved back to Prontera. Would",
+                                                "you mind asking him to taste",
+                                                "them? Here, I'll wrap your",
+                                                "food in this handy cloth..."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.call(Function::DelItem, vec![Val::from(12041), Val::from(1)])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(12046), Val::from(1)])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(12061), Val::from(1)])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(12056), Val::from(1)])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(12051), Val::from(1)])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(12066), Val::from(1)])?;
+                                        ctx.var("cooking_q").set(Val::from(9))?;
+                                        ctx.call(Function::GetItem, vec![Val::from(12111), Val::from(1)])?;
+                                        ctx.lines_as(
+                                            "Madeleine Chu",
+                                            args![
+                                                "There you go, it's ready",
+                                                "to be delivered. Now, make",
+                                                "sure not to open this before",
+                                                "giving it to my old friend,",
+                                                "Chulsoo. You can find him",
+                                                "somewhere around Payon..."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Madeleine Chu",
+                                            args![
+                                                "You should be able to",
+                                                "find Chulsoo around the",
+                                                "water mill or the pub in",
+                                                "Payon. Oh, and don't",
+                                                "forget to tell him that",
+                                                "I sent you, okay? Thanks~"
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    ctx.lines_as(
+                                        "Madeleine Chu",
+                                        args![
+                                            "Hmm... I think it'd",
+                                            "be better if you tried",
+                                            "to make every recipe in",
+                                            "that basic cookbook I gave",
+                                            "you first. That way, I can more",
+                                            "accurately judge your skills."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Madeleine Chu",
+                                        args![
+                                            "It's not bad to focus",
+                                            "on just one recipe, but",
+                                            "as a beginner, you need",
+                                            "to cover all of the basics.",
+                                            "Please read the cookbook that I gave you very carefully, okay?"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    if (((((ctx.call(Function::CountItem, vec![Val::from(12041)])?.number()? > 0
+                                        || ctx.call(Function::CountItem, vec![Val::from(12046)])?.number()? > 0)
+                                        || ctx.call(Function::CountItem, vec![Val::from(12061)])?.number()? > 0)
+                                        || ctx.call(Function::CountItem, vec![Val::from(12056)])?.number()? > 0)
+                                        || ctx.call(Function::CountItem, vec![Val::from(12051)])?.number()? > 0)
+                                        || ctx.call(Function::CountItem, vec![Val::from(12066)])?.number()? > 0)
+                                    {
+                                        ctx.lines_as(
+                                            "Madeleine Chu",
+                                            args![
+                                                "Oh, I see that you've",
+                                                "tried some recipes in that",
+                                                "basic cookbook that I gave",
+                                                "you. Everything you made looks",
+                                                "delicious. All that's left now",
+                                                "is for someone to taste it..."
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    ctx.lines_as(
+                                        "Madeleine Chu",
+                                        args![
+                                            "Well... I don't know...",
+                                            "I think you really should try",
+                                            "to make every recipe listed",
+                                            "in that basic cookbook that",
+                                            "I gave to you first. Then, you",
+                                            "can present your dishes~"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                        } else if ctx.var("cooking_q").get()? == 9 {
+                            if ctx.call(Function::CountItem, vec![Val::from(12111)])?.number()? > 0 {
                                 ctx.lines_as(
                                     "Madeleine Chu",
                                     args![
-                                        "So how has your cooking",
-                                        "been coming along? You'll",
-                                        "need to practice to develop",
-                                        "your culinary skills. Now,",
-                                        "can I help you with anything?"
+                                        "Please find my friend",
+                                        "Chulsoo in Payon and",
+                                        "give him the Bundle of",
+                                        "Food so that he can taste",
+                                        "the dishes you've made."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
+                                ctx.lines_as(
+                                    "Madeleine Chu",
+                                    args![
+                                        "Ah, hello~ oh, will you give me a second?",
+                                        "Right now, I am frying something so, I need to focus on this work for a while.",
+                                        "Hahahaha."
                                     ],
                                 )?;
                                 ctx.next()?;
-                                'b3: {
-                                    let subject3 = Val::from(runtime::select_values(
+                                ctx.lines_as(
+                                    "Madeleine Chu",
+                                    args![
+                                        "Oh, so have you met",
+                                        "my friend Chulsoo?",
+                                        "You brought him the",
+                                        "Bundle of Food, right?",
+                                        "I'd be disappointed if",
+                                        "you lost it or sold it..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                if Val::from(runtime::select_values(ctx, &[Val::from("I did!:I lost the Bundle of Food!")])?) == 1 {
+                                    ctx.lines_as(
+                                        "Madeleine Chu",
+                                        args![
+                                            "Hahaha, I suppose you",
+                                            "did. But even if you didn't",
+                                            "yet, make sure that you do",
+                                            "it soon, alright? See you~"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if ctx.call(Function::CountItem, vec![Val::from(7472)])?.number()? > 0 {
+                                    ctx.lines_as(
+                                        "Madeleine Chu",
+                                        args![
+                                            "You lost it? Oh, that's",
+                                            "not good. How can you ",
+                                            "disrespect the culinary",
+                                            "arts in that way? I'm so",
+                                            "very ashamed of you..."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.call(Function::DelItem, vec![Val::from(7472), Val::from(1)])?;
+                                    ctx.var("cooking_q").set(Val::from(0))?;
+                                    ctx.lines_as(
+                                        "Madeleine Chu",
+                                        args![
+                                            "First of all, I'd like",
+                                            "you to return my cookbook.",
+                                            "I want you to reflect on what",
+                                            "you've done, and then learn",
+                                            "cooking skills from Sir Charles, starting from the very beginning."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                ctx.lines_as(
+                                    "Madeleine Chu",
+                                    args![
+                                        "Oh, you must be joking~",
+                                        "I'm sure you must have",
+                                        "hidden it somewhere.",
+                                        "Anyway, please deliver that",
+                                        "Bundle of Food to Chulsoo."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        } else {
+                            if ctx.var("cooking_q").get()? == 10 {
+                                ctx.lines_as(
+                                    "Madeleine Chu",
+                                    args![
+                                        "I just received a",
+                                        "message from Chulsoo",
+                                        "thanking me for having",
+                                        "you send him that food.",
+                                        "I'm guessing that he",
+                                        "really liked it a lot."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Madeleine Chu",
+                                    args![
+                                        "I think you're ready to use",
+                                        "higher grade cooking tools now.",
+                                        "But never forget that your own",
+                                        "skills are the most important",
+                                        "factor in quality cuisine."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.var("cooking_q").set(Val::from(11))?;
+                                ctx.call(Function::GetItem, vec![Val::from(12126), Val::from(10)])?;
+                                ctx.lines_as(
+                                    "Madeleine Chu",
+                                    args![
+                                        "Please try these Indoor",
+                                        "Cooking Kits to help you",
+                                        "create more delicate dishes.",
+                                        "When you run out, feel free to",
+                                        "purchase more from me, okay?"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Madeleine Chu",
+                                    args![
+                                        "Also, if you want to",
+                                        "learn some new recipes,",
+                                        "why don't you talk to Sir",
+                                        "Charles again? Okay then,",
+                                        "good luck, and I'll see you later~ "
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("cooking_q").get()? == 11 {
+                                ctx.lines_as(
+                                    "Madeleine Chu",
+                                    args![
+                                        "How are you? I hope",
+                                        "that you've been honing",
+                                        "your cooking skills since",
+                                        "the last time we've met.",
+                                        "Now, can I help you with",
+                                        "anything in particular?"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                'b5: {
+                                    let subject5 = Val::from(runtime::select_values(
                                         ctx,
-                                        &[Val::from(
-                                            "I need some Cooking Kits.:Will you try the food I cooked?:How does the food I cooked look?",
-                                        )],
+                                        &[Val::from("I need some Cooking Kits.:How is Sir Charles?:Um, who's that kid?")],
                                     )?);
-                                    let mut matched3 = false;
-                                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                        && !subject3.loosely_equals(&Val::from(2))
-                                        && !subject3.loosely_equals(&Val::from(3));
-                                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                        matched3 = true;
+                                    let mut matched5 = false;
+                                    let no_case5 = !subject5.loosely_equals(&Val::from(1))
+                                        && !subject5.loosely_equals(&Val::from(2))
+                                        && !subject5.loosely_equals(&Val::from(3));
+                                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                                        matched5 = true;
                                     }
-                                    if matched3 {
-                                        ctx.lines_as("Madeleine Chu", args!["Sure, which kind", "of Cooking Kits", "did you need?"])?;
+                                    if matched5 {
+                                        ctx.lines_as(
+                                            "Madeleine Chu",
+                                            args!["Sure, which kind", "of Cooking Kits", "did you need?"],
+                                        )?;
                                         ctx.next()?;
-                                        'b4: {
-                                            let subject4 = Val::from(runtime::select_values(
+                                        'b6: {
+                                            let subject6 = Val::from(runtime::select_values(
                                                 ctx,
-                                                &[Val::from("Outdoor Cooking Kit - 500z:Home Cooking Kit - 1,000z:Quit")],
+                                                &[Val::from(
+                                                    "Outdoor Cooking Kit - 500z:Home Cooking Kit - 1,000z:Show me a different kit.:Quit",
+                                                )],
                                             )?);
-                                            let mut matched4 = false;
-                                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                                && !subject4.loosely_equals(&Val::from(2))
-                                                && !subject4.loosely_equals(&Val::from(3));
-                                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                                matched4 = true;
+                                            let mut matched6 = false;
+                                            let no_case6 = !subject6.loosely_equals(&Val::from(1))
+                                                && !subject6.loosely_equals(&Val::from(2))
+                                                && !subject6.loosely_equals(&Val::from(3))
+                                                && !subject6.loosely_equals(&Val::from(4));
+                                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                                                matched6 = true;
                                             }
-                                            if matched4 {
-                                                madeleine_chu_cook_run(ctx, MadeleineChuCookStep::SSellSets, vec![Val::from(12125)])?;
+                                            if matched6 {
+                                                madeleine_chu_cook_run(
+                                                    ctx,
+                                                    MadeleineChuCookStep::SSellSets,
+                                                    vec![Val::from(12125)],
+                                                )?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                matched4 = true;
+                                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                                                matched6 = true;
                                             }
-                                            if matched4 {
+                                            if matched6 {
+                                                madeleine_chu_cook_run(
+                                                    ctx,
+                                                    MadeleineChuCookStep::SSellSets,
+                                                    vec![Val::from(12126)],
+                                                )?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
+                                                matched6 = true;
+                                            }
+                                            if matched6 {
                                                 ctx.lines_as(
                                                     "Madeleine Chu",
                                                     args![
-                                                        "Oh, I'm sorry, but you",
-                                                        "don't have enough skills",
-                                                        "to use a Home Cooking Kit.",
-                                                        "Please practice some more",
-                                                        "with the Outdoor Cooking",
-                                                        "Kits first, alright?"
+                                                        "Well, I only have two",
+                                                        "types of cooking kits,",
+                                                        "although there is a superior",
+                                                        "Professional Cooking Kit that",
+                                                        "real experts, like Sir Charles,",
+                                                        "use. Amazing, isn't it?"
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Madeleine Chu",
+                                                    args![
+                                                        "You're still a beginner, so",
+                                                        "my kits will serve you well. ",
+                                                        "You know, there's a rumor about a cooking kit that can perfectly",
+                                                        "make any recipe, so long as all of the ingredients are provided."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Madeleine Chu",
+                                                    args![
+                                                        "Of course, it's only",
+                                                        "a rumor, probably just",
+                                                        "the result of someone's",
+                                                        "weird imagination. I still",
+                                                        "believe skill is the most",
+                                                        "important ingredient~"
                                                     ],
                                                 )?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                                matched4 = true;
+                                            if !matched6 && subject6.loosely_equals(&Val::from(4)) {
+                                                matched6 = true;
                                             }
-                                            if matched4 {
+                                            if matched6 {
                                                 ctx.lines_as(
                                                     "Madeleine Chu",
                                                     args![
@@ -3013,80 +3382,57 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                             }
                                         }
                                     }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                        matched3 = true;
+                                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                                        matched5 = true;
                                     }
-                                    if matched3 {
-                                        if (((((ctx.call(Function::CountItem, vec![Val::from(12041)])?.number()? > 0
-                                            && ctx.call(Function::CountItem, vec![Val::from(12046)])?.number()? > 0)
-                                            && ctx.call(Function::CountItem, vec![Val::from(12061)])?.number()? > 0)
-                                            && ctx.call(Function::CountItem, vec![Val::from(12056)])?.number()? > 0)
-                                            && ctx.call(Function::CountItem, vec![Val::from(12051)])?.number()? > 0)
-                                            && ctx.call(Function::CountItem, vec![Val::from(12066)])?.number()? > 0)
-                                        {
+                                    if matched5 {
+                                        ctx.lines_as(
+                                            "Madeleine Chu",
+                                            args![
+                                                "Hm? Sir Charles is",
+                                                "fine, but lately he's been",
+                                                "getting a little upset at",
+                                                "even small things. Still,",
+                                                "I guess it's understandable."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        l_talk_j = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                                        if l_talk_j.clone() == 1 {
                                             ctx.lines_as(
                                                 "Madeleine Chu",
                                                 args![
-                                                    "Oh, you've made a sample",
-                                                    "of every recipe detailed in",
-                                                    "that basic cookbook, did you?",
-                                                    "That must have been very good training for your culinary skills."
+                                                    "You know, when I first",
+                                                    "met him, I assumed he was",
+                                                    "only good at cooking sweets",
+                                                    "like chocolates and caramels.",
+                                                    "However, he is highly skilled",
+                                                    "at cooking almost everything!"
                                                 ],
                                             )?;
                                             ctx.next()?;
                                             ctx.lines_as(
                                                 "Madeleine Chu",
                                                 args![
-                                                    "I'd love to taste your",
-                                                    "food and give my opinion,",
-                                                    "but do you mind if I ask",
-                                                    "you a favor first? I have",
-                                                    "a friend in Payon who used",
-                                                    "to study cooking in Prontera."
+                                                    "I suppose he's been focusing",
+                                                    "on foods other than desserts",
+                                                    "ever since our king disappeared. I wonder if King Tristram III's",
+                                                    "disappearance is related to Sir",
+                                                    "Charles's change in mood?"
                                                 ],
                                             )?;
-                                            ctx.next()?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        } else if l_talk_j.clone() == 2 {
                                             ctx.lines_as(
                                                 "Madeleine Chu",
                                                 args![
-                                                    "However, he became frustrated",
-                                                    "with the culinary classes and",
-                                                    "moved back to Prontera. Would",
-                                                    "you mind asking him to taste",
-                                                    "them? Here, I'll wrap your",
-                                                    "food in this handy cloth..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.call(Function::DelItem, vec![Val::from(12041), Val::from(1)])?;
-                                            ctx.call(Function::DelItem, vec![Val::from(12046), Val::from(1)])?;
-                                            ctx.call(Function::DelItem, vec![Val::from(12061), Val::from(1)])?;
-                                            ctx.call(Function::DelItem, vec![Val::from(12056), Val::from(1)])?;
-                                            ctx.call(Function::DelItem, vec![Val::from(12051), Val::from(1)])?;
-                                            ctx.call(Function::DelItem, vec![Val::from(12066), Val::from(1)])?;
-                                            ctx.var("cooking_q").set(Val::from(9))?;
-                                            ctx.call(Function::GetItem, vec![Val::from(12111), Val::from(1)])?;
-                                            ctx.lines_as(
-                                                "Madeleine Chu",
-                                                args![
-                                                    "There you go, it's ready",
-                                                    "to be delivered. Now, make",
-                                                    "sure not to open this before",
-                                                    "giving it to my old friend,",
-                                                    "Chulsoo. You can find him",
-                                                    "somewhere around Payon..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Madeleine Chu",
-                                                args![
-                                                    "You should be able to",
-                                                    "find Chulsoo around the",
-                                                    "water mill or the pub in",
-                                                    "Payon. Oh, and don't",
-                                                    "forget to tell him that",
-                                                    "I sent you, okay? Thanks~"
+                                                    "I mean, Sir Charles seems",
+                                                    "to be the type that has trouble",
+                                                    "opening up to other people.",
+                                                    "That may explain why he's much",
+                                                    "nicer to women than to men.",
+                                                    "Doesn't that make sense?"
                                                 ],
                                             )?;
                                             ctx.close_window()?;
@@ -3095,461 +3441,69 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                         ctx.lines_as(
                                             "Madeleine Chu",
                                             args![
-                                                "Hmm... I think it'd",
-                                                "be better if you tried",
-                                                "to make every recipe in",
-                                                "that basic cookbook I gave",
-                                                "you first. That way, I can more",
-                                                "accurately judge your skills."
+                                                "Maybe it's because he's",
+                                                "been experimenting with",
+                                                "a new recipe lately. I think he",
+                                                "mentioned something about",
+                                                "wanting to treat some woman",
+                                                "to the finest food ever made."
                                             ],
                                         )?;
                                         ctx.next()?;
                                         ctx.lines_as(
                                             "Madeleine Chu",
                                             args![
-                                                "It's not bad to focus",
-                                                "on just one recipe, but",
-                                                "as a beginner, you need",
-                                                "to cover all of the basics.",
-                                                "Please read the cookbook that I gave you very carefully, okay?"
+                                                "I've never seen Sir Charles",
+                                                "so excited before. That woman",
+                                                "must be very lucky: she has the",
+                                                "chance to eat his cooking every",
+                                                "day if she wanted! I'm almost",
+                                                "jealous of her, you know that?"
                                             ],
                                         )?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                        matched3 = true;
+                                    if !matched5 && subject5.loosely_equals(&Val::from(3)) {
+                                        matched5 = true;
                                     }
-                                    if matched3 {
-                                        if (((((ctx.call(Function::CountItem, vec![Val::from(12041)])?.number()? > 0
-                                            || ctx.call(Function::CountItem, vec![Val::from(12046)])?.number()? > 0)
-                                            || ctx.call(Function::CountItem, vec![Val::from(12061)])?.number()? > 0)
-                                            || ctx.call(Function::CountItem, vec![Val::from(12056)])?.number()? > 0)
-                                            || ctx.call(Function::CountItem, vec![Val::from(12051)])?.number()? > 0)
-                                            || ctx.call(Function::CountItem, vec![Val::from(12066)])?.number()? > 0)
-                                        {
-                                            ctx.lines_as(
-                                                "Madeleine Chu",
-                                                args![
-                                                    "Oh, I see that you've",
-                                                    "tried some recipes in that",
-                                                    "basic cookbook that I gave",
-                                                    "you. Everything you made looks",
-                                                    "delicious. All that's left now",
-                                                    "is for someone to taste it..."
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
+                                    if matched5 {
                                         ctx.lines_as(
                                             "Madeleine Chu",
                                             args![
-                                                "Well... I don't know...",
-                                                "I think you really should try",
-                                                "to make every recipe listed",
-                                                "in that basic cookbook that",
-                                                "I gave to you first. Then, you",
-                                                "can present your dishes~"
+                                                "Oh, you mean the",
+                                                "child with the cat?",
+                                                "I'm not sure, but I think",
+                                                "I overheard that she might",
+                                                "be the younger sister of",
+                                                "Madam Wickebine."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Madeleine Chu",
+                                            args![
+                                                "I wonder why Sir Charles",
+                                                "gives Madam Wickebine such",
+                                                "special treatment. Whenever",
+                                                "I ask him about it, he gets so",
+                                                "upset and doesn't say anything!"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.call(Function::Cutin, vec![Val::from("orleans_6"), Val::from(0)])?;
+                                        ctx.lines_as(
+                                            "Charles Orleans",
+                                            args![
+                                                "Mince alors!",
+                                                "I just felt a chill down my",
+                                                "spine... Could someone",
+                                                "be talking about me?"
                                             ],
                                         )?;
                                         ctx.close_window()?;
+                                        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                                         return Err(Stop::End);
-                                    }
-                                }
-                            } else {
-                                if ctx.var("cooking_q").get()? == 9 {
-                                    if ctx.call(Function::CountItem, vec![Val::from(12111)])?.number()? > 0 {
-                                        ctx.lines_as(
-                                            "Madeleine Chu",
-                                            args![
-                                                "Please find my friend",
-                                                "Chulsoo in Payon and",
-                                                "give him the Bundle of",
-                                                "Food so that he can taste",
-                                                "the dishes you've made."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as(
-                                            "Madeleine Chu",
-                                            args![
-                                                "Ah, hello~ oh, will you give me a second?",
-                                                "Right now, I am frying something so, I need to focus on this work for a while.",
-                                                "Hahahaha."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Madeleine Chu",
-                                            args![
-                                                "Oh, so have you met",
-                                                "my friend Chulsoo?",
-                                                "You brought him the",
-                                                "Bundle of Food, right?",
-                                                "I'd be disappointed if",
-                                                "you lost it or sold it..."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        if Val::from(runtime::select_values(ctx, &[Val::from("I did!:I lost the Bundle of Food!")])?) == 1 {
-                                            ctx.lines_as(
-                                                "Madeleine Chu",
-                                                args![
-                                                    "Hahaha, I suppose you",
-                                                    "did. But even if you didn't",
-                                                    "yet, make sure that you do",
-                                                    "it soon, alright? See you~"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if ctx.call(Function::CountItem, vec![Val::from(7472)])?.number()? > 0 {
-                                            ctx.lines_as(
-                                                "Madeleine Chu",
-                                                args![
-                                                    "You lost it? Oh, that's",
-                                                    "not good. How can you ",
-                                                    "disrespect the culinary",
-                                                    "arts in that way? I'm so",
-                                                    "very ashamed of you..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.call(Function::DelItem, vec![Val::from(7472), Val::from(1)])?;
-                                            ctx.var("cooking_q").set(Val::from(0))?;
-                                            ctx.lines_as(
-                                                "Madeleine Chu",
-                                                args![
-                                                    "First of all, I'd like",
-                                                    "you to return my cookbook.",
-                                                    "I want you to reflect on what",
-                                                    "you've done, and then learn",
-                                                    "cooking skills from Sir Charles, starting from the very beginning."
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        ctx.lines_as(
-                                            "Madeleine Chu",
-                                            args![
-                                                "Oh, you must be joking~",
-                                                "I'm sure you must have",
-                                                "hidden it somewhere.",
-                                                "Anyway, please deliver that",
-                                                "Bundle of Food to Chulsoo."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                } else {
-                                    if ctx.var("cooking_q").get()? == 10 {
-                                        ctx.lines_as(
-                                            "Madeleine Chu",
-                                            args![
-                                                "I just received a",
-                                                "message from Chulsoo",
-                                                "thanking me for having",
-                                                "you send him that food.",
-                                                "I'm guessing that he",
-                                                "really liked it a lot."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Madeleine Chu",
-                                            args![
-                                                "I think you're ready to use",
-                                                "higher grade cooking tools now.",
-                                                "But never forget that your own",
-                                                "skills are the most important",
-                                                "factor in quality cuisine."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.var("cooking_q").set(Val::from(11))?;
-                                        ctx.call(Function::GetItem, vec![Val::from(12126), Val::from(10)])?;
-                                        ctx.lines_as(
-                                            "Madeleine Chu",
-                                            args![
-                                                "Please try these Indoor",
-                                                "Cooking Kits to help you",
-                                                "create more delicate dishes.",
-                                                "When you run out, feel free to",
-                                                "purchase more from me, okay?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Madeleine Chu",
-                                            args![
-                                                "Also, if you want to",
-                                                "learn some new recipes,",
-                                                "why don't you talk to Sir",
-                                                "Charles again? Okay then,",
-                                                "good luck, and I'll see you later~ "
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("cooking_q").get()? == 11 {
-                                            ctx.lines_as(
-                                                "Madeleine Chu",
-                                                args![
-                                                    "How are you? I hope",
-                                                    "that you've been honing",
-                                                    "your cooking skills since",
-                                                    "the last time we've met.",
-                                                    "Now, can I help you with",
-                                                    "anything in particular?"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            'b5: {
-                                                let subject5 = Val::from(runtime::select_values(
-                                                    ctx,
-                                                    &[Val::from("I need some Cooking Kits.:How is Sir Charles?:Um, who's that kid?")],
-                                                )?);
-                                                let mut matched5 = false;
-                                                let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                                                    && !subject5.loosely_equals(&Val::from(2))
-                                                    && !subject5.loosely_equals(&Val::from(3));
-                                                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                                    matched5 = true;
-                                                }
-                                                if matched5 {
-                                                    ctx.lines_as(
-                                                        "Madeleine Chu",
-                                                        args!["Sure, which kind", "of Cooking Kits", "did you need?"],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    'b6: {
-                                                        let subject6 = Val::from(runtime::select_values(
-                                                            ctx,
-                                                            &[Val::from(
-                                                                "Outdoor Cooking Kit - 500z:Home Cooking Kit - 1,000z:Show me a different kit.:Quit",
-                                                            )],
-                                                        )?);
-                                                        let mut matched6 = false;
-                                                        let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                                                            && !subject6.loosely_equals(&Val::from(2))
-                                                            && !subject6.loosely_equals(&Val::from(3))
-                                                            && !subject6.loosely_equals(&Val::from(4));
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            madeleine_chu_cook_run(
-                                                                ctx,
-                                                                MadeleineChuCookStep::SSellSets,
-                                                                vec![Val::from(12125)],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            madeleine_chu_cook_run(
-                                                                ctx,
-                                                                MadeleineChuCookStep::SSellSets,
-                                                                vec![Val::from(12126)],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            ctx.lines_as(
-                                                                "Madeleine Chu",
-                                                                args![
-                                                                    "Well, I only have two",
-                                                                    "types of cooking kits,",
-                                                                    "although there is a superior",
-                                                                    "Professional Cooking Kit that",
-                                                                    "real experts, like Sir Charles,",
-                                                                    "use. Amazing, isn't it?"
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Madeleine Chu",
-                                                                args![
-                                                                    "You're still a beginner, so",
-                                                                    "my kits will serve you well. ",
-                                                                    "You know, there's a rumor about a cooking kit that can perfectly",
-                                                                    "make any recipe, so long as all of the ingredients are provided."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Madeleine Chu",
-                                                                args![
-                                                                    "Of course, it's only",
-                                                                    "a rumor, probably just",
-                                                                    "the result of someone's",
-                                                                    "weird imagination. I still",
-                                                                    "believe skill is the most",
-                                                                    "important ingredient~"
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(4)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            ctx.lines_as(
-                                                                "Madeleine Chu",
-                                                                args![
-                                                                    "Please come back and",
-                                                                    "let me know if you need",
-                                                                    "to purchase any Cooking",
-                                                                    "Kits, alright? See you later~"
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                }
-                                                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                                    matched5 = true;
-                                                }
-                                                if matched5 {
-                                                    ctx.lines_as(
-                                                        "Madeleine Chu",
-                                                        args![
-                                                            "Hm? Sir Charles is",
-                                                            "fine, but lately he's been",
-                                                            "getting a little upset at",
-                                                            "even small things. Still,",
-                                                            "I guess it's understandable."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    l_talk_j = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                                                    if l_talk_j.clone() == 1 {
-                                                        ctx.lines_as(
-                                                            "Madeleine Chu",
-                                                            args![
-                                                                "You know, when I first",
-                                                                "met him, I assumed he was",
-                                                                "only good at cooking sweets",
-                                                                "like chocolates and caramels.",
-                                                                "However, he is highly skilled",
-                                                                "at cooking almost everything!"
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Madeleine Chu",
-                                                            args![
-                                                                "I suppose he's been focusing",
-                                                                "on foods other than desserts",
-                                                                "ever since our king disappeared. I wonder if King Tristram III's",
-                                                                "disappearance is related to Sir",
-                                                                "Charles's change in mood?"
-                                                            ],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    } else {
-                                                        if l_talk_j.clone() == 2 {
-                                                            ctx.lines_as(
-                                                                "Madeleine Chu",
-                                                                args![
-                                                                    "I mean, Sir Charles seems",
-                                                                    "to be the type that has trouble",
-                                                                    "opening up to other people.",
-                                                                    "That may explain why he's much",
-                                                                    "nicer to women than to men.",
-                                                                    "Doesn't that make sense?"
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                    ctx.lines_as(
-                                                        "Madeleine Chu",
-                                                        args![
-                                                            "Maybe it's because he's",
-                                                            "been experimenting with",
-                                                            "a new recipe lately. I think he",
-                                                            "mentioned something about",
-                                                            "wanting to treat some woman",
-                                                            "to the finest food ever made."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Madeleine Chu",
-                                                        args![
-                                                            "I've never seen Sir Charles",
-                                                            "so excited before. That woman",
-                                                            "must be very lucky: she has the",
-                                                            "chance to eat his cooking every",
-                                                            "day if she wanted! I'm almost",
-                                                            "jealous of her, you know that?"
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                                                    matched5 = true;
-                                                }
-                                                if matched5 {
-                                                    ctx.lines_as(
-                                                        "Madeleine Chu",
-                                                        args![
-                                                            "Oh, you mean the",
-                                                            "child with the cat?",
-                                                            "I'm not sure, but I think",
-                                                            "I overheard that she might",
-                                                            "be the younger sister of",
-                                                            "Madam Wickebine."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Madeleine Chu",
-                                                        args![
-                                                            "I wonder why Sir Charles",
-                                                            "gives Madam Wickebine such",
-                                                            "special treatment. Whenever",
-                                                            "I ask him about it, he gets so",
-                                                            "upset and doesn't say anything!"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::Cutin, vec![Val::from("orleans_6"), Val::from(0)])?;
-                                                    ctx.lines_as(
-                                                        "Charles Orleans",
-                                                        args![
-                                                            "Mince alors!",
-                                                            "I just felt a chill down my",
-                                                            "spine... Could someone",
-                                                            "be talking about me?"
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
                                     }
                                 }
                             }
@@ -3600,21 +3554,19 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
+                        } else if l_sell.clone().number()? > 100 {
+                            ctx.lines_as(
+                                "Madeleine Chu",
+                                args![
+                                    "Oh, I'm sorry, but",
+                                    "I don't sell more than",
+                                    (Val::from("100 ") + ctx.call(Function::GetItemName, vec![l_item_id.clone()])?),
+                                    "at a time, just to be safe."
+                                ],
+                            )?;
+                            ctx.next()?;
                         } else {
-                            if l_sell.clone().number()? > 100 {
-                                ctx.lines_as(
-                                    "Madeleine Chu",
-                                    args![
-                                        "Oh, I'm sorry, but",
-                                        "I don't sell more than",
-                                        (Val::from("100 ") + ctx.call(Function::GetItemName, vec![l_item_id.clone()])?),
-                                        "at a time, just to be safe."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                            } else {
-                                break 'l7;
-                            }
+                            break 'l7;
                         }
                     }
                 }
@@ -3750,304 +3702,54 @@ fn servant_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("cooking_q").get()? == 9 {
-            ctx.lines_as(
-                "Chulsoo",
-                args![
-                    "How would you like",
-                    "to buy a Rice Cake?",
-                    "It's only 200 zeny, but",
-                    "it's oh-so-delicious~"
-                ],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Sure, I'll buy one!:No, thanks.:Actually, Madeleine sent me...")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.var("Zeny").get()?.number()? < 200 {
-                        ctx.lines_as(
-                            "Chulsoo",
-                            args![
-                                "Oh, I'm sorry, but",
-                                "you don't have enough",
-                                "money to buy a Rice Cake...",
-                                "Still, it should be easy to",
-                                "raise 200 zeny, right?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(200))?))?;
-                    ctx.call(Function::GetItem, vec![Val::from(555), Val::from(1)])?;
-                    ctx.lines_as("Chulsoo", args!["Thank you very", "much! I hope you", "enjoy your Rice Cake~"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+    } else if ctx.var("cooking_q").get()? == 9 {
+        ctx.lines_as(
+            "Chulsoo",
+            args![
+                "How would you like",
+                "to buy a Rice Cake?",
+                "It's only 200 zeny, but",
+                "it's oh-so-delicious~"
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Sure, I'll buy one!:No, thanks.:Actually, Madeleine sent me...")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.var("Zeny").get()?.number()? < 200 {
                     ctx.lines_as(
                         "Chulsoo",
                         args![
-                            "Are you sure about",
-                            "that? You won't get",
-                            "the chance to have a",
-                            "Rice Cake this delicious",
-                            "anywhere else. Oh well,",
-                            "that means more for me~"
+                            "Oh, I'm sorry, but",
+                            "you don't have enough",
+                            "money to buy a Rice Cake...",
+                            "Still, it should be easy to",
+                            "raise 200 zeny, right?"
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(12111)])?.number()? > 0 {
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Actually, Madeleine",
-                                "sent me here to find",
-                                "you. She said that you'd",
-                                "be willing to taste test",
-                                "the food in this bundle..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Chulsoo",
-                            args![
-                                "Madeleine? You mean",
-                                "Madeleine Chu? Oh, I haven't",
-                                "heard from her in such a long",
-                                "time! Great, let me see the",
-                                "bundle that she sent me. Ah, everything here looks appetizing!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Chulsoo",
-                            args![
-                                "Oh, wait. She even",
-                                "included a message",
-                                "inside this bundle.",
-                                "Let's see, here..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^333333Dear Chulsoo,",
-                            " It's been a long time.",
-                            "I know you left Prontera on",
-                            "bad terms with Sir Charles,",
-                            "but please understand that",
-                            "he was only trying his best to",
-                            "help improve your cooking.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^333333 Sir Charles always wished",
-                            "that you'd expand your repetoire, and that you'd make these kinds",
-                            "of foods someday. The person",
-                            "that delivered this food also",
-                            "cooked it. Please try it...^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^333333 Hopefully, you'll be",
-                            "able to understand Sir ",
-                            "Charles a little better ",
-                            "after tasting this food.",
-                            " ",
-                            " Your friend, Madeleine^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Chulsoo",
-                            args![
-                                "Now I get it...",
-                                "These are the recipes",
-                                "that Sir Charles tried",
-                                "to teach me. But I refused",
-                                "to learn them because I had",
-                                "thought they were too gross..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Chulsoo",
-                            args![
-                                "......",
-                                ".........",
-                                "It's so delicious... Are",
-                                "you sure you're just a",
-                                "beginner? No... This must",
-                                "be what I've been missing..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Chulsoo",
-                            args![
-                                "It's what my master",
-                                "always tried to teach me,",
-                                "but I was too impatient to",
-                                "properly learn it. The greatest",
-                                "ingredient of them all... ^D02090heart^000000. After all this time, I understand."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Chulsoo",
-                            args![
-                                "Thank you for bringing",
-                                "this food to me. I will enjoy",
-                                "it thoroughly, and reflect upon",
-                                "what my old teacher was trying",
-                                "to tell me. In return, please have one of my humble Rice Cakes."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.call(Function::DelItem, vec![Val::from(12111), Val::from(1)])?;
-                        ctx.var("cooking_q").set(Val::from(10))?;
-                        ctx.call(Function::GetItem, vec![Val::from(555), Val::from(1)])?;
-                        ctx.lines_as(
-                            "Chulsoo",
-                            args![
-                                "I better visit Prontera",
-                                "again soon. It's been a long",
-                                "time since I've seen Madeleine.",
-                                "More importantly, I think that",
-                                "I should apologize to Sir Charles. "
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "Actually, Madeleine",
-                            "sent me here to find",
-                            "you. She said that you'd",
-                            "be willing to taste test",
-                            "the food in this bundle..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Wait, wait...", "I don't have it!", "Where did I put", "that Bundle of Food?"],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
-        } else {
-            if ctx.var("cooking_q").get()? == 8 {
-                ctx.lines_as(
-                    "Chulsoo",
-                    args![
-                        "Lately, it seems that",
-                        "no one wants to buy my",
-                        "Rice Cakes. It's been like",
-                        "that ever since I left Prontera... "
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Chulsoo",
-                    args![
-                        "You see, I used to study",
-                        "in that city as one of Sir",
-                        "Charles's apprentices. It",
-                        "was only a few months, but",
-                        "I was very excited to get the",
-                        "chance to learn under him."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Chulsoo",
-                    args![
-                        "At least, I was excited",
-                        "at first. Sir Charles really",
-                        "frustrated me: he would",
-                        "only teach me to make these",
-                        "really gross sounding recipes! Like Grasshopper Legs and-- ugh!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Chulsoo",
-                    args![
-                        "He kept insisting that",
-                        "I was forgetting the most",
-                        "important ingredient, and that",
-                        "it was possible to make things",
-                        "like Fried Monkey Tails delicious. But I can't believe that nonsense!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Chulsoo",
-                    args![
-                        "In the end, I ran away.",
-                        "For some reason, I feel",
-                        "a little ashamed and regret",
-                        "what I did. Still, I don't see",
-                        "what Sir Charles meant..."
-                    ],
-                )?;
+                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(200))?))?;
+                ctx.call(Function::GetItem, vec![Val::from(555), Val::from(1)])?;
+                ctx.lines_as("Chulsoo", args!["Thank you very", "much! I hope you", "enjoy your Rice Cake~"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Chulsoo",
-                    args![
-                        "How would you like",
-                        "to buy a Rice Cake?",
-                        "It's only 200 zeny, but",
-                        "it's oh-so-delicious~"
-                    ],
-                )?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(ctx, &[Val::from("Sure, I'll buy one!:No, thanks.")])?) == 1 {
-                    if ctx.var("Zeny").get()?.number()? < 200 {
-                        ctx.lines_as(
-                            "Chulsoo",
-                            args![
-                                "Oh, I'm sorry, but",
-                                "you don't have enough",
-                                "money to buy a Rice Cake...",
-                                "Still, it should be easy to",
-                                "raise 200 zeny, right?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(200))?))?;
-                    ctx.call(Function::GetItem, vec![Val::from(555), Val::from(1)])?;
-                    ctx.lines_as("Chulsoo", args!["Thank you very", "much! I hope you", "enjoy your Rice Cake~"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
                 ctx.lines_as(
                     "Chulsoo",
                     args![
@@ -4062,7 +3764,253 @@ fn servant_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(12111)])?.number()? > 0 {
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args![
+                            "Actually, Madeleine",
+                            "sent me here to find",
+                            "you. She said that you'd",
+                            "be willing to taste test",
+                            "the food in this bundle..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Chulsoo",
+                        args![
+                            "Madeleine? You mean",
+                            "Madeleine Chu? Oh, I haven't",
+                            "heard from her in such a long",
+                            "time! Great, let me see the",
+                            "bundle that she sent me. Ah, everything here looks appetizing!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Chulsoo",
+                        args![
+                            "Oh, wait. She even",
+                            "included a message",
+                            "inside this bundle.",
+                            "Let's see, here..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^333333Dear Chulsoo,",
+                        " It's been a long time.",
+                        "I know you left Prontera on",
+                        "bad terms with Sir Charles,",
+                        "but please understand that",
+                        "he was only trying his best to",
+                        "help improve your cooking.^000000"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^333333 Sir Charles always wished",
+                        "that you'd expand your repetoire, and that you'd make these kinds",
+                        "of foods someday. The person",
+                        "that delivered this food also",
+                        "cooked it. Please try it...^000000"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^333333 Hopefully, you'll be",
+                        "able to understand Sir ",
+                        "Charles a little better ",
+                        "after tasting this food.",
+                        " ",
+                        " Your friend, Madeleine^000000"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Chulsoo",
+                        args![
+                            "Now I get it...",
+                            "These are the recipes",
+                            "that Sir Charles tried",
+                            "to teach me. But I refused",
+                            "to learn them because I had",
+                            "thought they were too gross..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Chulsoo",
+                        args![
+                            "......",
+                            ".........",
+                            "It's so delicious... Are",
+                            "you sure you're just a",
+                            "beginner? No... This must",
+                            "be what I've been missing..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Chulsoo",
+                        args![
+                            "It's what my master",
+                            "always tried to teach me,",
+                            "but I was too impatient to",
+                            "properly learn it. The greatest",
+                            "ingredient of them all... ^D02090heart^000000. After all this time, I understand."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Chulsoo",
+                        args![
+                            "Thank you for bringing",
+                            "this food to me. I will enjoy",
+                            "it thoroughly, and reflect upon",
+                            "what my old teacher was trying",
+                            "to tell me. In return, please have one of my humble Rice Cakes."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::DelItem, vec![Val::from(12111), Val::from(1)])?;
+                    ctx.var("cooking_q").set(Val::from(10))?;
+                    ctx.call(Function::GetItem, vec![Val::from(555), Val::from(1)])?;
+                    ctx.lines_as(
+                        "Chulsoo",
+                        args![
+                            "I better visit Prontera",
+                            "again soon. It's been a long",
+                            "time since I've seen Madeleine.",
+                            "More importantly, I think that",
+                            "I should apologize to Sir Charles. "
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Actually, Madeleine",
+                        "sent me here to find",
+                        "you. She said that you'd",
+                        "be willing to taste test",
+                        "the food in this bundle..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Wait, wait...", "I don't have it!", "Where did I put", "that Bundle of Food?"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+    } else if ctx.var("cooking_q").get()? == 8 {
+        ctx.lines_as(
+            "Chulsoo",
+            args![
+                "Lately, it seems that",
+                "no one wants to buy my",
+                "Rice Cakes. It's been like",
+                "that ever since I left Prontera... "
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Chulsoo",
+            args![
+                "You see, I used to study",
+                "in that city as one of Sir",
+                "Charles's apprentices. It",
+                "was only a few months, but",
+                "I was very excited to get the",
+                "chance to learn under him."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Chulsoo",
+            args![
+                "At least, I was excited",
+                "at first. Sir Charles really",
+                "frustrated me: he would",
+                "only teach me to make these",
+                "really gross sounding recipes! Like Grasshopper Legs and-- ugh!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Chulsoo",
+            args![
+                "He kept insisting that",
+                "I was forgetting the most",
+                "important ingredient, and that",
+                "it was possible to make things",
+                "like Fried Monkey Tails delicious. But I can't believe that nonsense!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Chulsoo",
+            args![
+                "In the end, I ran away.",
+                "For some reason, I feel",
+                "a little ashamed and regret",
+                "what I did. Still, I don't see",
+                "what Sir Charles meant..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Chulsoo",
+            args![
+                "How would you like",
+                "to buy a Rice Cake?",
+                "It's only 200 zeny, but",
+                "it's oh-so-delicious~"
+            ],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Sure, I'll buy one!:No, thanks.")])?) == 1 {
+            if ctx.var("Zeny").get()?.number()? < 200 {
+                ctx.lines_as(
+                    "Chulsoo",
+                    args![
+                        "Oh, I'm sorry, but",
+                        "you don't have enough",
+                        "money to buy a Rice Cake...",
+                        "Still, it should be easy to",
+                        "raise 200 zeny, right?"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(200))?))?;
+            ctx.call(Function::GetItem, vec![Val::from(555), Val::from(1)])?;
+            ctx.lines_as("Chulsoo", args!["Thank you very", "much! I hope you", "enjoy your Rice Cake~"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Chulsoo",
+            args![
+                "Are you sure about",
+                "that? You won't get",
+                "the chance to have a",
+                "Rice Cake this delicious",
+                "anywhere else. Oh well,",
+                "that means more for me~"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }

@@ -409,45 +409,43 @@ fn shurank_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if l_chk_endure.clone().number()? > 1 {
+                ctx.lines_as(
+                    "Shurank",
+                    args!["From that gleen of toughness upon your skin, I see now that I was foolish to ask. Well done~"],
+                )?;
+                ctx.var("tu_swordman").set(Val::from(13))?;
+                ctx.call(Function::EraseQuest, vec![Val::from(8221)])?;
+                ctx.call(Function::SetQuest, vec![Val::from(8222)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Ah, once again, I have",
+                        "another task for you to perform. Please visit Dequ'ee in Geffen since it seems he has something",
+                        "to ask of you."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Hurry and meet with Dequ'ee and return to me when you complete whatever it is that he wishes for you to do."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if l_chk_endure.clone().number()? > 1 {
-                    ctx.lines_as(
-                        "Shurank",
-                        args!["From that gleen of toughness upon your skin, I see now that I was foolish to ask. Well done~"],
-                    )?;
-                    ctx.var("tu_swordman").set(Val::from(13))?;
-                    ctx.call(Function::EraseQuest, vec![Val::from(8221)])?;
-                    ctx.call(Function::SetQuest, vec![Val::from(8222)])?;
-                    ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Ah, once again, I have",
-                            "another task for you to perform. Please visit Dequ'ee in Geffen since it seems he has something",
-                            "to ask of you."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Hurry and meet with Dequ'ee and return to me when you complete whatever it is that he wishes for you to do."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "No...?",
-                            "I recommend that you learn it as soon as you can. Endure is an invaluable skill for any Swordman to have!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "No...?",
+                        "I recommend that you learn it as soon as you can. Endure is an invaluable skill for any Swordman to have!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(10)) {
@@ -487,73 +485,69 @@ fn shurank_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::ChangeQuest, vec![Val::from(8220), Val::from(8221)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if (l_chk_endure.clone().number()? > 0 && l_chk_endure.clone().number()? < 2) {
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "I see that you",
-                            "know how to use the",
-                            "Endure skill. Still, it wouldn't hurt if I review the basic details regarding its use..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["As you've noticed, receiving any damage causes you to reel in pain, stunning you for an instant. Thus, rapidly attacking enemies are dangerous since it's difficult to counter or escape them."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Activating Endure enables you to shrug off attacks. You'll receive damage, but enemy attacks will not impede you as much. This means you can counter enemy attacks or escape if you need to."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Of course, you can't use Endure forever. However, the more you increase the level of the Endure",
-                            "skill, the longer Endure's effect will last. Also, remember that Endure also has a skill delay."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Since you've learned the Endure skill already, I don't think I need to explain it any further. You've done well."])?;
-                    ctx.var("tu_swordman").set(Val::from(13))?;
-                    ctx.call(Function::EraseQuest, vec![Val::from(8221)])?;
-                    ctx.call(Function::SetQuest, vec![Val::from(8222)])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Ah, once again, I have",
-                            "another task for you to perform. Please visit Dequ'ee in Geffen since it seems he has something",
-                            "to ask of you."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Hurry and meet with Dequ'ee and return to me when you complete whatever it is that he wishes for you to do."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if l_chk_endure.clone().number()? > 1 {
-                        ctx.lines_as("Shurank", args!["Hm. But judging from the gleen of toughness on your skin, I suppose teaching you about Endure would be a waste of your time. Well done!"])?;
-                        ctx.var("tu_swordman").set(Val::from(13))?;
-                        ctx.call(Function::EraseQuest, vec![Val::from(8221)])?;
-                        ctx.call(Function::SetQuest, vec![Val::from(8222)])?;
-                        ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Shurank",
-                            args![
-                                "Ah, once again, I have",
-                                "another task for you to perform. Please visit Dequ'ee in Geffen since it seems he has something",
-                                "to ask of you."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Shurank", args!["Hurry and meet with Dequ'ee and return to me when you complete whatever it is that he wishes for you to do."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+            } else if (l_chk_endure.clone().number()? > 0 && l_chk_endure.clone().number()? < 2) {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "I see that you",
+                        "know how to use the",
+                        "Endure skill. Still, it wouldn't hurt if I review the basic details regarding its use..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["As you've noticed, receiving any damage causes you to reel in pain, stunning you for an instant. Thus, rapidly attacking enemies are dangerous since it's difficult to counter or escape them."])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Activating Endure enables you to shrug off attacks. You'll receive damage, but enemy attacks will not impede you as much. This means you can counter enemy attacks or escape if you need to."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Of course, you can't use Endure forever. However, the more you increase the level of the Endure",
+                        "skill, the longer Endure's effect will last. Also, remember that Endure also has a skill delay."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Since you've learned the Endure skill already, I don't think I need to explain it any further. You've done well."])?;
+                ctx.var("tu_swordman").set(Val::from(13))?;
+                ctx.call(Function::EraseQuest, vec![Val::from(8221)])?;
+                ctx.call(Function::SetQuest, vec![Val::from(8222)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Ah, once again, I have",
+                        "another task for you to perform. Please visit Dequ'ee in Geffen since it seems he has something",
+                        "to ask of you."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Hurry and meet with Dequ'ee and return to me when you complete whatever it is that he wishes for you to do."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if l_chk_endure.clone().number()? > 1 {
+                ctx.lines_as("Shurank", args!["Hm. But judging from the gleen of toughness on your skin, I suppose teaching you about Endure would be a waste of your time. Well done!"])?;
+                ctx.var("tu_swordman").set(Val::from(13))?;
+                ctx.call(Function::EraseQuest, vec![Val::from(8221)])?;
+                ctx.call(Function::SetQuest, vec![Val::from(8222)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Ah, once again, I have",
+                        "another task for you to perform. Please visit Dequ'ee in Geffen since it seems he has something",
+                        "to ask of you."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Hurry and meet with Dequ'ee and return to me when you complete whatever it is that he wishes for you to do."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(9)) {
@@ -575,37 +569,35 @@ fn shurank_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.lines_as("Shurank", args!["Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me."])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if l_chk_provoke.clone() == 10 {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Y-you've mastered",
+                        "Provoke? Impressive!",
+                        "I see that you've made",
+                        "up your mind to become",
+                        "an outstanding Swordman.",
+                        "Here is a small reward..."
+                    ],
+                )?;
+                ctx.var("tu_swordman").set(Val::from(10))?;
+                ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if l_chk_provoke.clone() == 10 {
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Y-you've mastered",
-                            "Provoke? Impressive!",
-                            "I see that you've made",
-                            "up your mind to become",
-                            "an outstanding Swordman.",
-                            "Here is a small reward..."
-                        ],
-                    )?;
-                    ctx.var("tu_swordman").set(Val::from(10))?;
-                    ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Hmm, I acknowledge",
-                            "your progress, but you're not quite there yet. You've got to become more skilled in Provoke before",
-                            "I can continue my lectures."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Hmm, I acknowledge",
+                        "your progress, but you're not quite there yet. You've got to become more skilled in Provoke before",
+                        "I can continue my lectures."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(8)) {
@@ -644,40 +636,36 @@ fn shurank_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.var("tu_swordman").set(Val::from(9))?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if (l_chk_provoke.clone().number()? > 4 && l_chk_provoke.clone().number()? < 10) {
+                ctx.lines_as("Shurank", args!["Ah, I see that you have a fairly good understanding of the Provoke skill. Let me reward you in this small way for your efforts."])?;
+                ctx.var("tu_swordman").set(Val::from(10))?;
+                ctx.call(Function::GetExperience, vec![Val::from(1120), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if l_chk_provoke.clone() == 10 {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Y-you've mastered",
+                        "Provoke? Impressive!",
+                        "I see that you've made",
+                        "up your mind to become",
+                        "an outstanding Swordman.",
+                        "Here is a small reward..."
+                    ],
+                )?;
+                ctx.var("tu_swordman").set(Val::from(10))?;
+                ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
+                ctx.next()?;
+                ctx.mes("Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me.")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if (l_chk_provoke.clone().number()? > 4 && l_chk_provoke.clone().number()? < 10) {
-                    ctx.lines_as("Shurank", args!["Ah, I see that you have a fairly good understanding of the Provoke skill. Let me reward you in this small way for your efforts."])?;
-                    ctx.var("tu_swordman").set(Val::from(10))?;
-                    ctx.call(Function::GetExperience, vec![Val::from(1120), Val::from(0)])?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if l_chk_provoke.clone() == 10 {
-                        ctx.lines_as(
-                            "Shurank",
-                            args![
-                                "Y-you've mastered",
-                                "Provoke? Impressive!",
-                                "I see that you've made",
-                                "up your mind to become",
-                                "an outstanding Swordman.",
-                                "Here is a small reward..."
-                            ],
-                        )?;
-                        ctx.var("tu_swordman").set(Val::from(10))?;
-                        ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
-                        ctx.next()?;
-                        ctx.mes("Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as("Shurank", args!["Still haven't learned Provoke, eh? As a Swordman, I believe that it's important that you at least be able to use Provoke!"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+                ctx.lines_as("Shurank", args!["Still haven't learned Provoke, eh? As a Swordman, I believe that it's important that you at least be able to use Provoke!"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(7)) {
@@ -739,74 +727,68 @@ fn shurank_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::ChangeQuest, vec![Val::from(8217), Val::from(8218)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if (l_chk_provoke.clone().number()? > 0 && l_chk_provoke.clone().number()? < 5) {
-                    ctx.lines_as("Shurank", args!["Hm. You seem to have a basic understanding of Provoke, but let me give you a few details so that you can better understand the use of that skill."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "In order to effectively use Provoke, you must understand",
-                            "how it works: Provoke infuriates your opponents, making them",
-                            "want to attack you."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["When provoked, an enemy will have greater attack strength, making it more dangerous, but will also have reduced defense, making your enemy easier to defeat."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Ideally, you may wish to use Provoke on enemies when they are weakened enough so that you can finish them off more quickly. But that's up to you."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Also, the higher the level of Provoke that is used, the higher the attack increase and defense decrease of your target."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["As an Active Skill, Provoke will consume a small amount of SP, just like Bash. So be careful not to run out of SP when using this skill."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Now I ask that you train yourself in the use of Provoke. Come back",
-                            "to me when you have a sufficient understanding of the use of the Provoke skill."
-                        ],
-                    )?;
-                    ctx.var("tu_swordman").set(Val::from(9))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(8218), Val::from(8219)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if (l_chk_provoke.clone().number()? > 4 && l_chk_provoke.clone().number()? < 10) {
-                        ctx.lines_as("Shurank", args!["Ah, I see that you have a fairly good understanding of the Provoke skill. Let me reward you in this small way for your efforts."])?;
-                        ctx.var("tu_swordman").set(Val::from(10))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(8219), Val::from(8220)])?;
-                        ctx.call(Function::GetExperience, vec![Val::from(1120), Val::from(0)])?;
-                        ctx.next()?;
-                        ctx.lines_as("Shurank", args!["Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if l_chk_provoke.clone() == 10 {
-                            ctx.lines_as(
-                                "Shurank",
-                                args![
-                                    "Y-you've mastered",
-                                    "Provoke? Impressive!",
-                                    "I see that you've made",
-                                    "up your mind to become",
-                                    "an outstanding Swordman.",
-                                    "Here is a small reward..."
-                                ],
-                            )?;
-                            ctx.var("tu_swordman").set(Val::from(10))?;
-                            ctx.call(Function::CompleteQuest, vec![Val::from(8218)])?;
-                            ctx.call(Function::CompleteQuest, vec![Val::from(8219)])?;
-                            ctx.call(Function::CompleteQuest, vec![Val::from(8220)])?;
-                            ctx.call(Function::SetQuest, vec![Val::from(8221)])?;
-                            ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
-                            ctx.next()?;
-                            ctx.lines_as("Shurank", args!["Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
+            } else if (l_chk_provoke.clone().number()? > 0 && l_chk_provoke.clone().number()? < 5) {
+                ctx.lines_as("Shurank", args!["Hm. You seem to have a basic understanding of Provoke, but let me give you a few details so that you can better understand the use of that skill."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "In order to effectively use Provoke, you must understand",
+                        "how it works: Provoke infuriates your opponents, making them",
+                        "want to attack you."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["When provoked, an enemy will have greater attack strength, making it more dangerous, but will also have reduced defense, making your enemy easier to defeat."])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Ideally, you may wish to use Provoke on enemies when they are weakened enough so that you can finish them off more quickly. But that's up to you."])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Also, the higher the level of Provoke that is used, the higher the attack increase and defense decrease of your target."])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["As an Active Skill, Provoke will consume a small amount of SP, just like Bash. So be careful not to run out of SP when using this skill."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Now I ask that you train yourself in the use of Provoke. Come back",
+                        "to me when you have a sufficient understanding of the use of the Provoke skill."
+                    ],
+                )?;
+                ctx.var("tu_swordman").set(Val::from(9))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(8218), Val::from(8219)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if (l_chk_provoke.clone().number()? > 4 && l_chk_provoke.clone().number()? < 10) {
+                ctx.lines_as("Shurank", args!["Ah, I see that you have a fairly good understanding of the Provoke skill. Let me reward you in this small way for your efforts."])?;
+                ctx.var("tu_swordman").set(Val::from(10))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(8219), Val::from(8220)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(1120), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if l_chk_provoke.clone() == 10 {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Y-you've mastered",
+                        "Provoke? Impressive!",
+                        "I see that you've made",
+                        "up your mind to become",
+                        "an outstanding Swordman.",
+                        "Here is a small reward..."
+                    ],
+                )?;
+                ctx.var("tu_swordman").set(Val::from(10))?;
+                ctx.call(Function::CompleteQuest, vec![Val::from(8218)])?;
+                ctx.call(Function::CompleteQuest, vec![Val::from(8219)])?;
+                ctx.call(Function::CompleteQuest, vec![Val::from(8220)])?;
+                ctx.call(Function::SetQuest, vec![Val::from(8221)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(1260), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Next time we speak, I will tell you what I know about the ^5D478BEndure^000000 skill. When you're ready to learn, come back to me."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(6)) {
@@ -935,36 +917,34 @@ fn shurank_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 )?;
                 ctx.var("tu_swordman").set(Val::from(5))?;
                 ctx.next()?;
+            } else if l_chk_hp.clone() == 10 {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Ah! That healthy glow!",
+                        "I see that you've mastered this skill already. Let me give you a little reward for your hard training!"
+                    ],
+                )?;
+                ctx.var("tu_swordman").set(Val::from(5))?;
+                ctx.call(Function::GetExperience, vec![Val::from(1120), Val::from(0)])?;
+                ctx.next()?;
             } else {
-                if l_chk_hp.clone() == 10 {
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Ah! That healthy glow!",
-                            "I see that you've mastered this skill already. Let me give you a little reward for your hard training!"
-                        ],
-                    )?;
-                    ctx.var("tu_swordman").set(Val::from(5))?;
-                    ctx.call(Function::GetExperience, vec![Val::from(1120), Val::from(0)])?;
-                    ctx.next()?;
-                } else {
-                    ctx.lines_as("Shurank", args!["Ah, and I see that you've already learned a little bit about it. But let me briefly tell you more about Increase HP Recovery."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "The Increase HP Recovery Skill",
-                            "is a passive skill that is always in effect and does not consume",
-                            "any of your SP."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["It enables you to regenerate your health twice as fast. This might not seem like a big deal, but it will reduce the time you need to rest from battles."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Increase HP Recovery is a fairly important skill, but whether or not you want to master that is really up to you."])?;
-                    ctx.var("tu_swordman").set(Val::from(5))?;
-                    ctx.next()?;
-                }
+                ctx.lines_as("Shurank", args!["Ah, and I see that you've already learned a little bit about it. But let me briefly tell you more about Increase HP Recovery."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "The Increase HP Recovery Skill",
+                        "is a passive skill that is always in effect and does not consume",
+                        "any of your SP."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["It enables you to regenerate your health twice as fast. This might not seem like a big deal, but it will reduce the time you need to rest from battles."])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Increase HP Recovery is a fairly important skill, but whether or not you want to master that is really up to you."])?;
+                ctx.var("tu_swordman").set(Val::from(5))?;
+                ctx.next()?;
             }
             ctx.call(Function::SetQuest, vec![Val::from(8215)])?;
             ctx.lines_as("Shurank", args!["By now, I believe that you know enough about the Increase HP Recovery skill. Next time, I shall teach you what I know about the Provoke skill."])?;
@@ -1058,28 +1038,26 @@ fn shurank_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::GetExperience, vec![Val::from(830), Val::from(0)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if l_chk_bash.clone() == 10 {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Those calluses...!",
+                        "Only a master of the Bash skill has those kinds of hands. Great work, Swordman. I'm very impressed."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Here's a small prize in recognition of your efforts thus far. But don't relax yet! You still have a long way to go before grasping", "all of the basics."])?;
+                ctx.var("tu_swordman").set(Val::from(4))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(8212), Val::from(8214)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(970), Val::from(0)])?;
+                ctx.call(Function::GetItem, vec![Val::from(2503), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if l_chk_bash.clone() == 10 {
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Those calluses...!",
-                            "Only a master of the Bash skill has those kinds of hands. Great work, Swordman. I'm very impressed."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Here's a small prize in recognition of your efforts thus far. But don't relax yet! You still have a long way to go before grasping", "all of the basics."])?;
-                    ctx.var("tu_swordman").set(Val::from(4))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(8212), Val::from(8214)])?;
-                    ctx.call(Function::GetExperience, vec![Val::from(970), Val::from(0)])?;
-                    ctx.call(Function::GetItem, vec![Val::from(2503), Val::from(1)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as("Shurank", args!["Hmm, you might be able to", "use Bash quite well, but you are not a master of it yet. I encourage you to master Bash in order to unleash its true potential!"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+                ctx.lines_as("Shurank", args!["Hmm, you might be able to", "use Bash quite well, but you are not a master of it yet. I encourage you to master Bash in order to unleash its true potential!"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(1)) {
@@ -1131,88 +1109,84 @@ fn shurank_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::GetExperience, vec![Val::from(580), Val::from(0)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if (l_chk_bash.clone().number()? > 4 && l_chk_bash.clone().number()? < 10) {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Hmm...",
+                        "Still haven't mastered Bash, eh? Well, in any case, I think you've made some progress."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args!["Let me explain the use of the Bash skill to you. If you've heard this before, it'll be a good refresher."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "I see that you understand",
+                        "a little bit about the Bash skill. But still, it's not enough. Let me explain in detail..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Bash is an active skill, mastered at Level 10, which allows you to smash your target. In essense,",
+                        "it's a highly damaging attack!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Since it's an active skill, Bash consumes SP each time it is",
+                        "used. If you're not careful, you'll be out of SP in no time...!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Well, that's all I can tell you about Bash for now. As for its subtle nuances, you'll have to experience them for yourself", "in battle."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args!["For your efforts and patience, I offer you this small reward. Please take it and grow even stronger..."],
+                )?;
+                ctx.var("tu_swordman").set(Val::from(3))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(8211), Val::from(8213)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(830), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["I believe that every true Swordman should master the Bash skill. If you ever do master the skill as a Swordman, come back to me."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if l_chk_bash.clone() == 10 {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Those calluses...!",
+                        "Only a master of the Bash skill has those kinds of hands. Great work, Swordman. I'm very impressed."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Here's a small prize in recognition of your efforts thus far. But don't relax yet! You still have a long way to go before grasping", "all of the basics."])?;
+                ctx.var("tu_swordman").set(Val::from(4))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(8211), Val::from(8214)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(970), Val::from(0)])?;
+                ctx.call(Function::GetItem, vec![Val::from(2503), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if (l_chk_bash.clone().number()? > 4 && l_chk_bash.clone().number()? < 10) {
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Hmm...",
-                            "Still haven't mastered Bash, eh? Well, in any case, I think you've made some progress."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args!["Let me explain the use of the Bash skill to you. If you've heard this before, it'll be a good refresher."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "I see that you understand",
-                            "a little bit about the Bash skill. But still, it's not enough. Let me explain in detail..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Bash is an active skill, mastered at Level 10, which allows you to smash your target. In essense,",
-                            "it's a highly damaging attack!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Since it's an active skill, Bash consumes SP each time it is",
-                            "used. If you're not careful, you'll be out of SP in no time...!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Well, that's all I can tell you about Bash for now. As for its subtle nuances, you'll have to experience them for yourself", "in battle."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args!["For your efforts and patience, I offer you this small reward. Please take it and grow even stronger..."],
-                    )?;
-                    ctx.var("tu_swordman").set(Val::from(3))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(8211), Val::from(8213)])?;
-                    ctx.call(Function::GetExperience, vec![Val::from(830), Val::from(0)])?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["I believe that every true Swordman should master the Bash skill. If you ever do master the skill as a Swordman, come back to me."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if l_chk_bash.clone() == 10 {
-                        ctx.lines_as(
-                            "Shurank",
-                            args![
-                                "Those calluses...!",
-                                "Only a master of the Bash skill has those kinds of hands. Great work, Swordman. I'm very impressed."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Shurank", args!["Here's a small prize in recognition of your efforts thus far. But don't relax yet! You still have a long way to go before grasping", "all of the basics."])?;
-                        ctx.var("tu_swordman").set(Val::from(4))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(8211), Val::from(8214)])?;
-                        ctx.call(Function::GetExperience, vec![Val::from(970), Val::from(0)])?;
-                        ctx.call(Function::GetItem, vec![Val::from(2503), Val::from(1)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Shurank",
-                            args![
-                                "You still can't even use Bash...? What's the use of a sword if not to smash things?! Come back to me",
-                                "once you've learned how to use",
-                                "that skill!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "You still can't even use Bash...? What's the use of a sword if not to smash things?! Come back to me",
+                        "once you've learned how to use",
+                        "that skill!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(0)) {
@@ -1247,105 +1221,99 @@ fn shurank_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::SetQuest, vec![Val::from(8211)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if (l_chk_bash.clone().number()? > 0 && l_chk_bash.clone().number()? < 5) {
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "I see that you understand",
-                            "a little bit about the Bash skill. But still, it's not enough. Let me explain in detail..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Bash is an active skill, mastered at Level 10, which allows you to smash your target. In essense,",
-                            "it's a highly damaging attack!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Since it's an active skill, Bash consumes SP each time it is",
-                            "used. If you're not careful, you'll be out of SP in no time...!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Shurank", args!["Well, that's all I can tell you about Bash for now. As for its subtle nuances, you'll have to experience them for yourself", "in battle."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Shurank",
-                        args![
-                            "Still, for your training efforts, let me give you a humble reward. But remember, we still have more",
-                            "of the fundamentals to cover!"
-                        ],
-                    )?;
-                    ctx.var("tu_swordman").set(Val::from(2))?;
-                    ctx.call(Function::SetQuest, vec![Val::from(8212)])?;
-                    ctx.call(Function::GetExperience, vec![Val::from(580), Val::from(0)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if (l_chk_bash.clone().number()? > 4 && l_chk_bash.clone().number()? < 10) {
-                        ctx.lines_as("Shurank", args!["I see that you've gained some proficiency with the Bash skill. But still, it's not enough. Let me explain..."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Shurank",
-                            args![
-                                "Bash is an active skill, mastered at Level 10, which allows you to smash your target. In essense,",
-                                "it's a highly damaging attack!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Shurank",
-                            args![
-                                "Since it's an active skill, Bash consumes SP each time it is",
-                                "used. If you're not careful, you'll be out of SP in no time...!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Shurank", args!["Well, that's all I can tell you about Bash for now. As for its subtle nuances, you'll have to experience them for yourself", "in battle."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Shurank",
-                            args![
-                                "Still, for your training efforts, let me give you a humble reward. But remember, we still have more",
-                                "of the fundamentals to cover!"
-                            ],
-                        )?;
-                        ctx.var("tu_swordman").set(Val::from(3))?;
-                        ctx.call(Function::SetQuest, vec![Val::from(8213)])?;
-                        ctx.call(Function::GetExperience, vec![Val::from(830), Val::from(0)])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Shurank",
-                            args!["But if you wish to become an expert Swordman in my eyes, you must master Bash!"],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if l_chk_bash.clone() == 10 {
-                            ctx.lines_as(
-                                "Shurank",
-                                args![
-                                    "Those calluses...!",
-                                    "Only a master of the Bash skill has those kinds of hands. Great work, Swordman. I'm very impressed."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Shurank", args!["Here's a small prize in recognition of your efforts thus far. But don't relax yet! You still have a long way to go before grasping", "all of the basics."])?;
-                            ctx.var("tu_swordman").set(Val::from(4))?;
-                            ctx.call(Function::SetQuest, vec![Val::from(8214)])?;
-                            ctx.call(Function::GetExperience, vec![Val::from(970), Val::from(0)])?;
-                            ctx.call(Function::GetItem, vec![Val::from(2503), Val::from(1)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
+            } else if (l_chk_bash.clone().number()? > 0 && l_chk_bash.clone().number()? < 5) {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "I see that you understand",
+                        "a little bit about the Bash skill. But still, it's not enough. Let me explain in detail..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Bash is an active skill, mastered at Level 10, which allows you to smash your target. In essense,",
+                        "it's a highly damaging attack!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Since it's an active skill, Bash consumes SP each time it is",
+                        "used. If you're not careful, you'll be out of SP in no time...!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Well, that's all I can tell you about Bash for now. As for its subtle nuances, you'll have to experience them for yourself", "in battle."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Still, for your training efforts, let me give you a humble reward. But remember, we still have more",
+                        "of the fundamentals to cover!"
+                    ],
+                )?;
+                ctx.var("tu_swordman").set(Val::from(2))?;
+                ctx.call(Function::SetQuest, vec![Val::from(8212)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(580), Val::from(0)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if (l_chk_bash.clone().number()? > 4 && l_chk_bash.clone().number()? < 10) {
+                ctx.lines_as("Shurank", args!["I see that you've gained some proficiency with the Bash skill. But still, it's not enough. Let me explain..."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Bash is an active skill, mastered at Level 10, which allows you to smash your target. In essense,",
+                        "it's a highly damaging attack!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Since it's an active skill, Bash consumes SP each time it is",
+                        "used. If you're not careful, you'll be out of SP in no time...!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Well, that's all I can tell you about Bash for now. As for its subtle nuances, you'll have to experience them for yourself", "in battle."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Still, for your training efforts, let me give you a humble reward. But remember, we still have more",
+                        "of the fundamentals to cover!"
+                    ],
+                )?;
+                ctx.var("tu_swordman").set(Val::from(3))?;
+                ctx.call(Function::SetQuest, vec![Val::from(8213)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(830), Val::from(0)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Shurank",
+                    args!["But if you wish to become an expert Swordman in my eyes, you must master Bash!"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if l_chk_bash.clone() == 10 {
+                ctx.lines_as(
+                    "Shurank",
+                    args![
+                        "Those calluses...!",
+                        "Only a master of the Bash skill has those kinds of hands. Great work, Swordman. I'm very impressed."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Shurank", args!["Here's a small prize in recognition of your efforts thus far. But don't relax yet! You still have a long way to go before grasping", "all of the basics."])?;
+                ctx.var("tu_swordman").set(Val::from(4))?;
+                ctx.call(Function::SetQuest, vec![Val::from(8214)])?;
+                ctx.call(Function::GetExperience, vec![Val::from(970), Val::from(0)])?;
+                ctx.call(Function::GetItem, vec![Val::from(2503), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -1509,16 +1477,14 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 "hekdlfiDrindkelsd"
             ])?;
             ctx.next()?;
-        } else {
-            if ctx.var("tu_swordman").get()? == 18 {
-                ctx.lines(args![
-                    "hekdlfiDrindkelsd",
-                    "TheisWesomeof",
-                    "ConBanfoevidehi",
-                    "victkleyundncem"
-                ])?;
-                ctx.next()?;
-            }
+        } else if ctx.var("tu_swordman").get()? == 18 {
+            ctx.lines(args![
+                "hekdlfiDrindkelsd",
+                "TheisWesomeof",
+                "ConBanfoevidehi",
+                "victkleyundncem"
+            ])?;
+            ctx.next()?;
         }
         ctx.lines_as(
             "Dequ'ee",

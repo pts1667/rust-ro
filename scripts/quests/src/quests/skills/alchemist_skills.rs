@@ -594,51 +594,49 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             return Err(Stop::End);
                                         }
                                     }
+                                } else if (((ctx.call(Function::CountItem, vec![Val::from(715)])? == 0
+                                    && ctx.call(Function::CountItem, vec![Val::from(1093)])? == 0)
+                                    && ctx.call(Function::CountItem, vec![Val::from(950)])? == 0)
+                                    && ctx.call(Function::CountItem, vec![Val::from(1057)])? == 0)
+                                {
+                                    ctx.lines_as(
+                                        "Pisruik",
+                                        args![
+                                            "So you knew what",
+                                            "you had to bring, came",
+                                            "to remind me what I had",
+                                            "forgotten, but didn't bring",
+                                            "anything? Weird. Ah well.",
+                                            "Come with the stuff next time."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 } else {
-                                    if (((ctx.call(Function::CountItem, vec![Val::from(715)])? == 0
-                                        && ctx.call(Function::CountItem, vec![Val::from(1093)])? == 0)
-                                        && ctx.call(Function::CountItem, vec![Val::from(950)])? == 0)
-                                        && ctx.call(Function::CountItem, vec![Val::from(1057)])? == 0)
-                                    {
-                                        ctx.lines_as(
-                                            "Pisruik",
-                                            args![
-                                                "So you knew what",
-                                                "you had to bring, came",
-                                                "to remind me what I had",
-                                                "forgotten, but didn't bring",
-                                                "anything? Weird. Ah well.",
-                                                "Come with the stuff next time."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as(
-                                            "Pisruik",
-                                            args![
-                                                "Oh, this isn't good, some",
-                                                "of the items I asked for are",
-                                                "missing. I'm sorry, but Alchemy",
-                                                "gets dangerously unpredictable",
-                                                "when things aren't used in just",
-                                                "the right amounts. Hmmm..."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Pisruik",
-                                            args![
-                                                "Well, I can afford to",
-                                                "push my deadlines back",
-                                                "if you promise to return",
-                                                "with the materials I need",
-                                                "as soon as you possibly can."
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
+                                    ctx.lines_as(
+                                        "Pisruik",
+                                        args![
+                                            "Oh, this isn't good, some",
+                                            "of the items I asked for are",
+                                            "missing. I'm sorry, but Alchemy",
+                                            "gets dangerously unpredictable",
+                                            "when things aren't used in just",
+                                            "the right amounts. Hmmm..."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Pisruik",
+                                        args![
+                                            "Well, I can afford to",
+                                            "push my deadlines back",
+                                            "if you promise to return",
+                                            "with the materials I need",
+                                            "as soon as you possibly can."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                             ctx.lines_as(
@@ -1476,157 +1474,149 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 )?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
-                                            } else {
-                                                if ctx.var("alche_sk").get()? == 10 {
+                                            } else if ctx.var("alche_sk").get()? == 10 {
+                                                ctx.lines_as(
+                                                    "Pisruik",
+                                                    args![
+                                                        ((Val::from("So, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                            + Val::from(",")),
+                                                        "Would you like me to",
+                                                        "teach you the results",
+                                                        "of the research I've''",
+                                                        "been conducting?"
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                if Val::from(runtime::select_values(ctx, &[Val::from("Yes!:No, thanks.")])?) == 1 {
                                                     ctx.lines_as(
                                                         "Pisruik",
                                                         args![
-                                                            ((Val::from("So, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                + Val::from(",")),
-                                                            "Would you like me to",
-                                                            "teach you the results",
-                                                            "of the research I've''",
-                                                            "been conducting?"
+                                                            ((Val::from("Great, ")
+                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                                + Val::from("!")),
+                                                            "I know I can trust you",
+                                                            "to use this research for",
+                                                            "good and noble ends. Now,",
+                                                            "please read this thesis and",
+                                                            "all of my additional notes..."
                                                         ],
                                                     )?;
                                                     ctx.next()?;
-                                                    if Val::from(runtime::select_values(ctx, &[Val::from("Yes!:No, thanks.")])?) == 1 {
-                                                        ctx.lines_as(
-                                                            "Pisruik",
-                                                            args![
-                                                                ((Val::from("Great, ")
-                                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                    + Val::from("!")),
-                                                                "I know I can trust you",
-                                                                "to use this research for",
-                                                                "good and noble ends. Now,",
-                                                                "please read this thesis and",
-                                                                "all of my additional notes..."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines(args![
-                                                            "^3355FFPisruik thoroughly",
-                                                            "explains the properties",
-                                                            "of his medicine, the reaction",
-                                                            "of the human organs to it, as",
-                                                            "well as a few warnings about",
-                                                            "the medicine's side effects.^000000"
-                                                        ])?;
-                                                        ctx.next()?;
-                                                        ctx.var("alche_sk").set(Val::from(11))?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(7434), Val::from(1)])?;
-                                                        ctx.lines_as(
-                                                            "Pisruik",
-                                                            args![
-                                                                "Well, you should be",
-                                                                "ready to make your own",
-                                                                "potions that are a variation",
-                                                                "of my medicine. But you'll",
-                                                                "probably need to keep that",
-                                                                "thesis as a ready reference."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.mes("[Pisruik]")?;
-                                                        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                                            ctx.lines(args![
-                                                                "Hopefully, we'll",
-                                                                "meet again sometime",
-                                                                "in the future. Good luck on",
-                                                                "your journeys, adventurer.",
-                                                                "*Cough cough* Now... What",
-                                                                "will be my next project?"
-                                                            ])?;
-                                                        } else {
-                                                            ctx.lines(args![
-                                                                "Anyway, I need to be",
-                                                                "working on a new project",
-                                                                "soon, so I suppose this is",
-                                                                "where we part ways for now.",
-                                                                "But I must say, it was truly",
-                                                                "a great pleasure to meet you..."
-                                                            ])?;
-                                                        }
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
+                                                    ctx.lines(args![
+                                                        "^3355FFPisruik thoroughly",
+                                                        "explains the properties",
+                                                        "of his medicine, the reaction",
+                                                        "of the human organs to it, as",
+                                                        "well as a few warnings about",
+                                                        "the medicine's side effects.^000000"
+                                                    ])?;
+                                                    ctx.next()?;
+                                                    ctx.var("alche_sk").set(Val::from(11))?;
+                                                    ctx.call(Function::GetItem, vec![Val::from(7434), Val::from(1)])?;
                                                     ctx.lines_as(
                                                         "Pisruik",
                                                         args![
-                                                            "R-Really...?",
-                                                            "Well, if you ever change",
-                                                            "your mind, feel free to come",
-                                                            "back for me to teach you."
+                                                            "Well, you should be",
+                                                            "ready to make your own",
+                                                            "potions that are a variation",
+                                                            "of my medicine. But you'll",
+                                                            "probably need to keep that",
+                                                            "thesis as a ready reference."
                                                         ],
                                                     )?;
-                                                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_FEMALE")?) {
-                                                        ctx.lines(args!["And it's no trouble at all!", "I really enjoy your company..."])?;
+                                                    ctx.next()?;
+                                                    ctx.mes("[Pisruik]")?;
+                                                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                                                        ctx.lines(args![
+                                                            "Hopefully, we'll",
+                                                            "meet again sometime",
+                                                            "in the future. Good luck on",
+                                                            "your journeys, adventurer.",
+                                                            "*Cough cough* Now... What",
+                                                            "will be my next project?"
+                                                        ])?;
+                                                    } else {
+                                                        ctx.lines(args![
+                                                            "Anyway, I need to be",
+                                                            "working on a new project",
+                                                            "soon, so I suppose this is",
+                                                            "where we part ways for now.",
+                                                            "But I must say, it was truly",
+                                                            "a great pleasure to meet you..."
+                                                        ])?;
                                                     }
                                                     ctx.close_window()?;
                                                     return Err(Stop::End);
-                                                } else {
-                                                    if ctx.var("alche_sk").get()? == 11 {
-                                                        if ctx.call(Function::CountItem, vec![Val::from(7434)])? == 0 {
-                                                            ctx.lines_as(
-                                                                "Pisruik",
-                                                                args![
-                                                                    "Uh oh...",
-                                                                    "You lost the thesis",
-                                                                    "I wrote for you? I don't",
-                                                                    "have the time to write",
-                                                                    "another one for you now..."
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        } else {
-                                                            if ctx.call(Function::CountItem, vec![Val::from(7434)])? == 1 {
-                                                                ctx.lines_as(
-                                                                    "Pisruik",
-                                                                    args![
-                                                                        "So, how have you been",
-                                                                        "using the potions that",
-                                                                        "I've taught you to make?",
-                                                                        "Hopefully, they'll come",
-                                                                        "in handy in your adventures."
-                                                                    ],
-                                                                )?;
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            } else {
-                                                                if ctx.call(Function::CountItem, vec![Val::from(7434)])?.number()? > 1 {
-                                                                    ctx.lines_as(
-                                                                        "Pisruik",
-                                                                        args![
-                                                                            "Huh, so copies of my",
-                                                                            "thesis are circulating",
-                                                                            "around in public? Well,",
-                                                                            "I'm sorry, but I don't have",
-                                                                            "time to autograph your copy..."
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                }
-                                                            }
-                                                        }
-                                                    } else {
-                                                        ctx.lines_as(
-                                                            "Pisruik",
-                                                            args![
-                                                                "Mmm...?",
-                                                                "Did you need anything",
-                                                                "in particular? Though,",
-                                                                "I'm afraid someone in",
-                                                                "my position won't be",
-                                                                "much help to you."
-                                                            ],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
                                                 }
+                                                ctx.lines_as(
+                                                    "Pisruik",
+                                                    args![
+                                                        "R-Really...?",
+                                                        "Well, if you ever change",
+                                                        "your mind, feel free to come",
+                                                        "back for me to teach you."
+                                                    ],
+                                                )?;
+                                                if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_FEMALE")?) {
+                                                    ctx.lines(args!["And it's no trouble at all!", "I really enjoy your company..."])?;
+                                                }
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            } else if ctx.var("alche_sk").get()? == 11 {
+                                                if ctx.call(Function::CountItem, vec![Val::from(7434)])? == 0 {
+                                                    ctx.lines_as(
+                                                        "Pisruik",
+                                                        args![
+                                                            "Uh oh...",
+                                                            "You lost the thesis",
+                                                            "I wrote for you? I don't",
+                                                            "have the time to write",
+                                                            "another one for you now..."
+                                                        ],
+                                                    )?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                } else if ctx.call(Function::CountItem, vec![Val::from(7434)])? == 1 {
+                                                    ctx.lines_as(
+                                                        "Pisruik",
+                                                        args![
+                                                            "So, how have you been",
+                                                            "using the potions that",
+                                                            "I've taught you to make?",
+                                                            "Hopefully, they'll come",
+                                                            "in handy in your adventures."
+                                                        ],
+                                                    )?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                } else if ctx.call(Function::CountItem, vec![Val::from(7434)])?.number()? > 1 {
+                                                    ctx.lines_as(
+                                                        "Pisruik",
+                                                        args![
+                                                            "Huh, so copies of my",
+                                                            "thesis are circulating",
+                                                            "around in public? Well,",
+                                                            "I'm sorry, but I don't have",
+                                                            "time to autograph your copy..."
+                                                        ],
+                                                    )?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                }
+                                            } else {
+                                                ctx.lines_as(
+                                                    "Pisruik",
+                                                    args![
+                                                        "Mmm...?",
+                                                        "Did you need anything",
+                                                        "in particular? Though,",
+                                                        "I'm afraid someone in",
+                                                        "my position won't be",
+                                                        "much help to you."
+                                                    ],
+                                                )?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
                                             }
                                         }
                                     }

@@ -34,75 +34,73 @@ fn chivalry_captain_knt_run(ctx: &Ctx, mut step: ChivalryCaptainKntStep, args: V
                         ctx.lines(args!["Ah, a member of our Chivalry.", "I hope you are living up to my expectations. We have vowed to be strong for our kingdom, even if death is upon us..."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                            ctx.lines(args!["Welcome,", "this is the", "Prontera Chivalry.", "What brings you here?"])?;
-                            ctx.next()?;
-                            'b1: {
-                                let subject1 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from(
-                                        "I want to change my job to Swordman.:I want to change my job to a Knight.:Just visiting.",
-                                    )],
-                                )?);
-                                let mut matched1 = false;
-                                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                    && !subject1.loosely_equals(&Val::from(2))
-                                    && !subject1.loosely_equals(&Val::from(3));
-                                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
-                                    ctx.lines_as(
-                                        "Captain Herman",
-                                        args![
-                                            "A-ha~",
-                                            "A Swordman, you say?",
-                                            ((Val::from("I'm sorry, ")
-                                                + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                                    Val::from("lad")
-                                                } else {
-                                                    Val::from("lass")
-                                                }))
-                                                + Val::from(", but you've")),
-                                            "come to the wrong place!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Captain Herman", args!["This isn't the Swordsman guild, it's the Prontera Chivalry! If you wish to become a Swordman, visit the Swordman Guild located in Izlude."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
-                                    ctx.lines_as(
-                                        "Captain Herman",
-                                        args![
-                                            "Ah, I see that you have great ambition. But you must first become a Swordman before becoming",
-                                            "a Knight. One step at a time..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Captain Herman", args!["First, visit the Swordman guild in Izlude. Then, come visit us again once you have become a well experienced Swordman."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
-                                    ctx.lines_as("Captain Herman", args!["Aha~", "You must have lots of free time. Why don't you go hunt some monsters instead of wandering about aimlessly?"])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
+                    } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+                        ctx.lines(args!["Welcome,", "this is the", "Prontera Chivalry.", "What brings you here?"])?;
+                        ctx.next()?;
+                        'b1: {
+                            let subject1 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from(
+                                    "I want to change my job to Swordman.:I want to change my job to a Knight.:Just visiting.",
+                                )],
+                            )?);
+                            let mut matched1 = false;
+                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                                && !subject1.loosely_equals(&Val::from(2))
+                                && !subject1.loosely_equals(&Val::from(3));
+                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                                matched1 = true;
                             }
-                        } else {
-                            ctx.mes("Welcome. We, the proud Knights of the Prontera Chivalry, will give our lives for king and country! Please enjoy your stay.")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
+                            if matched1 {
+                                ctx.lines_as(
+                                    "Captain Herman",
+                                    args![
+                                        "A-ha~",
+                                        "A Swordman, you say?",
+                                        ((Val::from("I'm sorry, ")
+                                            + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                                                Val::from("lad")
+                                            } else {
+                                                Val::from("lass")
+                                            }))
+                                            + Val::from(", but you've")),
+                                        "come to the wrong place!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Captain Herman", args!["This isn't the Swordsman guild, it's the Prontera Chivalry! If you wish to become a Swordman, visit the Swordman Guild located in Izlude."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines_as(
+                                    "Captain Herman",
+                                    args![
+                                        "Ah, I see that you have great ambition. But you must first become a Swordman before becoming",
+                                        "a Knight. One step at a time..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Captain Herman", args!["First, visit the Swordman guild in Izlude. Then, come visit us again once you have become a well experienced Swordman."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines_as("Captain Herman", args!["Aha~", "You must have lots of free time. Why don't you go hunt some monsters instead of wandering about aimlessly?"])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
                         }
+                    } else {
+                        ctx.mes("Welcome. We, the proud Knights of the Prontera Chivalry, will give our lives for king and country! Please enjoy your stay.")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
                 if ctx.var("knight_q").get()? == 0 {
@@ -342,228 +340,220 @@ fn chivalry_captain_knt_run(ctx: &Ctx, mut step: ChivalryCaptainKntStep, args: V
                                                             )?;
                                                             ctx.close_window()?;
                                                             return Err(Stop::End);
-                                                        } else {
-                                                            if ctx.var("knight_q").get()? == 11 {
-                                                                chivalry_captain_knt_run(
-                                                                    ctx,
-                                                                    ChivalryCaptainKntStep::LMission,
-                                                                    vec![Val::from(0)],
-                                                                )?;
-                                                            } else {
-                                                                if ctx.var("knight_q").get()? == 12 {
-                                                                    chivalry_captain_knt_run(
-                                                                        ctx,
-                                                                        ChivalryCaptainKntStep::LMission,
-                                                                        vec![Val::from(1)],
-                                                                    )?;
-                                                                    ctx.lines(args![
-                                                                        "Don't you only have to visit one more person? The Knight in",
-                                                                        "charge of the final test",
-                                                                        "is Sir Gray Prospheiro."
-                                                                    ])?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as(
-                                                                        "Sir Edmond",
-                                                                        args![
-                                                                            "This world operates according",
-                                                                            "to the law of cause and effect.",
-                                                                            "All will be revealed in the end."
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as(
-                                                                        "Captain Herman",
-                                                                        args!["Be alert and do", "your best, as this", "is the last test."],
-                                                                    )?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as(
-                                                                        "Captain Herman",
-                                                                        args![
-                                                                            "Return to me",
-                                                                            "after you have",
-                                                                            "completed the",
-                                                                            "final test."
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                } else {
-                                                                    if ctx.var("knight_q").get()? == 13 {
-                                                                        ctx.lines(args!["Finish the last test.", "Once that is complete, all the Knights involved in your testing shall gather, and we will evaluate your performance."])?;
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    } else {
-                                                                        if ctx.var("knight_q").get()? == 14 {
-                                                                            if ctx.var("SkillPoint").get()?.is_true() {
-                                                                                ctx.lines(args!["Oh...!", "You cannot change jobs if you have unused skill points remaining. Return once you have distributed all your skill points."])?;
-                                                                                ctx.close_window()?;
-                                                                                return Err(Stop::End);
-                                                                            }
-                                                                            ctx.lines(args!["Oh, have you completed all the tests? But not everyone who completes the tests can", "become a Knight."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Captain Herman", args!["During the test we see how loyal, honorable and strong you are. We also see if you were courteous and if you know the value of modesty and reverence."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Captain Herman", args!["Through this process, I have also observed your actions. All seven of our opinions will be reflected in the decision of your job change."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Captain Herman",
-                                                                                args![
-                                                                                    "Then...",
-                                                                                    "We shall listen",
-                                                                                    "to everyone's thoughts!",
-                                                                                    "Andrew, what do you think?"
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.mes("[Sir Andrew]")?;
-                                                                            if ctx.var("JobLevel").get()? == 50 {
-                                                                                ctx.lines(args![
-                                                                                    "What can I say?",
-                                                                                    "I approve!",
-                                                                                    "Having lived as",
-                                                                                    "a Swordsman up",
-                                                                                    "until now",
-                                                                                    "is enough."
-                                                                                ])?;
-                                                                            } else {
-                                                                                ctx.lines(args!["This one has", "gathered items", "that are troublesome", "to obtain. I approve!", ((Val::from("I believe ") + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) { Val::from("") } else { Val::from("s") })) + Val::from("he will continue to be loyal after becoming a Knight."))])?;
-                                                                            }
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Captain Herman",
-                                                                                args![
-                                                                                    "Hmm.",
-                                                                                    "What a nice review.",
-                                                                                    "Siracuse, what are your thoughts?"
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Sir Siracuse", args!["Heh, very well. Not quite what", "I would want, but hopefully will become better in the future."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Sir Siracuse", args!["After becoming a Knight, you must build a good reputation through honor. Ehh... I approve."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Captain Herman",
-                                                                                args!["Okay...", "Windsor,", "what about you?"],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Sir Windsor", args!["..."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Sir Windsor", args!["...", "......"])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Sir Windsor", args!["....Approved."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Captain Herman",
-                                                                                args![
-                                                                                    "I don't think",
-                                                                                    "he disapproves.",
-                                                                                    "Then, let's listen",
-                                                                                    "to Amy's opinion."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.mes("[Lady Amy]")?;
-                                                                            if ctx
-                                                                                .var("Sex")
-                                                                                .get()?
-                                                                                .loosely_equals(&ctx.constant("SEX_MALE")?)
-                                                                            {
-                                                                                ctx.lines(args!["Mmm~ He's so polite!", "He'll grow to be a wonderful Knight. And he's got such cute widdle cheeeeks~ Hee hee!"])?;
-                                                                            } else {
-                                                                                ctx.lines(args!["Mmm~ She should be great!", "She's very courteous and also very cute, so a few more points! Heh~", "I shouldn't be saying things like this!"])?;
-                                                                            }
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Captain Herman",
-                                                                                args![
-                                                                                    "Well...",
-                                                                                    "A strange review,",
-                                                                                    "but I believe",
-                                                                                    "she approves.",
-                                                                                    "Edmond, speak",
-                                                                                    "your mind."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.mes("[Sir Edmond]")?;
-                                                                            if ctx
-                                                                                .var("Sex")
-                                                                                .get()?
-                                                                                .loosely_equals(&ctx.constant("SEX_MALE")?)
-                                                                            {
-                                                                                ctx.lines(args!["He seems a little rough, but something bright shines within him. With polish and refinement, his true value will shine forth", "as the sun."])?;
-                                                                            } else {
-                                                                                ctx.lines(args!["It's difficult to see, but there is a spiritual beauty within her. With polish and refinement, her true value will glow as resplendently", "as the moon."])?;
-                                                                            }
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Captain Herman",
-                                                                                args![
-                                                                                    "Lastly...",
-                                                                                    "Gray. I would like",
-                                                                                    "to hear your thoughts."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Gray", args![((Val::from("A young ") + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) { Val::from("gentleman") } else { Val::from("lady") })) + Val::from(" coming here with the determination to become a Knight is enough..."))])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Captain Herman",
-                                                                                args![
-                                                                                    "Everyone",
-                                                                                    "has approved.",
-                                                                                    "No one has opposed.",
-                                                                                    "Then I shall tell",
-                                                                                    "you my opinion."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Captain Herman", args!["My decision is..."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Captain Herman", args!["I approve."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Captain Herman", args!["You may not have finished all the tests perfectly, but you have all the necessary qualities to become", "a Knight."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.call(Function::CompleteQuest, vec![Val::from(9012)])?;
-                                                                            shared::other_global_functions::job_change(
-                                                                                ctx,
-                                                                                vec![ctx.constant("JOB_KNIGHT")?],
-                                                                            )?;
-                                                                            shared::other_global_functions::f_clearjobvar(ctx, vec![])?;
-                                                                            ctx.lines_as(
-                                                                                "Captain Herman",
-                                                                                args![
-                                                                                    "I hereby declare",
-                                                                                    "you a member of",
-                                                                                    "the Prontera Chivalry.",
-                                                                                    "Protect the weak and",
-                                                                                    "live with honor."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.next()?;
-                                                                            ctx.call(
-                                                                                Function::GetItem,
-                                                                                vec![Val::from(656), Val::from(7)],
-                                                                            )?;
-                                                                            ctx.lines_as("Captain Herman", args!["Oh...", "We have prepared a small gift to congratulate you on your job change. Please use it when you are in battle as you honorably protect others."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Captain Herman",
-                                                                                args![
-                                                                                    "Go forth!",
-                                                                                    "The future of",
-                                                                                    "Rune-Midgarts",
-                                                                                    "rests on your",
-                                                                                    "shoulders!"
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        }
-                                                                    }
-                                                                }
+                                                        } else if ctx.var("knight_q").get()? == 11 {
+                                                            chivalry_captain_knt_run(
+                                                                ctx,
+                                                                ChivalryCaptainKntStep::LMission,
+                                                                vec![Val::from(0)],
+                                                            )?;
+                                                        } else if ctx.var("knight_q").get()? == 12 {
+                                                            chivalry_captain_knt_run(
+                                                                ctx,
+                                                                ChivalryCaptainKntStep::LMission,
+                                                                vec![Val::from(1)],
+                                                            )?;
+                                                            ctx.lines(args![
+                                                                "Don't you only have to visit one more person? The Knight in",
+                                                                "charge of the final test",
+                                                                "is Sir Gray Prospheiro."
+                                                            ])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Sir Edmond",
+                                                                args![
+                                                                    "This world operates according",
+                                                                    "to the law of cause and effect.",
+                                                                    "All will be revealed in the end."
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args!["Be alert and do", "your best, as this", "is the last test."],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args![
+                                                                    "Return to me",
+                                                                    "after you have",
+                                                                    "completed the",
+                                                                    "final test."
+                                                                ],
+                                                            )?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        } else if ctx.var("knight_q").get()? == 13 {
+                                                            ctx.lines(args!["Finish the last test.", "Once that is complete, all the Knights involved in your testing shall gather, and we will evaluate your performance."])?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        } else if ctx.var("knight_q").get()? == 14 {
+                                                            if ctx.var("SkillPoint").get()?.is_true() {
+                                                                ctx.lines(args!["Oh...!", "You cannot change jobs if you have unused skill points remaining. Return once you have distributed all your skill points."])?;
+                                                                ctx.close_window()?;
+                                                                return Err(Stop::End);
                                                             }
+                                                            ctx.lines(args!["Oh, have you completed all the tests? But not everyone who completes the tests can", "become a Knight."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Captain Herman", args!["During the test we see how loyal, honorable and strong you are. We also see if you were courteous and if you know the value of modesty and reverence."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Captain Herman", args!["Through this process, I have also observed your actions. All seven of our opinions will be reflected in the decision of your job change."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args![
+                                                                    "Then...",
+                                                                    "We shall listen",
+                                                                    "to everyone's thoughts!",
+                                                                    "Andrew, what do you think?"
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.mes("[Sir Andrew]")?;
+                                                            if ctx.var("JobLevel").get()? == 50 {
+                                                                ctx.lines(args![
+                                                                    "What can I say?",
+                                                                    "I approve!",
+                                                                    "Having lived as",
+                                                                    "a Swordsman up",
+                                                                    "until now",
+                                                                    "is enough."
+                                                                ])?;
+                                                            } else {
+                                                                ctx.lines(args!["This one has", "gathered items", "that are troublesome", "to obtain. I approve!", ((Val::from("I believe ") + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) { Val::from("") } else { Val::from("s") })) + Val::from("he will continue to be loyal after becoming a Knight."))])?;
+                                                            }
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args![
+                                                                    "Hmm.",
+                                                                    "What a nice review.",
+                                                                    "Siracuse, what are your thoughts?"
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Sir Siracuse", args!["Heh, very well. Not quite what", "I would want, but hopefully will become better in the future."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Sir Siracuse", args!["After becoming a Knight, you must build a good reputation through honor. Ehh... I approve."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args!["Okay...", "Windsor,", "what about you?"],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Sir Windsor", args!["..."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Sir Windsor", args!["...", "......"])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Sir Windsor", args!["....Approved."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args![
+                                                                    "I don't think",
+                                                                    "he disapproves.",
+                                                                    "Then, let's listen",
+                                                                    "to Amy's opinion."
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.mes("[Lady Amy]")?;
+                                                            if ctx
+                                                                .var("Sex")
+                                                                .get()?
+                                                                .loosely_equals(&ctx.constant("SEX_MALE")?)
+                                                            {
+                                                                ctx.lines(args!["Mmm~ He's so polite!", "He'll grow to be a wonderful Knight. And he's got such cute widdle cheeeeks~ Hee hee!"])?;
+                                                            } else {
+                                                                ctx.lines(args!["Mmm~ She should be great!", "She's very courteous and also very cute, so a few more points! Heh~", "I shouldn't be saying things like this!"])?;
+                                                            }
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args![
+                                                                    "Well...",
+                                                                    "A strange review,",
+                                                                    "but I believe",
+                                                                    "she approves.",
+                                                                    "Edmond, speak",
+                                                                    "your mind."
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.mes("[Sir Edmond]")?;
+                                                            if ctx
+                                                                .var("Sex")
+                                                                .get()?
+                                                                .loosely_equals(&ctx.constant("SEX_MALE")?)
+                                                            {
+                                                                ctx.lines(args!["He seems a little rough, but something bright shines within him. With polish and refinement, his true value will shine forth", "as the sun."])?;
+                                                            } else {
+                                                                ctx.lines(args!["It's difficult to see, but there is a spiritual beauty within her. With polish and refinement, her true value will glow as resplendently", "as the moon."])?;
+                                                            }
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args![
+                                                                    "Lastly...",
+                                                                    "Gray. I would like",
+                                                                    "to hear your thoughts."
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Gray", args![((Val::from("A young ") + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) { Val::from("gentleman") } else { Val::from("lady") })) + Val::from(" coming here with the determination to become a Knight is enough..."))])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args![
+                                                                    "Everyone",
+                                                                    "has approved.",
+                                                                    "No one has opposed.",
+                                                                    "Then I shall tell",
+                                                                    "you my opinion."
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Captain Herman", args!["My decision is..."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Captain Herman", args!["I approve."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Captain Herman", args!["You may not have finished all the tests perfectly, but you have all the necessary qualities to become", "a Knight."])?;
+                                                            ctx.next()?;
+                                                            ctx.call(Function::CompleteQuest, vec![Val::from(9012)])?;
+                                                            shared::other_global_functions::job_change(
+                                                                ctx,
+                                                                vec![ctx.constant("JOB_KNIGHT")?],
+                                                            )?;
+                                                            shared::other_global_functions::f_clearjobvar(ctx, vec![])?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args![
+                                                                    "I hereby declare",
+                                                                    "you a member of",
+                                                                    "the Prontera Chivalry.",
+                                                                    "Protect the weak and",
+                                                                    "live with honor."
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.call(
+                                                                Function::GetItem,
+                                                                vec![Val::from(656), Val::from(7)],
+                                                            )?;
+                                                            ctx.lines_as("Captain Herman", args!["Oh...", "We have prepared a small gift to congratulate you on your job change. Please use it when you are in battle as you honorably protect others."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Captain Herman",
+                                                                args![
+                                                                    "Go forth!",
+                                                                    "The future of",
+                                                                    "Rune-Midgarts",
+                                                                    "rests on your",
+                                                                    "shoulders!"
+                                                                ],
+                                                            )?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
                                                         }
                                                     }
                                                 }
@@ -624,37 +614,35 @@ fn sir_andrew_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.lines(args!["Hey there,", "little Novice.", "Welcome to the", "Prontera Chivalry."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Andrew",
+                args!["You might that you're", "weak right now, but someday", "you'll become stronger."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Andrew",
+                args!["Dream of a bright future, and go look forward on the path that you choose to take."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.lines(args!["Hey there,", "little Novice.", "Welcome to the", "Prontera Chivalry."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Andrew",
-                    args!["You might that you're", "weak right now, but someday", "you'll become stronger."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Andrew",
-                    args!["Dream of a bright future, and go look forward on the path that you choose to take."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args![
-                    "We, the members of the",
-                    "Prontera Chivalry, are putting our best effort in protecting peace in this world."
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Andrew",
-                    args![
-                        "Even during the battles we face each and every day, we dream of",
-                        "a bright future that is to come."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines(args![
+                "We, the members of the",
+                "Prontera Chivalry, are putting our best effort in protecting peace in this world."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Andrew",
+                args![
+                    "Even during the battles we face each and every day, we dream of",
+                    "a bright future that is to come."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ctx.var("knight_q").get()? == 0 {
@@ -672,376 +660,368 @@ fn sir_andrew_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("knight_q").get()? == 1 {
-            ctx.lines(args!["Good day.", "May I help you", "with something?"])?;
+    } else if ctx.var("knight_q").get()? == 1 {
+        ctx.lines(args!["Good day.", "May I help you", "with something?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("I would like to take the test.:Oh, nothing.")],
+        )?) == 1
+        {
+            ctx.lines_as(
+                "Sir Andrew",
+                args![
+                    "Ah...",
+                    "You wish",
+                    "to become a Knight.",
+                    "Your name is",
+                    (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from(",")),
+                    "correct?"
+                ],
+            )?;
             ctx.next()?;
-            if Val::from(runtime::select_values(
-                ctx,
-                &[Val::from("I would like to take the test.:Oh, nothing.")],
-            )?) == 1
-            {
+            ctx.lines_as(
+                "Sir Andrew",
+                args![
+                    "I am a Knight of",
+                    "the Prontera Chivalry,",
+                    "Andrew Shylock.",
+                    "I am in charge of",
+                    "your first test."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Sir Andrew", args!["I will be testing your sense of loyalty. Every Knight must possess this virtue. For this exam, you will be gathering prizes from", "the battlefield."])?;
+            ctx.next()?;
+            if ctx.var("JobLevel").get()? == 50 {
                 ctx.lines_as(
                     "Sir Andrew",
                     args![
-                        "Ah...",
-                        "You wish",
-                        "to become a Knight.",
-                        "Your name is",
-                        (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from(",")),
-                        "correct?"
+                        "Mmm...?",
+                        "Hold on there.",
+                        "You look like you've",
+                        "mastered being",
+                        "a Swordsman."
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Sir Andrew",
                     args![
-                        "I am a Knight of",
-                        "the Prontera Chivalry,",
-                        "Andrew Shylock.",
-                        "I am in charge of",
-                        "your first test."
+                        "Impressive...!",
+                        "On second thought,",
+                        "I don't think your",
+                        "loyalty needs to",
+                        "be tested."
                     ],
                 )?;
                 ctx.next()?;
-                ctx.lines_as("Sir Andrew", args!["I will be testing your sense of loyalty. Every Knight must possess this virtue. For this exam, you will be gathering prizes from", "the battlefield."])?;
-                ctx.next()?;
-                if ctx.var("JobLevel").get()? == 50 {
-                    ctx.lines_as(
-                        "Sir Andrew",
-                        args![
-                            "Mmm...?",
-                            "Hold on there.",
-                            "You look like you've",
-                            "mastered being",
-                            "a Swordsman."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sir Andrew",
-                        args![
-                            "Impressive...!",
-                            "On second thought,",
-                            "I don't think your",
-                            "loyalty needs to",
-                            "be tested."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Andrew", args!["Please go to my fellow Knight, Sir Siracuse, as he will give you your next test. Well done in mastering the Swordman job."])?;
-                    ctx.var("knight_q").set(Val::from(4))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(9000), Val::from(9003)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                ctx.lines_as(
-                    "Sir Andrew",
-                    args!["Without", "further ado,", "let's begin!", "Go and gather the", "following items..."],
-                )?;
-                ctx.next()?;
-                ctx.mes("[Sir Andrew]")?;
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        let base = Val::from(0).number()?;
-                        runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1040), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(7006), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(931), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(1057), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(903), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(1028), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(2), false);
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        let base = Val::from(0).number()?;
-                        runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1042), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1032), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(966), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(7031), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(946), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(3), false);
-                        break 'b1;
-                    }
-                }
-                ctx.var("knight_q").set(runtime::local_get(&l_items, &Val::from(12), false))?;
-                if ctx.var("knight_q").get()? == 2 {
-                    ctx.call(Function::ChangeQuest, vec![Val::from(9000), Val::from(9001)])?;
-                } else {
-                    ctx.call(Function::ChangeQuest, vec![Val::from(9000), Val::from(9002)])?;
-                }
-                ctx.lines(args![
-                    ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(1), false)) + Val::from(" "))
-                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
-                        + Val::from("^000000,")),
-                    ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(3), false)) + Val::from(" "))
-                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(2), false)])?)
-                        + Val::from("^000000,")),
-                    ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(5), false)) + Val::from(" "))
-                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(4), false)])?)
-                        + Val::from("^000000,")),
-                    ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(7), false)) + Val::from(" "))
-                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(6), false)])?)
-                        + Val::from("^000000,")),
-                    ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(9), false)) + Val::from(" "))
-                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(8), false)])?)
-                        + Val::from("^000000 and")),
-                    ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(11), false)) + Val::from(" "))
-                        + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(10), false)])?)
-                        + Val::from("^000000,"))
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Andrew",
-                    args![
-                        "I shall be",
-                        "waiting here for",
-                        "you to bring the",
-                        "items I've listed.",
-                        "See you soon~"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Sir Andrew", args!["Well, then...", "Good day."])?;
+                ctx.lines_as("Sir Andrew", args!["Please go to my fellow Knight, Sir Siracuse, as he will give you your next test. Well done in mastering the Swordman job."])?;
+                ctx.var("knight_q").set(Val::from(4))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(9000), Val::from(9003)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-        } else {
-            if (ctx.var("knight_q").get()? == 2 || ctx.var("knight_q").get()? == 3) {
-                ctx.lines(args![
-                    "Welcome back~",
-                    "Did you gather",
-                    "all the items?",
-                    "Let's check and see..."
-                ])?;
-                ctx.next()?;
-                'b2: {
-                    let subject2 = ctx.var("knight_q").get()?;
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(2)) && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        let base = Val::from(0).number()?;
-                        runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1040), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(7006), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(931), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(1057), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(903), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(1028), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(0), false);
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        let base = Val::from(0).number()?;
-                        runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1042), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1032), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(966), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(7031), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(946), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
-                        runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(0), false);
-                        break 'b2;
-                    }
+            ctx.lines_as(
+                "Sir Andrew",
+                args!["Without", "further ado,", "let's begin!", "Go and gather the", "following items..."],
+            )?;
+            ctx.next()?;
+            ctx.mes("[Sir Andrew]")?;
+            'b1: {
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])?;
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
                 }
-                if (((((runtime::op(
-                    &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?,
-                    ">=",
-                    &runtime::local_get(&l_items, &Val::from(1), false),
-                )?
-                .is_true()
-                    && runtime::op(
-                        &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(2), false)])?,
-                        ">=",
-                        &runtime::local_get(&l_items, &Val::from(3), false),
-                    )?
-                    .is_true())
-                    && runtime::op(
-                        &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(4), false)])?,
-                        ">=",
-                        &runtime::local_get(&l_items, &Val::from(5), false),
-                    )?
-                    .is_true())
-                    && runtime::op(
-                        &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(6), false)])?,
-                        ">=",
-                        &runtime::local_get(&l_items, &Val::from(7), false),
-                    )?
-                    .is_true())
-                    && runtime::op(
-                        &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(8), false)])?,
-                        ">=",
-                        &runtime::local_get(&l_items, &Val::from(9), false),
-                    )?
-                    .is_true())
-                    && runtime::op(
-                        &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(10), false)])?,
-                        ">=",
-                        &runtime::local_get(&l_items, &Val::from(11), false),
-                    )?
-                    .is_true())
-                {
-                    ctx.lines_as("Sir Andrew", args!["Perfect! We appreciate your effort in gathering these items. Thesee will be used to support the Chivalry's finances."])?;
-                    ctx.next()?;
-                    ctx.call(
-                        Function::DelItem,
-                        vec![
-                            runtime::local_get(&l_items, &Val::from(0), false),
-                            runtime::local_get(&l_items, &Val::from(1), false),
-                        ],
-                    )?;
-                    ctx.call(
-                        Function::DelItem,
-                        vec![
-                            runtime::local_get(&l_items, &Val::from(2), false),
-                            runtime::local_get(&l_items, &Val::from(3), false),
-                        ],
-                    )?;
-                    ctx.call(
-                        Function::DelItem,
-                        vec![
-                            runtime::local_get(&l_items, &Val::from(4), false),
-                            runtime::local_get(&l_items, &Val::from(5), false),
-                        ],
-                    )?;
-                    ctx.call(
-                        Function::DelItem,
-                        vec![
-                            runtime::local_get(&l_items, &Val::from(6), false),
-                            runtime::local_get(&l_items, &Val::from(7), false),
-                        ],
-                    )?;
-                    ctx.call(
-                        Function::DelItem,
-                        vec![
-                            runtime::local_get(&l_items, &Val::from(8), false),
-                            runtime::local_get(&l_items, &Val::from(9), false),
-                        ],
-                    )?;
-                    ctx.call(
-                        Function::DelItem,
-                        vec![
-                            runtime::local_get(&l_items, &Val::from(10), false),
-                            runtime::local_get(&l_items, &Val::from(11), false),
-                        ],
-                    )?;
-                    if ctx.var("knight_q").get()? == 2 {
-                        ctx.call(Function::ChangeQuest, vec![Val::from(9001), Val::from(9003)])?;
-                    } else {
-                        ctx.call(Function::ChangeQuest, vec![Val::from(9002), Val::from(9003)])?;
-                    }
-                    ctx.var("knight_q").set(Val::from(4))?;
-                    ctx.lines_as("Sir Andrew", args!["Please visit my fellow Knight, Sir Siracuse, and continue the tests with the dedication and loyalty you've shown to me this day."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
+                if matched1 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1040), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(7006), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(931), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(1057), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(903), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(1028), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(2), false);
+                    break 'b1;
                 }
-                ctx.lines_as(
-                    "Sir Andrew",
-                    args![
-                        "Wait, wait...",
-                        "I think you're",
-                        "still missing some",
-                        "items. In case you",
-                        "forgot, let me",
-                        "remind you..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Andrew",
-                    args![
-                        ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(1), false)) + Val::from(" "))
-                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
-                            + Val::from("^000000,")),
-                        ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(3), false)) + Val::from(" "))
-                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(2), false)])?)
-                            + Val::from("^000000,")),
-                        ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(5), false)) + Val::from(" "))
-                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(4), false)])?)
-                            + Val::from("^000000,")),
-                        ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(7), false)) + Val::from(" "))
-                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(6), false)])?)
-                            + Val::from("^000000,")),
-                        ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(9), false)) + Val::from(" "))
-                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(8), false)])?)
-                            + Val::from("^000000 and")),
-                        ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(11), false)) + Val::from(" "))
-                            + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(10), false)])?)
-                            + Val::from("^000000,"))
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Andrew",
-                    args![
-                        "Now, please take this test seriously and with sincerity.",
-                        "Now, I'll be waiting for you",
-                        "to complete this task."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1042), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1032), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(966), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(7031), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(946), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
+                    runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(3), false);
+                    break 'b1;
+                }
+            }
+            ctx.var("knight_q").set(runtime::local_get(&l_items, &Val::from(12), false))?;
+            if ctx.var("knight_q").get()? == 2 {
+                ctx.call(Function::ChangeQuest, vec![Val::from(9000), Val::from(9001)])?;
             } else {
-                if ctx.var("knight_q").get()? == 4 {
-                    ctx.mes("Did you have something you needed to ask me? You should go and take the next test. Hurry, Sir Siracuse is waiting for you~")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("knight_q").get()? == 14 {
-                        ctx.mes("You must have finished all the tests. Good job! You should go see our Captain so that we can all give our evaluation.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines(args![
-                            "Did you have something you needed to ask me? You should go and take your next test. Do your best.",
-                            "I know you can do it!"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+                ctx.call(Function::ChangeQuest, vec![Val::from(9000), Val::from(9002)])?;
+            }
+            ctx.lines(args![
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(1), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
+                    + Val::from("^000000,")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(3), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(2), false)])?)
+                    + Val::from("^000000,")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(5), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(4), false)])?)
+                    + Val::from("^000000,")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(7), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(6), false)])?)
+                    + Val::from("^000000,")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(9), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(8), false)])?)
+                    + Val::from("^000000 and")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(11), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(10), false)])?)
+                    + Val::from("^000000,"))
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Andrew",
+                args![
+                    "I shall be",
+                    "waiting here for",
+                    "you to bring the",
+                    "items I've listed.",
+                    "See you soon~"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Sir Andrew", args!["Well, then...", "Good day."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    } else if (ctx.var("knight_q").get()? == 2 || ctx.var("knight_q").get()? == 3) {
+        ctx.lines(args![
+            "Welcome back~",
+            "Did you gather",
+            "all the items?",
+            "Let's check and see..."
+        ])?;
+        ctx.next()?;
+        'b2: {
+            let subject2 = ctx.var("knight_q").get()?;
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(2)) && !subject2.loosely_equals(&Val::from(3));
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1040), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(7006), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(931), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(1057), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(903), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(1028), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(0), false);
+                break 'b2;
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                matched2 = true;
+            }
+            if matched2 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1042), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1032), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(966), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(7031), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(946), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(0), false);
+                break 'b2;
             }
         }
+        if (((((runtime::op(
+            &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?,
+            ">=",
+            &runtime::local_get(&l_items, &Val::from(1), false),
+        )?
+        .is_true()
+            && runtime::op(
+                &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(2), false)])?,
+                ">=",
+                &runtime::local_get(&l_items, &Val::from(3), false),
+            )?
+            .is_true())
+            && runtime::op(
+                &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(4), false)])?,
+                ">=",
+                &runtime::local_get(&l_items, &Val::from(5), false),
+            )?
+            .is_true())
+            && runtime::op(
+                &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(6), false)])?,
+                ">=",
+                &runtime::local_get(&l_items, &Val::from(7), false),
+            )?
+            .is_true())
+            && runtime::op(
+                &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(8), false)])?,
+                ">=",
+                &runtime::local_get(&l_items, &Val::from(9), false),
+            )?
+            .is_true())
+            && runtime::op(
+                &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(10), false)])?,
+                ">=",
+                &runtime::local_get(&l_items, &Val::from(11), false),
+            )?
+            .is_true())
+        {
+            ctx.lines_as("Sir Andrew", args!["Perfect! We appreciate your effort in gathering these items. Thesee will be used to support the Chivalry's finances."])?;
+            ctx.next()?;
+            ctx.call(
+                Function::DelItem,
+                vec![
+                    runtime::local_get(&l_items, &Val::from(0), false),
+                    runtime::local_get(&l_items, &Val::from(1), false),
+                ],
+            )?;
+            ctx.call(
+                Function::DelItem,
+                vec![
+                    runtime::local_get(&l_items, &Val::from(2), false),
+                    runtime::local_get(&l_items, &Val::from(3), false),
+                ],
+            )?;
+            ctx.call(
+                Function::DelItem,
+                vec![
+                    runtime::local_get(&l_items, &Val::from(4), false),
+                    runtime::local_get(&l_items, &Val::from(5), false),
+                ],
+            )?;
+            ctx.call(
+                Function::DelItem,
+                vec![
+                    runtime::local_get(&l_items, &Val::from(6), false),
+                    runtime::local_get(&l_items, &Val::from(7), false),
+                ],
+            )?;
+            ctx.call(
+                Function::DelItem,
+                vec![
+                    runtime::local_get(&l_items, &Val::from(8), false),
+                    runtime::local_get(&l_items, &Val::from(9), false),
+                ],
+            )?;
+            ctx.call(
+                Function::DelItem,
+                vec![
+                    runtime::local_get(&l_items, &Val::from(10), false),
+                    runtime::local_get(&l_items, &Val::from(11), false),
+                ],
+            )?;
+            if ctx.var("knight_q").get()? == 2 {
+                ctx.call(Function::ChangeQuest, vec![Val::from(9001), Val::from(9003)])?;
+            } else {
+                ctx.call(Function::ChangeQuest, vec![Val::from(9002), Val::from(9003)])?;
+            }
+            ctx.var("knight_q").set(Val::from(4))?;
+            ctx.lines_as("Sir Andrew", args!["Please visit my fellow Knight, Sir Siracuse, and continue the tests with the dedication and loyalty you've shown to me this day."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Sir Andrew",
+            args![
+                "Wait, wait...",
+                "I think you're",
+                "still missing some",
+                "items. In case you",
+                "forgot, let me",
+                "remind you..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sir Andrew",
+            args![
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(1), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
+                    + Val::from("^000000,")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(3), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(2), false)])?)
+                    + Val::from("^000000,")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(5), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(4), false)])?)
+                    + Val::from("^000000,")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(7), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(6), false)])?)
+                    + Val::from("^000000,")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(9), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(8), false)])?)
+                    + Val::from("^000000 and")),
+                ((((Val::from("^236B8E") + runtime::local_get(&l_items, &Val::from(11), false)) + Val::from(" "))
+                    + ctx.call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(10), false)])?)
+                    + Val::from("^000000,"))
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sir Andrew",
+            args![
+                "Now, please take this test seriously and with sincerity.",
+                "Now, I'll be waiting for you",
+                "to complete this task."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("knight_q").get()? == 4 {
+        ctx.mes("Did you have something you needed to ask me? You should go and take the next test. Hurry, Sir Siracuse is waiting for you~")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("knight_q").get()? == 14 {
+        ctx.mes("You must have finished all the tests. Good job! You should go see our Captain so that we can all give our evaluation.")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args![
+            "Did you have something you needed to ask me? You should go and take your next test. Do your best.",
+            "I know you can do it!"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -1085,48 +1065,46 @@ fn sir_siracuse_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.lines(args!["Oh?", "What is a Novice", "doing here?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Siracuse",
+                args!["Are you interested in becoming a Knight? You just can't change into a Knight from a Novice, you know."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Siracuse",
+                args![
+                    "First, you have",
+                    "to become a well",
+                    "experienced Swordman",
+                    "before you can consider",
+                    "becoming a Knight."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.lines(args!["Oh?", "What is a Novice", "doing here?"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Siracuse",
-                    args!["Are you interested in becoming a Knight? You just can't change into a Knight from a Novice, you know."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Siracuse",
-                    args![
-                        "First, you have",
-                        "to become a well",
-                        "experienced Swordman",
-                        "before you can consider",
-                        "becoming a Knight."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args![
-                    "Offense and defense.",
-                    "Is there a way to have both without compromising one or the other?"
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Siracuse",
-                    args![
-                        "Two-handed weapons greatly",
-                        "improve your offense but decrease your defenses. Is there something that can overcome this weakness?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Siracuse",
-                    args!["A weapon or some sort", "of technique like that", "would help Knights greatly..."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines(args![
+                "Offense and defense.",
+                "Is there a way to have both without compromising one or the other?"
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Siracuse",
+                args![
+                    "Two-handed weapons greatly",
+                    "improve your offense but decrease your defenses. Is there something that can overcome this weakness?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Siracuse",
+                args!["A weapon or some sort", "of technique like that", "would help Knights greatly..."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ctx.var("knight_q").get()? == 0 {
@@ -1202,393 +1180,383 @@ fn sir_siracuse_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if (ctx.var("knight_q").get()? == 2 || ctx.var("knight_q").get()? == 3) {
-                ctx.lines(args!["Eh?", "Do you have", "something to", "ask me?"])?;
+        } else if (ctx.var("knight_q").get()? == 2 || ctx.var("knight_q").get()? == 3) {
+            ctx.lines(args!["Eh?", "Do you have", "something to", "ask me?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
+            )?) == 1
+            {
+                ctx.lines_as("Sir Siracuse", args!["Hahaha~!", "Aren't you supposed to be taking Andrew's test? You can't just skip that, you know! All of our tests are important."])?;
                 ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
-                )?) == 1
-                {
-                    ctx.lines_as("Sir Siracuse", args!["Hahaha~!", "Aren't you supposed to be taking Andrew's test? You can't just skip that, you know! All of our tests are important."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sir Siracuse",
-                        args![
-                            "Speak to Sir Andrew first.",
-                            "My test for you will come after you've finished his test."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
                 ctx.lines_as(
                     "Sir Siracuse",
-                    args!["Hmmm...?", "Alright.", "It's just that", "you had that", "look on your", "face."],
+                    args![
+                        "Speak to Sir Andrew first.",
+                        "My test for you will come after you've finished his test."
+                    ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if (ctx.var("knight_q").get()? == 4 || ctx.var("knight_q").get()? == 5) {
-                    if ctx.var("knight_q").get()? == 4 {
-                        ctx.lines(args!["Oh?", "Do you have", "something to", "ask me?"])?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Sir Andrew sent me to take your test.:Oh, nothing.")],
-                        )?) == 1
-                        {
-                            ctx.lines_as("Sir Siracuse", args!["I see, you've passed the first test. Very well, I'll make some time for you. Let me introduce myself. My name is James Siracuse."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Sir Siracuse", args!["This test will measure how much you know about Knighthood. More importantly, I want to know your thoughts about honor."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Sir Siracuse", args!["Don't be nervous, I won't keep you too long. These will be quick questions. Plus, you still have to see the others, right?"])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Sir Siracuse",
-                                args!["Well then,", "let's begin.", "Please answer", "promptly."],
-                            )?;
-                            ctx.next()?;
-                        } else {
-                            ctx.lines_as(
-                                "Sir Siracuse",
-                                args!["Hmmm...?", "Alright.", "It's just that", "you had that", "look on your", "face."],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        if ctx.var("knight_q").get()? == 5 {
-                            ctx.lines(args!["What...", "You again?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("I wish to take the test again.:Oh, nothing.")],
-                            )?) == 1
-                            {
-                                ctx.lines_as(
-                                    "Sir Siracuse",
-                                    args!["Is that right?", "Are you sure you're", "prepared this time?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Sir Siracuse", args!["Alright then,", "here we go again..."])?;
-                                ctx.next()?;
-                            } else {
-                                ctx.lines_as(
-                                    "Sir Siracuse",
-                                    args!["Hmmm...?", "Alright.", "It's just that", "you had that", "look on your", "face."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
-                    ctx.lines_as("Sir Siracuse", args!["A Knight must possess great strength, defense, speed, and the skill to wield a Two-Handed Sword. Which of the following weapons are not affected by the Two Hand Quicken skill?"])?;
+            }
+            ctx.lines_as(
+                "Sir Siracuse",
+                args!["Hmmm...?", "Alright.", "It's just that", "you had that", "look on your", "face."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if (ctx.var("knight_q").get()? == 4 || ctx.var("knight_q").get()? == 5) {
+            if ctx.var("knight_q").get()? == 4 {
+                ctx.lines(args!["Oh?", "Do you have", "something to", "ask me?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Sir Andrew sent me to take your test.:Oh, nothing.")],
+                )?) == 1
+                {
+                    ctx.lines_as("Sir Siracuse", args!["I see, you've passed the first test. Very well, I'll make some time for you. Let me introduce myself. My name is James Siracuse."])?;
                     ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Katana:Slayer:Broadsword:Flamberge")])?) != 4 {
-                        ctx.var("knight_q").set(Val::from(5))?;
-                        ctx.lines_as(
-                            "Sir Siracuse",
-                            args![
-                                "Wrong!",
-                                "That's a Two-Handed Sword!",
-                                "Are you sure you want to be a Knight? You don't even know the basics..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Sir Siracuse", args!["If you're not sure about anything, go into town and ask any Knight. You need to learn more about Knights before applying for the job!"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as(
-                        "Sir Siracuse",
-                        args!["Good, now let me ask about some skills. Which of the following is not necessary to learn Bowling Bash?"],
-                    )?;
+                    ctx.lines_as("Sir Siracuse", args!["This test will measure how much you know about Knighthood. More importantly, I want to know your thoughts about honor."])?;
                     ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "Two Handed Sword Mastery Lv.5:Magnum Break Lv.3:Provoke Lv.10:Bash Lv.10",
-                        )],
-                    )?) != 3
-                    {
-                        ctx.var("knight_q").set(Val::from(5))?;
-                        ctx.lines_as("Sir Siracuse", args!["Wrong!", "You need that to learn Bowling Bash! You should learn more about the Knight class before applying for the job!"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as("Sir Siracuse", args!["Knights can also use Spears, unlike other jobs, and have skills related to Spears as well. What skills are not necessary to learn the skill Brandish Spear?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Pierce Lv.5:Spear Stab Lv.3:Spear Boomerang Lv.3:Peco Peco Ride Lv.1")],
-                    )?) != 3
-                    {
-                        ctx.var("knight_q").set(Val::from(5))?;
-                        ctx.lines_as("Sir Siracuse", args!["Wrong! You need to learn that to learn Brandish Spear! How can you not know about Knights if you want to become one?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Sir Siracuse",
-                            args![
-                                "If you aren't sure about anything, go into town and ask any Knight",
-                                "for help. Come back after you've learned more about Knights."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as("Sir Siracuse", args!["Some Spears also have magical attributes, just like spells. Of the following, which can attack a Nightmare, which has the Ghost attribute?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Zephyrus:Lance:Bill Guisarme:Crescent Scythe")],
-                    )?) != 1
-                    {
-                        ctx.var("knight_q").set(Val::from(5))?;
-                        ctx.lines_as("Sir Siracuse", args!["Wrong! You'll be doing absolutely no damage with that type of Spear! Come back after you've learned more about Knights!"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Sir Siracuse",
-                            args!["If you have a question, just ask any Knight in town. This is basic knowledge for us!"],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as("Sir Siracuse", args!["When you become a Knight you can ride a Peco Peco. However, your attack speed decreases once you're mounted on a Peco Peco."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Siracuse", args!["But, you can counter this speed decrease as you learn the Cavalier Mastery skill. What percentage of your normal attack speed will you have after learning Level 3 Cavalier Mastery?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "70 % of normal attack speed:80 % of normal attack speed:90 % of normal attack speed:100 % of normal attack speed",
-                        )],
-                    )?) != 2
-                    {
-                        ctx.var("knight_q").set(Val::from(5))?;
-                        ctx.lines_as(
-                            "Sir Siracuse",
-                            args![
-                                "Wrong!",
-                                "Don't bother riding a Peco Peco if you don't know about Cavalier Mastery!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Sir Siracuse",
-                            args!["You better come back after you've learned a little more about Knights!"],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as("Sir Siracuse", args!["Good, good...", "I'm pretty sure you know a decent amount about Knights. Now, let me ask you some personal questions about Knights."])?;
+                    ctx.lines_as("Sir Siracuse", args!["Don't be nervous, I won't keep you too long. These will be quick questions. Plus, you still have to see the others, right?"])?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Sir Siracuse",
-                        args!["What should you do when you run into a Novice asking for help in town?"],
+                        args!["Well then,", "let's begin.", "Please answer", "promptly."],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "Tell the Novice of a reasonable hunting area.:Let the Novice fight while you take the damage.:Give the Novice a bunch of Zeny and items.",
-                            )],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.lines_as("Sir Siracuse", args!["Of course, even a Novice needs to learn how to be independent. Giving good guidance to Novices is one of the best things we can do."])?;
-                            ctx.next()?;
-                            break 'b1;
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.var("knight_q").set(Val::from(5))?;
-                            ctx.lines_as("Sir Siracuse", args!["You have the wrong idea. Do you really believe that is helping the Novice? Give a man a fish, he will eat for a day. Teach him to fish, he will eat for a lifetime!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            ctx.var("knight_q").set(Val::from(5))?;
-                            ctx.lines_as("Sir Siracuse", args!["Do you really believe that this will truly help the poor Novice? It's generous but, they will not know the true value of zeny and items until they earn it themselves."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
+                } else {
                     ctx.lines_as(
                         "Sir Siracuse",
-                        args!["Alright...", "Now, how should", "you act within", "a party?"],
+                        args!["Hmmm...?", "Alright.", "It's just that", "you had that", "look on your", "face."],
                     )?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "Protect everyone in the front of the battle.:Gather monsters and destroy them at once.:Get as many items possible, at all cost.",
-                            )],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as("Sir Siracuse", args!["That's it! Our strength and attacks are very important in a party. All Knights should engage in a battle with that mindset."])?;
-                            ctx.next()?;
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.var("knight_q").set(Val::from(5))?;
-                            ctx.lines_as("Sir Siracuse", args!["Are you crazy? Don't you realize the flaw in that kind of thinking? You can't control large mobs. What if they kill you? Who will protect the innocent?"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.var("knight_q").set(Val::from(5))?;
-                            ctx.lines_as(
-                                "Sir Siracuse",
-                                args![
-                                    "I see your greed and we will have none of it here! It seems you do not truly care for others!",
-                                    "Get lost!"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            } else if ctx.var("knight_q").get()? == 5 {
+                ctx.lines(args!["What...", "You again?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("I wish to take the test again.:Oh, nothing.")],
+                )?) == 1
+                {
                     ctx.lines_as(
                         "Sir Siracuse",
-                        args!["Lastly...", "what's the most", "important value", "a Knight must have?"],
+                        args!["Is that right?", "Are you sure you're", "prepared this time?"],
                     )?;
                     ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Honor:Wealth:Status")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Sir Siracuse",
-                                args![
-                                    "Right, above all else, Knights must be honorable! We live and die for honor! Always keep that in mind."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.var("knight_q").set(Val::from(5))?;
-                            ctx.lines_as("Sir Siracuse", args!["You're scum! You strive to become a Knight for personal wealth? Get lost! We will not accept someone like you in our Chivalry!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.var("knight_q").set(Val::from(5))?;
-                            ctx.lines_as("Sir Siracuse", args!["So you're trying to become famous through the Chivalry? That's pathetic. We won't accept someone like you in our Chivalry!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                    ctx.var("knight_q").set(Val::from(6))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(9003), Val::from(9004)])?;
-                    ctx.lines_as("Sir Siracuse", args!["Well then,", "this is the", "end of my test."])?;
+                    ctx.lines_as("Sir Siracuse", args!["Alright then,", "here we go again..."])?;
                     ctx.next()?;
+                } else {
+                    ctx.lines_as(
+                        "Sir Siracuse",
+                        args!["Hmmm...?", "Alright.", "It's just that", "you had that", "look on your", "face."],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            }
+            ctx.lines_as("Sir Siracuse", args!["A Knight must possess great strength, defense, speed, and the skill to wield a Two-Handed Sword. Which of the following weapons are not affected by the Two Hand Quicken skill?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(ctx, &[Val::from("Katana:Slayer:Broadsword:Flamberge")])?) != 4 {
+                ctx.var("knight_q").set(Val::from(5))?;
+                ctx.lines_as(
+                    "Sir Siracuse",
+                    args![
+                        "Wrong!",
+                        "That's a Two-Handed Sword!",
+                        "Are you sure you want to be a Knight? You don't even know the basics..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Sir Siracuse", args!["If you're not sure about anything, go into town and ask any Knight. You need to learn more about Knights before applying for the job!"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as(
+                "Sir Siracuse",
+                args!["Good, now let me ask about some skills. Which of the following is not necessary to learn Bowling Bash?"],
+            )?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "Two Handed Sword Mastery Lv.5:Magnum Break Lv.3:Provoke Lv.10:Bash Lv.10",
+                )],
+            )?) != 3
+            {
+                ctx.var("knight_q").set(Val::from(5))?;
+                ctx.lines_as("Sir Siracuse", args!["Wrong!", "You need that to learn Bowling Bash! You should learn more about the Knight class before applying for the job!"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as("Sir Siracuse", args!["Knights can also use Spears, unlike other jobs, and have skills related to Spears as well. What skills are not necessary to learn the skill Brandish Spear?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Pierce Lv.5:Spear Stab Lv.3:Spear Boomerang Lv.3:Peco Peco Ride Lv.1")],
+            )?) != 3
+            {
+                ctx.var("knight_q").set(Val::from(5))?;
+                ctx.lines_as("Sir Siracuse", args!["Wrong! You need to learn that to learn Brandish Spear! How can you not know about Knights if you want to become one?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Sir Siracuse",
+                    args![
+                        "If you aren't sure about anything, go into town and ask any Knight",
+                        "for help. Come back after you've learned more about Knights."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as("Sir Siracuse", args!["Some Spears also have magical attributes, just like spells. Of the following, which can attack a Nightmare, which has the Ghost attribute?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Zephyrus:Lance:Bill Guisarme:Crescent Scythe")],
+            )?) != 1
+            {
+                ctx.var("knight_q").set(Val::from(5))?;
+                ctx.lines_as("Sir Siracuse", args!["Wrong! You'll be doing absolutely no damage with that type of Spear! Come back after you've learned more about Knights!"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Sir Siracuse",
+                    args!["If you have a question, just ask any Knight in town. This is basic knowledge for us!"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as("Sir Siracuse", args!["When you become a Knight you can ride a Peco Peco. However, your attack speed decreases once you're mounted on a Peco Peco."])?;
+            ctx.next()?;
+            ctx.lines_as("Sir Siracuse", args!["But, you can counter this speed decrease as you learn the Cavalier Mastery skill. What percentage of your normal attack speed will you have after learning Level 3 Cavalier Mastery?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "70 % of normal attack speed:80 % of normal attack speed:90 % of normal attack speed:100 % of normal attack speed",
+                )],
+            )?) != 2
+            {
+                ctx.var("knight_q").set(Val::from(5))?;
+                ctx.lines_as(
+                    "Sir Siracuse",
+                    args![
+                        "Wrong!",
+                        "Don't bother riding a Peco Peco if you don't know about Cavalier Mastery!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Sir Siracuse",
+                    args!["You better come back after you've learned a little more about Knights!"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as("Sir Siracuse", args!["Good, good...", "I'm pretty sure you know a decent amount about Knights. Now, let me ask you some personal questions about Knights."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Siracuse",
+                args!["What should you do when you run into a Novice asking for help in town?"],
+            )?;
+            ctx.next()?;
+            'b1: {
+                let subject1 = Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Tell the Novice of a reasonable hunting area.:Let the Novice fight while you take the damage.:Give the Novice a bunch of Zeny and items.",
+                    )],
+                )?);
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                    && !subject1.loosely_equals(&Val::from(2))
+                    && !subject1.loosely_equals(&Val::from(3));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.lines_as("Sir Siracuse", args!["Of course, even a Novice needs to learn how to be independent. Giving good guidance to Novices is one of the best things we can do."])?;
+                    ctx.next()?;
+                    break 'b1;
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.var("knight_q").set(Val::from(5))?;
+                    ctx.lines_as("Sir Siracuse", args!["You have the wrong idea. Do you really believe that is helping the Novice? Give a man a fish, he will eat for a day. Teach him to fish, he will eat for a lifetime!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.var("knight_q").set(Val::from(5))?;
+                    ctx.lines_as("Sir Siracuse", args!["Do you really believe that this will truly help the poor Novice? It's generous but, they will not know the true value of zeny and items until they earn it themselves."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            }
+            ctx.lines_as(
+                "Sir Siracuse",
+                args!["Alright...", "Now, how should", "you act within", "a party?"],
+            )?;
+            ctx.next()?;
+            'b2: {
+                let subject2 = Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Protect everyone in the front of the battle.:Gather monsters and destroy them at once.:Get as many items possible, at all cost.",
+                    )],
+                )?);
+                let mut matched2 = false;
+                let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                    && !subject2.loosely_equals(&Val::from(2))
+                    && !subject2.loosely_equals(&Val::from(3));
+                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                    matched2 = true;
+                }
+                if matched2 {
+                    ctx.lines_as("Sir Siracuse", args!["That's it! Our strength and attacks are very important in a party. All Knights should engage in a battle with that mindset."])?;
+                    ctx.next()?;
+                    break 'b2;
+                }
+                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                    matched2 = true;
+                }
+                if matched2 {
+                    ctx.var("knight_q").set(Val::from(5))?;
+                    ctx.lines_as("Sir Siracuse", args!["Are you crazy? Don't you realize the flaw in that kind of thinking? You can't control large mobs. What if they kill you? Who will protect the innocent?"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                    matched2 = true;
+                }
+                if matched2 {
+                    ctx.var("knight_q").set(Val::from(5))?;
                     ctx.lines_as(
                         "Sir Siracuse",
                         args![
-                            "For your next",
-                            "test, please go",
-                            "see Sir Windsor.",
-                            "He's very quiet,",
-                            "but don't let that",
-                            "get to you."
+                            "I see your greed and we will have none of it here! It seems you do not truly care for others!",
+                            "Get lost!"
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("knight_q").get()? == 6 {
-                        ctx.lines(args!["Oh?", "Do you have", "something to", "ask me?"])?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
-                        )?) == 1
-                        {
-                            ctx.lines_as(
-                                "Sir Siracuse",
-                                args![
-                                    "Hey...",
-                                    "You already took my test, didn't you? You're done here. You should go visit Sir Windsor now..."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as(
-                            "Sir Siracuse",
-                            args!["Hmmm...?", "Alright.", "It's just that", "you had that", "look on your", "face."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("knight_q").get()? == 14 {
-                            ctx.lines(args!["Mmm...?", "You finished", "everyone else's", "tests as well?"])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Sir Siracuse",
-                                args![
-                                    "Well then,",
-                                    "go and see the",
-                                    "captain. We'll all",
-                                    "be there to evaluate",
-                                    "your performance."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "Hey again.",
-                                "Did you need something?",
-                                "Sorry, but I'm busy at the moment. You should go and finish the rest of your tests."
-                            ])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
                 }
             }
+            ctx.lines_as(
+                "Sir Siracuse",
+                args!["Lastly...", "what's the most", "important value", "a Knight must have?"],
+            )?;
+            ctx.next()?;
+            'b3: {
+                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Honor:Wealth:Status")])?);
+                let mut matched3 = false;
+                let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                    && !subject3.loosely_equals(&Val::from(2))
+                    && !subject3.loosely_equals(&Val::from(3));
+                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    ctx.lines_as(
+                        "Sir Siracuse",
+                        args![
+                            "Right, above all else, Knights must be honorable! We live and die for honor! Always keep that in mind."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    break 'b3;
+                }
+                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    ctx.var("knight_q").set(Val::from(5))?;
+                    ctx.lines_as("Sir Siracuse", args!["You're scum! You strive to become a Knight for personal wealth? Get lost! We will not accept someone like you in our Chivalry!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    ctx.var("knight_q").set(Val::from(5))?;
+                    ctx.lines_as("Sir Siracuse", args!["So you're trying to become famous through the Chivalry? That's pathetic. We won't accept someone like you in our Chivalry!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            }
+            ctx.var("knight_q").set(Val::from(6))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(9003), Val::from(9004)])?;
+            ctx.lines_as("Sir Siracuse", args!["Well then,", "this is the", "end of my test."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Siracuse",
+                args![
+                    "For your next",
+                    "test, please go",
+                    "see Sir Windsor.",
+                    "He's very quiet,",
+                    "but don't let that",
+                    "get to you."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("knight_q").get()? == 6 {
+            ctx.lines(args!["Oh?", "Do you have", "something to", "ask me?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
+            )?) == 1
+            {
+                ctx.lines_as(
+                    "Sir Siracuse",
+                    args![
+                        "Hey...",
+                        "You already took my test, didn't you? You're done here. You should go visit Sir Windsor now..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as(
+                "Sir Siracuse",
+                args!["Hmmm...?", "Alright.", "It's just that", "you had that", "look on your", "face."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("knight_q").get()? == 14 {
+            ctx.lines(args!["Mmm...?", "You finished", "everyone else's", "tests as well?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Siracuse",
+                args![
+                    "Well then,",
+                    "go and see the",
+                    "captain. We'll all",
+                    "be there to evaluate",
+                    "your performance."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines(args![
+                "Hey again.",
+                "Did you need something?",
+                "Sorry, but I'm busy at the moment. You should go and finish the rest of your tests."
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
 }
@@ -1607,12 +1575,10 @@ fn sir_windsor_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if !ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_SWORDMAN")?) {
         if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?) {
             ctx.mes("Protect.")?;
+        } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.lines(args!["...Go play", "outside."])?;
         } else {
-            if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.lines(args!["...Go play", "outside."])?;
-            } else {
-                ctx.mes("...Hmpf.")?;
-            }
+            ctx.mes("...Hmpf.")?;
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -1621,75 +1587,69 @@ fn sir_windsor_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.mes("...What?")?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("knight_q").get()?.number()? >= 1 && ctx.var("knight_q").get()?.number()? <= 5) {
-            ctx.mes("...What?")?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(
-                ctx,
-                &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
-            )?) == 1
-            {
-                ctx.lines_as("Sir Windsor", args!["..."])?;
-                ctx.next()?;
-                ctx.lines_as("Sir Windsor", args!["...", "......"])?;
-                ctx.next()?;
-                ctx.lines_as("Sir Windsor", args!["...It's not my turn."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if (ctx.var("knight_q").get()?.number()? >= 1 && ctx.var("knight_q").get()?.number()? <= 5) {
+        ctx.mes("...What?")?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
+        )?) == 1
+        {
             ctx.lines_as("Sir Windsor", args!["..."])?;
+            ctx.next()?;
+            ctx.lines_as("Sir Windsor", args!["...", "......"])?;
+            ctx.next()?;
+            ctx.lines_as("Sir Windsor", args!["...It's not my turn."])?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if (ctx.var("knight_q").get()? == 6 || ctx.var("knight_q").get()? == 7) {
-                if ctx.var("knight_q").get()? == 6 {
-                    l_mes_s = Val::from("Sir Siracuse sent me to you.:Oh, nothing.");
-                    ctx.mes(".....What?")?;
-                    ctx.next()?;
-                } else {
-                    l_mes_s = Val::from("I want to try again!:...");
-                    ctx.next()?;
-                }
-                if Val::from(runtime::select_values(ctx, &[l_mes_s.clone()])?) == 1 {
-                    ctx.lines_as("Sir Windsor", args!["..."])?;
-                    ctx.next()?;
-                    ctx.var("knight_q").set(Val::from(7))?;
-                    if ctx.call(Function::CheckQuest, vec![Val::from(9004)])? != -1 {
-                        ctx.call(Function::ChangeQuest, vec![Val::from(9004), Val::from(9005)])?;
-                    }
-                    ctx.lines_as("Sir Windsor", args!["...", "......"])?;
-                    ctx.next()?;
-                    ctx.mes("[Sir Windsor]")?;
-                    if ctx.var("knight_q").get()? == 6 {
-                        ctx.mes("...Follow me.")?;
-                    } else {
-                        ctx.mes("...Fine.")?;
-                        ctx.next()?;
-                        ctx.lines_as("Sir Windsor", args!["...This way."])?;
-                    }
-                    ctx.close_window()?;
-                    if ctx.call(Function::CheckQuest, vec![Val::from(9006)])? == -1 {
-                        ctx.call(Function::ChangeQuest, vec![Val::from(9005), Val::from(9006)])?;
-                    }
-                    ctx.call(Function::Warp, vec![Val::from("job_knt"), Val::from(89), Val::from(101)])?;
-                    return Err(Stop::End);
-                }
-                ctx.lines_as("Sir Windsor", args!["..."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("knight_q").get()? == 14 {
-                    ctx.lines(args!["...Talk to", "the captain."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines(args!["...You're", "done here."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
         }
+        ctx.lines_as("Sir Windsor", args!["..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (ctx.var("knight_q").get()? == 6 || ctx.var("knight_q").get()? == 7) {
+        if ctx.var("knight_q").get()? == 6 {
+            l_mes_s = Val::from("Sir Siracuse sent me to you.:Oh, nothing.");
+            ctx.mes(".....What?")?;
+            ctx.next()?;
+        } else {
+            l_mes_s = Val::from("I want to try again!:...");
+            ctx.next()?;
+        }
+        if Val::from(runtime::select_values(ctx, &[l_mes_s.clone()])?) == 1 {
+            ctx.lines_as("Sir Windsor", args!["..."])?;
+            ctx.next()?;
+            ctx.var("knight_q").set(Val::from(7))?;
+            if ctx.call(Function::CheckQuest, vec![Val::from(9004)])? != -1 {
+                ctx.call(Function::ChangeQuest, vec![Val::from(9004), Val::from(9005)])?;
+            }
+            ctx.lines_as("Sir Windsor", args!["...", "......"])?;
+            ctx.next()?;
+            ctx.mes("[Sir Windsor]")?;
+            if ctx.var("knight_q").get()? == 6 {
+                ctx.mes("...Follow me.")?;
+            } else {
+                ctx.mes("...Fine.")?;
+                ctx.next()?;
+                ctx.lines_as("Sir Windsor", args!["...This way."])?;
+            }
+            ctx.close_window()?;
+            if ctx.call(Function::CheckQuest, vec![Val::from(9006)])? == -1 {
+                ctx.call(Function::ChangeQuest, vec![Val::from(9005), Val::from(9006)])?;
+            }
+            ctx.call(Function::Warp, vec![Val::from("job_knt"), Val::from(89), Val::from(101)])?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as("Sir Windsor", args!["..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("knight_q").get()? == 14 {
+        ctx.lines(args!["...Talk to", "the captain."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args!["...You're", "done here."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2582,37 +2542,35 @@ fn lady_amy_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.lines_as("Lady Amy", args!["Of course~", "You're a member of", "the Prontera Chivalry~"])?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.lines(args!["Aww~", "What a cute", "little Novice!", "Soooooo cute!"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lady Amy",
+                args![
+                    "Heh heh...",
+                    "Are you interested",
+                    "in becoming a Knight",
+                    "later on? You'd be",
+                    "a great Knight~"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lady Amy",
+                args!["Remember, you're", "going to be a Knight,", "alright? Promise?"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.lines(args!["Aww~", "What a cute", "little Novice!", "Soooooo cute!"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args![
-                        "Heh heh...",
-                        "Are you interested",
-                        "in becoming a Knight",
-                        "later on? You'd be",
-                        "a great Knight~"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["Remember, you're", "going to be a Knight,", "alright? Promise?"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args!["Welcome to", "the Prontera Chivalry~"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["We're only Knights,", "but hope you enjoy", "your stay here.", "Heh heh~"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines(args!["Welcome to", "the Prontera Chivalry~"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lady Amy",
+                args!["We're only Knights,", "but hope you enjoy", "your stay here.", "Heh heh~"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ctx.var("knight_q").get()? == 0 {
@@ -2630,8 +2588,89 @@ fn lady_amy_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("knight_q").get()?.number()? >= 1 && ctx.var("knight_q").get()?.number()? <= 7) {
+    } else if (ctx.var("knight_q").get()?.number()? >= 1 && ctx.var("knight_q").get()?.number()? <= 7) {
+        ctx.lines(args!["Hmmm?", "Why did you", "come to Amy?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
+        )?) == 1
+        {
+            ctx.lines_as(
+                "Lady Amy",
+                args![
+                    "Mmm~",
+                    "You applied to change jobs! Okay! You'll soon be a Knight with that kind of determination!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lady Amy",
+                args!["But...", "You have to go", "to the other Knights", "before talking to Amy."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lady Amy",
+                args!["I'd love to test", "you from the beginning,", "but I'm not allowed to.", "Hee hee~"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as("Lady Amy", args!["Aww~", "Alright..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (ctx.var("knight_q").get()? == 8 || ctx.var("knight_q").get()? == 9) {
+        if ctx.var("knight_q").get()? == 8 {
+            ctx.lines(args!["Hmmm?", "Why did you", "come to Amy?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Sir Windsor told me to--:Oh, nothing.")],
+            )?) == 1
+            {
+                if ctx.call(Function::CheckQuest, vec![Val::from(9008)])? == -1 {
+                    ctx.call(Function::ChangeQuest, vec![Val::from(9007), Val::from(9008)])?;
+                }
+                ctx.lines_as(
+                    "Lady Amy",
+                    args![
+                        "Oh!",
+                        "No need to say",
+                        "anything more.",
+                        "Welcome! It's time",
+                        "to take Amy's test!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lady Amy",
+                    args![
+                        "My name is Amy Beatrice,",
+                        "a proud Lady Knight of the Prontera Chivalry. Amy's test will test your etiquette as a Knight~"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lady Amy",
+                    args![
+                        "I'll tell you a story and you choose an answer whenever",
+                        "I ask a question. Your etiquette will be judged on your answers."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lady Amy",
+                    args!["So listen carefully", "and answer as if you're", "already a Knight, okay?"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Lady Amy", args!["Then,", "let's begin!"])?;
+                ctx.next()?;
+            } else {
+                ctx.lines_as("Lady Amy", args!["Aww...", "Alright~"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        } else if ctx.var("knight_q").get()? == 9 {
             ctx.lines(args!["Hmmm?", "Why did you", "come to Amy?"])?;
             ctx.next()?;
             if Val::from(runtime::select_values(
@@ -2642,372 +2681,279 @@ fn lady_amy_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.lines_as(
                     "Lady Amy",
                     args![
-                        "Mmm~",
-                        "You applied to change jobs! Okay! You'll soon be a Knight with that kind of determination!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["But...", "You have to go", "to the other Knights", "before talking to Amy."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["I'd love to test", "you from the beginning,", "but I'm not allowed to.", "Hee hee~"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as("Lady Amy", args!["Aww~", "Alright..."])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if (ctx.var("knight_q").get()? == 8 || ctx.var("knight_q").get()? == 9) {
-                if ctx.var("knight_q").get()? == 8 {
-                    ctx.lines(args!["Hmmm?", "Why did you", "come to Amy?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Sir Windsor told me to--:Oh, nothing.")],
-                    )?) == 1
-                    {
-                        if ctx.call(Function::CheckQuest, vec![Val::from(9008)])? == -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(9007), Val::from(9008)])?;
-                        }
-                        ctx.lines_as(
-                            "Lady Amy",
-                            args![
-                                "Oh!",
-                                "No need to say",
-                                "anything more.",
-                                "Welcome! It's time",
-                                "to take Amy's test!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lady Amy",
-                            args![
-                                "My name is Amy Beatrice,",
-                                "a proud Lady Knight of the Prontera Chivalry. Amy's test will test your etiquette as a Knight~"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lady Amy",
-                            args![
-                                "I'll tell you a story and you choose an answer whenever",
-                                "I ask a question. Your etiquette will be judged on your answers."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lady Amy",
-                            args!["So listen carefully", "and answer as if you're", "already a Knight, okay?"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Lady Amy", args!["Then,", "let's begin!"])?;
-                        ctx.next()?;
-                    } else {
-                        ctx.lines_as("Lady Amy", args!["Aww...", "Alright~"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                } else {
-                    if ctx.var("knight_q").get()? == 9 {
-                        ctx.lines(args!["Hmmm?", "Why did you", "come to Amy?"])?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
-                        )?) == 1
-                        {
-                            ctx.lines_as(
-                                "Lady Amy",
-                                args![
-                                    "Mmm~?",
-                                    "Have you learned",
-                                    "what you did wrong",
-                                    "last time? If you",
-                                    "fail again, I'm going",
-                                    "to be mad!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Lady Amy",
-                                args![
-                                    "So listen carefully",
-                                    "and answer as if you",
-                                    "are a Knight.",
-                                    "Well then,",
-                                    "let's begin!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Lady Amy",
-                                args![
-                                    "You are a Knight and you are looking for a party in Morocc.",
-                                    "How would you go about doing so?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                        } else {
-                            ctx.lines_as("Lady Amy", args!["Aww...", "Alright~"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
-                ctx.lines(args![
-                    "You are a Knight and you are looking for a party in Morocc.",
-                    "How would you go about doing so?"
-                ])?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Shout out that you are looking for a party.:Open a chat room and wait.:Look for people seeking Knights.",
-                    )],
-                )?) != 1
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
-                ctx.lines_as("Lady Amy", args!["You have formed a party with equal leveled players. There's a Priest, a Wizard, a Hunter, an Assassin, and a Blacksmith..."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["The six of you decide to go hunt and have decided to go to the Pyramids."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["You reach Level 4", "of the Pyramids", "with your party.", "What should you do?"],
-                )?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Check out the area and plan ahead.:Gather monsters for your party members.:Lead the party slowly at the front.",
-                    )],
-                )?) != 2
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["But some rude players came with a group of monsters and disappeared! What should you do?"],
-                )?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Keep the monsters from reaching the party.:Defend while the party retreats.:Run away on your Peco Peco.",
-                    )],
-                )?) != 3
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
-                ctx.lines_as("Lady Amy", args!["Luckily, you all lived through the crisis. But as you walk, you find a person, who is not in your party, collapsed on the ground."])?;
-                ctx.next()?;
-                ctx.lines_as("Lady Amy", args!["The person is asking politely for help. What should you do?"])?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Ask your party's Priest to help.:Say you will help for Zeny.:Ignore and move on.",
-                    )],
-                )?) == 1
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["You must bid farewell to your party members because you must go somewhere else."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["But you find", "a rare item during", "the battle. What", "should you do?"],
-                )?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Give it to who deserves it the most.:Pretend like nothing happened and keep it.:Decide with party who gets it.",
-                    )],
-                )?) != 2
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
-                ctx.lines_as("Lady Amy", args!["You end up with the item and you go to Prontera to sell it. There are many people with shops and chat rooms opened selling items."])?;
-                ctx.next()?;
-                ctx.lines_as("Lady Amy", args!["What should you", "do to sell your item?"])?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Shout out loud to everyone.:Open a chat room and wait.:Inquire if there is anyone that is interested.",
-                    )],
-                )?) != 1
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
-                ctx.lines_as(
-                    "Lady Amy",
-                    args![
-                        "While you are waiting,",
-                        "someone comes and begs",
-                        "for items and zeny.",
-                        "What do you do?"
-                    ],
-                )?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Give them some Zeny and items.:Simply ignore them.:Give suggestions for a place to hunt.",
-                    )],
-                )?) == 3
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["Now you decide to go to the Hidden Temple by yourself. You happily ride on your Peco Peco."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["But you run into", "someone that is lost.", "What should you do?"],
-                )?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Tell the person how to reach the exit.:Lead the person to the exit.:Give a Butterfly Wing.",
-                    )],
-                )?) != 3
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
-                ctx.lines_as(
-                    "Lady Amy",
-                    args![
-                        "You've been hunting for a while, and now you're low on HP!",
-                        "It's red now, which is very dangerous."
+                        "Mmm~?",
+                        "Have you learned",
+                        "what you did wrong",
+                        "last time? If you",
+                        "fail again, I'm going",
+                        "to be mad!"
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Lady Amy",
                     args![
-                        "Ah, then a Priest",
-                        "happens to walk by.",
-                        "How would you ask",
-                        "the Priest for a Heal?"
+                        "So listen carefully",
+                        "and answer as if you",
+                        "are a Knight.",
+                        "Well then,",
+                        "let's begin!"
                     ],
                 )?;
                 ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "Would it be possible to get a heal please?:Can I have a heal?:Heal plz!!",
-                    )],
-                )?) == 1
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
                 ctx.lines_as(
                     "Lady Amy",
-                    args!["You are now very", "exhausted and it's time", "to go back to town."],
+                    args![
+                        "You are a Knight and you are looking for a party in Morocc.",
+                        "How would you go about doing so?"
+                    ],
                 )?;
                 ctx.next()?;
-                ctx.lines_as(
-                    "Lady Amy",
-                    args!["You then find", "a rare item on", "the street.", "What should", "you do?"],
-                )?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Pick it up and keep it.:Ask around to find the owner.:Simply walk by.")],
-                )?) != 1
-                {
-                    l_knight_t = (l_knight_t.clone() + Val::from(10));
-                }
-                ctx.lines_as("Lady Amy", args!["Okay,", "that was the", "end of my test!"])?;
-                ctx.next()?;
-                ctx.mes("[Lady Amy]")?;
-                if l_knight_t.clone() == 100 {
-                    ctx.var("knight_q").set(Val::from(10))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(9008), Val::from(9009)])?;
-                    ctx.mes("Well done, that kind of mentality is needed for a Knight! For your next test, visit Sir Edmond, please~")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lady Amy",
-                        args!["I'll have nice comments about you for the captain. Do well on the tests you have left, okay?"],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if l_knight_t.clone() == 90 {
-                        ctx.var("knight_q").set(Val::from(10))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(9008), Val::from(9009)])?;
-                        ctx.lines(args![
-                            "Well, it wasn't perfect,",
-                            "but I think you know enough",
-                            "about etiquette to be",
-                            "a fine Knight."
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as("Lady Amy", args!["Now, it's time for you to go to Sir Edmond for your next test. Do well on the rest of your tests. You better promise~"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-                ctx.var("knight_q").set(Val::from(9))?;
-                ctx.lines(args![
-                    "Mmm...",
-                    "To be honest, I don't think your attitude is good enough to be a Knight quite yet."
-                ])?;
-                ctx.next()?;
-                ctx.lines_as("Lady Amy", args!["If you really act like that, everyone will think Knights are rude! Think about how you answered my questions and come again later."])?;
-                ctx.next()?;
-                ctx.lines_as("Lady Amy", args!["If you want,", "I'll let you", "retake the test, okay?"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
             } else {
-                if ctx.var("knight_q").get()? == 10 {
-                    ctx.lines(args!["Hmmm?", "Why did you", "come to Amy?"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lady Amy",
-                        args!["You have to go to", "Sir Edmond for your", "next test, okay?"],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("knight_q").get()? == 14 {
-                        ctx.lines(args!["Wow~", "Now it's time for", "everyone to decide", "on your job change!"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Lady Amy",
-                            args!["Let's go talk to our", "captain. Don't worry", "too much. It should", "be okay."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines(args!["Hmmm?", "Why did you", "come to Amy?"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Lady Amy", args!["You still have", "other tests to take.", "Hurry and finish~"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+                ctx.lines_as("Lady Amy", args!["Aww...", "Alright~"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
+        ctx.lines(args![
+            "You are a Knight and you are looking for a party in Morocc.",
+            "How would you go about doing so?"
+        ])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "Shout out that you are looking for a party.:Open a chat room and wait.:Look for people seeking Knights.",
+            )],
+        )?) != 1
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as("Lady Amy", args!["You have formed a party with equal leveled players. There's a Priest, a Wizard, a Hunter, an Assassin, and a Blacksmith..."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lady Amy",
+            args!["The six of you decide to go hunt and have decided to go to the Pyramids."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lady Amy",
+            args!["You reach Level 4", "of the Pyramids", "with your party.", "What should you do?"],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "Check out the area and plan ahead.:Gather monsters for your party members.:Lead the party slowly at the front.",
+            )],
+        )?) != 2
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as(
+            "Lady Amy",
+            args!["But some rude players came with a group of monsters and disappeared! What should you do?"],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "Keep the monsters from reaching the party.:Defend while the party retreats.:Run away on your Peco Peco.",
+            )],
+        )?) != 3
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as("Lady Amy", args!["Luckily, you all lived through the crisis. But as you walk, you find a person, who is not in your party, collapsed on the ground."])?;
+        ctx.next()?;
+        ctx.lines_as("Lady Amy", args!["The person is asking politely for help. What should you do?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "Ask your party's Priest to help.:Say you will help for Zeny.:Ignore and move on.",
+            )],
+        )?) == 1
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as(
+            "Lady Amy",
+            args!["You must bid farewell to your party members because you must go somewhere else."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lady Amy",
+            args!["But you find", "a rare item during", "the battle. What", "should you do?"],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "Give it to who deserves it the most.:Pretend like nothing happened and keep it.:Decide with party who gets it.",
+            )],
+        )?) != 2
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as("Lady Amy", args!["You end up with the item and you go to Prontera to sell it. There are many people with shops and chat rooms opened selling items."])?;
+        ctx.next()?;
+        ctx.lines_as("Lady Amy", args!["What should you", "do to sell your item?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "Shout out loud to everyone.:Open a chat room and wait.:Inquire if there is anyone that is interested.",
+            )],
+        )?) != 1
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as(
+            "Lady Amy",
+            args![
+                "While you are waiting,",
+                "someone comes and begs",
+                "for items and zeny.",
+                "What do you do?"
+            ],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "Give them some Zeny and items.:Simply ignore them.:Give suggestions for a place to hunt.",
+            )],
+        )?) == 3
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as(
+            "Lady Amy",
+            args!["Now you decide to go to the Hidden Temple by yourself. You happily ride on your Peco Peco."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lady Amy",
+            args!["But you run into", "someone that is lost.", "What should you do?"],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "Tell the person how to reach the exit.:Lead the person to the exit.:Give a Butterfly Wing.",
+            )],
+        )?) != 3
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as(
+            "Lady Amy",
+            args![
+                "You've been hunting for a while, and now you're low on HP!",
+                "It's red now, which is very dangerous."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lady Amy",
+            args![
+                "Ah, then a Priest",
+                "happens to walk by.",
+                "How would you ask",
+                "the Priest for a Heal?"
+            ],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from(
+                "Would it be possible to get a heal please?:Can I have a heal?:Heal plz!!",
+            )],
+        )?) == 1
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as(
+            "Lady Amy",
+            args!["You are now very", "exhausted and it's time", "to go back to town."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lady Amy",
+            args!["You then find", "a rare item on", "the street.", "What should", "you do?"],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("Pick it up and keep it.:Ask around to find the owner.:Simply walk by.")],
+        )?) != 1
+        {
+            l_knight_t = (l_knight_t.clone() + Val::from(10));
+        }
+        ctx.lines_as("Lady Amy", args!["Okay,", "that was the", "end of my test!"])?;
+        ctx.next()?;
+        ctx.mes("[Lady Amy]")?;
+        if l_knight_t.clone() == 100 {
+            ctx.var("knight_q").set(Val::from(10))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(9008), Val::from(9009)])?;
+            ctx.mes("Well done, that kind of mentality is needed for a Knight! For your next test, visit Sir Edmond, please~")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Lady Amy",
+                args!["I'll have nice comments about you for the captain. Do well on the tests you have left, okay?"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if l_knight_t.clone() == 90 {
+            ctx.var("knight_q").set(Val::from(10))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(9008), Val::from(9009)])?;
+            ctx.lines(args![
+                "Well, it wasn't perfect,",
+                "but I think you know enough",
+                "about etiquette to be",
+                "a fine Knight."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as("Lady Amy", args!["Now, it's time for you to go to Sir Edmond for your next test. Do well on the rest of your tests. You better promise~"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.var("knight_q").set(Val::from(9))?;
+        ctx.lines(args![
+            "Mmm...",
+            "To be honest, I don't think your attitude is good enough to be a Knight quite yet."
+        ])?;
+        ctx.next()?;
+        ctx.lines_as("Lady Amy", args!["If you really act like that, everyone will think Knights are rude! Think about how you answered my questions and come again later."])?;
+        ctx.next()?;
+        ctx.lines_as("Lady Amy", args!["If you want,", "I'll let you", "retake the test, okay?"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("knight_q").get()? == 10 {
+        ctx.lines(args!["Hmmm?", "Why did you", "come to Amy?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lady Amy",
+            args!["You have to go to", "Sir Edmond for your", "next test, okay?"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("knight_q").get()? == 14 {
+        ctx.lines(args!["Wow~", "Now it's time for", "everyone to decide", "on your job change!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Lady Amy",
+            args!["Let's go talk to our", "captain. Don't worry", "too much. It should", "be okay."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args!["Hmmm?", "Why did you", "come to Amy?"])?;
+        ctx.next()?;
+        ctx.lines_as("Lady Amy", args!["You still have", "other tests to take.", "Hurry and finish~"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -3029,151 +2975,141 @@ fn sir_edmond_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.mes("Trees with deep roots don't sway with the wind. The fact that powerful skills must be built on strong basics is immutable...")?;
+            ctx.next()?;
+            ctx.lines_as("Sir Edmond", args!["Your future", "can even be", "decided now..."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.mes("Trees with deep roots don't sway with the wind. The fact that powerful skills must be built on strong basics is immutable...")?;
-                ctx.next()?;
-                ctx.lines_as("Sir Edmond", args!["Your future", "can even be", "decided now..."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.mes("Everything in this world exists in harmony. Living without disrupting this harmony is the right way to live...")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.mes("Everything in this world exists in harmony. Living without disrupting this harmony is the right way to live...")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ctx.var("knight_q").get()? == 0 {
         ctx.mes("Those with ominous thoughts will only dream such dreams. It's better to have no dreams at all than to have dreams of sadness and despair.")?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("knight_q").get()?.number()? >= 1 && ctx.var("knight_q").get()?.number()? <= 9) {
-            ctx.lines(args!["What is it...", "Wandering Swordman?"])?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(
-                ctx,
-                &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
-            )?) == 1
-            {
-                ctx.lines_as(
-                    "Sir Edmond",
-                    args![
-                        "A seed must first be nestled",
-                        "in the earth before the seed may sprout. Then, the sprout must grow leaves before its buds blossom into flowers..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Sir Edmond", args!["If not...", "The flower will", "be incomplete."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sir Edmond",
-                    args!["Go to the others", "first, so that you", "may find your path..."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if (ctx.var("knight_q").get()?.number()? >= 1 && ctx.var("knight_q").get()?.number()? <= 9) {
+        ctx.lines(args!["What is it...", "Wandering Swordman?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
+        )?) == 1
+        {
             ctx.lines_as(
                 "Sir Edmond",
                 args![
-                    "The life that you",
-                    "want will soon be",
-                    "before your eyes.",
-                    "Everything will",
-                    "come in perfect",
-                    "order."
+                    "A seed must first be nestled",
+                    "in the earth before the seed may sprout. Then, the sprout must grow leaves before its buds blossom into flowers..."
                 ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Sir Edmond", args!["If not...", "The flower will", "be incomplete."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Edmond",
+                args!["Go to the others", "first, so that you", "may find your path..."],
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("knight_q").get()? == 10 {
-                ctx.lines(args!["What is it...", "Wandering Swordman."])?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(ctx, &[Val::from("Lady Amy sent me.:Oh, nothing.")])?) == 1 {
-                    ctx.lines_as(
-                        "Sir Edmond",
-                        args!["It is now time to take my test. Please do your best, as you have done on the other tests."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sir Edmond",
-                        args!["My name is", "Edmond Groster.", "I am a member of", "the Prontera Chivalry."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Edmond", args!["Knights are in the position for others to follow. Therefore, you must modestly think about the world's order and have the personality to fit the role you will play."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Edmond", args!["You must not make careless decisions. Your will should bend as the reeds or be as firm as stone when the situation calls for it."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Edmond", args!["You must not kill monsters without reason and not take joy in doing so. Take this time to quietly think about this on your own..."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sir Edmond",
-                        args!["Then, we shall", "begin the test.", "Keep in mind", "the quality of", "reverence."],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.var("knight_q").set(Val::from(11))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(9009), Val::from(9010)])?;
-                    ctx.call(Function::Warp, vec![Val::from("job_knt"), Val::from(143), Val::from(57)])?;
-                    return Err(Stop::End);
-                }
-                ctx.lines_as("Sir Edmond", args!["The life you want", "will soon be before", "your eyes."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("knight_q").get()? == 11 {
-                    ctx.lines(args!["What is it...", "Wandering Swordman?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("I'm sorry, I didn't mean to...:Oh, nothing.")],
-                    )?) == 1
-                    {
-                        ctx.lines_as("Sir Edmond", args!["You were too careless in the last test. A Knight's sword exists to protect others, not to torment weaker monsters."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Sir Edmond", args!["In a world where everything exists in harmony, you can't have humans continuously destroying without purpose. This principle applies to the real world, not to this test alone."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Sir Edmond", args!["The test", "shall begin.", "Show me your", "patience..."])?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("job_knt"), Val::from(143), Val::from(57)])?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as(
-                        "Sir Edmond",
-                        args![
-                            "The life that you",
-                            "want will soon be",
-                            "before your eyes.",
-                            "Everything will",
-                            "come in perfect",
-                            "order."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if (ctx.var("knight_q").get()? == 12 || ctx.var("knight_q").get()? == 13) {
-                        ctx.lines(args![
-                            "I have seen your character for myself. It is now time for you to take the last test. Go and speak",
-                            "to Sir Gray..."
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines(args![
-                            "Go and speak",
-                            "to our captain.",
-                            "The time has come",
-                            "for all of us to",
-                            "evaluate your",
-                            "performance."
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-            }
         }
+        ctx.lines_as(
+            "Sir Edmond",
+            args![
+                "The life that you",
+                "want will soon be",
+                "before your eyes.",
+                "Everything will",
+                "come in perfect",
+                "order."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("knight_q").get()? == 10 {
+        ctx.lines(args!["What is it...", "Wandering Swordman."])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Lady Amy sent me.:Oh, nothing.")])?) == 1 {
+            ctx.lines_as(
+                "Sir Edmond",
+                args!["It is now time to take my test. Please do your best, as you have done on the other tests."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Edmond",
+                args!["My name is", "Edmond Groster.", "I am a member of", "the Prontera Chivalry."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Sir Edmond", args!["Knights are in the position for others to follow. Therefore, you must modestly think about the world's order and have the personality to fit the role you will play."])?;
+            ctx.next()?;
+            ctx.lines_as("Sir Edmond", args!["You must not make careless decisions. Your will should bend as the reeds or be as firm as stone when the situation calls for it."])?;
+            ctx.next()?;
+            ctx.lines_as("Sir Edmond", args!["You must not kill monsters without reason and not take joy in doing so. Take this time to quietly think about this on your own..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Edmond",
+                args!["Then, we shall", "begin the test.", "Keep in mind", "the quality of", "reverence."],
+            )?;
+            ctx.close_window()?;
+            ctx.var("knight_q").set(Val::from(11))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(9009), Val::from(9010)])?;
+            ctx.call(Function::Warp, vec![Val::from("job_knt"), Val::from(143), Val::from(57)])?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as("Sir Edmond", args!["The life you want", "will soon be before", "your eyes."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("knight_q").get()? == 11 {
+        ctx.lines(args!["What is it...", "Wandering Swordman?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("I'm sorry, I didn't mean to...:Oh, nothing.")],
+        )?) == 1
+        {
+            ctx.lines_as("Sir Edmond", args!["You were too careless in the last test. A Knight's sword exists to protect others, not to torment weaker monsters."])?;
+            ctx.next()?;
+            ctx.lines_as("Sir Edmond", args!["In a world where everything exists in harmony, you can't have humans continuously destroying without purpose. This principle applies to the real world, not to this test alone."])?;
+            ctx.next()?;
+            ctx.lines_as("Sir Edmond", args!["The test", "shall begin.", "Show me your", "patience..."])?;
+            ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("job_knt"), Val::from(143), Val::from(57)])?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Sir Edmond",
+            args![
+                "The life that you",
+                "want will soon be",
+                "before your eyes.",
+                "Everything will",
+                "come in perfect",
+                "order."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (ctx.var("knight_q").get()? == 12 || ctx.var("knight_q").get()? == 13) {
+        ctx.lines(args![
+            "I have seen your character for myself. It is now time for you to take the last test. Go and speak",
+            "to Sir Gray..."
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args![
+            "Go and speak",
+            "to our captain.",
+            "The time has come",
+            "for all of us to",
+            "evaluate your",
+            "performance."
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -3612,14 +3548,12 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.lines(args!["Believe it", "or not, I was", "once a Novice", "as well."])?;
-                ctx.next()?;
-                ctx.lines_as("Sir Gray", args!["I never really planned to become a Knight, but I did decide to become a strong person. Somehow, along my journeys, I ended up joining the Prontera Chivalry. Ha ha ha!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.lines(args!["Believe it", "or not, I was", "once a Novice", "as well."])?;
+            ctx.next()?;
+            ctx.lines_as("Sir Gray", args!["I never really planned to become a Knight, but I did decide to become a strong person. Somehow, along my journeys, I ended up joining the Prontera Chivalry. Ha ha ha!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
         ctx.lines(args!["Young one,", "use your time", "wisely."])?;
         ctx.next()?;
@@ -3633,568 +3567,558 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Sir Gray", args!["No point in", "harboring regret", "once time has passed."])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("knight_q").get()? == 12 || ctx.var("knight_q").get()? == 13) {
-            if ctx.var("knight_q").get()? == 12 {
-                ctx.lines(args!["Oh...", "A young Swordman.", "Yes, what can", "I do for you?"])?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
-                )?) == 1
-                {
-                    ctx.lines_as("Sir Gray", args!["Hoho, I see.", "So you took", "everyone else's", "test?"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sir Gray",
-                        args!["Then shall", "we begin mine?", "It's not really", "a test though."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Gray", args!["Let's talk", "casually,", "shall we?"])?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Gray", args!["First...", "Why did you", "decide to become", "a Knight?"])?;
-                    ctx.next()?;
-                } else {
-                    ctx.lines_as("Sir Gray", args!["Take care!"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            } else {
-                if ctx.var("knight_q").get()? == 13 {
-                    ctx.lines(args!["Ah, you again.", "What brings you", "to me?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("I've been thinking a lot.:Oh, nothing.")],
-                    )?) == 1
-                    {
-                        ctx.lines_as("Sir Gray", args!["Is that so...", "I wonder if you", "truly have..."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Sir Gray", args!["Then...", "Like last time,", "I will ask again..."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Sir Gray", args!["First...", "Why did you", "decide to become", "a Knight?"])?;
-                        ctx.next()?;
-                    } else {
-                        ctx.lines_as("Sir Gray", args!["Take care!", "Health is", "every man's", "treasure!"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-            }
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "To become stronger...:To help my guild...:Because I'm unsatisfied with myself right now...",
-                    )],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines_as(
-                        "Sir Gray",
-                        args![
-                            "To become stronger, you say?",
-                            "Yes, Knights are indeed strong.",
-                            "But why gain strength?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Gray", args!["Is it to show off to others? To attain fame? Or do you have a diferent reason? What do you think is so good about gaining strength as a Knight?"])?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Gain wealth and fame.:I can protect myself.:I can protect others.")],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            l_knight_t = (l_knight_t.clone() + Val::from(10));
-                            ctx.lines_as("Sir Gray", args!["Of course, wealth and fame have their place in the world. But we as Knights must live for higher virtues."])?;
-                            ctx.next()?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Sir Gray", args!["Good thinking. You must first be able to protect yourself in order to protect others. To this end, you must constantly train, and never give in to laziness."])?;
-                            ctx.next()?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args![
-                                    "Ah, a wonderful idea. A Knight's strength must be used to protect the weak and defend righteousness."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Sir Gray", args!["Sadly, there are a few Knights who shame us by forgetting the ideals that should be basic to Knighthood..."])?;
-                            ctx.next()?;
-                            break 'b3;
-                        }
-                    }
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines_as("Sir Gray", args!["Ah, to help your guild, or maybe even your party. Our wise and benevolent King Tristram the 3rd gave us these golden words..."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Gray", args!["^8B7500Beyond the calm river, lies a dangerous waterfall. Therefore, you must always be prepared for everything...^000000"])?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Gray", args!["So how do you", "think you can", "help your guild?"])?;
-                    ctx.next()?;
-                    'b4: {
-                        let subject4 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "My guild needs me.:I can help gather funds for my guild.:I can protect my guild members.",
-                            )],
-                        )?);
-                        let mut matched4 = false;
-                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                            && !subject4.loosely_equals(&Val::from(2))
-                            && !subject4.loosely_equals(&Val::from(3));
-                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args![
-                                    "Anyone, anywhere in this world,",
-                                    "has a place where they are needed. Never neglect someone in need, even if he is not a guild member."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            break 'b4;
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            l_knight_t = (l_knight_t.clone() + Val::from(10));
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args!["Of course wealth is important.", "But we Knights must live for higher virtues."],
-                            )?;
-                            ctx.next()?;
-                            break 'b4;
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args![
-                                    "Ah, a wonderful idea. A Knight's strength must be used to protect the weak and defend righteousness."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Sir Gray", args!["Sadly, there are a few Knights who shame us by forgetting the ideals that should be basic to Knighthood..."])?;
-                            ctx.next()?;
-                            break 'b4;
-                        }
-                    }
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    l_knight_t = (l_knight_t.clone() + Val::from(5));
-                    ctx.lines_as(
-                        "Sir Gray",
-                        args![
-                            "Satisfaction, you say.",
-                            "It seems like you are",
-                            "already a fine Swordman.",
-                            "Is there a particular reason you wish to be a Knight?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Gray", args!["I don't know about", "Swordmen, but Knights do not allow self-indulgence. There are those so obsessed with gaining strength that they cannot control themselves."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sir Gray",
-                        args!["So...", "What part of yourself", "are you not satisfied", "with right now?"],
-                    )?;
-                    ctx.next()?;
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("Skills.:Goal.:Appearance.")])?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                            && !subject5.loosely_equals(&Val::from(2))
-                            && !subject5.loosely_equals(&Val::from(3));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            l_knight_t = (l_knight_t.clone() + Val::from(5));
-                            ctx.lines_as("Sir Gray", args!["Skill is something you gain with experience as a Knight. It cannot be your highest goal. Otherwise, you'll never be satisfied as a Knight."])?;
-                            ctx.next()?;
-                            break 'b5;
-                        }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            l_knight_t = (l_knight_t.clone().try_sub(Val::from(5))?);
-                            ctx.lines_as("Sir Gray", args!["I see...", "Always having a goal is very important. You may be full of ideas upon becoming a Knight, but that may change with time."])?;
-                            ctx.next()?;
-                            break 'b5;
-                        }
-                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            l_knight_t = (l_knight_t.clone() + Val::from(5));
-                            ctx.lines_as("Sir Gray", args!["Oh no...", "What you see isn't what really counts. A Swordman may be stronger than a Knight, and even Knight may grow weak if he becomes lazy."])?;
-                            ctx.next()?;
-                            break 'b5;
-                        }
-                    }
-                    break 'b2;
-                }
-            }
-            ctx.lines_as(
-                "Sir Gray",
-                args![
-                    "I understand your thoughts,",
-                    "but there are those who wish to",
-                    "become Knights without thinking."
-                ],
-            )?;
+    } else if (ctx.var("knight_q").get()? == 12 || ctx.var("knight_q").get()? == 13) {
+        if ctx.var("knight_q").get()? == 12 {
+            ctx.lines(args!["Oh...", "A young Swordman.", "Yes, what can", "I do for you?"])?;
             ctx.next()?;
-            ctx.lines_as(
-                "Sir Gray",
-                args!["Those are the ones who instigate problems and shame the honor of Knights, bringing irreversible results."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Sir Gray", args!["The same goes for you as well. Once you become a Knight, you can never become a Swordman again. The duties and responsibilities of a Knight will always be with you."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Sir Gray",
-                args!["If you become a Knight right away, what are you going to do first?"],
-            )?;
-            ctx.next()?;
-            'b6: {
-                let subject6 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "I am going to go straight to battle.:There are those waiting for me.:I will learn more about Knights.",
-                    )],
-                )?);
-                let mut matched6 = false;
-                let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                    && !subject6.loosely_equals(&Val::from(2))
-                    && !subject6.loosely_equals(&Val::from(3));
-                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                    matched6 = true;
-                }
-                if matched6 {
-                    ctx.lines_as("Sir Gray", args!["Battle...?", "And then?"])?;
-                    ctx.next()?;
-                    'b7: {
-                        let subject7 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "I will grow within a short period of time.:I would like to test my ability as a Knight.:I would like to go to more challenging places.",
-                            )],
-                        )?);
-                        let mut matched7 = false;
-                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                            && !subject7.loosely_equals(&Val::from(2))
-                            && !subject7.loosely_equals(&Val::from(3));
-                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
-                            l_knight_t = (l_knight_t.clone() + Val::from(10));
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args![
-                                    "Don't be in too much of a hurry to become strong. Even if you become",
-                                    "a Knight, you are still yourself."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            break 'b7;
-                        }
-                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
-                            ctx.lines_as("Sir Gray", args!["Testing yourself is a good thing. It's okay to be happy about how you change, but don't forget about the true qualities of being a Knight."])?;
-                            ctx.next()?;
-                            break 'b7;
-                        }
-                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args![
-                                    "Even if you become a Knight, you are not changing your inner self. No need to overwork yourself.",
-                                    "Relax and take things step by step."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            break 'b7;
-                        }
-                    }
-                    break 'b6;
-                }
-                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                    matched6 = true;
-                }
-                if matched6 {
-                    ctx.lines_as("Sir Gray", args!["Who is", "waiting for you?"])?;
-                    ctx.next()?;
-                    'b8: {
-                        let subject8 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("My friends.:My Guild members.:My Lover.")],
-                        )?);
-                        let mut matched8 = false;
-                        let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                            && !subject8.loosely_equals(&Val::from(2))
-                            && !subject8.loosely_equals(&Val::from(3));
-                        if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                            matched8 = true;
-                        }
-                        if matched8 {
-                            ctx.lines_as("Sir Gray", args!["I see, they would share in the joy of your achievements. Don't ever lose your kind heart, and always give help to your friends."])?;
-                            ctx.next()?;
-                            break 'b8;
-                        }
-                        if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                            matched8 = true;
-                        }
-                        if matched8 {
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args!["Those who would share in your happiness and hardship. As a Knight, you must always protect them."],
-                            )?;
-                            ctx.next()?;
-                            break 'b8;
-                        }
-                        if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                            matched8 = true;
-                        }
-                        if matched8 {
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args![
-                                    "Oh, youth!",
-                                    "Becoming a Knight",
-                                    "for your beloved!",
-                                    ((Val::from("Always protect ")
-                                        + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                            Val::from("her")
-                                        } else {
-                                            Val::from("him")
-                                        }))
-                                        + Val::from("...")),
-                                    "Even at the sacrifice",
-                                    "of your own life!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args!["Also...", "Love them forever.", "Sincere affection", "is hard to find."],
-                            )?;
-                            ctx.next()?;
-                            break 'b8;
-                        }
-                    }
-                    break 'b6;
-                }
-                if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                    matched6 = true;
-                }
-                if matched6 {
-                    ctx.lines_as("Sir Gray", args!["Good attitude...", "What do you plan", "on learning?"])?;
-                    ctx.next()?;
-                    'b9: {
-                        let subject9 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "Comfortable places for Knights to go...:The different paths of a Knight...:Ways to get more money as a Knight...",
-                            )],
-                        )?);
-                        let mut matched9 = false;
-                        let no_case9 = !subject9.loosely_equals(&Val::from(1))
-                            && !subject9.loosely_equals(&Val::from(2))
-                            && !subject9.loosely_equals(&Val::from(3));
-                        if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
-                            l_knight_t = (l_knight_t.clone() + Val::from(5));
-                            ctx.lines_as(
-                                "Sir Gray",
-                                args![
-                                    "There are many places that are comfortable or uncomfortable in this world. However Knights must",
-                                    "be able to survive anywhere."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            break 'b9;
-                        }
-                        if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
-                            ctx.lines_as("Sir Gray", args!["There are many similar Knights outside in the world. Think of them as your seniors and ask many questions."])?;
-                            ctx.next()?;
-                            break 'b9;
-                        }
-                        if !matched9 && subject9.loosely_equals(&Val::from(3)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
-                            l_knight_t = (l_knight_t.clone() + Val::from(15));
-                            ctx.lines_as("Sir Gray", args!["Oh no. Do you hold wealth as a priority of being a Knight? We're not meant to be that way. Come again when you have thought", "more about it..."])?;
-                            ctx.next()?;
-                            break 'b9;
-                        }
-                    }
-                    break 'b6;
-                }
-            }
-            ctx.lines_as(
-                "Sir Gray",
-                args![
-                    "Oh no, we've been",
-                    "talking too much...",
-                    "I apologize for",
-                    "keeping you here",
-                    "for so long."
-                ],
-            )?;
-            ctx.next()?;
-            if l_knight_t.clone() == 0 {
-                ctx.var("knight_q").set(Val::from(14))?;
-                ctx.call(Function::ChangeQuest, vec![Val::from(9011), Val::from(9012)])?;
-                ctx.lines_as("Sir Gray", args!["I enjoyed talking with you. You remind me of myself as a young recruit. Shall we talk to the captain and decide on your", "job change?"])?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
+            )?) == 1
+            {
+                ctx.lines_as("Sir Gray", args!["Hoho, I see.", "So you took", "everyone else's", "test?"])?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Sir Gray",
-                    args!["Don't worry too", "much, I have a very", "high opinion of you.", "Now, go~"],
+                    args!["Then shall", "we begin mine?", "It's not really", "a test though."],
                 )?;
+                ctx.next()?;
+                ctx.lines_as("Sir Gray", args!["Let's talk", "casually,", "shall we?"])?;
+                ctx.next()?;
+                ctx.lines_as("Sir Gray", args!["First...", "Why did you", "decide to become", "a Knight?"])?;
+                ctx.next()?;
+            } else {
+                ctx.lines_as("Sir Gray", args!["Take care!"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if l_knight_t.clone() == 5 {
-                    ctx.var("knight_q").set(Val::from(14))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(9011), Val::from(9012)])?;
-                    ctx.lines_as(
-                        "Sir Gray",
-                        args![
-                            "I enjoyed speaking with you. You can think about the principles of Knighthood more once you become a Knight."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Sir Gray", args!["Then, shall we go to the captain and decide on your job change? Don't worry too much. You are good enough to be a Knight!"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if l_knight_t.clone() == 10 {
-                        ctx.var("knight_q").set(Val::from(14))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(9011), Val::from(9012)])?;
-                        ctx.lines_as(
-                            "Sir Gray",
-                            args![
-                                "I enjoyed talking with you. Although, there were some",
-                                "things that bothered me..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Sir Gray",
-                            args!["You should go", "to the captain", "so we can decide", "on your job change."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Sir Gray",
-                            args![
-                                "Don't worry too much, coming to take my test means the others have acknowledged you as well.",
-                                "Go now...!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.var("knight_q").set(Val::from(13))?;
-                        ctx.lines_as("Sir Gray", args!["Conversing", "with young ones", "is always enjoyable..."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Sir Gray", args!["But it seems as though your dream is elsewhere, or that your focus is hazy. Spend more time as a Swordman, and come back", "to me later."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Sir Gray",
-                            args!["If you truly wish to become a Knight, you must change your outlook first. Then, we shall see."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
             }
-        } else {
-            if ctx.var("knight_q").get()? == 14 {
-                ctx.lines(args!["I told you", "to go to", "the captain."])?;
+        } else if ctx.var("knight_q").get()? == 13 {
+            ctx.lines(args!["Ah, you again.", "What brings you", "to me?"])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("I've been thinking a lot.:Oh, nothing.")],
+            )?) == 1
+            {
+                ctx.lines_as("Sir Gray", args!["Is that so...", "I wonder if you", "truly have..."])?;
                 ctx.next()?;
-                ctx.lines_as(
-                    "Sir Gray",
-                    args!["Everyone will", "carefully make", "their decision,", "so go now!"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
+                ctx.lines_as("Sir Gray", args!["Then...", "Like last time,", "I will ask again..."])?;
+                ctx.next()?;
+                ctx.lines_as("Sir Gray", args!["First...", "Why did you", "decide to become", "a Knight?"])?;
+                ctx.next()?;
             } else {
-                ctx.lines(args!["Oh...", "A young Swordman.", "What can I do for you?"])?;
-                ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
-                )?) == 1
-                {
-                    ctx.lines_as(
-                        "Sir Gray",
-                        args!["Hoho~", "There are many", "other younger", "Knights in here."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Sir Gray",
-                        args!["If you talk", "to all of them,", "I may review", "you as well."],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
                 ctx.lines_as("Sir Gray", args!["Take care!", "Health is", "every man's", "treasure!"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
+        'b2: {
+            let subject2 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "To become stronger...:To help my guild...:Because I'm unsatisfied with myself right now...",
+                )],
+            )?);
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                && !subject2.loosely_equals(&Val::from(2))
+                && !subject2.loosely_equals(&Val::from(3));
+            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as(
+                    "Sir Gray",
+                    args![
+                        "To become stronger, you say?",
+                        "Yes, Knights are indeed strong.",
+                        "But why gain strength?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Sir Gray", args!["Is it to show off to others? To attain fame? Or do you have a diferent reason? What do you think is so good about gaining strength as a Knight?"])?;
+                ctx.next()?;
+                'b3: {
+                    let subject3 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Gain wealth and fame.:I can protect myself.:I can protect others.")],
+                    )?);
+                    let mut matched3 = false;
+                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                        && !subject3.loosely_equals(&Val::from(2))
+                        && !subject3.loosely_equals(&Val::from(3));
+                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        l_knight_t = (l_knight_t.clone() + Val::from(10));
+                        ctx.lines_as("Sir Gray", args!["Of course, wealth and fame have their place in the world. But we as Knights must live for higher virtues."])?;
+                        ctx.next()?;
+                        break 'b3;
+                    }
+                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as("Sir Gray", args!["Good thinking. You must first be able to protect yourself in order to protect others. To this end, you must constantly train, and never give in to laziness."])?;
+                        ctx.next()?;
+                        break 'b3;
+                    }
+                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args![
+                                "Ah, a wonderful idea. A Knight's strength must be used to protect the weak and defend righteousness."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Sir Gray", args!["Sadly, there are a few Knights who shame us by forgetting the ideals that should be basic to Knighthood..."])?;
+                        ctx.next()?;
+                        break 'b3;
+                    }
+                }
+                break 'b2;
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as("Sir Gray", args!["Ah, to help your guild, or maybe even your party. Our wise and benevolent King Tristram the 3rd gave us these golden words..."])?;
+                ctx.next()?;
+                ctx.lines_as("Sir Gray", args!["^8B7500Beyond the calm river, lies a dangerous waterfall. Therefore, you must always be prepared for everything...^000000"])?;
+                ctx.next()?;
+                ctx.lines_as("Sir Gray", args!["So how do you", "think you can", "help your guild?"])?;
+                ctx.next()?;
+                'b4: {
+                    let subject4 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from(
+                            "My guild needs me.:I can help gather funds for my guild.:I can protect my guild members.",
+                        )],
+                    )?);
+                    let mut matched4 = false;
+                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                        && !subject4.loosely_equals(&Val::from(2))
+                        && !subject4.loosely_equals(&Val::from(3));
+                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args![
+                                "Anyone, anywhere in this world,",
+                                "has a place where they are needed. Never neglect someone in need, even if he is not a guild member."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        break 'b4;
+                    }
+                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        l_knight_t = (l_knight_t.clone() + Val::from(10));
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args!["Of course wealth is important.", "But we Knights must live for higher virtues."],
+                        )?;
+                        ctx.next()?;
+                        break 'b4;
+                    }
+                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args![
+                                "Ah, a wonderful idea. A Knight's strength must be used to protect the weak and defend righteousness."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Sir Gray", args!["Sadly, there are a few Knights who shame us by forgetting the ideals that should be basic to Knighthood..."])?;
+                        ctx.next()?;
+                        break 'b4;
+                    }
+                }
+                break 'b2;
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                matched2 = true;
+            }
+            if matched2 {
+                l_knight_t = (l_knight_t.clone() + Val::from(5));
+                ctx.lines_as(
+                    "Sir Gray",
+                    args![
+                        "Satisfaction, you say.",
+                        "It seems like you are",
+                        "already a fine Swordman.",
+                        "Is there a particular reason you wish to be a Knight?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Sir Gray", args!["I don't know about", "Swordmen, but Knights do not allow self-indulgence. There are those so obsessed with gaining strength that they cannot control themselves."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Sir Gray",
+                    args!["So...", "What part of yourself", "are you not satisfied", "with right now?"],
+                )?;
+                ctx.next()?;
+                'b5: {
+                    let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("Skills.:Goal.:Appearance.")])?);
+                    let mut matched5 = false;
+                    let no_case5 = !subject5.loosely_equals(&Val::from(1))
+                        && !subject5.loosely_equals(&Val::from(2))
+                        && !subject5.loosely_equals(&Val::from(3));
+                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                        matched5 = true;
+                    }
+                    if matched5 {
+                        l_knight_t = (l_knight_t.clone() + Val::from(5));
+                        ctx.lines_as("Sir Gray", args!["Skill is something you gain with experience as a Knight. It cannot be your highest goal. Otherwise, you'll never be satisfied as a Knight."])?;
+                        ctx.next()?;
+                        break 'b5;
+                    }
+                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                        matched5 = true;
+                    }
+                    if matched5 {
+                        l_knight_t = (l_knight_t.clone().try_sub(Val::from(5))?);
+                        ctx.lines_as("Sir Gray", args!["I see...", "Always having a goal is very important. You may be full of ideas upon becoming a Knight, but that may change with time."])?;
+                        ctx.next()?;
+                        break 'b5;
+                    }
+                    if !matched5 && subject5.loosely_equals(&Val::from(3)) {
+                        matched5 = true;
+                    }
+                    if matched5 {
+                        l_knight_t = (l_knight_t.clone() + Val::from(5));
+                        ctx.lines_as("Sir Gray", args!["Oh no...", "What you see isn't what really counts. A Swordman may be stronger than a Knight, and even Knight may grow weak if he becomes lazy."])?;
+                        ctx.next()?;
+                        break 'b5;
+                    }
+                }
+                break 'b2;
+            }
+        }
+        ctx.lines_as(
+            "Sir Gray",
+            args![
+                "I understand your thoughts,",
+                "but there are those who wish to",
+                "become Knights without thinking."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sir Gray",
+            args!["Those are the ones who instigate problems and shame the honor of Knights, bringing irreversible results."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Sir Gray", args!["The same goes for you as well. Once you become a Knight, you can never become a Swordman again. The duties and responsibilities of a Knight will always be with you."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sir Gray",
+            args!["If you become a Knight right away, what are you going to do first?"],
+        )?;
+        ctx.next()?;
+        'b6: {
+            let subject6 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "I am going to go straight to battle.:There are those waiting for me.:I will learn more about Knights.",
+                )],
+            )?);
+            let mut matched6 = false;
+            let no_case6 = !subject6.loosely_equals(&Val::from(1))
+                && !subject6.loosely_equals(&Val::from(2))
+                && !subject6.loosely_equals(&Val::from(3));
+            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as("Sir Gray", args!["Battle...?", "And then?"])?;
+                ctx.next()?;
+                'b7: {
+                    let subject7 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from(
+                            "I will grow within a short period of time.:I would like to test my ability as a Knight.:I would like to go to more challenging places.",
+                        )],
+                    )?);
+                    let mut matched7 = false;
+                    let no_case7 = !subject7.loosely_equals(&Val::from(1))
+                        && !subject7.loosely_equals(&Val::from(2))
+                        && !subject7.loosely_equals(&Val::from(3));
+                    if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                        matched7 = true;
+                    }
+                    if matched7 {
+                        l_knight_t = (l_knight_t.clone() + Val::from(10));
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args![
+                                "Don't be in too much of a hurry to become strong. Even if you become",
+                                "a Knight, you are still yourself."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        break 'b7;
+                    }
+                    if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                        matched7 = true;
+                    }
+                    if matched7 {
+                        ctx.lines_as("Sir Gray", args!["Testing yourself is a good thing. It's okay to be happy about how you change, but don't forget about the true qualities of being a Knight."])?;
+                        ctx.next()?;
+                        break 'b7;
+                    }
+                    if !matched7 && subject7.loosely_equals(&Val::from(3)) {
+                        matched7 = true;
+                    }
+                    if matched7 {
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args![
+                                "Even if you become a Knight, you are not changing your inner self. No need to overwork yourself.",
+                                "Relax and take things step by step."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        break 'b7;
+                    }
+                }
+                break 'b6;
+            }
+            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as("Sir Gray", args!["Who is", "waiting for you?"])?;
+                ctx.next()?;
+                'b8: {
+                    let subject8 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("My friends.:My Guild members.:My Lover.")],
+                    )?);
+                    let mut matched8 = false;
+                    let no_case8 = !subject8.loosely_equals(&Val::from(1))
+                        && !subject8.loosely_equals(&Val::from(2))
+                        && !subject8.loosely_equals(&Val::from(3));
+                    if !matched8 && subject8.loosely_equals(&Val::from(1)) {
+                        matched8 = true;
+                    }
+                    if matched8 {
+                        ctx.lines_as("Sir Gray", args!["I see, they would share in the joy of your achievements. Don't ever lose your kind heart, and always give help to your friends."])?;
+                        ctx.next()?;
+                        break 'b8;
+                    }
+                    if !matched8 && subject8.loosely_equals(&Val::from(2)) {
+                        matched8 = true;
+                    }
+                    if matched8 {
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args!["Those who would share in your happiness and hardship. As a Knight, you must always protect them."],
+                        )?;
+                        ctx.next()?;
+                        break 'b8;
+                    }
+                    if !matched8 && subject8.loosely_equals(&Val::from(3)) {
+                        matched8 = true;
+                    }
+                    if matched8 {
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args![
+                                "Oh, youth!",
+                                "Becoming a Knight",
+                                "for your beloved!",
+                                ((Val::from("Always protect ")
+                                    + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                                        Val::from("her")
+                                    } else {
+                                        Val::from("him")
+                                    }))
+                                    + Val::from("...")),
+                                "Even at the sacrifice",
+                                "of your own life!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args!["Also...", "Love them forever.", "Sincere affection", "is hard to find."],
+                        )?;
+                        ctx.next()?;
+                        break 'b8;
+                    }
+                }
+                break 'b6;
+            }
+            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
+                matched6 = true;
+            }
+            if matched6 {
+                ctx.lines_as("Sir Gray", args!["Good attitude...", "What do you plan", "on learning?"])?;
+                ctx.next()?;
+                'b9: {
+                    let subject9 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from(
+                            "Comfortable places for Knights to go...:The different paths of a Knight...:Ways to get more money as a Knight...",
+                        )],
+                    )?);
+                    let mut matched9 = false;
+                    let no_case9 = !subject9.loosely_equals(&Val::from(1))
+                        && !subject9.loosely_equals(&Val::from(2))
+                        && !subject9.loosely_equals(&Val::from(3));
+                    if !matched9 && subject9.loosely_equals(&Val::from(1)) {
+                        matched9 = true;
+                    }
+                    if matched9 {
+                        l_knight_t = (l_knight_t.clone() + Val::from(5));
+                        ctx.lines_as(
+                            "Sir Gray",
+                            args![
+                                "There are many places that are comfortable or uncomfortable in this world. However Knights must",
+                                "be able to survive anywhere."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        break 'b9;
+                    }
+                    if !matched9 && subject9.loosely_equals(&Val::from(2)) {
+                        matched9 = true;
+                    }
+                    if matched9 {
+                        ctx.lines_as("Sir Gray", args!["There are many similar Knights outside in the world. Think of them as your seniors and ask many questions."])?;
+                        ctx.next()?;
+                        break 'b9;
+                    }
+                    if !matched9 && subject9.loosely_equals(&Val::from(3)) {
+                        matched9 = true;
+                    }
+                    if matched9 {
+                        l_knight_t = (l_knight_t.clone() + Val::from(15));
+                        ctx.lines_as("Sir Gray", args!["Oh no. Do you hold wealth as a priority of being a Knight? We're not meant to be that way. Come again when you have thought", "more about it..."])?;
+                        ctx.next()?;
+                        break 'b9;
+                    }
+                }
+                break 'b6;
+            }
+        }
+        ctx.lines_as(
+            "Sir Gray",
+            args![
+                "Oh no, we've been",
+                "talking too much...",
+                "I apologize for",
+                "keeping you here",
+                "for so long."
+            ],
+        )?;
+        ctx.next()?;
+        if l_knight_t.clone() == 0 {
+            ctx.var("knight_q").set(Val::from(14))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(9011), Val::from(9012)])?;
+            ctx.lines_as("Sir Gray", args!["I enjoyed talking with you. You remind me of myself as a young recruit. Shall we talk to the captain and decide on your", "job change?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Gray",
+                args!["Don't worry too", "much, I have a very", "high opinion of you.", "Now, go~"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if l_knight_t.clone() == 5 {
+            ctx.var("knight_q").set(Val::from(14))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(9011), Val::from(9012)])?;
+            ctx.lines_as(
+                "Sir Gray",
+                args![
+                    "I enjoyed speaking with you. You can think about the principles of Knighthood more once you become a Knight."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Sir Gray", args!["Then, shall we go to the captain and decide on your job change? Don't worry too much. You are good enough to be a Knight!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if l_knight_t.clone() == 10 {
+            ctx.var("knight_q").set(Val::from(14))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(9011), Val::from(9012)])?;
+            ctx.lines_as(
+                "Sir Gray",
+                args![
+                    "I enjoyed talking with you. Although, there were some",
+                    "things that bothered me..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Gray",
+                args!["You should go", "to the captain", "so we can decide", "on your job change."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Gray",
+                args![
+                    "Don't worry too much, coming to take my test means the others have acknowledged you as well.",
+                    "Go now...!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.var("knight_q").set(Val::from(13))?;
+            ctx.lines_as("Sir Gray", args!["Conversing", "with young ones", "is always enjoyable..."])?;
+            ctx.next()?;
+            ctx.lines_as("Sir Gray", args!["But it seems as though your dream is elsewhere, or that your focus is hazy. Spend more time as a Swordman, and come back", "to me later."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Gray",
+                args!["If you truly wish to become a Knight, you must change your outlook first. Then, we shall see."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+    } else if ctx.var("knight_q").get()? == 14 {
+        ctx.lines(args!["I told you", "to go to", "the captain."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Sir Gray",
+            args!["Everyone will", "carefully make", "their decision,", "so go now!"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args!["Oh...", "A young Swordman.", "What can I do for you?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("I would like to take the test to change jobs.:Oh, nothing.")],
+        )?) == 1
+        {
+            ctx.lines_as(
+                "Sir Gray",
+                args!["Hoho~", "There are many", "other younger", "Knights in here."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sir Gray",
+                args!["If you talk", "to all of them,", "I may review", "you as well."],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as("Sir Gray", args!["Take care!", "Health is", "every man's", "treasure!"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 

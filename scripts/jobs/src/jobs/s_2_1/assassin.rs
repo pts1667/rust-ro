@@ -196,137 +196,129 @@ fn guildsman_asn_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.lines_as("Ferocious-looking guy", args!["I thought something smelled funny. What's a servant of God doing in this place? You don't belong here."])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?) {
-                                    ctx.lines_as("Ferocious-looking guy", args!["We don't like greedy people around these parts. You better sell your stuff somewhere else, Moneybags."])?;
+                            } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_MERCHANT")?) {
+                                ctx.lines_as("Ferocious-looking guy", args!["We don't like greedy people around these parts. You better sell your stuff somewhere else, Moneybags."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
+                                ctx.lines_as("Ferocious-looking guy", args!["You look like you don't have a care in the world. Well, I hope you enjoy your rest while you stay here. It's okay, since the Rogue and Assassin Guilds have always gotten along pretty well."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Ferocious-looking guy",
+                                    args!["By the way...", "Have you ever seen", "a girl named Markie?"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Ferocious-looking guy", args!["Markie...", "We promised that we'd be together forever. ^666666*Sigh...*^000000 I don't even think she remembers that promise anymore. Then again, we were pretty young back then..."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?) {
+                                ctx.lines_as(
+                                    "Assassin Expert 'Huey'",
+                                    args![
+                                        "Hey, I remember you~",
+                                        "Wasn't your name, umm, I remember 'cause it sounded funny to me..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Assassin Expert 'Huey'",
+                                    args![
+                                        ((((Val::from(":+:") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from(":+:, right? No wait, just "))
+                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from(". Yeah, how's it goin'?"))
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Assassin Expert 'Huey'", args!["Unfortunately, I don't have any requests for you at this time from the guild. Just keep focusing on your training. Till then, see ya."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
+                                && ctx.var("JobLevel").get()?.number()? > 39)
+                            {
+                                if ctx.var("SkillPoint").get()?.is_true() {
+                                    ctx.lines_as("Ferocious-looking guy", args!["You can't change your job if you still have unused skill points from First Job. You better use up those skill points first."])?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 } else {
-                                    if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?) {
-                                        ctx.lines_as("Ferocious-looking guy", args!["You look like you don't have a care in the world. Well, I hope you enjoy your rest while you stay here. It's okay, since the Rogue and Assassin Guilds have always gotten along pretty well."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Ferocious-looking guy",
-                                            args!["By the way...", "Have you ever seen", "a girl named Markie?"],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Ferocious-looking guy", args!["Markie...", "We promised that we'd be together forever. ^666666*Sigh...*^000000 I don't even think she remembers that promise anymore. Then again, we were pretty young back then..."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?) {
+                                    ctx.lines_as("Ferocious-looking guy", args!["Hmm...", "A Thief...?"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Ferocious-looking guy", args!["And a well-experienced Thief since I can't seem to find my wallet. We do need people like you, you know."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Ferocious-looking guy",
+                                        args!["So how about taking the next step and becoming an Assassin?"],
+                                    )?;
+                                    ctx.next()?;
+                                    'b1: {
+                                        let subject1 = Val::from(runtime::select_values(
+                                            ctx,
+                                            &[Val::from(
+                                                "Yes. I've picked my last pocket.:What's the requirements?:Maybe later, I need to steal some things first.",
+                                            )],
+                                        )?);
+                                        let mut matched1 = false;
+                                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                                            && !subject1.loosely_equals(&Val::from(2))
+                                            && !subject1.loosely_equals(&Val::from(3));
+                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                                            matched1 = true;
+                                        }
+                                        if matched1 {
                                             ctx.lines_as(
-                                                "Assassin Expert 'Huey'",
+                                                "Ferocious-looking guy",
                                                 args![
-                                                    "Hey, I remember you~",
-                                                    "Wasn't your name, umm, I remember 'cause it sounded funny to me..."
+                                                    "It's been a while since I've received a guest. I'm sending",
+                                                    "you to the office."
                                                 ],
                                             )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Assassin Expert 'Huey'",
-                                                args![
-                                                    ((((Val::from(":+:") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                        + Val::from(":+:, right? No wait, just "))
-                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                        + Val::from(". Yeah, how's it goin'?"))
-                                                ],
+                                            ctx.close_window()?;
+                                            ctx.var("assin_q").set(Val::from(0))?;
+                                            if ctx.call(Function::CheckQuest, vec![Val::from(8000)])? != -1 {
+                                                ctx.call(Function::ChangeQuest, vec![Val::from(8000), Val::from(8001)])?;
+                                            } else {
+                                                ctx.call(Function::SetQuest, vec![Val::from(8001)])?;
+                                            }
+                                            ctx.call(
+                                                Function::Warp,
+                                                vec![Val::from("in_moc_16"), Val::from(19), Val::from(76)],
                                             )?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                                            matched1 = true;
+                                        }
+                                        if matched1 {
+                                            ctx.lines_as("Ferocious-looking guy", args!["Requirements? Well, first you need to be a Thief. Second, you need to be at least Thief job level 40."])?;
                                             ctx.next()?;
-                                            ctx.lines_as("Assassin Expert 'Huey'", args!["Unfortunately, I don't have any requests for you at this time from the guild. Just keep focusing on your training. Till then, see ya."])?;
+                                            ctx.lines_as("Ferocious-looking guy", args!["And third, you need to pass a test to become an Assassin. You got", "all that? If you're sure of your ability as a Thief, you won't have to worry."])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
-                                        } else {
-                                            if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
-                                                && ctx.var("JobLevel").get()?.number()? > 39)
-                                            {
-                                                if ctx.var("SkillPoint").get()?.is_true() {
-                                                    ctx.lines_as("Ferocious-looking guy", args!["You can't change your job if you still have unused skill points from First Job. You better use up those skill points first."])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    ctx.lines_as("Ferocious-looking guy", args!["Hmm...", "A Thief...?"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Ferocious-looking guy", args!["And a well-experienced Thief since I can't seem to find my wallet. We do need people like you, you know."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Ferocious-looking guy",
-                                                        args!["So how about taking the next step and becoming an Assassin?"],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    'b1: {
-                                                        let subject1 = Val::from(runtime::select_values(
-                                                            ctx,
-                                                            &[Val::from(
-                                                                "Yes. I've picked my last pocket.:What's the requirements?:Maybe later, I need to steal some things first.",
-                                                            )],
-                                                        )?);
-                                                        let mut matched1 = false;
-                                                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                                            && !subject1.loosely_equals(&Val::from(2))
-                                                            && !subject1.loosely_equals(&Val::from(3));
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
-                                                            ctx.lines_as(
-                                                                "Ferocious-looking guy",
-                                                                args![
-                                                                    "It's been a while since I've received a guest. I'm sending",
-                                                                    "you to the office."
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            ctx.var("assin_q").set(Val::from(0))?;
-                                                            if ctx.call(Function::CheckQuest, vec![Val::from(8000)])? != -1 {
-                                                                ctx.call(Function::ChangeQuest, vec![Val::from(8000), Val::from(8001)])?;
-                                                            } else {
-                                                                ctx.call(Function::SetQuest, vec![Val::from(8001)])?;
-                                                            }
-                                                            ctx.call(
-                                                                Function::Warp,
-                                                                vec![Val::from("in_moc_16"), Val::from(19), Val::from(76)],
-                                                            )?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
-                                                            ctx.lines_as("Ferocious-looking guy", args!["Requirements? Well, first you need to be a Thief. Second, you need to be at least Thief job level 40."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Ferocious-looking guy", args!["And third, you need to pass a test to become an Assassin. You got", "all that? If you're sure of your ability as a Thief, you won't have to worry."])?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
-                                                            ctx.lines_as(
-                                                                "Ferocious-looking guy",
-                                                                args![
-                                                                    "Hmm...",
-                                                                    "Alright then.",
-                                                                    "But come back when",
-                                                                    "you think you're ready."
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                }
-                                            } else {
-                                                ctx.lines_as("Ferocious-looking guy", args!["Huh. You're not qualified to become an Assassin yet. There are requirements you need to meet first, you know."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Ferocious-looking guy", args!["Well, keep training. You need to be at least job level 40, got it? But if you're above job level 40, that will probably be even better."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
+                                        }
+                                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                                            matched1 = true;
+                                        }
+                                        if matched1 {
+                                            ctx.lines_as(
+                                                "Ferocious-looking guy",
+                                                args![
+                                                    "Hmm...",
+                                                    "Alright then.",
+                                                    "But come back when",
+                                                    "you think you're ready."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         }
                                     }
                                 }
+                            } else {
+                                ctx.lines_as("Ferocious-looking guy", args!["Huh. You're not qualified to become an Assassin yet. There are requirements you need to meet first, you know."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Ferocious-looking guy", args!["Well, keep training. You need to be at least job level 40, got it? But if you're above job level 40, that will probably be even better."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         }
                     }
@@ -688,41 +680,39 @@ fn guildsman_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::ChangeQuest, vec![Val::from(8001), Val::from(8002)])?;
                 ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(19), Val::from(144)])?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("JobLevel").get()?.number()? < 49 {
-                    ctx.lines_as(
-                        "Assassin 'Khai'",
-                        args!["Well, you passed", "the requirements.", "Not bad at all."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Assassin 'Khai'",
-                        args![
-                            "Go ahead and give",
-                            "me the form when you're",
-                            "done filling it out.",
-                            "Alright, thanks."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Assassin 'Khai'",
-                        args!["I'll transport you", "to the Test Hall.", "Best of luck~"],
-                    )?;
-                    ctx.close_window()?;
-                    if ctx.var("assin_q3").get()?.number()? < 3 {
-                        ctx.var("assin_q3").set(Val::from(2))?;
-                    }
-                    ctx.var("assin_q").set(Val::from(1))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(8001), Val::from(8002)])?;
-                    ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(19), Val::from(144)])?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as("Assassin 'Khai'", args!["Who the", "hell are you?", "...Guards!"])?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Warp, vec![Val::from("moc_fild16"), Val::from(206), Val::from(229)])?;
-                    return Err(Stop::End);
+            } else if ctx.var("JobLevel").get()?.number()? < 49 {
+                ctx.lines_as(
+                    "Assassin 'Khai'",
+                    args!["Well, you passed", "the requirements.", "Not bad at all."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Assassin 'Khai'",
+                    args![
+                        "Go ahead and give",
+                        "me the form when you're",
+                        "done filling it out.",
+                        "Alright, thanks."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Assassin 'Khai'",
+                    args!["I'll transport you", "to the Test Hall.", "Best of luck~"],
+                )?;
+                ctx.close_window()?;
+                if ctx.var("assin_q3").get()?.number()? < 3 {
+                    ctx.var("assin_q3").set(Val::from(2))?;
                 }
+                ctx.var("assin_q").set(Val::from(1))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(8001), Val::from(8002)])?;
+                ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(19), Val::from(144)])?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as("Assassin 'Khai'", args!["Who the", "hell are you?", "...Guards!"])?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("moc_fild16"), Val::from(206), Val::from(229)])?;
+                return Err(Stop::End);
             }
         } else {
             ctx.lines_as(
@@ -780,34 +770,32 @@ fn guildsman_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::ChangeQuest, vec![Val::from(8001), Val::from(8002)])?;
                 ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(19), Val::from(144)])?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("JobLevel").get()?.number()? < 49 {
-                    ctx.lines_as(
-                        "Assassin 'Khai'",
-                        args!["Not bad. You fulfilled our requirements. Not bad at all. Now are you done filling out the form?"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Assassin 'Khai'",
-                        args![
-                            "Then give me the form so that I can send you to the Test Hall, alright?",
-                            "Good luck..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    if ctx.var("assin_q3").get()?.number()? < 3 {
-                        ctx.var("assin_q3").set(Val::from(2))?;
-                    }
-                    ctx.var("assin_q").set(Val::from(1))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(8001), Val::from(8002)])?;
-                    ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(19), Val::from(144)])?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as("Assassin 'Khai'", args!["How the hell did", "you get in here?", "Get out!"])?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Warp, vec![Val::from("moc_fild16"), Val::from(206), Val::from(229)])?;
-                    return Err(Stop::End);
+            } else if ctx.var("JobLevel").get()?.number()? < 49 {
+                ctx.lines_as(
+                    "Assassin 'Khai'",
+                    args!["Not bad. You fulfilled our requirements. Not bad at all. Now are you done filling out the form?"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Assassin 'Khai'",
+                    args![
+                        "Then give me the form so that I can send you to the Test Hall, alright?",
+                        "Good luck..."
+                    ],
+                )?;
+                ctx.next()?;
+                if ctx.var("assin_q3").get()?.number()? < 3 {
+                    ctx.var("assin_q3").set(Val::from(2))?;
                 }
+                ctx.var("assin_q").set(Val::from(1))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(8001), Val::from(8002)])?;
+                ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(19), Val::from(144)])?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as("Assassin 'Khai'", args!["How the hell did", "you get in here?", "Get out!"])?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("moc_fild16"), Val::from(206), Val::from(229)])?;
+                return Err(Stop::End);
             }
         }
     }
@@ -999,37 +987,35 @@ fn nameless_one_run(ctx: &Ctx, mut step: NamelessOneStep, args: Vec<Val>) -> Res
                         ctx.lines_as("The Anonymous One", args!["In other words, if you want to pass this test, you must give me 9 correct answers out of 10 questions. I won't let you know which answer you got wrong..."])?;
                         ctx.next()?;
                         ctx.lines_as("The Anonymous One", args!["Are you ready?", "Prepare yourself!"])?;
-                    } else {
-                        if ctx.var("assin_q2").get()?.number()? < 5 {
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["Having problems", "passing a simple test?", "You should have", "known better."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Help me, how do I pass?:I challenge you again!")],
-                            )?) == 1
-                            {
-                                ctx.lines_as("The Anonymous One", args!["Well, that's a damn good question. But you're banished from the Assassin Guild, so it's no concern of mine..."])?;
-                                ctx.close_window()?;
-                                ctx.call(Function::Warp, vec![Val::from("moc_fild16"), Val::from(206), Val::from(151)])?;
-                                return Err(Stop::End);
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args![
-                                    "So I see...",
-                                    "Now go, but do not fear. I will be by your side as you learn the outcome of your choice..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("The Anonymous One", args!["Now, we shall test you once more! Keep in mind, you must answer 9 questions out of 10 correctly. Remember I am doing you a favor..."])?;
-                            ctx.next()?;
-                            ctx.lines_as("The Anonymous One", args!["You must answer 9 questions out of 10 correctly. If you miss more than one question, you can never become an Assassin."])?;
-                            ctx.next()?;
-                            ctx.lines_as("The Anonymous One", args!["Okay,", "are you ready?", "Good luck."])?;
+                    } else if ctx.var("assin_q2").get()?.number()? < 5 {
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["Having problems", "passing a simple test?", "You should have", "known better."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Help me, how do I pass?:I challenge you again!")],
+                        )?) == 1
+                        {
+                            ctx.lines_as("The Anonymous One", args!["Well, that's a damn good question. But you're banished from the Assassin Guild, so it's no concern of mine..."])?;
+                            ctx.close_window()?;
+                            ctx.call(Function::Warp, vec![Val::from("moc_fild16"), Val::from(206), Val::from(151)])?;
+                            return Err(Stop::End);
                         }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args![
+                                "So I see...",
+                                "Now go, but do not fear. I will be by your side as you learn the outcome of your choice..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("The Anonymous One", args!["Now, we shall test you once more! Keep in mind, you must answer 9 questions out of 10 correctly. Remember I am doing you a favor..."])?;
+                        ctx.next()?;
+                        ctx.lines_as("The Anonymous One", args!["You must answer 9 questions out of 10 correctly. If you miss more than one question, you can never become an Assassin."])?;
+                        ctx.next()?;
+                        ctx.lines_as("The Anonymous One", args!["Okay,", "are you ready?", "Good luck."])?;
                     }
                     ctx.next()?;
                     'b3: {
@@ -1412,52 +1398,50 @@ fn nameless_one_run(ctx: &Ctx, mut step: NamelessOneStep, args: Vec<Val>) -> Res
                             ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(19), Val::from(76)])?;
                             return Err(Stop::End);
                         }
-                    } else {
-                        if ctx.var("assin_q2").get()? == 4 {
+                    } else if ctx.var("assin_q2").get()? == 4 {
+                        ctx.next()?;
+                        ctx.lines_as("The Anonymous One", args!["You showed", "great effort..."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args![
+                                "Let's see...",
+                                "You scored",
+                                ((Val::from("") + l_assassin_t.clone()) + Val::from(" points..."))
+                            ],
+                        )?;
+                        if l_assassin_t.clone().number()? > 80 {
+                            ctx.var("assin_q2").set(Val::from(5))?;
+                            ctx.call(Function::ChangeQuest, vec![Val::from(8002), Val::from(8003)])?;
                             ctx.next()?;
-                            ctx.lines_as("The Anonymous One", args!["You showed", "great effort..."])?;
+                            ctx.lines_as("The Anonymous One", args!["You didn't fail this time! But you're not done just yet. You have another test ahead of you. Once you proceed, you will be informed about your next trial."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.var("assin_q2").set(Val::from(4))?;
+                            ctx.mes("You failed!")?;
                             ctx.next()?;
                             ctx.lines_as(
                                 "The Anonymous One",
-                                args![
-                                    "Let's see...",
-                                    "You scored",
-                                    ((Val::from("") + l_assassin_t.clone()) + Val::from(" points..."))
-                                ],
+                                args!["You're too underqualified. How can you even think about becoming an Assassin?!"],
                             )?;
-                            if l_assassin_t.clone().number()? > 80 {
-                                ctx.var("assin_q2").set(Val::from(5))?;
-                                ctx.call(Function::ChangeQuest, vec![Val::from(8002), Val::from(8003)])?;
-                                ctx.next()?;
-                                ctx.lines_as("The Anonymous One", args!["You didn't fail this time! But you're not done just yet. You have another test ahead of you. Once you proceed, you will be informed about your next trial."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.var("assin_q2").set(Val::from(4))?;
-                                ctx.mes("You failed!")?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "The Anonymous One",
-                                    args!["You're too underqualified. How can you even think about becoming an Assassin?!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("The Anonymous One", args!["I'm surprised that you were even able to become a Thief. Go away, and come back only when you know what the hell you're doing."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "The Anonymous One",
-                                    args!["Hmpf, if you really don't have a clue, I will give you a little advice."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "The Anonymous One",
-                                    args!["Go ask 'Khai,' the guy who takes care of your test application, maybe he will help you."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("The Anonymous One", args!["You may also wish to take advantage of the ancient code, ^3355FFiro.ragnarokonline.com^000000. Supposedly, those words are linked to a vast body of otherworldly knowledge..."])?;
-                                ctx.close_window()?;
-                                ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(19), Val::from(76)])?;
-                                return Err(Stop::End);
-                            }
+                            ctx.next()?;
+                            ctx.lines_as("The Anonymous One", args!["I'm surprised that you were even able to become a Thief. Go away, and come back only when you know what the hell you're doing."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "The Anonymous One",
+                                args!["Hmpf, if you really don't have a clue, I will give you a little advice."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "The Anonymous One",
+                                args!["Go ask 'Khai,' the guy who takes care of your test application, maybe he will help you."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("The Anonymous One", args!["You may also wish to take advantage of the ancient code, ^3355FFiro.ragnarokonline.com^000000. Supposedly, those words are linked to a vast body of otherworldly knowledge..."])?;
+                            ctx.close_window()?;
+                            ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(19), Val::from(76)])?;
+                            return Err(Stop::End);
                         }
                     }
                 } else {
@@ -4174,40 +4158,36 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
         ctx.close_window()?;
         ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(17), Val::from(19)])?;
         return Err(Stop::End);
+    } else if ctx.var("assin_q").get()? == 17 {
+        ctx.lines_as("Guildmaster", args!["Umm...?", "How come you're in here...?"])?;
+        ctx.next()?;
+        ctx.lines_as("Guildmaster", args!["You already finished your test. Why don't you go try to get the ^006699Necklace of Oblivion^000000 so you can change your job?"])?;
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(17), Val::from(19)])?;
+        return Err(Stop::End);
+    } else if (ctx.var("assin_q").get()?.number()? > 7 && ctx.var("assin_q").get()?.number()? < 17) {
+        ctx.var("assin_q").set(Val::from(7))?;
+        ctx.lines_as(
+            "Guildmaster",
+            args!["What the hell? You pressed 'Cancel' during the process. Do you want to change your job or what?"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Guildmaster",
+            args![
+                "^666666*Sigh...*^000000",
+                "Ok, let's start again. If you don't listen this time, you won't leave this room alive. You got me?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("assin_q").get()? == 17 {
-            ctx.lines_as("Guildmaster", args!["Umm...?", "How come you're in here...?"])?;
-            ctx.next()?;
-            ctx.lines_as("Guildmaster", args!["You already finished your test. Why don't you go try to get the ^006699Necklace of Oblivion^000000 so you can change your job?"])?;
-            ctx.close_window()?;
-            ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(17), Val::from(19)])?;
-            return Err(Stop::End);
-        } else {
-            if (ctx.var("assin_q").get()?.number()? > 7 && ctx.var("assin_q").get()?.number()? < 17) {
-                ctx.var("assin_q").set(Val::from(7))?;
-                ctx.lines_as(
-                    "Guildmaster",
-                    args!["What the hell? You pressed 'Cancel' during the process. Do you want to change your job or what?"],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Guildmaster",
-                    args![
-                        "^666666*Sigh...*^000000",
-                        "Ok, let's start again. If you don't listen this time, you won't leave this room alive. You got me?"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Guildmaster", args!["Umm? How come your in here?"])?;
-                ctx.next()?;
-                ctx.lines_as("Guildmaster", args!["You already finished your test, go give your ^006699Necklace of Oblivion^000000 to the Ferocious-looking guy so you can change your job!"])?;
-                ctx.close_window()?;
-                ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(17), Val::from(19)])?;
-                return Err(Stop::End);
-            }
-        }
+        ctx.lines_as("Guildmaster", args!["Umm? How come your in here?"])?;
+        ctx.next()?;
+        ctx.lines_as("Guildmaster", args!["You already finished your test, go give your ^006699Necklace of Oblivion^000000 to the Ferocious-looking guy so you can change your job!"])?;
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("in_moc_16"), Val::from(17), Val::from(19)])?;
+        return Err(Stop::End);
     }
 }
 

@@ -502,22 +502,16 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                         if matched6 {
                                             if ctx.call(Function::CountItem, vec![Val::from(7352)])?.is_true() {
                                                 scholar_run(ctx, ScholarStep::FuncJupHist, vec![Val::from(7352), Val::from(1)])?;
-                                            } else {
-                                                if ctx.call(Function::CountItem, vec![Val::from(7353)])?.is_true() {
-                                                    scholar_run(ctx, ScholarStep::FuncJupHist, vec![Val::from(7353), Val::from(2)])?;
-                                                } else {
-                                                    if ctx.call(Function::CountItem, vec![Val::from(7354)])?.is_true() {
-                                                        scholar_run(ctx, ScholarStep::FuncJupHist, vec![Val::from(7354), Val::from(4)])?;
-                                                    } else {
-                                                        if ctx.call(Function::CountItem, vec![Val::from(7355)])?.is_true() {
-                                                            scholar_run(
-                                                                ctx,
-                                                                ScholarStep::FuncJupHist,
-                                                                vec![Val::from(7352), Val::from(8)],
-                                                            )?;
-                                                        }
-                                                    }
-                                                }
+                                            } else if ctx.call(Function::CountItem, vec![Val::from(7353)])?.is_true() {
+                                                scholar_run(ctx, ScholarStep::FuncJupHist, vec![Val::from(7353), Val::from(2)])?;
+                                            } else if ctx.call(Function::CountItem, vec![Val::from(7354)])?.is_true() {
+                                                scholar_run(ctx, ScholarStep::FuncJupHist, vec![Val::from(7354), Val::from(4)])?;
+                                            } else if ctx.call(Function::CountItem, vec![Val::from(7355)])?.is_true() {
+                                                scholar_run(
+                                                    ctx,
+                                                    ScholarStep::FuncJupHist,
+                                                    vec![Val::from(7352), Val::from(8)],
+                                                )?;
                                             }
                                         }
                                         if !matched6 && subject6.loosely_equals(&Val::from(2)) {
@@ -1044,16 +1038,12 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                     )?;
                                     if ctx.call(Function::CountItem, vec![Val::from(7352)])?.is_true() {
                                         ctx.call(Function::DelItem, vec![Val::from(7352), Val::from(1)])?;
+                                    } else if ctx.call(Function::CountItem, vec![Val::from(7353)])?.is_true() {
+                                        ctx.call(Function::DelItem, vec![Val::from(7353), Val::from(1)])?;
+                                    } else if ctx.call(Function::CountItem, vec![Val::from(7354)])?.is_true() {
+                                        ctx.call(Function::DelItem, vec![Val::from(7354), Val::from(1)])?;
                                     } else {
-                                        if ctx.call(Function::CountItem, vec![Val::from(7353)])?.is_true() {
-                                            ctx.call(Function::DelItem, vec![Val::from(7353), Val::from(1)])?;
-                                        } else {
-                                            if ctx.call(Function::CountItem, vec![Val::from(7354)])?.is_true() {
-                                                ctx.call(Function::DelItem, vec![Val::from(7354), Val::from(1)])?;
-                                            } else {
-                                                ctx.call(Function::DelItem, vec![Val::from(7355), Val::from(1)])?;
-                                            }
-                                        }
+                                        ctx.call(Function::DelItem, vec![Val::from(7355), Val::from(1)])?;
                                     }
                                     ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
                                     ctx.close_window()?;
@@ -1265,30 +1255,28 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 } else {
                                     ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
                                 }
-                            } else {
-                                if ctx
-                                    .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
-                                    .is_true()
-                                {
-                                    ctx.call(
-                                        Function::DelItem,
-                                        vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
-                                    )?;
-                                    if runtime::local_get(&l_arg, &Val::from(1), false) == 7353 {
-                                        ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
-                                    } else {
-                                        ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                                    }
+                            } else if ctx
+                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
+                                .is_true()
+                            {
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
+                                )?;
+                                if runtime::local_get(&l_arg, &Val::from(1), false) == 7353 {
+                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
                                 } else {
-                                    ctx.call(
-                                        Function::DelItem,
-                                        vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
-                                    )?;
-                                    if runtime::local_get(&l_arg, &Val::from(2), false) == 7354 {
-                                        ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                                    } else {
-                                        ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
-                                    }
+                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
+                                }
+                            } else {
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
+                                )?;
+                                if runtime::local_get(&l_arg, &Val::from(2), false) == 7354 {
+                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
+                                } else {
+                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
                                 }
                             }
                             ctx.var("yuno_hist").set(Val::from(6))?;
@@ -1320,66 +1308,64 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
+                        } else if ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
+                            .is_true()
+                        {
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Oh, this one seems",
+                                    "to have been created",
+                                    "in a similar era as the",
+                                    "one you gave me earlier.",
+                                    "I'm not sure how much new",
+                                    "information this may provide..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Still, I'm sure this will",
+                                    "helpful in my research. I just",
+                                    "won't be as making progress",
+                                    "as quickly as I had projected.",
+                                    "Please, I'd like you to take this as a token of my gratitude."
+                                ],
+                            )?;
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
+                            )?;
+                            ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Now if you'll excuse",
+                                    "me, I need to go back",
+                                    "to compiling my research...",
+                                    "Thank you so much for",
+                                    ((Val::from("your help, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from("."))
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
-                                .is_true()
-                            {
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Oh, this one seems",
-                                        "to have been created",
-                                        "in a similar era as the",
-                                        "one you gave me earlier.",
-                                        "I'm not sure how much new",
-                                        "information this may provide..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Still, I'm sure this will",
-                                        "helpful in my research. I just",
-                                        "won't be as making progress",
-                                        "as quickly as I had projected.",
-                                        "Please, I'd like you to take this as a token of my gratitude."
-                                    ],
-                                )?;
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
-                                )?;
-                                ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Now if you'll excuse",
-                                        "me, I need to go back",
-                                        "to compiling my research...",
-                                        "Thank you so much for",
-                                        ((Val::from("your help, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                            + Val::from("."))
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Oh. There isn't anything",
-                                        "here that would help in my",
-                                        "research, but thank you anyway.",
-                                        "If you find anything else while",
-                                        "you're in Juperos, please come back and show it to me, alright?"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Oh. There isn't anything",
+                                    "here that would help in my",
+                                    "research, but thank you anyway.",
+                                    "If you find anything else while",
+                                    "you're in Juperos, please come back and show it to me, alright?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                     if !matched14 && subject14.loosely_equals(&Val::from(7)) {
@@ -1487,31 +1473,25 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 )?;
                                 if runtime::local_get(&l_arg, &Val::from(0), false) == 7352 {
                                     ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(1)))?;
+                                } else if runtime::local_get(&l_arg, &Val::from(0), false) == 7353 {
+                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
                                 } else {
-                                    if runtime::local_get(&l_arg, &Val::from(0), false) == 7353 {
-                                        ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
-                                    } else {
-                                        ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                                    }
+                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
                                 }
-                            } else {
-                                if ctx
-                                    .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
-                                    .is_true()
-                                {
-                                    ctx.call(
-                                        Function::DelItem,
-                                        vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
-                                    )?;
-                                    if runtime::local_get(&l_arg, &Val::from(1), false) == 7353 {
-                                        ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
-                                    } else {
-                                        if runtime::local_get(&l_arg, &Val::from(1), false) == 7354 {
-                                            ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                                        } else {
-                                            ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
-                                        }
-                                    }
+                            } else if ctx
+                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
+                                .is_true()
+                            {
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
+                                )?;
+                                if runtime::local_get(&l_arg, &Val::from(1), false) == 7353 {
+                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
+                                } else if runtime::local_get(&l_arg, &Val::from(1), false) == 7354 {
+                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
+                                } else {
+                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
                                 }
                             }
                             ctx.var("yuno_hist").set(Val::from(8))?;
@@ -1531,84 +1511,80 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if (ctx
+                        } else if (ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
+                            .is_true()
+                            || ctx
+                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
+                                .is_true())
+                        {
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Oh, this one seems",
+                                    "to have been created",
+                                    "in a similar era as the",
+                                    "one you gave me earlier.",
+                                    "I'm not sure how much new",
+                                    "information this may provide..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Still, I'm sure this will",
+                                    "helpful in my research. I just",
+                                    "won't be as making progress",
+                                    "as quickly as I had projected.",
+                                    "Please, I'd like you to take this as a token of my gratitude."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Now if you'll excuse",
+                                    "me, I need to go back",
+                                    "to compiling my research...",
+                                    "Thank you so much for",
+                                    ((Val::from("your help, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from("."))
+                                ],
+                            )?;
+                            if ctx
                                 .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
                                 .is_true()
-                                || ctx
-                                    .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
-                                    .is_true())
                             {
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Oh, this one seems",
-                                        "to have been created",
-                                        "in a similar era as the",
-                                        "one you gave me earlier.",
-                                        "I'm not sure how much new",
-                                        "information this may provide..."
-                                    ],
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
                                 )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Still, I'm sure this will",
-                                        "helpful in my research. I just",
-                                        "won't be as making progress",
-                                        "as quickly as I had projected.",
-                                        "Please, I'd like you to take this as a token of my gratitude."
-                                    ],
+                            } else if ctx
+                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
+                                .is_true()
+                            {
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
                                 )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Now if you'll excuse",
-                                        "me, I need to go back",
-                                        "to compiling my research...",
-                                        "Thank you so much for",
-                                        ((Val::from("your help, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                            + Val::from("."))
-                                    ],
-                                )?;
-                                if ctx
-                                    .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
-                                    .is_true()
-                                {
-                                    ctx.call(
-                                        Function::DelItem,
-                                        vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
-                                    )?;
-                                } else {
-                                    if ctx
-                                        .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
-                                        .is_true()
-                                    {
-                                        ctx.call(
-                                            Function::DelItem,
-                                            vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
-                                        )?;
-                                    }
-                                }
-                                ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Oh. There isn't anything",
-                                        "here that would help in my",
-                                        "research, but thank you anyway.",
-                                        "If you find anything else while",
-                                        "you're in Juperos, please come back and show it to me, alright?"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
                             }
+                            ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Oh. There isn't anything",
+                                    "here that would help in my",
+                                    "research, but thank you anyway.",
+                                    "If you find anything else while",
+                                    "you're in Juperos, please come back and show it to me, alright?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                     if !matched14 && subject14.loosely_equals(&Val::from(9)) {
@@ -1683,16 +1659,12 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                             ])?;
                             if runtime::local_get(&l_arg, &Val::from(0), false) == 7352 {
                                 ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(1)))?;
+                            } else if runtime::local_get(&l_arg, &Val::from(0), false) == 7353 {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
+                            } else if runtime::local_get(&l_arg, &Val::from(0), false) == 7354 {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
                             } else {
-                                if runtime::local_get(&l_arg, &Val::from(0), false) == 7353 {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
-                                } else {
-                                    if runtime::local_get(&l_arg, &Val::from(0), false) == 7354 {
-                                        ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                                    } else {
-                                        ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
-                                    }
-                                }
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
                             }
                             ctx.var("yuno_hist").set(Val::from(10))?;
                             ctx.call(Function::CompleteQuest, vec![Val::from(11022)])?;
@@ -1715,77 +1687,73 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ((ctx
+                        } else if ((ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
+                            .is_true()
+                            || ctx
+                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
+                                .is_true())
+                            || ctx
+                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
+                                .is_true())
+                        {
+                            ctx.lines_as(
+                                "Fayruz",
+                                args!["Hmm...", "This one seems to be created in a similar time", "as the previous one."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Don't you worry.",
+                                    "This will help my research of course,",
+                                    "although I do not think this will",
+                                    "help me in advancing my research",
+                                    "with a great speed unlike this other one."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Fayruz", args!["Please take this as a token of my gratitude."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Fayruz", args!["Now, excuse me. I need to go back to my research."])?;
+                            if ctx
                                 .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
                                 .is_true()
-                                || ctx
-                                    .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
-                                    .is_true())
-                                || ctx
-                                    .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
-                                    .is_true())
                             {
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args!["Hmm...", "This one seems to be created in a similar time", "as the previous one."],
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
                                 )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Don't you worry.",
-                                        "This will help my research of course,",
-                                        "although I do not think this will",
-                                        "help me in advancing my research",
-                                        "with a great speed unlike this other one."
-                                    ],
+                            } else if ctx
+                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
+                                .is_true()
+                            {
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
                                 )?;
-                                ctx.next()?;
-                                ctx.lines_as("Fayruz", args!["Please take this as a token of my gratitude."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Fayruz", args!["Now, excuse me. I need to go back to my research."])?;
-                                if ctx
-                                    .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
-                                    .is_true()
-                                {
-                                    ctx.call(
-                                        Function::DelItem,
-                                        vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
-                                    )?;
-                                } else {
-                                    if ctx
-                                        .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
-                                        .is_true()
-                                    {
-                                        ctx.call(
-                                            Function::DelItem,
-                                            vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
-                                        )?;
-                                    } else {
-                                        ctx.call(
-                                            Function::DelItem,
-                                            vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
-                                        )?;
-                                    }
-                                }
-                                ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
                             } else {
-                                ctx.lines_as(
-                                    "Fayruz",
-                                    args![
-                                        "Oh. There isn't anything",
-                                        "here that would help in my",
-                                        "research, but thank you anyway.",
-                                        "If you find anything else while",
-                                        "you're in Juperos, please come back and show it to me, alright?"
-                                    ],
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
                                 )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
                             }
+                            ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.lines_as(
+                                "Fayruz",
+                                args![
+                                    "Oh. There isn't anything",
+                                    "here that would help in my",
+                                    "research, but thank you anyway.",
+                                    "If you find anything else while",
+                                    "you're in Juperos, please come back and show it to me, alright?"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -1913,35 +1881,33 @@ fn bundle_of_files_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.var("yuno_hist").get()? == 9 {
-                                ctx.lines(args![
-                                    "^8B6914Juperos was built over",
-                                    "a thousand years ago in",
-                                    "an era of peace just after",
-                                    "a major war. Contrary to",
-                                    "popular belief, there isn't any",
-                                    "evidence proving that Juno may",
-                                    "have descended from Juperos.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^8B6914In fact, there is a",
-                                    "strong possibility that",
-                                    "another war, between Juno",
-                                    "and Juperos, resulted in Juno's",
-                                    "independence from Juperos and",
-                                    "the destruction of any existing",
-                                    "documentation from that era.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["Yes... Of course!", "It all makes sense now!"],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                        } else if ctx.var("yuno_hist").get()? == 9 {
+                            ctx.lines(args![
+                                "^8B6914Juperos was built over",
+                                "a thousand years ago in",
+                                "an era of peace just after",
+                                "a major war. Contrary to",
+                                "popular belief, there isn't any",
+                                "evidence proving that Juno may",
+                                "have descended from Juperos.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^8B6914In fact, there is a",
+                                "strong possibility that",
+                                "another war, between Juno",
+                                "and Juperos, resulted in Juno's",
+                                "independence from Juperos and",
+                                "the destruction of any existing",
+                                "documentation from that era.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["Yes... Of course!", "It all makes sense now!"],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                         ctx.lines(args![
                             "^8B6914Juperos was built over",
@@ -2168,45 +2134,39 @@ fn bundle_of_files_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if ctx.var("yuno_hist").get()?.number()? < 7 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["I don't feel like", "reading this. Not", "enough pictures..."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("yuno_hist").get()?.number()? < 9 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["It looks very sophisticated..."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if ctx.var("yuno_hist").get()?.number()? < 10 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["I know this book...", "But I don't feel like", "reading it right now."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if ctx.var("yuno_hist").get()?.number()? < 7 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["I don't feel like", "reading this. Not", "enough pictures..."],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("yuno_hist").get()?.number()? < 9 {
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["It looks very sophisticated..."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("yuno_hist").get()?.number()? < 10 {
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args!["I know this book...", "But I don't feel like", "reading it right now."],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args![
-                                    "This thesis is",
-                                    "looking pretty good~",
-                                    "Of course, I did have",
-                                    "a hand in making it..."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "This thesis is",
+                        "looking pretty good~",
+                        "Of course, I did have",
+                        "a hand in making it..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -2307,90 +2267,88 @@ fn bronze_statue_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("yuno_hist").get()? == 3 {
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "I better go and",
+                "see Fayruz in the",
+                "Juno Library and tell",
+                "her about the inscription."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("yuno_hist").get()? == 3 {
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    "I better go and",
-                    "see Fayruz in the",
-                    "Juno Library and tell",
-                    "her about the inscription."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines(args![
-                "^3355FFThere's a peculiar",
-                "engraving on the",
-                "Bronze Statue's rod.^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Investigate:Ignore it")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        "^3355FFIt's an inscription that's",
-                        "written in an old language",
-                        "that you can't understand,",
-                        "but have no problem reading",
-                        "and making out the sounds",
-                        "for some weird reason.^000000"
-                    ])?;
-                    ctx.next()?;
+        ctx.lines(args![
+            "^3355FFThere's a peculiar",
+            "engraving on the",
+            "Bronze Statue's rod.^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Investigate:Ignore it")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFIt's an inscription that's",
+                    "written in an old language",
+                    "that you can't understand,",
+                    "but have no problem reading",
+                    "and making out the sounds",
+                    "for some weird reason.^000000"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "This is creepy!",
+                        "I know that I'm not",
+                        "supposed to be able",
+                        "to read this, but here",
+                        "I am. I know what sounds",
+                        "all of these letters make..."
+                    ],
+                )?;
+                ctx.next()?;
+                if ctx.var("yuno_hist").get()? == 2 {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args![
-                            "This is creepy!",
-                            "I know that I'm not",
-                            "supposed to be able",
-                            "to read this, but here",
-                            "I am. I know what sounds",
-                            "all of these letters make..."
+                            "Then again, Fayruz did",
+                            "say this was enchanted.",
+                            "Okay, I guess I'll go back",
+                            "to the Juno Library and",
+                            "tell her what I found."
                         ],
                     )?;
-                    ctx.next()?;
-                    if ctx.var("yuno_hist").get()? == 2 {
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Then again, Fayruz did",
-                                "say this was enchanted.",
-                                "Okay, I guess I'll go back",
-                                "to the Juno Library and",
-                                "tell her what I found."
-                            ],
-                        )?;
-                        ctx.var("yuno_hist").set(Val::from(3))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(11017), Val::from(11018)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "Huh. Only a scholar,",
-                            "maybe someone even in",
-                            "Juno, could make sense",
-                            "of what this stuff says."
-                        ],
-                    )?;
+                    ctx.var("yuno_hist").set(Val::from(3))?;
+                    ctx.call(Function::ChangeQuest, vec![Val::from(11017), Val::from(11018)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Huh. Only a scholar,",
+                        "maybe someone even in",
+                        "Juno, could make sense",
+                        "of what this stuff says."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -3102,34 +3060,30 @@ fn s_3f_gate_switch_jupe_run(ctx: &Ctx, mut step: S3fGateSwitchJupeStep, args: V
                             Val::from("0xFF0000"),
                         ],
                     )?;
-                } else {
-                    if ctx.var(".mymobs").get()? == 1 {
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                Val::from("juperos_02"),
-                                Val::from("Have you come seeking Juperos?! It no longer exists..."),
-                                ctx.constant("BC_MAP")?,
-                                Val::from("0xFF0000"),
-                            ],
-                        )?;
-                    } else {
-                        if ctx.var(".mymobs").get()? == 0 {
-                            ctx.call(
-                                Function::MapAnnounce,
-                                vec![
-                                    Val::from("juperos_02"),
-                                    Val::from("Have you come to see me? Fine! Find me first!"),
-                                    ctx.constant("BC_MAP")?,
-                                    Val::from("0xFF0000"),
-                                ],
-                            )?;
-                            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_SCREEN_QUAKE")?])?;
-                            ctx.call(Function::SoundEffectAll, vec![Val::from("earth_quake.wav"), Val::from(0)])?;
-                            ctx.call(Function::DisableNpc, vec![Val::from("3F Gate Switch#jupe")])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Restricted Area#jupe::OnEnable")])?;
-                        }
-                    }
+                } else if ctx.var(".mymobs").get()? == 1 {
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("juperos_02"),
+                            Val::from("Have you come seeking Juperos?! It no longer exists..."),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0xFF0000"),
+                        ],
+                    )?;
+                } else if ctx.var(".mymobs").get()? == 0 {
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("juperos_02"),
+                            Val::from("Have you come to see me? Fine! Find me first!"),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0xFF0000"),
+                        ],
+                    )?;
+                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_SCREEN_QUAKE")?])?;
+                    ctx.call(Function::SoundEffectAll, vec![Val::from("earth_quake.wav"), Val::from(0)])?;
+                    ctx.call(Function::DisableNpc, vec![Val::from("3F Gate Switch#jupe")])?;
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("Restricted Area#jupe::OnEnable")])?;
                 }
                 return Err(Stop::End);
             }
@@ -3570,113 +3524,111 @@ fn hole_1_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
-            || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
-        {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0 {
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
+        || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
+    {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0 {
+                    ctx.lines(args![
+                        "^3355FFYou take out your",
+                        "Crest Piece and place",
+                        "it into the slot where it",
+                        "happens to fit perfectly.^000000"
+                    ])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
+                    ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(2)])?;
+                    ctx.next()?;
+                    if ctx.var("$@juprearea1inuse").get()? == 1 {
                         ctx.lines(args![
-                            "^3355FFYou take out your",
-                            "Crest Piece and place",
-                            "it into the slot where it",
-                            "happens to fit perfectly.^000000"
-                        ])?;
-                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
-                        ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(2)])?;
-                        ctx.next()?;
-                        if ctx.var("$@juprearea1inuse").get()? == 1 {
-                            ctx.lines(args![
-                                "^3355FFNothing happens.",
-                                "Perhaps an alarm or",
-                                "some other safety measure",
-                                "was activated to keep the",
-                                "Crest Piece from activating",
-                                "this transportation device.",
-                                "You retrieve the Crest Piece.^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFThe slot rotates and",
-                                "the Crest Piece moves as",
-                                "if it were turning a key. You",
-                                "feel a weak tremor as a Warp",
-                                "Portal to the other side is",
-                                "activated. You then retrieve",
-                                "your Crest Piece.^000000"
-                            ])?;
-                            ctx.call(Function::InitNpcTimer, vec![])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#1-1::OnEnable")])?;
-                            ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#1-1")])?;
-                            ctx.call(Function::DisableNpc, vec![Val::from("#hole#1-1")])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFUnfortunately, you're",
-                            "not carrying anything",
-                            "that might be able to fit",
-                            "into the slot and activate",
-                            "this mechanical device.^000000"
+                            "^3355FFNothing happens.",
+                            "Perhaps an alarm or",
+                            "some other safety measure",
+                            "was activated to keep the",
+                            "Crest Piece from activating",
+                            "this transportation device.",
+                            "You retrieve the Crest Piece.^000000"
                         ])?;
                         ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
+                        ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(255)])?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines(args![
+                            "^3355FFThe slot rotates and",
+                            "the Crest Piece moves as",
+                            "if it were turning a key. You",
+                            "feel a weak tremor as a Warp",
+                            "Portal to the other side is",
+                            "activated. You then retrieve",
+                            "your Crest Piece.^000000"
+                        ])?;
+                        ctx.call(Function::InitNpcTimer, vec![])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#1-1::OnEnable")])?;
+                        ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#1-1")])?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("#hole#1-1")])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(255)])?;
                         return Err(Stop::End);
                     }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
-                    )?;
+                } else {
+                    ctx.lines(args![
+                        "^3355FFUnfortunately, you're",
+                        "not carrying anything",
+                        "that might be able to fit",
+                        "into the slot and activate",
+                        "this mechanical device.^000000"
+                    ])?;
                     ctx.close_window()?;
                     ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
             }
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
+                return Err(Stop::End);
+            }
         }
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
+        return Err(Stop::End);
     }
 }
 
@@ -4416,114 +4368,112 @@ fn hole_1_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
-            || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
-        {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0 {
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
+        || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
+    {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0 {
+                    ctx.lines(args![
+                        "^3355FFYou take out your",
+                        "Crest Piece and place",
+                        "it into the slot where it",
+                        "happens to fit perfectly.^000000"
+                    ])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
+                    ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(2)])?;
+                    ctx.next()?;
+                    if ctx.var("$@juprearea1inuse").get()? == 1 {
                         ctx.lines(args![
-                            "^3355FFYou take out your",
-                            "Crest Piece and place",
-                            "it into the slot where it",
-                            "happens to fit perfectly.^000000"
-                        ])?;
-                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
-                        ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(2)])?;
-                        ctx.next()?;
-                        if ctx.var("$@juprearea1inuse").get()? == 1 {
-                            ctx.lines(args![
-                                "^3355FFNothing happens.",
-                                "Perhaps an alarm or",
-                                "some other safety measure",
-                                "was activated to keep the",
-                                "Crest Piece from activating",
-                                "this transportation device.",
-                                "You retrieve the Crest Piece.^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFThe slot rotates and",
-                                "the Crest Piece moves as",
-                                "if it were turning a key. You",
-                                "feel a weak tremor as a Warp",
-                                "Portal to the other side is",
-                                "activated. You then retrieve",
-                                "your Crest Piece.^000000"
-                            ])?;
-                            ctx.call(Function::InitNpcTimer, vec![])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#1-2::OnEnable")])?;
-                            ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#1-2")])?;
-                            ctx.call(Function::DisableNpc, vec![Val::from("#hole#1-2")])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFUnfortunately, you're",
-                            "not carrying anything",
-                            "that might be able to fit",
-                            "into the slot and activate",
-                            "this mechanical device.^000000"
+                            "^3355FFNothing happens.",
+                            "Perhaps an alarm or",
+                            "some other safety measure",
+                            "was activated to keep the",
+                            "Crest Piece from activating",
+                            "this transportation device.",
+                            "You retrieve the Crest Piece.^000000"
                         ])?;
                         ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
+                        ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(255)])?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines(args![
+                            "^3355FFThe slot rotates and",
+                            "the Crest Piece moves as",
+                            "if it were turning a key. You",
+                            "feel a weak tremor as a Warp",
+                            "Portal to the other side is",
+                            "activated. You then retrieve",
+                            "your Crest Piece.^000000"
+                        ])?;
+                        ctx.call(Function::InitNpcTimer, vec![])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#1-2::OnEnable")])?;
+                        ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#1-2")])?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("#hole#1-2")])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(255)])?;
                         return Err(Stop::End);
                     }
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
-                    )?;
+                } else {
+                    ctx.lines(args![
+                        "^3355FFUnfortunately, you're",
+                        "not carrying anything",
+                        "that might be able to fit",
+                        "into the slot and activate",
+                        "this mechanical device.^000000"
+                    ])?;
                     ctx.close_window()?;
                     ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
+                break 'b1;
             }
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
+                return Err(Stop::End);
+            }
         }
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -5290,111 +5240,109 @@ fn hole_1_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
-            || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
-        {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0 {
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
+        || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
+    {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0 {
+                    ctx.lines(args![
+                        "^3355FFYou take out your",
+                        "Crest Piece and place",
+                        "it into the slot where it",
+                        "happens to fit perfectly.^000000"
+                    ])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
+                    ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(2)])?;
+                    ctx.next()?;
+                    if ctx.var("$@juprearea1inuse").get()? == 1 {
                         ctx.lines(args![
-                            "^3355FFYou take out your",
-                            "Crest Piece and place",
-                            "it into the slot where it",
-                            "happens to fit perfectly.^000000"
-                        ])?;
-                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
-                        ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(2)])?;
-                        ctx.next()?;
-                        if ctx.var("$@juprearea1inuse").get()? == 1 {
-                            ctx.lines(args![
-                                "^3355FFNothing happens.",
-                                "Perhaps an alarm or",
-                                "some other safety measure",
-                                "was activated to keep the",
-                                "Crest Piece from activating",
-                                "this transportation device.",
-                                "You retrieve the Crest Piece.^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFThe slot rotates and",
-                                "the Crest Piece moves as",
-                                "if it were turning a key. You",
-                                "feel a weak tremor as a Warp",
-                                "Portal to the other side is",
-                                "activated. You then retrieve",
-                                "your Crest Piece.^000000"
-                            ])?;
-                            ctx.call(Function::InitNpcTimer, vec![])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#1-3::OnEnable")])?;
-                            ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#1-3")])?;
-                            ctx.call(Function::DisableNpc, vec![Val::from("#hole#1-3")])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFUnfortunately, you're",
-                            "not carrying anything",
-                            "that might be able to fit",
-                            "into the slot and activate",
-                            "this mechanical device.^000000"
+                            "^3355FFNothing happens.",
+                            "Perhaps an alarm or",
+                            "some other safety measure",
+                            "was activated to keep the",
+                            "Crest Piece from activating",
+                            "this transportation device.",
+                            "You retrieve the Crest Piece.^000000"
                         ])?;
                         ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
+                        ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(255)])?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines(args![
+                            "^3355FFThe slot rotates and",
+                            "the Crest Piece moves as",
+                            "if it were turning a key. You",
+                            "feel a weak tremor as a Warp",
+                            "Portal to the other side is",
+                            "activated. You then retrieve",
+                            "your Crest Piece.^000000"
+                        ])?;
+                        ctx.call(Function::InitNpcTimer, vec![])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#1-3::OnEnable")])?;
+                        ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#1-3")])?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("#hole#1-3")])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(255)])?;
                         return Err(Stop::End);
                     }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
-                    )?;
+                } else {
+                    ctx.lines(args![
+                        "^3355FFUnfortunately, you're",
+                        "not carrying anything",
+                        "that might be able to fit",
+                        "into the slot and activate",
+                        "this mechanical device.^000000"
+                    ])?;
                     ctx.close_window()?;
                     ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
             }
-        } else {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -6184,112 +6132,110 @@ fn hole_1_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
-            || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
-        {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0 {
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
+        || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
+    {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0 {
+                    ctx.lines(args![
+                        "^3355FFYou take out your",
+                        "Crest Piece and place",
+                        "it into the slot where it",
+                        "happens to fit perfectly.^000000"
+                    ])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
+                    ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(2)])?;
+                    ctx.next()?;
+                    if ctx.var("$@juprearea1inuse").get()? == 1 {
                         ctx.lines(args![
-                            "^3355FFYou take out your",
-                            "Crest Piece and place",
-                            "it into the slot where it",
-                            "happens to fit perfectly.^000000"
-                        ])?;
-                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
-                        ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(2)])?;
-                        ctx.next()?;
-                        if ctx.var("$@juprearea1inuse").get()? == 1 {
-                            ctx.lines(args![
-                                "^3355FFNothing happens.",
-                                "Perhaps an alarm or",
-                                "some other safety measure",
-                                "was activated to keep the",
-                                "Crest Piece from activating",
-                                "this transportation device.",
-                                "You retrieve the Crest Piece.^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFThe slot rotates and",
-                                "the Crest Piece moves as",
-                                "if it were turning a key. You",
-                                "feel a weak tremor as a Warp",
-                                "Portal to the other side is",
-                                "activated. You then retrieve",
-                                "your Crest Piece.^000000"
-                            ])?;
-                            ctx.call(Function::InitNpcTimer, vec![])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#1-4::OnEnable")])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Red Alarm#1-4::OnEnable")])?;
-                            ctx.call(Function::DisableNpc, vec![Val::from("#hole#1-4")])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFUnfortunately, you're",
-                            "not carrying anything",
-                            "that might be able to fit",
-                            "into the slot and activate",
-                            "this mechanical device.^000000"
+                            "^3355FFNothing happens.",
+                            "Perhaps an alarm or",
+                            "some other safety measure",
+                            "was activated to keep the",
+                            "Crest Piece from activating",
+                            "this transportation device.",
+                            "You retrieve the Crest Piece.^000000"
                         ])?;
                         ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
+                        ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(255)])?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines(args![
+                            "^3355FFThe slot rotates and",
+                            "the Crest Piece moves as",
+                            "if it were turning a key. You",
+                            "feel a weak tremor as a Warp",
+                            "Portal to the other side is",
+                            "activated. You then retrieve",
+                            "your Crest Piece.^000000"
+                        ])?;
+                        ctx.call(Function::InitNpcTimer, vec![])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#1-4::OnEnable")])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Red Alarm#1-4::OnEnable")])?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("#hole#1-4")])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(255)])?;
                         return Err(Stop::End);
                     }
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
-                    )?;
+                } else {
+                    ctx.lines(args![
+                        "^3355FFUnfortunately, you're",
+                        "not carrying anything",
+                        "that might be able to fit",
+                        "into the slot and activate",
+                        "this mechanical device.^000000"
+                    ])?;
                     ctx.close_window()?;
                     ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
+                break 'b1;
             }
-        } else {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -7139,113 +7085,111 @@ fn hole_2_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
-            || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
-        {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0 {
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
+        || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
+    {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0 {
+                    ctx.lines(args![
+                        "^3355FFYou take out your",
+                        "Crest Piece and place",
+                        "it into the slot where it",
+                        "happens to fit perfectly.^000000"
+                    ])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
+                    ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(2)])?;
+                    ctx.next()?;
+                    if ctx.var("$@juprearea2inuse").get()? == 1 {
                         ctx.lines(args![
-                            "^3355FFYou take out your",
-                            "Crest Piece and place",
-                            "it into the slot where it",
-                            "happens to fit perfectly.^000000"
-                        ])?;
-                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
-                        ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(2)])?;
-                        ctx.next()?;
-                        if ctx.var("$@juprearea2inuse").get()? == 1 {
-                            ctx.lines(args![
-                                "^3355FFNothing happens.",
-                                "Perhaps an alarm or",
-                                "some other safety measure",
-                                "was activated to keep the",
-                                "Crest Piece from activating",
-                                "this transportation device.",
-                                "You retrieve the Crest Piece.^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFThe slot rotates and",
-                                "the Crest Piece moves as",
-                                "if it were turning a key. You",
-                                "feel a weak tremor as a Warp",
-                                "Portal to the other side is",
-                                "activated. You then retrieve",
-                                "your Crest Piece.^000000"
-                            ])?;
-                            ctx.call(Function::InitNpcTimer, vec![])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#2-1::OnEnable")])?;
-                            ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#2-1")])?;
-                            ctx.call(Function::DisableNpc, vec![Val::from("#hole#2-1")])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFUnfortunately, you're",
-                            "not carrying anything",
-                            "that might be able to fit",
-                            "into the slot and activate",
-                            "this mechanical device.^000000"
+                            "^3355FFNothing happens.",
+                            "Perhaps an alarm or",
+                            "some other safety measure",
+                            "was activated to keep the",
+                            "Crest Piece from activating",
+                            "this transportation device.",
+                            "You retrieve the Crest Piece.^000000"
                         ])?;
                         ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
+                        ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(255)])?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines(args![
+                            "^3355FFThe slot rotates and",
+                            "the Crest Piece moves as",
+                            "if it were turning a key. You",
+                            "feel a weak tremor as a Warp",
+                            "Portal to the other side is",
+                            "activated. You then retrieve",
+                            "your Crest Piece.^000000"
+                        ])?;
+                        ctx.call(Function::InitNpcTimer, vec![])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#2-1::OnEnable")])?;
+                        ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#2-1")])?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("#hole#2-1")])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Cutin, vec![Val::from("1-1"), Val::from(255)])?;
                         return Err(Stop::End);
                     }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
-                    )?;
+                } else {
+                    ctx.lines(args![
+                        "^3355FFUnfortunately, you're",
+                        "not carrying anything",
+                        "that might be able to fit",
+                        "into the slot and activate",
+                        "this mechanical device.^000000"
+                    ])?;
                     ctx.close_window()?;
                     ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
             }
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
+                return Err(Stop::End);
+            }
         }
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
+        return Err(Stop::End);
     }
 }
 
@@ -7985,114 +7929,112 @@ fn hole_2_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
-            || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
-        {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0 {
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
+        || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
+    {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0 {
+                    ctx.lines(args![
+                        "^3355FFYou take out your",
+                        "Crest Piece and place",
+                        "it into the slot where it",
+                        "happens to fit perfectly.^000000"
+                    ])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
+                    ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(2)])?;
+                    ctx.next()?;
+                    if ctx.var("$@juprearea2inuse").get()? == 1 {
                         ctx.lines(args![
-                            "^3355FFYou take out your",
-                            "Crest Piece and place",
-                            "it into the slot where it",
-                            "happens to fit perfectly.^000000"
-                        ])?;
-                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
-                        ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(2)])?;
-                        ctx.next()?;
-                        if ctx.var("$@juprearea2inuse").get()? == 1 {
-                            ctx.lines(args![
-                                "^3355FFNothing happens.",
-                                "Perhaps an alarm or",
-                                "some other safety measure",
-                                "was activated to keep the",
-                                "Crest Piece from activating",
-                                "this transportation device.",
-                                "You retrieve the Crest Piece.^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFThe slot rotates and",
-                                "the Crest Piece moves as",
-                                "if it were turning a key. You",
-                                "feel a weak tremor as a Warp",
-                                "Portal to the other side is",
-                                "activated. You then retrieve",
-                                "your Crest Piece.^000000"
-                            ])?;
-                            ctx.call(Function::InitNpcTimer, vec![])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#2-2::OnEnable")])?;
-                            ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#2-2")])?;
-                            ctx.call(Function::DisableNpc, vec![Val::from("#hole#2-2")])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFUnfortunately, you're",
-                            "not carrying anything",
-                            "that might be able to fit",
-                            "into the slot and activate",
-                            "this mechanical device.^000000"
+                            "^3355FFNothing happens.",
+                            "Perhaps an alarm or",
+                            "some other safety measure",
+                            "was activated to keep the",
+                            "Crest Piece from activating",
+                            "this transportation device.",
+                            "You retrieve the Crest Piece.^000000"
                         ])?;
                         ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
+                        ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(255)])?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines(args![
+                            "^3355FFThe slot rotates and",
+                            "the Crest Piece moves as",
+                            "if it were turning a key. You",
+                            "feel a weak tremor as a Warp",
+                            "Portal to the other side is",
+                            "activated. You then retrieve",
+                            "your Crest Piece.^000000"
+                        ])?;
+                        ctx.call(Function::InitNpcTimer, vec![])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#2-2::OnEnable")])?;
+                        ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#2-2")])?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("#hole#2-2")])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Cutin, vec![Val::from("2-1"), Val::from(255)])?;
                         return Err(Stop::End);
                     }
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
-                    )?;
+                } else {
+                    ctx.lines(args![
+                        "^3355FFUnfortunately, you're",
+                        "not carrying anything",
+                        "that might be able to fit",
+                        "into the slot and activate",
+                        "this mechanical device.^000000"
+                    ])?;
                     ctx.close_window()?;
                     ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
+                break 'b1;
             }
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
+                return Err(Stop::End);
+            }
         }
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -8859,111 +8801,109 @@ fn hole_2_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
-            || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
-        {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0 {
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
+        || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
+    {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0 {
+                    ctx.lines(args![
+                        "^3355FFYou take out your",
+                        "Crest Piece and place",
+                        "it into the slot where it",
+                        "happens to fit perfectly.^000000"
+                    ])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
+                    ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(2)])?;
+                    ctx.next()?;
+                    if ctx.var("$@juprearea2inuse").get()? == 1 {
                         ctx.lines(args![
-                            "^3355FFYou take out your",
-                            "Crest Piece and place",
-                            "it into the slot where it",
-                            "happens to fit perfectly.^000000"
-                        ])?;
-                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
-                        ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(2)])?;
-                        ctx.next()?;
-                        if ctx.var("$@juprearea2inuse").get()? == 1 {
-                            ctx.lines(args![
-                                "^3355FFNothing happens.",
-                                "Perhaps an alarm or",
-                                "some other safety measure",
-                                "was activated to keep the",
-                                "Crest Piece from activating",
-                                "this transportation device.",
-                                "You retrieve the Crest Piece.^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFThe slot rotates and",
-                                "the Crest Piece moves as",
-                                "if it were turning a key. You",
-                                "feel a weak tremor as a Warp",
-                                "Portal to the other side is",
-                                "activated. You then retrieve",
-                                "your Crest Piece.^000000"
-                            ])?;
-                            ctx.call(Function::InitNpcTimer, vec![])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#2-3::OnEnable")])?;
-                            ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#2-3")])?;
-                            ctx.call(Function::DisableNpc, vec![Val::from("#hole#2-3")])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFUnfortunately, you're",
-                            "not carrying anything",
-                            "that might be able to fit",
-                            "into the slot and activate",
-                            "this mechanical device.^000000"
+                            "^3355FFNothing happens.",
+                            "Perhaps an alarm or",
+                            "some other safety measure",
+                            "was activated to keep the",
+                            "Crest Piece from activating",
+                            "this transportation device.",
+                            "You retrieve the Crest Piece.^000000"
                         ])?;
                         ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
+                        ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(255)])?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines(args![
+                            "^3355FFThe slot rotates and",
+                            "the Crest Piece moves as",
+                            "if it were turning a key. You",
+                            "feel a weak tremor as a Warp",
+                            "Portal to the other side is",
+                            "activated. You then retrieve",
+                            "your Crest Piece.^000000"
+                        ])?;
+                        ctx.call(Function::InitNpcTimer, vec![])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#2-3::OnEnable")])?;
+                        ctx.call(Function::EnableNpc, vec![Val::from("Red Alarm#2-3")])?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("#hole#2-3")])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Cutin, vec![Val::from("3-1"), Val::from(255)])?;
                         return Err(Stop::End);
                     }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
-                    )?;
+                } else {
+                    ctx.lines(args![
+                        "^3355FFUnfortunately, you're",
+                        "not carrying anything",
+                        "that might be able to fit",
+                        "into the slot and activate",
+                        "this mechanical device.^000000"
+                    ])?;
                     ctx.close_window()?;
                     ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
             }
-        } else {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -9766,112 +9706,110 @@ fn hole_2_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
-            || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
-            || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
-        {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0 {
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
+        || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
+        || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
+    {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0 {
+                    ctx.lines(args![
+                        "^3355FFYou take out your",
+                        "Crest Piece and place",
+                        "it into the slot where it",
+                        "happens to fit perfectly.^000000"
+                    ])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
+                    ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(2)])?;
+                    ctx.next()?;
+                    if ctx.var("$@juprearea2inuse").get()? == 1 {
                         ctx.lines(args![
-                            "^3355FFYou take out your",
-                            "Crest Piece and place",
-                            "it into the slot where it",
-                            "happens to fit perfectly.^000000"
-                        ])?;
-                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_TOPRANK")?])?;
-                        ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(2)])?;
-                        ctx.next()?;
-                        if ctx.var("$@juprearea2inuse").get()? == 1 {
-                            ctx.lines(args![
-                                "^3355FFNothing happens.",
-                                "Perhaps an alarm or",
-                                "some other safety measure",
-                                "was activated to keep the",
-                                "Crest Piece from activating",
-                                "this transportation device.",
-                                "You retrieve the Crest Piece.^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFThe slot rotates and",
-                                "the Crest Piece moves as",
-                                "if it were turning a key. You",
-                                "feel a weak tremor as a Warp",
-                                "Portal to the other side is",
-                                "activated. You then retrieve",
-                                "your Crest Piece.^000000"
-                            ])?;
-                            ctx.call(Function::InitNpcTimer, vec![])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#2-4::OnEnable")])?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Red Alarm#2-4::OnEnable")])?;
-                            ctx.call(Function::DisableNpc, vec![Val::from("#hole#2-4")])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(255)])?;
-                            return Err(Stop::End);
-                        }
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFUnfortunately, you're",
-                            "not carrying anything",
-                            "that might be able to fit",
-                            "into the slot and activate",
-                            "this mechanical device.^000000"
+                            "^3355FFNothing happens.",
+                            "Perhaps an alarm or",
+                            "some other safety measure",
+                            "was activated to keep the",
+                            "Crest Piece from activating",
+                            "this transportation device.",
+                            "You retrieve the Crest Piece.^000000"
                         ])?;
                         ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
+                        ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(255)])?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines(args![
+                            "^3355FFThe slot rotates and",
+                            "the Crest Piece moves as",
+                            "if it were turning a key. You",
+                            "feel a weak tremor as a Warp",
+                            "Portal to the other side is",
+                            "activated. You then retrieve",
+                            "your Crest Piece.^000000"
+                        ])?;
+                        ctx.call(Function::InitNpcTimer, vec![])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Warp#2-4::OnEnable")])?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Red Alarm#2-4::OnEnable")])?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("#hole#2-4")])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Cutin, vec![Val::from("4-1"), Val::from(255)])?;
                         return Err(Stop::End);
                     }
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
-                    )?;
+                } else {
+                    ctx.lines(args![
+                        "^3355FFUnfortunately, you're",
+                        "not carrying anything",
+                        "that might be able to fit",
+                        "into the slot and activate",
+                        "this mechanical device.^000000"
+                    ])?;
                     ctx.close_window()?;
                     ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
+                break 'b1;
             }
-        } else {
-            ctx.lines(args![
-                "^3355FFThis seems like",
-                "some kind of device",
-                "that will allow you to",
-                "pass to the other side.",
-                "There's a slot where you",
-                "probably need to insert",
-                "some kind of object...^000000"
-            ])?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
+                )?;
+                ctx.close_window()?;
+                ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFThis seems like",
+            "some kind of device",
+            "that will allow you to",
+            "pass to the other side.",
+            "There's a slot where you",
+            "probably need to insert",
+            "some kind of object...^000000"
+        ])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -10858,34 +10796,32 @@ fn switch_ufe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             }
                         }
                     }
+                } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
+                    || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
+                    || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
+                    || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
+                {
+                    let choice = runtime::select_values(ctx, &[Val::from("Insert Crest Pieces.")])?;
+                    ctx.var("@menu").set(choice)?;
+                    ctx.lines(args![
+                        "^3355FFRight now, you don't",
+                        "have enough Crest Pieces",
+                        "to place into all four of these",
+                        "slots. You'll need to find and^FFFFFF ^3355FF bring them all to make this work.^000000"
+                    ])?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Cutin, vec![Val::from("5-1"), Val::from(255)])?;
+                    return Err(Stop::End);
                 } else {
-                    if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
-                        || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
-                        || ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
-                        || ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
-                    {
-                        let choice = runtime::select_values(ctx, &[Val::from("Insert Crest Pieces.")])?;
-                        ctx.var("@menu").set(choice)?;
-                        ctx.lines(args![
-                            "^3355FFRight now, you don't",
-                            "have enough Crest Pieces",
-                            "to place into all four of these",
-                            "slots. You'll need to find and^FFFFFF ^3355FF bring them all to make this work.^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("5-1"), Val::from(255)])?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFYou need to find",
-                            "some kind of object",
-                            "that you can fit into",
-                            "each of these four slots...^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Cutin, vec![Val::from("5-1"), Val::from(255)])?;
-                        return Err(Stop::End);
-                    }
+                    ctx.lines(args![
+                        "^3355FFYou need to find",
+                        "some kind of object",
+                        "that you can fit into",
+                        "each of these four slots...^000000"
+                    ])?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Cutin, vec![Val::from("5-1"), Val::from(255)])?;
+                    return Err(Stop::End);
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -11992,33 +11928,31 @@ fn guard_1_ufe_run(ctx: &Ctx, mut step: Guard1UfeStep, args: Vec<Val>) -> Result
                     if ctx.var("$@jupeelevatorinuse2").get()? == 1 {
                         ctx.call(Function::DoNpcEvent, vec![Val::from("Guard-2#ufe::OnEnable")])?;
                         ctx.call(Function::StopNpcTimer, vec![])?;
-                    } else {
-                        if (((ctx.var("$@jupeelevatorinuse2").get()? == 4
-                            && ctx
-                                .call(
-                                    Function::GetVariableOfNpc,
-                                    vec![Val::from(".mymobs"), Val::from("Guard-2#ufe"), Val::from(0)],
-                                )?
-                                .number()?
-                                < 1)
-                            && ctx
-                                .call(
-                                    Function::GetVariableOfNpc,
-                                    vec![Val::from(".mymobs"), Val::from("Guard-3#ufe"), Val::from(0)],
-                                )?
-                                .number()?
-                                < 1)
-                            && ctx
-                                .call(
-                                    Function::GetVariableOfNpc,
-                                    vec![Val::from(".mymobs"), Val::from("Guard-4#ufe"), Val::from(0)],
-                                )?
-                                .number()?
-                                < 1)
-                        {
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("GuardEnd#ufe::OnEnable")])?;
-                            ctx.call(Function::StopNpcTimer, vec![])?;
-                        }
+                    } else if (((ctx.var("$@jupeelevatorinuse2").get()? == 4
+                        && ctx
+                            .call(
+                                Function::GetVariableOfNpc,
+                                vec![Val::from(".mymobs"), Val::from("Guard-2#ufe"), Val::from(0)],
+                            )?
+                            .number()?
+                            < 1)
+                        && ctx
+                            .call(
+                                Function::GetVariableOfNpc,
+                                vec![Val::from(".mymobs"), Val::from("Guard-3#ufe"), Val::from(0)],
+                            )?
+                            .number()?
+                            < 1)
+                        && ctx
+                            .call(
+                                Function::GetVariableOfNpc,
+                                vec![Val::from(".mymobs"), Val::from("Guard-4#ufe"), Val::from(0)],
+                            )?
+                            .number()?
+                            < 1)
+                    {
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("GuardEnd#ufe::OnEnable")])?;
+                        ctx.call(Function::StopNpcTimer, vec![])?;
                     }
                 }
                 return Err(Stop::End);
@@ -12254,33 +12188,31 @@ fn guard_2_ufe_run(ctx: &Ctx, mut step: Guard2UfeStep, args: Vec<Val>) -> Result
                     if ctx.var("$@jupeelevatorinuse2").get()? == 2 {
                         ctx.call(Function::DoNpcEvent, vec![Val::from("Guard-3#ufe::OnEnable")])?;
                         ctx.call(Function::StopNpcTimer, vec![])?;
-                    } else {
-                        if (((ctx.var("$@jupeelevatorinuse2").get()? == 4
-                            && ctx
-                                .call(
-                                    Function::GetVariableOfNpc,
-                                    vec![Val::from(".mymobs"), Val::from("Guard-1#ufe"), Val::from(0)],
-                                )?
-                                .number()?
-                                < 1)
-                            && ctx
-                                .call(
-                                    Function::GetVariableOfNpc,
-                                    vec![Val::from(".mymobs"), Val::from("Guard-3#ufe"), Val::from(0)],
-                                )?
-                                .number()?
-                                < 1)
-                            && ctx
-                                .call(
-                                    Function::GetVariableOfNpc,
-                                    vec![Val::from(".mymobs"), Val::from("Guard-4#ufe"), Val::from(0)],
-                                )?
-                                .number()?
-                                < 1)
-                        {
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("GuardEnd#ufe::OnEnable")])?;
-                            ctx.call(Function::StopNpcTimer, vec![])?;
-                        }
+                    } else if (((ctx.var("$@jupeelevatorinuse2").get()? == 4
+                        && ctx
+                            .call(
+                                Function::GetVariableOfNpc,
+                                vec![Val::from(".mymobs"), Val::from("Guard-1#ufe"), Val::from(0)],
+                            )?
+                            .number()?
+                            < 1)
+                        && ctx
+                            .call(
+                                Function::GetVariableOfNpc,
+                                vec![Val::from(".mymobs"), Val::from("Guard-3#ufe"), Val::from(0)],
+                            )?
+                            .number()?
+                            < 1)
+                        && ctx
+                            .call(
+                                Function::GetVariableOfNpc,
+                                vec![Val::from(".mymobs"), Val::from("Guard-4#ufe"), Val::from(0)],
+                            )?
+                            .number()?
+                            < 1)
+                    {
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("GuardEnd#ufe::OnEnable")])?;
+                        ctx.call(Function::StopNpcTimer, vec![])?;
                     }
                 }
                 return Err(Stop::End);
@@ -12507,33 +12439,31 @@ fn guard_3_ufe_run(ctx: &Ctx, mut step: Guard3UfeStep, args: Vec<Val>) -> Result
                     if ctx.var("$@jupeelevatorinuse2").get()? == 3 {
                         ctx.call(Function::DoNpcEvent, vec![Val::from("Guard-4#ufe::OnEnable")])?;
                         ctx.call(Function::StopNpcTimer, vec![])?;
-                    } else {
-                        if (((ctx.var("$@jupeelevatorinuse2").get()? == 4
-                            && ctx
-                                .call(
-                                    Function::GetVariableOfNpc,
-                                    vec![Val::from(".mymobs"), Val::from("Guard-1#ufe"), Val::from(0)],
-                                )?
-                                .number()?
-                                < 1)
-                            && ctx
-                                .call(
-                                    Function::GetVariableOfNpc,
-                                    vec![Val::from(".mymobs"), Val::from("Guard-2#ufe"), Val::from(0)],
-                                )?
-                                .number()?
-                                < 1)
-                            && ctx
-                                .call(
-                                    Function::GetVariableOfNpc,
-                                    vec![Val::from(".mymobs"), Val::from("Guard-4#ufe"), Val::from(0)],
-                                )?
-                                .number()?
-                                < 1)
-                        {
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("GuardEnd#ufe::OnEnable")])?;
-                            ctx.call(Function::StopNpcTimer, vec![])?;
-                        }
+                    } else if (((ctx.var("$@jupeelevatorinuse2").get()? == 4
+                        && ctx
+                            .call(
+                                Function::GetVariableOfNpc,
+                                vec![Val::from(".mymobs"), Val::from("Guard-1#ufe"), Val::from(0)],
+                            )?
+                            .number()?
+                            < 1)
+                        && ctx
+                            .call(
+                                Function::GetVariableOfNpc,
+                                vec![Val::from(".mymobs"), Val::from("Guard-2#ufe"), Val::from(0)],
+                            )?
+                            .number()?
+                            < 1)
+                        && ctx
+                            .call(
+                                Function::GetVariableOfNpc,
+                                vec![Val::from(".mymobs"), Val::from("Guard-4#ufe"), Val::from(0)],
+                            )?
+                            .number()?
+                            < 1)
+                    {
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("GuardEnd#ufe::OnEnable")])?;
+                        ctx.call(Function::StopNpcTimer, vec![])?;
                     }
                 }
                 return Err(Stop::End);
@@ -12731,8 +12661,8 @@ fn guard_4_ufe_run(ctx: &Ctx, mut step: Guard4UfeStep, args: Vec<Val>) -> Result
             }
             Guard4UfeStep::OnMyMobDead => {
                 ctx.var(".mymobs").set((ctx.var(".mymobs").get()?.try_sub(Val::from(1))?))?;
-                if ctx.var(".mymobs").get()?.number()? < 1 {
-                    if ((ctx
+                if ctx.var(".mymobs").get()?.number()? < 1
+                    && ((ctx
                         .call(
                             Function::GetVariableOfNpc,
                             vec![Val::from(".mymobs"), Val::from("Guard-1#ufe"), Val::from(0)],
@@ -12757,7 +12687,6 @@ fn guard_4_ufe_run(ctx: &Ctx, mut step: Guard4UfeStep, args: Vec<Val>) -> Result
                         ctx.call(Function::DoNpcEvent, vec![Val::from("GuardEnd#ufe::OnEnable")])?;
                         ctx.call(Function::StopNpcTimer, vec![])?;
                     }
-                }
                 return Err(Stop::End);
             }
         }

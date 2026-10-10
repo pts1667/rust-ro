@@ -227,94 +227,86 @@ fn race_progress_timer_run(ctx: &Ctx, mut step: RaceProgressTimerStep, args: Vec
                                 if l_tired.clone().number()? >= 50 {
                                     ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#2"))])?;
                                 }
-                            } else {
-                                if l_line.clone().number()? <= 40 {
-                                    l_tired = ctx.call(Function::Rand, vec![Val::from(30), Val::from(50)])?;
-                                    ctx.call(Function::EnableNpc, vec![((Val::from("Luk") + l_c.clone()) + Val::from("#1"))])?;
-                                    ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#2"))])?;
-                                    if l_tired.clone().number()? < 40 {
-                                        ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#3"))])?;
+                            } else if l_line.clone().number()? <= 40 {
+                                l_tired = ctx.call(Function::Rand, vec![Val::from(30), Val::from(50)])?;
+                                ctx.call(Function::EnableNpc, vec![((Val::from("Luk") + l_c.clone()) + Val::from("#1"))])?;
+                                ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#2"))])?;
+                                if l_tired.clone().number()? < 40 {
+                                    ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#3"))])?;
+                                }
+                            } else if l_line.clone().number()? <= 50 {
+                                l_tired = ctx.call(Function::Rand, vec![Val::from(20), Val::from(40)])?;
+                                ctx.call(Function::EnableNpc, vec![((Val::from("Luk") + l_c.clone()) + Val::from("#1"))])?;
+                                ctx.call(Function::EnableNpc, vec![((Val::from("Luk") + l_c.clone()) + Val::from("#2"))])?;
+                                ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#2"))])?;
+                                ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#3"))])?;
+                                if l_tired.clone().number()? < 30 {
+                                    ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#4"))])?;
+                                }
+                            } else if l_line.clone().number()? <= 60 {
+                                l_tired = ctx.call(Function::Rand, vec![Val::from(10), Val::from(30)])?;
+                                l_i = Val::from(1);
+                                'l2: loop {
+                                    if !(l_i.clone().number()? <= 3) {
+                                        break 'l2;
                                     }
-                                } else {
-                                    if l_line.clone().number()? <= 50 {
-                                        l_tired = ctx.call(Function::Rand, vec![Val::from(20), Val::from(40)])?;
-                                        ctx.call(Function::EnableNpc, vec![((Val::from("Luk") + l_c.clone()) + Val::from("#1"))])?;
-                                        ctx.call(Function::EnableNpc, vec![((Val::from("Luk") + l_c.clone()) + Val::from("#2"))])?;
-                                        ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#2"))])?;
-                                        ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#3"))])?;
-                                        if l_tired.clone().number()? < 30 {
-                                            ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#4"))])?;
-                                        }
-                                    } else {
-                                        if l_line.clone().number()? <= 60 {
-                                            l_tired = ctx.call(Function::Rand, vec![Val::from(10), Val::from(30)])?;
-                                            l_i = Val::from(1);
-                                            'l2: loop {
-                                                if !(l_i.clone().number()? <= 3) {
-                                                    break 'l2;
-                                                }
-                                                'b2: {
-                                                    ctx.call(
-                                                        Function::EnableNpc,
-                                                        vec![(((Val::from("Luk") + l_c.clone()) + Val::from("#")) + l_i.clone())],
-                                                    )?;
-                                                }
-                                                l_i = (l_i.clone() + Val::from(1));
-                                            }
-                                            l_i = Val::from(2);
-                                            'l3: loop {
-                                                if !(l_i.clone().number()? <= 4) {
-                                                    break 'l3;
-                                                }
-                                                'b3: {
-                                                    ctx.call(
-                                                        Function::EnableNpc,
-                                                        vec![(((Val::from("Tire") + l_c.clone()) + Val::from("#")) + l_i.clone())],
-                                                    )?;
-                                                }
-                                                l_i = (l_i.clone() + Val::from(1));
-                                            }
-                                            if l_tired.clone().number()? < 20 {
-                                                ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#5"))])?;
-                                            }
-                                        } else {
-                                            if l_line.clone().number()? <= 70 {
-                                                l_tired = ctx.call(Function::Rand, vec![Val::from(0), Val::from(20)])?;
-                                                l_i = Val::from(1);
-                                                'l4: loop {
-                                                    if !(l_i.clone().number()? <= 4) {
-                                                        break 'l4;
-                                                    }
-                                                    'b4: {
-                                                        ctx.call(
-                                                            Function::EnableNpc,
-                                                            vec![(((Val::from("Luk") + l_c.clone()) + Val::from("#")) + l_i.clone())],
-                                                        )?;
-                                                    }
-                                                    l_i = (l_i.clone() + Val::from(1));
-                                                }
-                                                l_i = Val::from(2);
-                                                'l5: loop {
-                                                    if !(l_i.clone().number()? <= 5) {
-                                                        break 'l5;
-                                                    }
-                                                    'b5: {
-                                                        ctx.call(
-                                                            Function::EnableNpc,
-                                                            vec![(((Val::from("Tire") + l_c.clone()) + Val::from("#")) + l_i.clone())],
-                                                        )?;
-                                                    }
-                                                    l_i = (l_i.clone() + Val::from(1));
-                                                }
-                                                if l_tired.clone().number()? < 10 {
-                                                    ctx.call(
-                                                        Function::EnableNpc,
-                                                        vec![((Val::from("Tire") + l_c.clone()) + Val::from("#6"))],
-                                                    )?;
-                                                }
-                                            }
-                                        }
+                                    'b2: {
+                                        ctx.call(
+                                            Function::EnableNpc,
+                                            vec![(((Val::from("Luk") + l_c.clone()) + Val::from("#")) + l_i.clone())],
+                                        )?;
                                     }
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                l_i = Val::from(2);
+                                'l3: loop {
+                                    if !(l_i.clone().number()? <= 4) {
+                                        break 'l3;
+                                    }
+                                    'b3: {
+                                        ctx.call(
+                                            Function::EnableNpc,
+                                            vec![(((Val::from("Tire") + l_c.clone()) + Val::from("#")) + l_i.clone())],
+                                        )?;
+                                    }
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                if l_tired.clone().number()? < 20 {
+                                    ctx.call(Function::EnableNpc, vec![((Val::from("Tire") + l_c.clone()) + Val::from("#5"))])?;
+                                }
+                            } else if l_line.clone().number()? <= 70 {
+                                l_tired = ctx.call(Function::Rand, vec![Val::from(0), Val::from(20)])?;
+                                l_i = Val::from(1);
+                                'l4: loop {
+                                    if !(l_i.clone().number()? <= 4) {
+                                        break 'l4;
+                                    }
+                                    'b4: {
+                                        ctx.call(
+                                            Function::EnableNpc,
+                                            vec![(((Val::from("Luk") + l_c.clone()) + Val::from("#")) + l_i.clone())],
+                                        )?;
+                                    }
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                l_i = Val::from(2);
+                                'l5: loop {
+                                    if !(l_i.clone().number()? <= 5) {
+                                        break 'l5;
+                                    }
+                                    'b5: {
+                                        ctx.call(
+                                            Function::EnableNpc,
+                                            vec![(((Val::from("Tire") + l_c.clone()) + Val::from("#")) + l_i.clone())],
+                                        )?;
+                                    }
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                if l_tired.clone().number()? < 10 {
+                                    ctx.call(
+                                        Function::EnableNpc,
+                                        vec![((Val::from("Tire") + l_c.clone()) + Val::from("#6"))],
+                                    )?;
                                 }
                             }
                         }
@@ -937,34 +929,32 @@ fn medal_distributor_single_run(ctx: &Ctx, mut step: MedalDistributorSingleStep,
                                     )?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
-                                } else {
-                                    if l_input.clone().loosely_equals(&l_insa.clone()) {
-                                        ctx.lines_as(
-                                            "Medal Distributor",
-                                            args![
-                                                "Thank you! You entered",
-                                                "the correct number...",
-                                                "Everything seems to",
-                                                "be in order. Alright!"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Medal Distributor",
-                                            args![
-                                                "Now please accept your",
-                                                "Prize Medals! You can",
-                                                "exchange these with",
-                                                "Wayne in Hugel for some",
-                                                "interesting items. Thank you~"
-                                            ],
-                                        )?;
-                                        ctx.call(Function::DelItem, vec![Val::from(7514), Val::from(1)])?;
-                                        ctx.var("monster_race_1").set(Val::from(0))?;
-                                        ctx.call(Function::GetItem, vec![Val::from(7515), Val::from(4)])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
+                                } else if l_input.clone().loosely_equals(&l_insa.clone()) {
+                                    ctx.lines_as(
+                                        "Medal Distributor",
+                                        args![
+                                            "Thank you! You entered",
+                                            "the correct number...",
+                                            "Everything seems to",
+                                            "be in order. Alright!"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Medal Distributor",
+                                        args![
+                                            "Now please accept your",
+                                            "Prize Medals! You can",
+                                            "exchange these with",
+                                            "Wayne in Hugel for some",
+                                            "interesting items. Thank you~"
+                                        ],
+                                    )?;
+                                    ctx.call(Function::DelItem, vec![Val::from(7514), Val::from(1)])?;
+                                    ctx.var("monster_race_1").set(Val::from(0))?;
+                                    ctx.call(Function::GetItem, vec![Val::from(7515), Val::from(4)])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                                 ctx.lines_as(
                                     "Medal Distributor",
@@ -1534,23 +1524,21 @@ fn eckar_ellebird_single_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.call(Function::Warp, vec![Val::from("p_track01"), Val::from(75), Val::from(41)])?;
             return Err(Stop::End);
         }
-    } else {
-        if ctx.var("$@mon_time_1_1").get()? == 1 {
-            ctx.lines_as(
-                "Eckar Ellebird",
-                args![
-                    "Thanks, I hope that",
-                    "you enjoy this race.",
-                    "Let me guide you now",
-                    "to the Monster Race Arena."
-                ],
-            )?;
-            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(2000))?))?;
-            ctx.var("monster_race_1").set(Val::from(0))?;
-            ctx.close_window()?;
-            ctx.call(Function::Warp, vec![Val::from("p_track01"), Val::from(75), Val::from(41)])?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("$@mon_time_1_1").get()? == 1 {
+        ctx.lines_as(
+            "Eckar Ellebird",
+            args![
+                "Thanks, I hope that",
+                "you enjoy this race.",
+                "Let me guide you now",
+                "to the Monster Race Arena."
+            ],
+        )?;
+        ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(2000))?))?;
+        ctx.var("monster_race_1").set(Val::from(0))?;
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("p_track01"), Val::from(75), Val::from(41)])?;
+        return Err(Stop::End);
     }
     if ctx.var("$@mon_time_1_1").get()? == 2 {
         ctx.lines_as(
@@ -1856,24 +1844,16 @@ fn starting_1_run(ctx: &Ctx, mut step: Starting1Step, args: Vec<Val>) -> Result<
                             } else {
                                 if l_start.clone().number()? < 51 {
                                     l_speed = Val::from(100);
+                                } else if l_start.clone().number()? < 61 {
+                                    l_speed = Val::from(110);
+                                } else if l_start.clone().number()? < 71 {
+                                    l_speed = Val::from(120);
+                                } else if l_start.clone().number()? < 81 {
+                                    l_speed = Val::from(130);
+                                } else if l_start.clone().number()? < 91 {
+                                    l_speed = Val::from(140);
                                 } else {
-                                    if l_start.clone().number()? < 61 {
-                                        l_speed = Val::from(110);
-                                    } else {
-                                        if l_start.clone().number()? < 71 {
-                                            l_speed = Val::from(120);
-                                        } else {
-                                            if l_start.clone().number()? < 81 {
-                                                l_speed = Val::from(130);
-                                            } else {
-                                                if l_start.clone().number()? < 91 {
-                                                    l_speed = Val::from(140);
-                                                } else {
-                                                    l_speed = Val::from(150);
-                                                }
-                                            }
-                                        }
-                                    }
+                                    l_speed = Val::from(150);
                                 }
                             }
                         }
@@ -1925,20 +1905,14 @@ fn luk_1_run(ctx: &Ctx, mut step: Luk1Step, args: Vec<Val>) -> Result<Val, Stop>
                 l_start = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
                 if l_start.clone().number()? < 61 {
                     l_speed = Val::from(110);
+                } else if l_start.clone().number()? < 71 {
+                    l_speed = Val::from(120);
+                } else if l_start.clone().number()? < 81 {
+                    l_speed = Val::from(130);
+                } else if l_start.clone().number()? < 91 {
+                    l_speed = Val::from(140);
                 } else {
-                    if l_start.clone().number()? < 71 {
-                        l_speed = Val::from(120);
-                    } else {
-                        if l_start.clone().number()? < 81 {
-                            l_speed = Val::from(130);
-                        } else {
-                            if l_start.clone().number()? < 91 {
-                                l_speed = Val::from(140);
-                            } else {
-                                l_speed = Val::from(150);
-                            }
-                        }
-                    }
+                    l_speed = Val::from(150);
                 }
                 ctx.call(
                     Function::StartStatus,
@@ -1986,18 +1960,12 @@ fn luk_2_run(ctx: &Ctx, mut step: Luk2Step, args: Vec<Val>) -> Result<Val, Stop>
                 l_start = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
                 if l_start.clone().number()? < 61 {
                     l_time = Val::from(1000);
-                } else {
-                    if l_start.clone().number()? < 71 {
-                        l_time = Val::from(2000);
-                    } else {
-                        if l_start.clone().number()? < 81 {
-                            l_time = Val::from(3000);
-                        } else {
-                            if l_start.clone().number()? < 91 {
-                                l_time = Val::from(4000);
-                            }
-                        }
-                    }
+                } else if l_start.clone().number()? < 71 {
+                    l_time = Val::from(2000);
+                } else if l_start.clone().number()? < 81 {
+                    l_time = Val::from(3000);
+                } else if l_start.clone().number()? < 91 {
+                    l_time = Val::from(4000);
                 }
                 if l_time.clone().is_true() {
                     ctx.call(
@@ -2047,18 +2015,12 @@ fn tire_1_run(ctx: &Ctx, mut step: Tire1Step, args: Vec<Val>) -> Result<Val, Sto
                 l_start = ctx.call(Function::Rand, vec![Val::from(1), Val::from(100)])?;
                 if l_start.clone().number()? < 61 {
                     l_time = Val::from(1000);
-                } else {
-                    if l_start.clone().number()? < 71 {
-                        l_time = Val::from(2000);
-                    } else {
-                        if l_start.clone().number()? < 81 {
-                            l_time = Val::from(3000);
-                        } else {
-                            if l_start.clone().number()? < 91 {
-                                l_time = Val::from(4000);
-                            }
-                        }
-                    }
+                } else if l_start.clone().number()? < 71 {
+                    l_time = Val::from(2000);
+                } else if l_start.clone().number()? < 81 {
+                    l_time = Val::from(3000);
+                } else if l_start.clone().number()? < 91 {
+                    l_time = Val::from(4000);
                 }
                 if l_time.clone().is_true() {
                     ctx.call(
@@ -2823,55 +2785,49 @@ fn eckar_erenes_double_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             ctx.call(Function::Warp, vec![Val::from("p_track02"), Val::from(75), Val::from(41)])?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("$@mon_time_2_1").get()? == 2 {
-                ctx.lines_as(
-                    "Eckar Erenes",
-                    args![
-                        "We're still finishing our",
-                        "preparations for the next",
-                        "Double Monster Race, so",
-                        "we ask that you please",
-                        "wait a little while longer..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
-    } else {
-        if ctx.var("$@mon_time_2_1").get()? == 1 {
+        } else if ctx.var("$@mon_time_2_1").get()? == 2 {
             ctx.lines_as(
                 "Eckar Erenes",
                 args![
-                    "Thanks, I hope that",
-                    "you enjoy this race.",
-                    "Let me guide you now",
-                    "to the Monster Race Arena."
+                    "We're still finishing our",
+                    "preparations for the next",
+                    "Double Monster Race, so",
+                    "we ask that you please",
+                    "wait a little while longer..."
                 ],
             )?;
-            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(2000))?))?;
-            ctx.var("monster_race_2_2").set(Val::from(0))?;
-            ctx.var("monster_race_2_1").set(ctx.var("monster_race_2_2").get()?)?;
             ctx.close_window()?;
-            ctx.call(Function::Warp, vec![Val::from("p_track02"), Val::from(75), Val::from(41)])?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("$@mon_time_2_1").get()? == 2 {
-                ctx.lines_as(
-                    "Eckar Erenes",
-                    args![
-                        "We're still finishing our",
-                        "preparations for the next",
-                        "Double Monster Race, so",
-                        "we ask that you please",
-                        "wait a little while longer..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
         }
+    } else if ctx.var("$@mon_time_2_1").get()? == 1 {
+        ctx.lines_as(
+            "Eckar Erenes",
+            args![
+                "Thanks, I hope that",
+                "you enjoy this race.",
+                "Let me guide you now",
+                "to the Monster Race Arena."
+            ],
+        )?;
+        ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(2000))?))?;
+        ctx.var("monster_race_2_2").set(Val::from(0))?;
+        ctx.var("monster_race_2_1").set(ctx.var("monster_race_2_2").get()?)?;
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("p_track02"), Val::from(75), Val::from(41)])?;
+        return Err(Stop::End);
+    } else if ctx.var("$@mon_time_2_1").get()? == 2 {
+        ctx.lines_as(
+            "Eckar Erenes",
+            args![
+                "We're still finishing our",
+                "preparations for the next",
+                "Double Monster Race, so",
+                "we ask that you please",
+                "wait a little while longer..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("$@mon_time_2_2").get()? == 1 {
         ctx.lines_as(
@@ -3720,50 +3676,44 @@ fn medal_distributor_medal_run(ctx: &Ctx, mut step: MedalDistributorMedalStep, a
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if (!(ctx.var("monster_race_2_1").get()?.is_true()) && !(ctx.var("monster_race_2_2").get()?.is_true())) {
-                        ctx.lines_as(
-                            "Medal Distributor",
-                            args![
-                                "Well, better luck next time...",
-                                "Although you can't always",
-                                "be lucky, it's always fun to",
-                                "wager on the monster races!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if (ctx.var("monster_race_2_1").get()? == 7 && ctx.var("monster_race_2_2").get()? == 7) {
-                            ctx.lines_as(
-                                "Medal Distributor",
-                                args![
-                                    "Thanks for visiting the",
-                                    "Monster Race Arena, and",
-                                    "I hope you enjoy your time",
-                                    "here. I'll see you next time~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (!ctx.var("monster_race_2_1").get()?.loosely_equals(&ctx.var("$@mon_race_2_1").get()?)
-                                || !ctx.var("monster_race_2_2").get()?.loosely_equals(&ctx.var("$@mon_race_2_2").get()?))
-                            {
-                                ctx.lines_as(
-                                    "Medal Distributor",
-                                    args![
-                                        "You may not have wagered",
-                                        "on the winning monster in",
-                                        "the last race, but I hope that",
-                                        "you get lucky next time~"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
+                } else if (!(ctx.var("monster_race_2_1").get()?.is_true()) && !(ctx.var("monster_race_2_2").get()?.is_true())) {
+                    ctx.lines_as(
+                        "Medal Distributor",
+                        args![
+                            "Well, better luck next time...",
+                            "Although you can't always",
+                            "be lucky, it's always fun to",
+                            "wager on the monster races!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if (ctx.var("monster_race_2_1").get()? == 7 && ctx.var("monster_race_2_2").get()? == 7) {
+                    ctx.lines_as(
+                        "Medal Distributor",
+                        args![
+                            "Thanks for visiting the",
+                            "Monster Race Arena, and",
+                            "I hope you enjoy your time",
+                            "here. I'll see you next time~"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if (!ctx.var("monster_race_2_1").get()?.loosely_equals(&ctx.var("$@mon_race_2_1").get()?)
+                    || !ctx.var("monster_race_2_2").get()?.loosely_equals(&ctx.var("$@mon_race_2_2").get()?))
+                {
+                    ctx.lines_as(
+                        "Medal Distributor",
+                        args![
+                            "You may not have wagered",
+                            "on the winning monster in",
+                            "the last race, but I hope that",
+                            "you get lucky next time~"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 step = MedalDistributorMedalStep::OnInit;
                 continue 'machine;
@@ -4086,126 +4036,118 @@ fn trapglobal_race02_run(ctx: &Ctx, mut step: TrapglobalRace02Step, args: Vec<Va
                                         vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_2"))],
                                     )?;
                                 }
-                            } else {
-                                if l_line.clone().number()? <= 40 {
-                                    l_tired = ctx.call(Function::Rand, vec![Val::from(30), Val::from(50)])?;
+                            } else if l_line.clone().number()? <= 40 {
+                                l_tired = ctx.call(Function::Rand, vec![Val::from(30), Val::from(50)])?;
+                                ctx.call(
+                                    Function::EnableNpc,
+                                    vec![((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_1"))],
+                                )?;
+                                ctx.call(
+                                    Function::EnableNpc,
+                                    vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_2"))],
+                                )?;
+                                if l_tired.clone().number()? < 40 {
                                     ctx.call(
                                         Function::EnableNpc,
-                                        vec![((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_1"))],
+                                        vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_3"))],
                                     )?;
+                                }
+                            } else if l_line.clone().number()? <= 50 {
+                                l_tired = ctx.call(Function::Rand, vec![Val::from(20), Val::from(40)])?;
+                                ctx.call(
+                                    Function::EnableNpc,
+                                    vec![((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_1"))],
+                                )?;
+                                ctx.call(
+                                    Function::EnableNpc,
+                                    vec![((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_2"))],
+                                )?;
+                                ctx.call(
+                                    Function::EnableNpc,
+                                    vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_2"))],
+                                )?;
+                                ctx.call(
+                                    Function::EnableNpc,
+                                    vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_3"))],
+                                )?;
+                                if l_tired.clone().number()? < 30 {
                                     ctx.call(
                                         Function::EnableNpc,
-                                        vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_2"))],
+                                        vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_4"))],
                                     )?;
-                                    if l_tired.clone().number()? < 40 {
+                                }
+                            } else if l_line.clone().number()? <= 60 {
+                                l_tired = ctx.call(Function::Rand, vec![Val::from(10), Val::from(30)])?;
+                                l_i = Val::from(1);
+                                'l2: loop {
+                                    if !(l_i.clone().number()? <= 3) {
+                                        break 'l2;
+                                    }
+                                    'b2: {
                                         ctx.call(
                                             Function::EnableNpc,
-                                            vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_3"))],
+                                            vec![(((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_")) + l_i.clone())],
                                         )?;
                                     }
-                                } else {
-                                    if l_line.clone().number()? <= 50 {
-                                        l_tired = ctx.call(Function::Rand, vec![Val::from(20), Val::from(40)])?;
-                                        ctx.call(
-                                            Function::EnableNpc,
-                                            vec![((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_1"))],
-                                        )?;
-                                        ctx.call(
-                                            Function::EnableNpc,
-                                            vec![((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_2"))],
-                                        )?;
-                                        ctx.call(
-                                            Function::EnableNpc,
-                                            vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_2"))],
-                                        )?;
-                                        ctx.call(
-                                            Function::EnableNpc,
-                                            vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_3"))],
-                                        )?;
-                                        if l_tired.clone().number()? < 30 {
-                                            ctx.call(
-                                                Function::EnableNpc,
-                                                vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_4"))],
-                                            )?;
-                                        }
-                                    } else {
-                                        if l_line.clone().number()? <= 60 {
-                                            l_tired = ctx.call(Function::Rand, vec![Val::from(10), Val::from(30)])?;
-                                            l_i = Val::from(1);
-                                            'l2: loop {
-                                                if !(l_i.clone().number()? <= 3) {
-                                                    break 'l2;
-                                                }
-                                                'b2: {
-                                                    ctx.call(
-                                                        Function::EnableNpc,
-                                                        vec![(((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_")) + l_i.clone())],
-                                                    )?;
-                                                }
-                                                l_i = (l_i.clone() + Val::from(1));
-                                            }
-                                            l_i = Val::from(2);
-                                            'l3: loop {
-                                                if !(l_i.clone().number()? <= 4) {
-                                                    break 'l3;
-                                                }
-                                                'b3: {
-                                                    ctx.call(
-                                                        Function::EnableNpc,
-                                                        vec![(((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_")) + l_i.clone())],
-                                                    )?;
-                                                }
-                                                l_i = (l_i.clone() + Val::from(1));
-                                            }
-                                            if l_tired.clone().number()? < 20 {
-                                                ctx.call(
-                                                    Function::EnableNpc,
-                                                    vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_5"))],
-                                                )?;
-                                            }
-                                        } else {
-                                            if l_line.clone().number()? <= 70 {
-                                                l_tired = ctx.call(Function::Rand, vec![Val::from(0), Val::from(20)])?;
-                                                l_i = Val::from(1);
-                                                'l4: loop {
-                                                    if !(l_i.clone().number()? <= 4) {
-                                                        break 'l4;
-                                                    }
-                                                    'b4: {
-                                                        ctx.call(
-                                                            Function::EnableNpc,
-                                                            vec![
-                                                                (((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_")) + l_i.clone()),
-                                                            ],
-                                                        )?;
-                                                    }
-                                                    l_i = (l_i.clone() + Val::from(1));
-                                                }
-                                                l_i = Val::from(2);
-                                                'l5: loop {
-                                                    if !(l_i.clone().number()? <= 5) {
-                                                        break 'l5;
-                                                    }
-                                                    'b5: {
-                                                        ctx.call(
-                                                            Function::EnableNpc,
-                                                            vec![
-                                                                (((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_"))
-                                                                    + l_i.clone()),
-                                                            ],
-                                                        )?;
-                                                    }
-                                                    l_i = (l_i.clone() + Val::from(1));
-                                                }
-                                                if l_tired.clone().number()? < 10 {
-                                                    ctx.call(
-                                                        Function::EnableNpc,
-                                                        vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_6"))],
-                                                    )?;
-                                                }
-                                            }
-                                        }
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                l_i = Val::from(2);
+                                'l3: loop {
+                                    if !(l_i.clone().number()? <= 4) {
+                                        break 'l3;
                                     }
+                                    'b3: {
+                                        ctx.call(
+                                            Function::EnableNpc,
+                                            vec![(((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_")) + l_i.clone())],
+                                        )?;
+                                    }
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                if l_tired.clone().number()? < 20 {
+                                    ctx.call(
+                                        Function::EnableNpc,
+                                        vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_5"))],
+                                    )?;
+                                }
+                            } else if l_line.clone().number()? <= 70 {
+                                l_tired = ctx.call(Function::Rand, vec![Val::from(0), Val::from(20)])?;
+                                l_i = Val::from(1);
+                                'l4: loop {
+                                    if !(l_i.clone().number()? <= 4) {
+                                        break 'l4;
+                                    }
+                                    'b4: {
+                                        ctx.call(
+                                            Function::EnableNpc,
+                                            vec![
+                                                (((Val::from("Luk#race02_") + l_c.clone()) + Val::from("_")) + l_i.clone()),
+                                            ],
+                                        )?;
+                                    }
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                l_i = Val::from(2);
+                                'l5: loop {
+                                    if !(l_i.clone().number()? <= 5) {
+                                        break 'l5;
+                                    }
+                                    'b5: {
+                                        ctx.call(
+                                            Function::EnableNpc,
+                                            vec![
+                                                (((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_"))
+                                                    + l_i.clone()),
+                                            ],
+                                        )?;
+                                    }
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                if l_tired.clone().number()? < 10 {
+                                    ctx.call(
+                                        Function::EnableNpc,
+                                        vec![((Val::from("Tire#race02_") + l_c.clone()) + Val::from("_6"))],
+                                    )?;
                                 }
                             }
                         }
@@ -4341,24 +4283,16 @@ fn starting_2_run(ctx: &Ctx, mut step: Starting2Step, args: Vec<Val>) -> Result<
                             } else {
                                 if l_start.clone().number()? < 51 {
                                     l_speed = Val::from(100);
+                                } else if l_start.clone().number()? < 61 {
+                                    l_speed = Val::from(110);
+                                } else if l_start.clone().number()? < 71 {
+                                    l_speed = Val::from(120);
+                                } else if l_start.clone().number()? < 81 {
+                                    l_speed = Val::from(130);
+                                } else if l_start.clone().number()? < 91 {
+                                    l_speed = Val::from(140);
                                 } else {
-                                    if l_start.clone().number()? < 61 {
-                                        l_speed = Val::from(110);
-                                    } else {
-                                        if l_start.clone().number()? < 71 {
-                                            l_speed = Val::from(120);
-                                        } else {
-                                            if l_start.clone().number()? < 81 {
-                                                l_speed = Val::from(130);
-                                            } else {
-                                                if l_start.clone().number()? < 91 {
-                                                    l_speed = Val::from(140);
-                                                } else {
-                                                    l_speed = Val::from(150);
-                                                }
-                                            }
-                                        }
-                                    }
+                                    l_speed = Val::from(150);
                                 }
                             }
                         }
@@ -4530,50 +4464,48 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("ein_medal01").get()?.number()? < 500 {
+                } else if ctx.var("ein_medal01").get()?.number()? < 500 {
+                    ctx.lines_as(
+                        "Ei'felle",
+                        args![
+                            "Oh, how have you been?",
+                            "Thank you so much for",
+                            "donating so many medals,",
+                            "they've been helpful in my",
+                            "research. Still, I need more",
+                            "and more of them everyday..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    if ctx.call(Function::CountItem, vec![Val::from("Marvelous_Medal")])?.is_true() {
                         ctx.lines_as(
                             "Ei'felle",
                             args![
-                                "Oh, how have you been?",
-                                "Thank you so much for",
-                                "donating so many medals,",
-                                "they've been helpful in my",
-                                "research. Still, I need more",
-                                "and more of them everyday..."
+                                "The other Blacksmith",
+                                "Guildsmen are doing their",
+                                "best to collect Prize Medals",
+                                "in Hugel, but they keep failing",
+                                "to win them! If you have any",
+                                "medals, then may I have some?"
                             ],
                         )?;
                         ctx.next()?;
-                        if ctx.call(Function::CountItem, vec![Val::from("Marvelous_Medal")])?.is_true() {
-                            ctx.lines_as(
-                                "Ei'felle",
-                                args![
-                                    "The other Blacksmith",
-                                    "Guildsmen are doing their",
-                                    "best to collect Prize Medals",
-                                    "in Hugel, but they keep failing",
-                                    "to win them! If you have any",
-                                    "medals, then may I have some?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ei_felle_repay01_run(ctx, EiFelleRepay01Step::SReward, vec![])?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as(
-                            "Ei'felle",
-                            args![
-                                "If you happen to obtain any",
-                                "medals from the Monster",
-                                "Race Arena in Hugel, then",
-                                "please bring some of them",
-                                "to me. I'll be sure to repay",
-                                "you for your kindness..."
-                            ],
-                        )?;
-                        ctx.close_window()?;
+                        ei_felle_repay01_run(ctx, EiFelleRepay01Step::SReward, vec![])?;
                         return Err(Stop::End);
                     }
+                    ctx.lines_as(
+                        "Ei'felle",
+                        args![
+                            "If you happen to obtain any",
+                            "medals from the Monster",
+                            "Race Arena in Hugel, then",
+                            "please bring some of them",
+                            "to me. I'll be sure to repay",
+                            "you for your kindness..."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 if !(ctx.call(Function::CheckWeight, vec![Val::from("Knife"), Val::from(1)])?.is_true()) {
                     ctx.lines_as(
@@ -4635,148 +4567,146 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                             ],
                         )?;
                         ctx.next()?;
-                    } else {
-                        if ctx.var("ein_medal01").get()?.number()? < 1500 {
-                            ctx.lines_as(
-                                "Ei'felle",
-                                args![
-                                    "Oh, you're back!",
-                                    "Thanks to all the medals",
-                                    "that you've donated, I'm now",
-                                    "able to manufacture a set",
-                                    "of slotted armor imbued",
-                                    "with a property of your choice."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Ei'felle",
-                                args![
-                                    "If you'd like, I can repay you",
-                                    "now by creating a set of slotted elemental armor for you, or we",
-                                    "can wait for you to donate more",
-                                    "medals until I can develop",
-                                    "something else for you."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            'b1: {
-                                let subject1 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from("Accept Armor:Can I have something else?:Wait for Further Development")],
-                                )?);
-                                let mut matched1 = false;
-                                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                    && !subject1.loosely_equals(&Val::from(2))
-                                    && !subject1.loosely_equals(&Val::from(3));
-                                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
-                                    ctx.lines_as(
-                                        "Ei'felle",
-                                        args![
-                                            "I can manufacture one set of",
-                                            "slotted Armor imbued with the",
-                                            "Fire, Earth, Wind, or Water",
-                                            "property. Which property would",
-                                            "you like your armor to have?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    'b2: {
-                                        let subject2 = Val::from(runtime::select_values(
+                    } else if ctx.var("ein_medal01").get()?.number()? < 1500 {
+                        ctx.lines_as(
+                            "Ei'felle",
+                            args![
+                                "Oh, you're back!",
+                                "Thanks to all the medals",
+                                "that you've donated, I'm now",
+                                "able to manufacture a set",
+                                "of slotted armor imbued",
+                                "with a property of your choice."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Ei'felle",
+                            args![
+                                "If you'd like, I can repay you",
+                                "now by creating a set of slotted elemental armor for you, or we",
+                                "can wait for you to donate more",
+                                "medals until I can develop",
+                                "something else for you."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        'b1: {
+                            let subject1 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Accept Armor:Can I have something else?:Wait for Further Development")],
+                            )?);
+                            let mut matched1 = false;
+                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                                && !subject1.loosely_equals(&Val::from(2))
+                                && !subject1.loosely_equals(&Val::from(3));
+                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines_as(
+                                    "Ei'felle",
+                                    args![
+                                        "I can manufacture one set of",
+                                        "slotted Armor imbued with the",
+                                        "Fire, Earth, Wind, or Water",
+                                        "property. Which property would",
+                                        "you like your armor to have?"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                'b2: {
+                                    let subject2 = Val::from(runtime::select_values(
+                                        ctx,
+                                        &[Val::from("Fire Property:Earth Property:Wind Property:Water Property")],
+                                    )?);
+                                    let mut matched2 = false;
+                                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                                        && !subject2.loosely_equals(&Val::from(2))
+                                        && !subject2.loosely_equals(&Val::from(3))
+                                        && !subject2.loosely_equals(&Val::from(4));
+                                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                                        matched2 = true;
+                                    }
+                                    if matched2 {
+                                        ei_felle_repay01_run(
                                             ctx,
-                                            &[Val::from("Fire Property:Earth Property:Wind Property:Water Property")],
-                                        )?);
-                                        let mut matched2 = false;
-                                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                            && !subject2.loosely_equals(&Val::from(2))
-                                            && !subject2.loosely_equals(&Val::from(3))
-                                            && !subject2.loosely_equals(&Val::from(4));
-                                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
-                                            ei_felle_repay01_run(
-                                                ctx,
-                                                EiFelleRepay01Step::SBonusReward,
-                                                vec![Val::from(1000), Val::from(2345)],
-                                            )?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
-                                            ei_felle_repay01_run(
-                                                ctx,
-                                                EiFelleRepay01Step::SBonusReward,
-                                                vec![Val::from(1000), Val::from(2351)],
-                                            )?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
-                                            ei_felle_repay01_run(
-                                                ctx,
-                                                EiFelleRepay01Step::SBonusReward,
-                                                vec![Val::from(1000), Val::from(2349)],
-                                            )?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
-                                            ei_felle_repay01_run(
-                                                ctx,
-                                                EiFelleRepay01Step::SBonusReward,
-                                                vec![Val::from(1000), Val::from(2347)],
-                                            )?;
-                                            return Err(Stop::End);
-                                        }
+                                            EiFelleRepay01Step::SBonusReward,
+                                            vec![Val::from(1000), Val::from(2345)],
+                                        )?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                                        matched2 = true;
+                                    }
+                                    if matched2 {
+                                        ei_felle_repay01_run(
+                                            ctx,
+                                            EiFelleRepay01Step::SBonusReward,
+                                            vec![Val::from(1000), Val::from(2351)],
+                                        )?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                                        matched2 = true;
+                                    }
+                                    if matched2 {
+                                        ei_felle_repay01_run(
+                                            ctx,
+                                            EiFelleRepay01Step::SBonusReward,
+                                            vec![Val::from(1000), Val::from(2349)],
+                                        )?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
+                                        matched2 = true;
+                                    }
+                                    if matched2 {
+                                        ei_felle_repay01_run(
+                                            ctx,
+                                            EiFelleRepay01Step::SBonusReward,
+                                            vec![Val::from(1000), Val::from(2347)],
+                                        )?;
+                                        return Err(Stop::End);
                                     }
                                 }
-                                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
-                                    ctx.lines_as(
-                                        "Ei'felle",
-                                        args![
-                                            "Something else...?",
-                                            "Oh, you must mean",
-                                            "the Glittering Jacket that",
-                                            "I developed earlier. After",
-                                            "all, I have any other items",
-                                            "to offer you for now..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(500), Val::from(2319)])?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
-                                    ctx.lines_as(
-                                        "Ei'felle",
-                                        args![
-                                            "Ah, I see. You'd rather wait",
-                                            "until we develop something",
-                                            "more to your liking. In that",
-                                            "case, would you please donate",
-                                            "more medals to my research?",
-                                            "We're always low on them..."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    break 'b1;
-                                }
+                            }
+                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines_as(
+                                    "Ei'felle",
+                                    args![
+                                        "Something else...?",
+                                        "Oh, you must mean",
+                                        "the Glittering Jacket that",
+                                        "I developed earlier. After",
+                                        "all, I have any other items",
+                                        "to offer you for now..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(500), Val::from(2319)])?;
+                                return Err(Stop::End);
+                            }
+                            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines_as(
+                                    "Ei'felle",
+                                    args![
+                                        "Ah, I see. You'd rather wait",
+                                        "until we develop something",
+                                        "more to your liking. In that",
+                                        "case, would you please donate",
+                                        "more medals to my research?",
+                                        "We're always low on them..."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                break 'b1;
                             }
                         }
                     }
@@ -4809,400 +4739,398 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("ein_medal01").get()?.number()? > 1499 {
+                } else if ctx.var("ein_medal01").get()?.number()? > 1499 {
+                    ctx.lines_as(
+                        "Ei'felle",
+                        args![
+                            "Ah, you're back! I've",
+                            "extracted all the metal",
+                            "from the medals you've",
+                            "given me, and I think I have",
+                            "enough to create a Level 4",
+                            "Weapon. Isn't that incredible?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Ei'felle",
+                        args![
+                            "If you like, I can create",
+                            "one of these weapons for you",
+                            "as my way of repaying you for",
+                            "your help. What do you think?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Yes, I want a Level 4 Weapon.:Can I have something else?")],
+                    )?) == 2
+                    {
                         ctx.lines_as(
                             "Ei'felle",
                             args![
-                                "Ah, you're back! I've",
-                                "extracted all the metal",
-                                "from the medals you've",
-                                "given me, and I think I have",
-                                "enough to create a Level 4",
-                                "Weapon. Isn't that incredible?"
+                                "Something else?",
+                                "Oh, alright then, would",
+                                "you like to have a Glittering",
+                                "Jacket, or a set of slotted",
+                                "elemental Armor? Please go",
+                                "ahead and make your choice~"
                             ],
                         )?;
                         ctx.next()?;
-                        ctx.lines_as(
-                            "Ei'felle",
-                            args![
-                                "If you like, I can create",
-                                "one of these weapons for you",
-                                "as my way of repaying you for",
-                                "your help. What do you think?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Yes, I want a Level 4 Weapon.:Can I have something else?")],
-                        )?) == 2
-                        {
-                            ctx.lines_as(
-                                "Ei'felle",
-                                args![
-                                    "Something else?",
-                                    "Oh, alright then, would",
-                                    "you like to have a Glittering",
-                                    "Jacket, or a set of slotted",
-                                    "elemental Armor? Please go",
-                                    "ahead and make your choice~"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            'b3: {
-                                let subject3 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from(
-                                        "Glittering Jacket:Fire Property Armor:Earth Property Armor:Wind Property Armor:Water Property Armor:Cancel",
-                                    )],
-                                )?);
-                                let mut matched3 = false;
-                                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                    && !subject3.loosely_equals(&Val::from(2))
-                                    && !subject3.loosely_equals(&Val::from(3))
-                                    && !subject3.loosely_equals(&Val::from(4))
-                                    && !subject3.loosely_equals(&Val::from(5))
-                                    && !subject3.loosely_equals(&Val::from(6));
-                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(500), Val::from(2319)])?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2345)])?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2351)])?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2349)])?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2347)])?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(6)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    return Err(Stop::End);
-                                }
+                        'b3: {
+                            let subject3 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from(
+                                    "Glittering Jacket:Fire Property Armor:Earth Property Armor:Wind Property Armor:Water Property Armor:Cancel",
+                                )],
+                            )?);
+                            let mut matched3 = false;
+                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                && !subject3.loosely_equals(&Val::from(2))
+                                && !subject3.loosely_equals(&Val::from(3))
+                                && !subject3.loosely_equals(&Val::from(4))
+                                && !subject3.loosely_equals(&Val::from(5))
+                                && !subject3.loosely_equals(&Val::from(6));
+                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(500), Val::from(2319)])?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2345)])?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2351)])?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(4)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2349)])?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(5)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2347)])?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(6)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                return Err(Stop::End);
                             }
                         }
-                        let base = Val::from(0).number()?;
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 0), Val::from("Dagger"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 1), Val::from("One Handed Sword"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 2), Val::from("Two Handed Sword"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 3), Val::from("Axe"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 4), Val::from("Mace"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 5), Val::from("Bow"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 6), Val::from("Staff"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 7), Val::from("Book"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 8), Val::from("Spear"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 9), Val::from("Katar"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 10), Val::from("Knuckle"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 11), Val::from("Whip"), true);
-                        runtime::local_set(&mut l_type_s, &Val::from(base + 12), Val::from("Musical Instrument"), true);
-                        l_m = (Val::from(runtime::select_values(ctx, &[runtime::implode(&l_type_s, &Val::from(":"))?])?)
-                            .try_sub(Val::from(1))?);
-                        ctx.lines_as(
-                            "Ei'felle",
-                            args![
-                                "So you'd like to have a",
-                                (runtime::local_get(&l_type_s, &l_m.clone(), true) + Val::from("? Please choose")),
-                                "which Level 4 Weapon",
-                                "that you want me to create."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        'b4: {
-                            let subject4 = l_m.clone();
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(0))
-                                && !subject4.loosely_equals(&Val::from(1))
-                                && !subject4.loosely_equals(&Val::from(2))
-                                && !subject4.loosely_equals(&Val::from(3))
-                                && !subject4.loosely_equals(&Val::from(4))
-                                && !subject4.loosely_equals(&Val::from(5))
-                                && !subject4.loosely_equals(&Val::from(6))
-                                && !subject4.loosely_equals(&Val::from(7))
-                                && !subject4.loosely_equals(&Val::from(8))
-                                && !subject4.loosely_equals(&Val::from(9))
-                                && !subject4.loosely_equals(&Val::from(10))
-                                && !subject4.loosely_equals(&Val::from(11))
-                                && !subject4.loosely_equals(&Val::from(12));
-                            if !matched4 && subject4.loosely_equals(&Val::from(0)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from(
-                                        "Ginnungagap:Grimtooth:Dragon Killer:Mail Breaker:Bazerald:Sword Breaker:Ice Pick:Sucsamad:Kitchen Knife:Azoth:Exorciser:Assassin Dagger:Moonlight Dagger:Weeder Knife:Cursed Dagger:Dagger of Counter:Combat Knife:Fortune Sword",
-                                    );
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(13002), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1237), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(13001), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1225), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1231), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1224), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1230), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 7), Val::from(1236), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 8), Val::from(1229), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 9), Val::from(1235), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 10), Val::from(1233), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 11), Val::from(1232), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 12), Val::from(1234), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 13), Val::from(1227), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 14), Val::from(1241), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 15), Val::from(1242), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 16), Val::from(1228), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 17), Val::from(1223), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from(
-                                        "Nagan:Immaterial Sword:Mysteltainn:Byeollungum:Star Dust Blade:Caesar's Sword:Ice Falchion:Excalibur:Edge:Cutlus:Solar Sword:Tirfing:Fireblend",
-                                    );
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1130), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1141), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1138), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1140), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1148), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1134), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1131), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 7), Val::from(1137), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 8), Val::from(1132), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 9), Val::from(1135), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 10), Val::from(1136), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 11), Val::from(1139), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 12), Val::from(1133), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned =
-                                        Val::from("Dragon Slayer:Masamune:Muramasa:Schweizersabel:Executioner:Zweihander:Katzbalger");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1166), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1165), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1164), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1167), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1169), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1168), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1170), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned =
-                                        Val::from("Great Axe:Guillotine:Light Epsilon:Bloody Axe:Sabbath:Slaughter:Cleaver:Tomahawk");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1364), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1369), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1366), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1363), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1365), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1367), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1305), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 7), Val::from(1368), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from("Golden Mace:Grand Cross:Long Mace:Spike:Slash:Quadrille");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1524), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1528), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1525), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1523), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1526), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1527), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from("Roguemaster's Bow:Dragon Wing:Rudra's Bow:Ballista");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1719), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1724), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1720), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1722), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from("Wing Staff:Wizardry Staff");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1616), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1473), false);
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(7)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from("Legacy of Dragon:Book of the Apocalypse:Girl's Diary:Hardcover Book");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1559), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1557), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1558), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1561), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(8)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from(
-                                        "Gae Bolg:Gelerdria:Gungnir:Skewer:Longinus's Spear:Brionac:Bill Guisarme:Zephyrus:Crescent Scythe:Tjungkuletti:Hellfire",
-                                    );
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1474), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1414), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1413), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1415), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1469), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1470), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1467), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 7), Val::from(1468), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 8), Val::from(1466), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 9), Val::from(1416), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 10), Val::from(1471), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(9)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from("Infiltrator:Bloody Roar:Unholy Touch");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1261), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1265), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1263), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(10)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from("Hatii Claw:Berserk:Kaiser Knuckle");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1815), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1814), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1813), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(11)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from("Lariat:Rapture Rose:Blade Whip:Chemeti:Queen's Whip");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1962), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1963), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1969), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1964), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1970), false);
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(12)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                {
-                                    let assigned = Val::from("Oriental Lute:Electric Guitar");
-                                    runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
-                                }
-                                let base = Val::from(0).number()?;
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1918), false);
-                                runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1913), false);
-                                break 'b4;
-                            }
-                        }
-                        l_j = (Val::from(runtime::select_values(
-                            ctx,
-                            &[(runtime::local_get(&l_weapon_s, &Val::from(0), true) + Val::from(":Cancel"))],
-                        )?)
+                    }
+                    let base = Val::from(0).number()?;
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 0), Val::from("Dagger"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 1), Val::from("One Handed Sword"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 2), Val::from("Two Handed Sword"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 3), Val::from("Axe"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 4), Val::from("Mace"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 5), Val::from("Bow"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 6), Val::from("Staff"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 7), Val::from("Book"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 8), Val::from("Spear"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 9), Val::from("Katar"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 10), Val::from("Knuckle"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 11), Val::from("Whip"), true);
+                    runtime::local_set(&mut l_type_s, &Val::from(base + 12), Val::from("Musical Instrument"), true);
+                    l_m = (Val::from(runtime::select_values(ctx, &[runtime::implode(&l_type_s, &Val::from(":"))?])?)
                         .try_sub(Val::from(1))?);
-                        l_weapon_s = runtime::explode(&runtime::local_get(&l_weapon_s, &Val::from(0), true), &Val::from(":"));
-                        if l_j.clone().loosely_equals(&Val::from(l_weapon_s.len() as i32)) {
-                            ctx.close_window()?;
-                            return Err(Stop::End);
+                    ctx.lines_as(
+                        "Ei'felle",
+                        args![
+                            "So you'd like to have a",
+                            (runtime::local_get(&l_type_s, &l_m.clone(), true) + Val::from("? Please choose")),
+                            "which Level 4 Weapon",
+                            "that you want me to create."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    'b4: {
+                        let subject4 = l_m.clone();
+                        let mut matched4 = false;
+                        let no_case4 = !subject4.loosely_equals(&Val::from(0))
+                            && !subject4.loosely_equals(&Val::from(1))
+                            && !subject4.loosely_equals(&Val::from(2))
+                            && !subject4.loosely_equals(&Val::from(3))
+                            && !subject4.loosely_equals(&Val::from(4))
+                            && !subject4.loosely_equals(&Val::from(5))
+                            && !subject4.loosely_equals(&Val::from(6))
+                            && !subject4.loosely_equals(&Val::from(7))
+                            && !subject4.loosely_equals(&Val::from(8))
+                            && !subject4.loosely_equals(&Val::from(9))
+                            && !subject4.loosely_equals(&Val::from(10))
+                            && !subject4.loosely_equals(&Val::from(11))
+                            && !subject4.loosely_equals(&Val::from(12));
+                        if !matched4 && subject4.loosely_equals(&Val::from(0)) {
+                            matched4 = true;
                         }
-                        ei_felle_repay01_run(
-                            ctx,
-                            EiFelleRepay01Step::SBonusReward,
-                            vec![Val::from(1500), runtime::local_get(&l_weapon_id, &l_j.clone(), false)],
-                        )?;
+                        if matched4 {
+                            {
+                                let assigned = Val::from(
+                                    "Ginnungagap:Grimtooth:Dragon Killer:Mail Breaker:Bazerald:Sword Breaker:Ice Pick:Sucsamad:Kitchen Knife:Azoth:Exorciser:Assassin Dagger:Moonlight Dagger:Weeder Knife:Cursed Dagger:Dagger of Counter:Combat Knife:Fortune Sword",
+                                );
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(13002), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1237), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(13001), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1225), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1231), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1224), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1230), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 7), Val::from(1236), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 8), Val::from(1229), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 9), Val::from(1235), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 10), Val::from(1233), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 11), Val::from(1232), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 12), Val::from(1234), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 13), Val::from(1227), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 14), Val::from(1241), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 15), Val::from(1242), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 16), Val::from(1228), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 17), Val::from(1223), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from(
+                                    "Nagan:Immaterial Sword:Mysteltainn:Byeollungum:Star Dust Blade:Caesar's Sword:Ice Falchion:Excalibur:Edge:Cutlus:Solar Sword:Tirfing:Fireblend",
+                                );
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1130), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1141), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1138), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1140), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1148), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1134), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1131), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 7), Val::from(1137), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 8), Val::from(1132), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 9), Val::from(1135), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 10), Val::from(1136), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 11), Val::from(1139), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 12), Val::from(1133), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned =
+                                    Val::from("Dragon Slayer:Masamune:Muramasa:Schweizersabel:Executioner:Zweihander:Katzbalger");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1166), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1165), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1164), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1167), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1169), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1168), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1170), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned =
+                                    Val::from("Great Axe:Guillotine:Light Epsilon:Bloody Axe:Sabbath:Slaughter:Cleaver:Tomahawk");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1364), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1369), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1366), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1363), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1365), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1367), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1305), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 7), Val::from(1368), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(4)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from("Golden Mace:Grand Cross:Long Mace:Spike:Slash:Quadrille");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1524), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1528), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1525), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1523), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1526), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1527), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(5)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from("Roguemaster's Bow:Dragon Wing:Rudra's Bow:Ballista");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1719), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1724), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1720), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1722), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(6)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from("Wing Staff:Wizardry Staff");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1616), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1473), false);
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(7)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from("Legacy of Dragon:Book of the Apocalypse:Girl's Diary:Hardcover Book");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1559), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1557), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1558), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1561), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(8)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from(
+                                    "Gae Bolg:Gelerdria:Gungnir:Skewer:Longinus's Spear:Brionac:Bill Guisarme:Zephyrus:Crescent Scythe:Tjungkuletti:Hellfire",
+                                );
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1474), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1414), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1413), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1415), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1469), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 5), Val::from(1470), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 6), Val::from(1467), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 7), Val::from(1468), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 8), Val::from(1466), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 9), Val::from(1416), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 10), Val::from(1471), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(9)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from("Infiltrator:Bloody Roar:Unholy Touch");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1261), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1265), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1263), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(10)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from("Hatii Claw:Berserk:Kaiser Knuckle");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1815), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1814), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1813), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(11)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from("Lariat:Rapture Rose:Blade Whip:Chemeti:Queen's Whip");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1962), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1963), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 2), Val::from(1969), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 3), Val::from(1964), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 4), Val::from(1970), false);
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(12)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            {
+                                let assigned = Val::from("Oriental Lute:Electric Guitar");
+                                runtime::local_set(&mut l_weapon_s, &Val::from(0), assigned, true);
+                            }
+                            let base = Val::from(0).number()?;
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 0), Val::from(1918), false);
+                            runtime::local_set(&mut l_weapon_id, &Val::from(base + 1), Val::from(1913), false);
+                            break 'b4;
+                        }
+                    }
+                    l_j = (Val::from(runtime::select_values(
+                        ctx,
+                        &[(runtime::local_get(&l_weapon_s, &Val::from(0), true) + Val::from(":Cancel"))],
+                    )?)
+                    .try_sub(Val::from(1))?);
+                    l_weapon_s = runtime::explode(&runtime::local_get(&l_weapon_s, &Val::from(0), true), &Val::from(":"));
+                    if l_j.clone().loosely_equals(&Val::from(l_weapon_s.len() as i32)) {
+                        ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    ei_felle_repay01_run(
+                        ctx,
+                        EiFelleRepay01Step::SBonusReward,
+                        vec![Val::from(1500), runtime::local_get(&l_weapon_id, &l_j.clone(), false)],
+                    )?;
+                    return Err(Stop::End);
                 }
                 step = EiFelleRepay01Step::SReward;
                 continue 'machine;
@@ -5293,28 +5221,20 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                 } else {
                                     if (ctx.var("BaseLevel").get()?.number()? > 30 && ctx.var("BaseLevel").get()?.number()? < 41) {
                                         ctx.call(Function::GetExperience, vec![Val::from(2000), Val::from(0)])?;
+                                    } else if (ctx.var("BaseLevel").get()?.number()? > 40 && ctx.var("BaseLevel").get()?.number()? < 51) {
+                                        ctx.call(Function::GetExperience, vec![Val::from(8000), Val::from(0)])?;
+                                    } else if (ctx.var("BaseLevel").get()?.number()? > 50 && ctx.var("BaseLevel").get()?.number()? < 61) {
+                                        ctx.call(Function::GetExperience, vec![Val::from(25000), Val::from(0)])?;
+                                    } else if (ctx.var("BaseLevel").get()?.number()? > 60
+                                        && ctx.var("BaseLevel").get()?.number()? < 71)
+                                    {
+                                        ctx.call(Function::GetExperience, vec![Val::from(47000), Val::from(0)])?;
+                                    } else if (ctx.var("BaseLevel").get()?.number()? > 70
+                                        && ctx.var("BaseLevel").get()?.number()? < 81)
+                                    {
+                                        ctx.call(Function::GetExperience, vec![Val::from(55000), Val::from(0)])?;
                                     } else {
-                                        if (ctx.var("BaseLevel").get()?.number()? > 40 && ctx.var("BaseLevel").get()?.number()? < 51) {
-                                            ctx.call(Function::GetExperience, vec![Val::from(8000), Val::from(0)])?;
-                                        } else {
-                                            if (ctx.var("BaseLevel").get()?.number()? > 50 && ctx.var("BaseLevel").get()?.number()? < 61) {
-                                                ctx.call(Function::GetExperience, vec![Val::from(25000), Val::from(0)])?;
-                                            } else {
-                                                if (ctx.var("BaseLevel").get()?.number()? > 60
-                                                    && ctx.var("BaseLevel").get()?.number()? < 71)
-                                                {
-                                                    ctx.call(Function::GetExperience, vec![Val::from(47000), Val::from(0)])?;
-                                                } else {
-                                                    if (ctx.var("BaseLevel").get()?.number()? > 70
-                                                        && ctx.var("BaseLevel").get()?.number()? < 81)
-                                                    {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(55000), Val::from(0)])?;
-                                                    } else {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(65000), Val::from(0)])?;
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        ctx.call(Function::GetExperience, vec![Val::from(65000), Val::from(0)])?;
                                     }
                                 }
                             }
@@ -5379,21 +5299,15 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                 {
                                     if ctx.var("JobLevel").get()?.number()? < 11 {
                                         ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(50)])?;
+                                    } else if (ctx.var("JobLevel").get()?.number()? > 10 && ctx.var("JobLevel").get()?.number()? < 21) {
+                                        ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(250)])?;
+                                    } else if (ctx.var("JobLevel").get()?.number()? > 20 && ctx.var("JobLevel").get()?.number()? < 31) {
+                                        ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(1500)])?;
+                                    } else if (ctx.var("JobLevel").get()?.number()? > 30 && ctx.var("JobLevel").get()?.number()? < 41)
+                                    {
+                                        ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(7000)])?;
                                     } else {
-                                        if (ctx.var("JobLevel").get()?.number()? > 10 && ctx.var("JobLevel").get()?.number()? < 21) {
-                                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(250)])?;
-                                        } else {
-                                            if (ctx.var("JobLevel").get()?.number()? > 20 && ctx.var("JobLevel").get()?.number()? < 31) {
-                                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(1500)])?;
-                                            } else {
-                                                if (ctx.var("JobLevel").get()?.number()? > 30 && ctx.var("JobLevel").get()?.number()? < 41)
-                                                {
-                                                    ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(7000)])?;
-                                                } else {
-                                                    ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(20000)])?;
-                                                }
-                                            }
-                                        }
+                                        ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(20000)])?;
                                     }
                                 } else {
                                     if (runtime::op(&ctx.var("Class").get()?, ">=", &ctx.constant("JOB_KNIGHT")?)?.is_true()
@@ -5401,23 +5315,17 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                     {
                                         if ctx.var("JobLevel").get()?.number()? < 11 {
                                             ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(80)])?;
+                                        } else if (ctx.var("JobLevel").get()?.number()? > 10 && ctx.var("JobLevel").get()?.number()? < 21) {
+                                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(2000)])?;
+                                        } else if (ctx.var("JobLevel").get()?.number()? > 20 && ctx.var("JobLevel").get()?.number()? < 31)
+                                        {
+                                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10000)])?;
+                                        } else if (ctx.var("JobLevel").get()?.number()? > 30
+                                            && ctx.var("JobLevel").get()?.number()? < 41)
+                                        {
+                                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(25000)])?;
                                         } else {
-                                            if (ctx.var("JobLevel").get()?.number()? > 10 && ctx.var("JobLevel").get()?.number()? < 21) {
-                                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(2000)])?;
-                                            } else {
-                                                if (ctx.var("JobLevel").get()?.number()? > 20 && ctx.var("JobLevel").get()?.number()? < 31)
-                                                {
-                                                    ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10000)])?;
-                                                } else {
-                                                    if (ctx.var("JobLevel").get()?.number()? > 30
-                                                        && ctx.var("JobLevel").get()?.number()? < 41)
-                                                    {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(25000)])?;
-                                                    } else {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(38000)])?;
-                                                    }
-                                                }
-                                            }
+                                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(38000)])?;
                                         }
                                     } else {
                                         if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_NOVICE_HIGH")?) {
@@ -5428,26 +5336,20 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                             {
                                                 if ctx.var("JobLevel").get()?.number()? < 11 {
                                                     ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(65)])?;
+                                                } else if (ctx.var("JobLevel").get()?.number()? > 10
+                                                    && ctx.var("JobLevel").get()?.number()? < 21)
+                                                {
+                                                    ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(300)])?;
+                                                } else if (ctx.var("JobLevel").get()?.number()? > 20
+                                                    && ctx.var("JobLevel").get()?.number()? < 31)
+                                                {
+                                                    ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(2500)])?;
+                                                } else if (ctx.var("JobLevel").get()?.number()? > 30
+                                                    && ctx.var("JobLevel").get()?.number()? < 41)
+                                                {
+                                                    ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10000)])?;
                                                 } else {
-                                                    if (ctx.var("JobLevel").get()?.number()? > 10
-                                                        && ctx.var("JobLevel").get()?.number()? < 21)
-                                                    {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(300)])?;
-                                                    } else {
-                                                        if (ctx.var("JobLevel").get()?.number()? > 20
-                                                            && ctx.var("JobLevel").get()?.number()? < 31)
-                                                        {
-                                                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(2500)])?;
-                                                        } else {
-                                                            if (ctx.var("JobLevel").get()?.number()? > 30
-                                                                && ctx.var("JobLevel").get()?.number()? < 41)
-                                                            {
-                                                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(10000)])?;
-                                                            } else {
-                                                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(25000)])?;
-                                                            }
-                                                        }
-                                                    }
+                                                    ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(25000)])?;
                                                 }
                                             } else {
                                                 if (runtime::op(&ctx.var("Class").get()?, ">=", &ctx.constant("JOB_LORD_KNIGHT")?)?
@@ -5457,41 +5359,33 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                                 {
                                                     if ctx.var("JobLevel").get()?.number()? < 11 {
                                                         ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(150)])?;
+                                                    } else if (ctx.var("JobLevel").get()?.number()? > 10
+                                                        && ctx.var("JobLevel").get()?.number()? < 21)
+                                                    {
+                                                        ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(2200)])?;
+                                                    } else if (ctx.var("JobLevel").get()?.number()? > 20
+                                                        && ctx.var("JobLevel").get()?.number()? < 31)
+                                                    {
+                                                        ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(13000)])?;
+                                                    } else if (ctx.var("JobLevel").get()?.number()? > 30
+                                                        && ctx.var("JobLevel").get()?.number()? < 41)
+                                                    {
+                                                        ctx.call(
+                                                            Function::GetExperience,
+                                                            vec![Val::from(0), Val::from(27000)],
+                                                        )?;
+                                                    } else if (ctx.var("JobLevel").get()?.number()? > 40
+                                                        && ctx.var("JobLevel").get()?.number()? < 51)
+                                                    {
+                                                        ctx.call(
+                                                            Function::GetExperience,
+                                                            vec![Val::from(0), Val::from(38000)],
+                                                        )?;
                                                     } else {
-                                                        if (ctx.var("JobLevel").get()?.number()? > 10
-                                                            && ctx.var("JobLevel").get()?.number()? < 21)
-                                                        {
-                                                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(2200)])?;
-                                                        } else {
-                                                            if (ctx.var("JobLevel").get()?.number()? > 20
-                                                                && ctx.var("JobLevel").get()?.number()? < 31)
-                                                            {
-                                                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(13000)])?;
-                                                            } else {
-                                                                if (ctx.var("JobLevel").get()?.number()? > 30
-                                                                    && ctx.var("JobLevel").get()?.number()? < 41)
-                                                                {
-                                                                    ctx.call(
-                                                                        Function::GetExperience,
-                                                                        vec![Val::from(0), Val::from(27000)],
-                                                                    )?;
-                                                                } else {
-                                                                    if (ctx.var("JobLevel").get()?.number()? > 40
-                                                                        && ctx.var("JobLevel").get()?.number()? < 51)
-                                                                    {
-                                                                        ctx.call(
-                                                                            Function::GetExperience,
-                                                                            vec![Val::from(0), Val::from(38000)],
-                                                                        )?;
-                                                                    } else {
-                                                                        ctx.call(
-                                                                            Function::GetExperience,
-                                                                            vec![Val::from(0), Val::from(40000)],
-                                                                        )?;
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
+                                                        ctx.call(
+                                                            Function::GetExperience,
+                                                            vec![Val::from(0), Val::from(40000)],
+                                                        )?;
                                                     }
                                                 } else {
                                                     if ctx.var("JobLevel").get()?.number()? < 11 {
@@ -5501,41 +5395,33 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                                             && ctx.var("JobLevel").get()?.number()? < 21)
                                                         {
                                                             ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(250)])?;
+                                                        } else if (ctx.var("JobLevel").get()?.number()? > 20
+                                                            && ctx.var("JobLevel").get()?.number()? < 31)
+                                                        {
+                                                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(1500)])?;
+                                                        } else if (ctx.var("JobLevel").get()?.number()? > 30
+                                                            && ctx.var("JobLevel").get()?.number()? < 41)
+                                                        {
+                                                            ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(7000)])?;
+                                                        } else if (ctx.var("JobLevel").get()?.number()? > 40
+                                                            && ctx.var("JobLevel").get()?.number()? < 51)
+                                                        {
+                                                            ctx.call(
+                                                                Function::GetExperience,
+                                                                vec![Val::from(0), Val::from(20000)],
+                                                            )?;
+                                                        } else if (ctx.var("JobLevel").get()?.number()? > 50
+                                                            && ctx.var("JobLevel").get()?.number()? < 61)
+                                                        {
+                                                            ctx.call(
+                                                                Function::GetExperience,
+                                                                vec![Val::from(0), Val::from(30000)],
+                                                            )?;
                                                         } else {
-                                                            if (ctx.var("JobLevel").get()?.number()? > 20
-                                                                && ctx.var("JobLevel").get()?.number()? < 31)
-                                                            {
-                                                                ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(1500)])?;
-                                                            } else {
-                                                                if (ctx.var("JobLevel").get()?.number()? > 30
-                                                                    && ctx.var("JobLevel").get()?.number()? < 41)
-                                                                {
-                                                                    ctx.call(Function::GetExperience, vec![Val::from(0), Val::from(7000)])?;
-                                                                } else {
-                                                                    if (ctx.var("JobLevel").get()?.number()? > 40
-                                                                        && ctx.var("JobLevel").get()?.number()? < 51)
-                                                                    {
-                                                                        ctx.call(
-                                                                            Function::GetExperience,
-                                                                            vec![Val::from(0), Val::from(20000)],
-                                                                        )?;
-                                                                    } else {
-                                                                        if (ctx.var("JobLevel").get()?.number()? > 50
-                                                                            && ctx.var("JobLevel").get()?.number()? < 61)
-                                                                        {
-                                                                            ctx.call(
-                                                                                Function::GetExperience,
-                                                                                vec![Val::from(0), Val::from(30000)],
-                                                                            )?;
-                                                                        } else {
-                                                                            ctx.call(
-                                                                                Function::GetExperience,
-                                                                                vec![Val::from(0), Val::from(38000)],
-                                                                            )?;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
+                                                            ctx.call(
+                                                                Function::GetExperience,
+                                                                vec![Val::from(0), Val::from(38000)],
+                                                            )?;
                                                         }
                                                     }
                                                 }
@@ -5664,22 +5550,20 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                             )?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
+                                        } else if (l_input.clone().number()? < 1 || l_input.clone().number()? > 100) {
+                                            ctx.lines_as(
+                                                "Ei'felle",
+                                                args![
+                                                    "Remember, you can only",
+                                                    "enter a number from 1 to 100.",
+                                                    "If you want to give me more",
+                                                    "medals, then perhaps you",
+                                                    "should just give them all to me~"
+                                                ],
+                                            )?;
+                                            ctx.next()?;
                                         } else {
-                                            if (l_input.clone().number()? < 1 || l_input.clone().number()? > 100) {
-                                                ctx.lines_as(
-                                                    "Ei'felle",
-                                                    args![
-                                                        "Remember, you can only",
-                                                        "enter a number from 1 to 100.",
-                                                        "If you want to give me more",
-                                                        "medals, then perhaps you",
-                                                        "should just give them all to me~"
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                            } else {
-                                                break 'l7;
-                                            }
+                                            break 'l7;
                                         }
                                     }
                                 }
@@ -5783,39 +5667,31 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                         "reward in favor of getting",
                         "something better later..."
                     ])?;
-                } else {
-                    if (((l_arg1.clone() == 2345 || l_arg1.clone() == 2347) || l_arg1.clone() == 2349) || l_arg1.clone() == 2351) {
-                        ctx.lines(args!["Are you sure that you want", "to accept this set of slotted"])?;
-                        if l_arg1.clone() == 2345 {
-                            ctx.mes("Fire property Armor? If you do,")?;
-                        } else {
-                            if l_arg1.clone() == 2351 {
-                                ctx.mes("Earth property Armor? If you do,")?;
-                            } else {
-                                if l_arg1.clone() == 2349 {
-                                    ctx.mes("Wind property Armor? If you do,")?;
-                                } else {
-                                    if l_arg1.clone() == 2347 {
-                                        ctx.mes("Water property Armor? If you do,")?;
-                                    }
-                                }
-                            }
-                        }
-                        ctx.lines(args![
-                            "I'll need more medals from you",
-                            "to make further advancements",
-                            "in my manufacturing research."
-                        ])?;
-                    } else {
-                        ctx.lines(args![
-                            "So you wish to have a",
-                            (ctx.call(Function::GetItemName, vec![l_arg1.clone()])? + Val::from("? If you choose")),
-                            "to have this Level 4 Weapon,",
-                            "I'll need to melt many of the",
-                            "medals that you've donated",
-                            "to me. Shall we proceed?"
-                        ])?;
+                } else if (((l_arg1.clone() == 2345 || l_arg1.clone() == 2347) || l_arg1.clone() == 2349) || l_arg1.clone() == 2351) {
+                    ctx.lines(args!["Are you sure that you want", "to accept this set of slotted"])?;
+                    if l_arg1.clone() == 2345 {
+                        ctx.mes("Fire property Armor? If you do,")?;
+                    } else if l_arg1.clone() == 2351 {
+                        ctx.mes("Earth property Armor? If you do,")?;
+                    } else if l_arg1.clone() == 2349 {
+                        ctx.mes("Wind property Armor? If you do,")?;
+                    } else if l_arg1.clone() == 2347 {
+                        ctx.mes("Water property Armor? If you do,")?;
                     }
+                    ctx.lines(args![
+                        "I'll need more medals from you",
+                        "to make further advancements",
+                        "in my manufacturing research."
+                    ])?;
+                } else {
+                    ctx.lines(args![
+                        "So you wish to have a",
+                        (ctx.call(Function::GetItemName, vec![l_arg1.clone()])? + Val::from("? If you choose")),
+                        "to have this Level 4 Weapon,",
+                        "I'll need to melt many of the",
+                        "medals that you've donated",
+                        "to me. Shall we proceed?"
+                    ])?;
                 }
                 ctx.next()?;
                 if Val::from(runtime::select_values(ctx, &[Val::from("Decline:Accept")])?) == 1 {
@@ -5861,40 +5737,32 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                         "you'll continue to donate your",
                         "medals for my metal research~"
                     ])?;
-                } else {
-                    if (((l_arg1.clone() == 2345 || l_arg1.clone() == 2347) || l_arg1.clone() == 2349) || l_arg1.clone() == 2351) {
-                        ctx.mes("Great choice! I'm sure")?;
-                        if l_arg1.clone() == 2345 {
-                            ctx.mes("that this set of slotted Fire")?;
-                        } else {
-                            if l_arg1.clone() == 2351 {
-                                ctx.mes("that this set of slotted Earth")?;
-                            } else {
-                                if l_arg1.clone() == 2349 {
-                                    ctx.mes("that this set of slotted Wind")?;
-                                } else {
-                                    if l_arg1.clone() == 2347 {
-                                        ctx.mes("that this set of slotted Water")?;
-                                    }
-                                }
-                            }
-                        }
-                        ctx.lines(args![
-                            "property Armor will serve you",
-                            "well. Thank you for your help,",
-                            "and if you get more medals,",
-                            "please donate them to me~"
-                        ])?;
-                    } else {
-                        ctx.lines(args![
-                            "Once again, I'd like to",
-                            "thank you for providing",
-                            "me with all of those medals.",
-                            "I imagine it must have been",
-                            "difficult. In any case, I would",
-                            "appreciate your continued help~"
-                        ])?;
+                } else if (((l_arg1.clone() == 2345 || l_arg1.clone() == 2347) || l_arg1.clone() == 2349) || l_arg1.clone() == 2351) {
+                    ctx.mes("Great choice! I'm sure")?;
+                    if l_arg1.clone() == 2345 {
+                        ctx.mes("that this set of slotted Fire")?;
+                    } else if l_arg1.clone() == 2351 {
+                        ctx.mes("that this set of slotted Earth")?;
+                    } else if l_arg1.clone() == 2349 {
+                        ctx.mes("that this set of slotted Wind")?;
+                    } else if l_arg1.clone() == 2347 {
+                        ctx.mes("that this set of slotted Water")?;
                     }
+                    ctx.lines(args![
+                        "property Armor will serve you",
+                        "well. Thank you for your help,",
+                        "and if you get more medals,",
+                        "please donate them to me~"
+                    ])?;
+                } else {
+                    ctx.lines(args![
+                        "Once again, I'd like to",
+                        "thank you for providing",
+                        "me with all of those medals.",
+                        "I imagine it must have been",
+                        "difficult. In any case, I would",
+                        "appreciate your continued help~"
+                    ])?;
                 }
                 ctx.var("ein_medal01")
                     .set((ctx.var("ein_medal01").get()?.try_sub(runtime::arg(&args, 0, Val::from(0)))?))?;
@@ -6543,56 +6411,52 @@ fn monster_race_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     l_i = shared::other_gm_npcs::f_gm_npc(ctx, vec![Val::from(1854), Val::from(0), Val::from(0), Val::from(2000)])?;
     if l_i.clone() == -2 {
         ctx.lines_as("Monster Race Manager", args!["Error."])?;
-    } else {
-        if l_i.clone() == -1 {
-            ctx.lines_as("Monster Race Manager", args!["Incorrect password."])?;
-        } else {
-            if l_i.clone() == 1 {
-                ctx.mes("[Monster Race Manager]")?;
-                'b1: {
-                    let subject1 = l_select.clone();
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args!["The Single Monster", "Race Entry NPC is ON."])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Ellebird#single::OnEnable")])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args!["The Dual Monster", "Race Entry NPC is ON."])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Erenes#double::OnEnable")])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args!["The Single Monster", "Race Entry NPC is OFF."])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Ellebird#single::OnDisable")])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args!["The Dual Monster", "Race Entry NPC is OFF."])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Erenes#double::OnDisable")])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+    } else if l_i.clone() == -1 {
+        ctx.lines_as("Monster Race Manager", args!["Incorrect password."])?;
+    } else if l_i.clone() == 1 {
+        ctx.mes("[Monster Race Manager]")?;
+        'b1: {
+            let subject1 = l_select.clone();
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3))
+                && !subject1.loosely_equals(&Val::from(4));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["The Single Monster", "Race Entry NPC is ON."])?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Ellebird#single::OnEnable")])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["The Dual Monster", "Race Entry NPC is ON."])?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Erenes#double::OnEnable")])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["The Single Monster", "Race Entry NPC is OFF."])?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Ellebird#single::OnDisable")])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["The Dual Monster", "Race Entry NPC is OFF."])?;
+                ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Erenes#double::OnDisable")])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }

@@ -153,30 +153,22 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                     } else {
                                         if (ctx.var("BaseLevel").get()?.number()? > 65 && ctx.var("BaseLevel").get()?.number()? < 71) {
                                             ctx.call(Function::GetExperience, vec![Val::from(13411), Val::from(0)])?;
+                                        } else if (ctx.var("BaseLevel").get()?.number()? > 70 && ctx.var("BaseLevel").get()?.number()? < 76) {
+                                            ctx.call(Function::GetExperience, vec![Val::from(35757), Val::from(0)])?;
+                                        } else if (ctx.var("BaseLevel").get()?.number()? > 75
+                                            && ctx.var("BaseLevel").get()?.number()? < 81)
+                                        {
+                                            ctx.call(Function::GetExperience, vec![Val::from(60246), Val::from(0)])?;
+                                        } else if (ctx.var("BaseLevel").get()?.number()? > 80
+                                            && ctx.var("BaseLevel").get()?.number()? < 86)
+                                        {
+                                            ctx.call(Function::GetExperience, vec![Val::from(70340), Val::from(0)])?;
+                                        } else if (ctx.var("BaseLevel").get()?.number()? > 85
+                                            && ctx.var("BaseLevel").get()?.number()? < 91)
+                                        {
+                                            ctx.call(Function::GetExperience, vec![Val::from(92052), Val::from(0)])?;
                                         } else {
-                                            if (ctx.var("BaseLevel").get()?.number()? > 70 && ctx.var("BaseLevel").get()?.number()? < 76) {
-                                                ctx.call(Function::GetExperience, vec![Val::from(35757), Val::from(0)])?;
-                                            } else {
-                                                if (ctx.var("BaseLevel").get()?.number()? > 75
-                                                    && ctx.var("BaseLevel").get()?.number()? < 81)
-                                                {
-                                                    ctx.call(Function::GetExperience, vec![Val::from(60246), Val::from(0)])?;
-                                                } else {
-                                                    if (ctx.var("BaseLevel").get()?.number()? > 80
-                                                        && ctx.var("BaseLevel").get()?.number()? < 86)
-                                                    {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(70340), Val::from(0)])?;
-                                                    } else {
-                                                        if (ctx.var("BaseLevel").get()?.number()? > 85
-                                                            && ctx.var("BaseLevel").get()?.number()? < 91)
-                                                        {
-                                                            ctx.call(Function::GetExperience, vec![Val::from(92052), Val::from(0)])?;
-                                                        } else {
-                                                            ctx.call(Function::GetExperience, vec![Val::from(156786), Val::from(0)])?;
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                            ctx.call(Function::GetExperience, vec![Val::from(156786), Val::from(0)])?;
                                         }
                                     }
                                 }
@@ -428,54 +420,48 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                                     ctx.close_window()?;
                                                     ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                                                     return Err(Stop::End);
+                                                } else if l_inputstr_s.clone() == "Gunther" {
+                                                    ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
+                                                    ctx.close_window()?;
+                                                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                                                    return Err(Stop::End);
+                                                } else if l_inputstr_s.clone() == "Gunther Doubleharmony" {
+                                                    ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
+                                                    ctx.close_window()?;
+                                                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                                                    return Err(Stop::End);
+                                                } else if l_inputstr_s.clone() == "Errende" {
+                                                    ctx.call(Function::Cutin, vec![Val::from("bard_eland04"), Val::from(2)])?;
+                                                    ctx.lines_as(
+                                                        "Errende",
+                                                        args![
+                                                            "Surely you jest!",
+                                                            "If I did, why would",
+                                                            "I not know what",
+                                                            "this song is about?"
+                                                        ],
+                                                    )?;
+                                                    ctx.close_window()?;
+                                                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                                                    return Err(Stop::End);
                                                 } else {
-                                                    if l_inputstr_s.clone() == "Gunther" {
-                                                        ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
-                                                        ctx.close_window()?;
-                                                        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                                        return Err(Stop::End);
-                                                    } else {
-                                                        if l_inputstr_s.clone() == "Gunther Doubleharmony" {
-                                                            ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
-                                                            ctx.close_window()?;
-                                                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                                            return Err(Stop::End);
-                                                        } else {
-                                                            if l_inputstr_s.clone() == "Errende" {
-                                                                ctx.call(Function::Cutin, vec![Val::from("bard_eland04"), Val::from(2)])?;
-                                                                ctx.lines_as(
-                                                                    "Errende",
-                                                                    args![
-                                                                        "Surely you jest!",
-                                                                        "If I did, why would",
-                                                                        "I not know what",
-                                                                        "this song is about?"
-                                                                    ],
-                                                                )?;
-                                                                ctx.close_window()?;
-                                                                ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                                                return Err(Stop::End);
-                                                            } else {
-                                                                ctx.lines_as(
-                                                                    "Errende",
-                                                                    args![
-                                                                        ((Val::from("") + l_inputstr_s.clone()) + Val::from("...?")),
-                                                                        "I don't think I know that person. Maybe you misunderstood",
-                                                                        "something? *Sigh...*"
-                                                                    ],
-                                                                )?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as(
-                                                                    "Errende",
-                                                                    args!["What was the line...?", "How could I forget", "the 8th love?"],
-                                                                )?;
-                                                                ctx.var("gef_bard_q").set(Val::from(26))?;
-                                                                ctx.close_window()?;
-                                                                ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                                                return Err(Stop::End);
-                                                            }
-                                                        }
-                                                    }
+                                                    ctx.lines_as(
+                                                        "Errende",
+                                                        args![
+                                                            ((Val::from("") + l_inputstr_s.clone()) + Val::from("...?")),
+                                                            "I don't think I know that person. Maybe you misunderstood",
+                                                            "something? *Sigh...*"
+                                                        ],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Errende",
+                                                        args!["What was the line...?", "How could I forget", "the 8th love?"],
+                                                    )?;
+                                                    ctx.var("gef_bard_q").set(Val::from(26))?;
+                                                    ctx.close_window()?;
+                                                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                                                    return Err(Stop::End);
                                                 }
                                             } else {
                                                 if ctx.var("gef_bard_q").get()? == 25 {
@@ -704,63 +690,57 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                                                     ctx.close_window()?;
                                                                     ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                                                                     return Err(Stop::End);
+                                                                } else if l_inputstr_s.clone() == "Gunther" {
+                                                                    ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
+                                                                    ctx.var("gef_bard_q").set(Val::from(26))?;
+                                                                    ctx.close_window()?;
+                                                                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                                                                    return Err(Stop::End);
+                                                                } else if l_inputstr_s.clone() == "Gunther Doubleharmony" {
+                                                                    ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
+                                                                    ctx.var("gef_bard_q").set(Val::from(26))?;
+                                                                    ctx.close_window()?;
+                                                                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                                                                    return Err(Stop::End);
+                                                                } else if l_inputstr_s.clone() == "Errende" {
+                                                                    ctx.call(
+                                                                        Function::Cutin,
+                                                                        vec![Val::from("bard_eland04"), Val::from(2)],
+                                                                    )?;
+                                                                    ctx.lines_as(
+                                                                        "Errende",
+                                                                        args![
+                                                                            "Surely you jest!",
+                                                                            "If I did, why would",
+                                                                            "I not know what this",
+                                                                            "song is about?"
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.var("gef_bard_q").set(Val::from(26))?;
+                                                                    ctx.close_window()?;
+                                                                    ctx.call(
+                                                                        Function::Cutin,
+                                                                        vec![Val::from(""), Val::from(255)],
+                                                                    )?;
+                                                                    return Err(Stop::End);
                                                                 } else {
-                                                                    if l_inputstr_s.clone() == "Gunther" {
-                                                                        ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
-                                                                        ctx.var("gef_bard_q").set(Val::from(26))?;
-                                                                        ctx.close_window()?;
-                                                                        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                                                        return Err(Stop::End);
-                                                                    } else {
-                                                                        if l_inputstr_s.clone() == "Gunther Doubleharmony" {
-                                                                            ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
-                                                                            ctx.var("gef_bard_q").set(Val::from(26))?;
-                                                                            ctx.close_window()?;
-                                                                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                                                            return Err(Stop::End);
-                                                                        } else {
-                                                                            if l_inputstr_s.clone() == "Errende" {
-                                                                                ctx.call(
-                                                                                    Function::Cutin,
-                                                                                    vec![Val::from("bard_eland04"), Val::from(2)],
-                                                                                )?;
-                                                                                ctx.lines_as(
-                                                                                    "Errende",
-                                                                                    args![
-                                                                                        "Surely you jest!",
-                                                                                        "If I did, why would",
-                                                                                        "I not know what this",
-                                                                                        "song is about?"
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.var("gef_bard_q").set(Val::from(26))?;
-                                                                                ctx.close_window()?;
-                                                                                ctx.call(
-                                                                                    Function::Cutin,
-                                                                                    vec![Val::from(""), Val::from(255)],
-                                                                                )?;
-                                                                                return Err(Stop::End);
-                                                                            } else {
-                                                                                ctx.lines_as("Errende", args![((Val::from("") + l_inputstr_s.clone()) + Val::from("...?")), "I don't think I know that person. Maybe you misunderstood", "something? *Sigh...*"])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as(
-                                                                                    "Errende",
-                                                                                    args![
-                                                                                        "What was the line...?",
-                                                                                        "How could I forget",
-                                                                                        "the 8th love?"
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.var("gef_bard_q").set(Val::from(26))?;
-                                                                                ctx.close_window()?;
-                                                                                ctx.call(
-                                                                                    Function::Cutin,
-                                                                                    vec![Val::from(""), Val::from(255)],
-                                                                                )?;
-                                                                                return Err(Stop::End);
-                                                                            }
-                                                                        }
-                                                                    }
+                                                                    ctx.lines_as("Errende", args![((Val::from("") + l_inputstr_s.clone()) + Val::from("...?")), "I don't think I know that person. Maybe you misunderstood", "something? *Sigh...*"])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as(
+                                                                        "Errende",
+                                                                        args![
+                                                                            "What was the line...?",
+                                                                            "How could I forget",
+                                                                            "the 8th love?"
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.var("gef_bard_q").set(Val::from(26))?;
+                                                                    ctx.close_window()?;
+                                                                    ctx.call(
+                                                                        Function::Cutin,
+                                                                        vec![Val::from(""), Val::from(255)],
+                                                                    )?;
+                                                                    return Err(Stop::End);
                                                                 }
                                                             } else {
                                                                 if ctx.var("gef_bard_q").get()? == 21 {
@@ -879,61 +859,55 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                                                                     vec![Val::from(""), Val::from(255)],
                                                                                 )?;
                                                                                 return Err(Stop::End);
+                                                                            } else if l_inputstr_s.clone() == "Gunther" {
+                                                                                ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
+                                                                                ctx.close_window()?;
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![Val::from(""), Val::from(255)],
+                                                                                )?;
+                                                                                return Err(Stop::End);
+                                                                            } else if l_inputstr_s.clone() == "Gunther Doubleharmony" {
+                                                                                ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
+                                                                                ctx.close_window()?;
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![Val::from(""), Val::from(255)],
+                                                                                )?;
+                                                                                return Err(Stop::End);
+                                                                            } else if l_inputstr_s.clone() == "Errende" {
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![
+                                                                                        Val::from("bard_eland04"),
+                                                                                        Val::from(2),
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.lines_as("Errende", args!["Surely you jest! If I did, why would I not know what this song is about?"])?;
+                                                                                ctx.close_window()?;
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![Val::from(""), Val::from(255)],
+                                                                                )?;
+                                                                                return Err(Stop::End);
                                                                             } else {
-                                                                                if l_inputstr_s.clone() == "Gunther" {
-                                                                                    ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
-                                                                                    ctx.close_window()?;
-                                                                                    ctx.call(
-                                                                                        Function::Cutin,
-                                                                                        vec![Val::from(""), Val::from(255)],
-                                                                                    )?;
-                                                                                    return Err(Stop::End);
-                                                                                } else {
-                                                                                    if l_inputstr_s.clone() == "Gunther Doubleharmony" {
-                                                                                        ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
-                                                                                        ctx.close_window()?;
-                                                                                        ctx.call(
-                                                                                            Function::Cutin,
-                                                                                            vec![Val::from(""), Val::from(255)],
-                                                                                        )?;
-                                                                                        return Err(Stop::End);
-                                                                                    } else {
-                                                                                        if l_inputstr_s.clone() == "Errende" {
-                                                                                            ctx.call(
-                                                                                                Function::Cutin,
-                                                                                                vec![
-                                                                                                    Val::from("bard_eland04"),
-                                                                                                    Val::from(2),
-                                                                                                ],
-                                                                                            )?;
-                                                                                            ctx.lines_as("Errende", args!["Surely you jest! If I did, why would I not know what this song is about?"])?;
-                                                                                            ctx.close_window()?;
-                                                                                            ctx.call(
-                                                                                                Function::Cutin,
-                                                                                                vec![Val::from(""), Val::from(255)],
-                                                                                            )?;
-                                                                                            return Err(Stop::End);
-                                                                                        } else {
-                                                                                            ctx.lines_as("Errende", args![((Val::from("") + l_inputstr_s.clone()) + Val::from("...?")), "I don't think I know that person. Maybe you misunderstood something? *Sigh...*"])?;
-                                                                                            ctx.next()?;
-                                                                                            ctx.lines_as(
-                                                                                                "Errende",
-                                                                                                args![
-                                                                                                    "What was the line...?",
-                                                                                                    "How could I forget",
-                                                                                                    "the 8th love?"
-                                                                                                ],
-                                                                                            )?;
-                                                                                            ctx.var("gef_bard_q").set(Val::from(6))?;
-                                                                                            ctx.close_window()?;
-                                                                                            ctx.call(
-                                                                                                Function::Cutin,
-                                                                                                vec![Val::from(""), Val::from(255)],
-                                                                                            )?;
-                                                                                            return Err(Stop::End);
-                                                                                        }
-                                                                                    }
-                                                                                }
+                                                                                ctx.lines_as("Errende", args![((Val::from("") + l_inputstr_s.clone()) + Val::from("...?")), "I don't think I know that person. Maybe you misunderstood something? *Sigh...*"])?;
+                                                                                ctx.next()?;
+                                                                                ctx.lines_as(
+                                                                                    "Errende",
+                                                                                    args![
+                                                                                        "What was the line...?",
+                                                                                        "How could I forget",
+                                                                                        "the 8th love?"
+                                                                                    ],
+                                                                                )?;
+                                                                                ctx.var("gef_bard_q").set(Val::from(6))?;
+                                                                                ctx.close_window()?;
+                                                                                ctx.call(
+                                                                                    Function::Cutin,
+                                                                                    vec![Val::from(""), Val::from(255)],
+                                                                                )?;
+                                                                                return Err(Stop::End);
                                                                             }
                                                                         } else {
                                                                             if ctx.var("gef_bard_q").get()? == 5 {
@@ -1063,84 +1037,280 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                                                                             vec![Val::from(""), Val::from(255)],
                                                                                         )?;
                                                                                         return Err(Stop::End);
-                                                                                    } else {
-                                                                                        if ctx.var("gef_bard_q").get()? == 3 {
+                                                                                    } else if ctx.var("gef_bard_q").get()? == 3 {
+                                                                                        ctx.call(
+                                                                                            Function::Cutin,
+                                                                                            vec![
+                                                                                                Val::from("bard_eland02"),
+                                                                                                Val::from(2),
+                                                                                            ],
+                                                                                        )?;
+                                                                                        ctx.lines_as(
+                                                                                            "Errende",
+                                                                                            args!["So...", "Have you", "seen Gunther?"],
+                                                                                        )?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines(args![
+                                                                                            "^3355FFYou turn around",
+                                                                                            "to show him your back.^000000"
+                                                                                        ])?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.call(
+                                                                                            Function::Cutin,
+                                                                                            vec![
+                                                                                                Val::from("bard_eland03"),
+                                                                                                Val::from(2),
+                                                                                            ],
+                                                                                        )?;
+                                                                                        ctx.lines_as("Errende", args!["Huh...?!", "Isn't that?!", "Is that the line of the song written on your back? Wait, don't move! The 8th love is...", "Now I see!"])?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines_as(
+                                                                                            "Errende",
+                                                                                            args![
+                                                                                                "At One, I fall in love.",
+                                                                                                "At Two, you give me your smile.",
+                                                                                                "At Three, I adore your touch.",
+                                                                                                "At Four, a tender kiss."
+                                                                                            ],
+                                                                                        )?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines_as(
+                                                                                            "Errende",
+                                                                                            args![
+                                                                                                "At Five, we change our minds.",
+                                                                                                "A petal scatters through the air.",
+                                                                                                "At Six, I fall in love~",
+                                                                                                "At Seven, you fall in love~"
+                                                                                            ],
+                                                                                        )?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines_as(
+                                                                                            "Errende",
+                                                                                            args![
+                                                                                                "At Eight we turn away...",
+                                                                                                "At Nine, love is reborn.",
+                                                                                                "At Ten, my Love is gone.",
+                                                                                                "At Eleven I find out why."
+                                                                                            ],
+                                                                                        )?;
+                                                                                        if ctx
+                                                                                            .var("Sex")
+                                                                                            .get()?
+                                                                                            .loosely_equals(&ctx.constant("SEX_MALE")?)
+                                                                                        {
+                                                                                            ctx.mes(
+                                                                                                "At Twelve I see her new boyfriend?",
+                                                                                            )?;
+                                                                                        } else {
+                                                                                            ctx.mes(
+                                                                                                "At Twelve I see his new girlfriend?",
+                                                                                            )?;
+                                                                                        }
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines_as("Errende", args!["..."])?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines_as(
+                                                                                            "Errende",
+                                                                                            args!["...", "......"],
+                                                                                        )?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.call(
+                                                                                            Function::Cutin,
+                                                                                            vec![
+                                                                                                Val::from("bard_eland04"),
+                                                                                                Val::from(2),
+                                                                                            ],
+                                                                                        )?;
+                                                                                        ctx.lines_as("Errende", args!["This...", "This cannot be.", "This song is supposed to be about love, not a romantic travesty!"])?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines_as("Errende", args!["The lyrics. They must have been changed. Did Gunther say anything about this?! Hmmm, but who would change the lyrics...?"])?;
+                                                                                        ctx.next()?;
+                                                                                        let (input, status) =
+                                                                                            runtime::input_text(ctx, None, None)?;
+                                                                                        l_inputstr_s = input;
+                                                                                        if l_inputstr_s.clone() == "Kino Kitty" {
                                                                                             ctx.call(
                                                                                                 Function::Cutin,
                                                                                                 vec![
-                                                                                                    Val::from("bard_eland02"),
+                                                                                                    Val::from("bard_eland01"),
                                                                                                     Val::from(2),
                                                                                                 ],
                                                                                             )?;
                                                                                             ctx.lines_as(
                                                                                                 "Errende",
-                                                                                                args!["So...", "Have you", "seen Gunther?"],
-                                                                                            )?;
-                                                                                            ctx.next()?;
-                                                                                            ctx.lines(args![
-                                                                                                "^3355FFYou turn around",
-                                                                                                "to show him your back.^000000"
-                                                                                            ])?;
-                                                                                            ctx.next()?;
-                                                                                            ctx.call(
-                                                                                                Function::Cutin,
-                                                                                                vec![
-                                                                                                    Val::from("bard_eland03"),
-                                                                                                    Val::from(2),
-                                                                                                ],
-                                                                                            )?;
-                                                                                            ctx.lines_as("Errende", args!["Huh...?!", "Isn't that?!", "Is that the line of the song written on your back? Wait, don't move! The 8th love is...", "Now I see!"])?;
-                                                                                            ctx.next()?;
-                                                                                            ctx.lines_as(
-                                                                                                "Errende",
                                                                                                 args![
-                                                                                                    "At One, I fall in love.",
-                                                                                                    "At Two, you give me your smile.",
-                                                                                                    "At Three, I adore your touch.",
-                                                                                                    "At Four, a tender kiss."
+                                                                                                    "Ah! Of course!",
+                                                                                                    "I think you're right!",
+                                                                                                    "How could I not think of that?"
                                                                                                 ],
                                                                                             )?;
                                                                                             ctx.next()?;
-                                                                                            ctx.lines_as(
-                                                                                                "Errende",
-                                                                                                args![
-                                                                                                    "At Five, we change our minds.",
-                                                                                                    "A petal scatters through the air.",
-                                                                                                    "At Six, I fall in love~",
-                                                                                                    "At Seven, you fall in love~"
-                                                                                                ],
-                                                                                            )?;
+                                                                                            ctx.lines_as("Errende", args!["It all makes sense now. After all, he used to be a member of the Invincible Single Army. His changes might have been a little mean, since this song used to be about a happy couple..."])?;
                                                                                             ctx.next()?;
-                                                                                            ctx.lines_as(
-                                                                                                "Errende",
-                                                                                                args![
-                                                                                                    "At Eight we turn away...",
-                                                                                                    "At Nine, love is reborn.",
-                                                                                                    "At Ten, my Love is gone.",
-                                                                                                    "At Eleven I find out why."
-                                                                                                ],
-                                                                                            )?;
-                                                                                            if ctx
-                                                                                                .var("Sex")
-                                                                                                .get()?
-                                                                                                .loosely_equals(&ctx.constant("SEX_MALE")?)
+                                                                                            ctx.lines_as("Errende", args!["Ummm...", "I'm sorry to ask a favor of you again, but in your travels, do you think you could find the original lyrics for this song? I can wait for it..."])?;
+                                                                                            ctx.next()?;
+                                                                                            if Val::from(runtime::select_values(
+                                                                                                ctx,
+                                                                                                &[Val::from(
+                                                                                                    "No, thanks.:I can, so stop crying.",
+                                                                                                )],
+                                                                                            )?) == 1
                                                                                             {
-                                                                                                ctx.mes(
-                                                                                                    "At Twelve I see her new boyfriend?",
-                                                                                                )?;
+                                                                                                ctx.lines_as("Errende", args!["Ah, I guess it was too much to ask of you. My apologies. Don't worry about it, I'll find out some other way."])?;
+                                                                                                ctx.var("gef_bard_q")
+                                                                                                    .set(Val::from(5))?;
                                                                                             } else {
-                                                                                                ctx.mes(
-                                                                                                    "At Twelve I see his new girlfriend?",
-                                                                                                )?;
+                                                                                                ctx.lines_as("Errende", args!["Are you serious? Oh, thank you so much! You must be an angel! An angel that truly understands the heart of a poet!"])?;
+                                                                                                ctx.next()?;
+                                                                                                ctx.lines_as("Errende", args!["I'll pay you back somehow! Thank you for your trouble in advance~"])?;
+                                                                                                ctx.var("gef_bard_q")
+                                                                                                    .set(Val::from(4))?;
                                                                                             }
-                                                                                            ctx.next()?;
-                                                                                            ctx.lines_as("Errende", args!["..."])?;
+                                                                                            ctx.close_window()?;
+                                                                                            ctx.call(
+                                                                                                Function::Cutin,
+                                                                                                vec![Val::from(""), Val::from(255)],
+                                                                                            )?;
+                                                                                            return Err(Stop::End);
+                                                                                        } else if l_inputstr_s.clone() == "Gunther" {
+                                                                                            ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
+                                                                                            ctx.var("gef_bard_q")
+                                                                                                .set(Val::from(6))?;
+                                                                                            ctx.close_window()?;
+                                                                                            ctx.call(
+                                                                                                Function::Cutin,
+                                                                                                vec![Val::from(""), Val::from(255)],
+                                                                                            )?;
+                                                                                            return Err(Stop::End);
+                                                                                        } else if l_inputstr_s.clone()
+                                                                                            == "Gunther Doubleharmony"
+                                                                                        {
+                                                                                            ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
+                                                                                            ctx.var("gef_bard_q")
+                                                                                                .set(Val::from(6))?;
+                                                                                            ctx.close_window()?;
+                                                                                            ctx.call(
+                                                                                                Function::Cutin,
+                                                                                                vec![
+                                                                                                    Val::from(""),
+                                                                                                    Val::from(255),
+                                                                                                ],
+                                                                                            )?;
+                                                                                            return Err(Stop::End);
+                                                                                        } else if l_inputstr_s.clone() == "Errende"
+                                                                                        {
+                                                                                            ctx.call(
+                                                                                                Function::Cutin,
+                                                                                                vec![
+                                                                                                    Val::from(
+                                                                                                        "bard_eland04",
+                                                                                                    ),
+                                                                                                    Val::from(2),
+                                                                                                ],
+                                                                                            )?;
+                                                                                            ctx.lines_as("Errende", args!["Surely you jest! If I did, why would I not know what this song is about?"])?;
+                                                                                            ctx.var("gef_bard_q")
+                                                                                                .set(Val::from(6))?;
+                                                                                            ctx.close_window()?;
+                                                                                            ctx.call(
+                                                                                                Function::Cutin,
+                                                                                                vec![
+                                                                                                    Val::from(""),
+                                                                                                    Val::from(255),
+                                                                                                ],
+                                                                                            )?;
+                                                                                            return Err(Stop::End);
+                                                                                        } else {
+                                                                                            ctx.lines_as("Errende", args![((Val::from("") + l_inputstr_s.clone()) + Val::from("...?")), "I don't think I know that person. Maybe you misunderstood something? *Sigh...*"])?;
                                                                                             ctx.next()?;
                                                                                             ctx.lines_as(
                                                                                                 "Errende",
-                                                                                                args!["...", "......"],
+                                                                                                args![
+                                                                                                    "What was the line...?",
+                                                                                                    "How could I forget",
+                                                                                                    "the 8th love?"
+                                                                                                ],
                                                                                             )?;
-                                                                                            ctx.next()?;
+                                                                                            ctx.var("gef_bard_q")
+                                                                                                .set(Val::from(6))?;
+                                                                                            ctx.close_window()?;
+                                                                                            ctx.call(
+                                                                                                Function::Cutin,
+                                                                                                vec![
+                                                                                                    Val::from(""),
+                                                                                                    Val::from(255),
+                                                                                                ],
+                                                                                            )?;
+                                                                                            return Err(Stop::End);
+                                                                                        }
+                                                                                    } else if ctx.var("gef_bard_q").get()? == 1 {
+                                                                                        ctx.call(
+                                                                                            Function::Cutin,
+                                                                                            vec![
+                                                                                                Val::from("bard_eland01"),
+                                                                                                Val::from(2),
+                                                                                            ],
+                                                                                        )?;
+                                                                                        ctx.lines_as(
+                                                                                            "Errende",
+                                                                                            args![
+                                                                                                "Welcome back,",
+                                                                                                ((Val::from("")
+                                                                                                    + ctx.var("@name$").get()?)
+                                                                                                    + Val::from("~")),
+                                                                                                "What would you like",
+                                                                                                "me to do for you?",
+                                                                                                "Would you like to hear",
+                                                                                                "a tale or listen to a song?"
+                                                                                            ],
+                                                                                        )?;
+                                                                                        bard_2_run(
+                                                                                            ctx,
+                                                                                            Bard2Step::SStorySong,
+                                                                                            vec![Val::from(4)],
+                                                                                        )?;
+                                                                                    } else {
+                                                                                        ctx.call(
+                                                                                            Function::Cutin,
+                                                                                            vec![
+                                                                                                Val::from("bard_eland03"),
+                                                                                                Val::from(2),
+                                                                                            ],
+                                                                                        )?;
+                                                                                        ctx.lines(args![
+                                                                                            "^483D8BWhat day is",
+                                                                                            "best for drinking?",
+                                                                                            "La la la~",
+                                                                                            "It's the day of",
+                                                                                            "the earth, the sun",
+                                                                                            "And the moon~",
+                                                                                            "La la la~^000000"
+                                                                                        ])?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines(args![
+                                                                                            "^483D8BLa la la~",
+                                                                                            "I'll only",
+                                                                                            "drink on one day~",
+                                                                                            "So if you'll tell me",
+                                                                                            "when you'll drink",
+                                                                                            "I'll tell you when",
+                                                                                            "I'll drink with you~^000000"
+                                                                                        ])?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines(args![
+                                                                                            "^483D8BLet's get together",
+                                                                                            "Yea yea ye-^000000 Hmmmmm...?"
+                                                                                        ])?;
+                                                                                        ctx.next()?;
+                                                                                        ctx.lines_as("Bard", args!["Why, hello there. Oh, have you come to listen to my song and forget your worries?"])?;
+                                                                                        ctx.next()?;
+                                                                                        if Val::from(runtime::select_values(
+                                                                                            ctx,
+                                                                                            &[Val::from(
+                                                                                                "Who are you?:Ignore him.",
+                                                                                            )],
+                                                                                        )?) == 1
+                                                                                        {
                                                                                             ctx.call(
                                                                                                 Function::Cutin,
                                                                                                 vec![
@@ -1148,240 +1318,34 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                                                                                     Val::from(2),
                                                                                                 ],
                                                                                             )?;
-                                                                                            ctx.lines_as("Errende", args!["This...", "This cannot be.", "This song is supposed to be about love, not a romantic travesty!"])?;
+                                                                                            ctx.lines_as(
+                                                                                                ctx.var("@name$").get()?,
+                                                                                                args![
+                                                                                                    "You seem to be",
+                                                                                                    "new around here...",
+                                                                                                    "Who are you?"
+                                                                                                ],
+                                                                                            )?;
                                                                                             ctx.next()?;
-                                                                                            ctx.lines_as("Errende", args!["The lyrics. They must have been changed. Did Gunther say anything about this?! Hmmm, but who would change the lyrics...?"])?;
+                                                                                            ctx.call(
+                                                                                                Function::Cutin,
+                                                                                                vec![
+                                                                                                    Val::from("bard_eland02"),
+                                                                                                    Val::from(2),
+                                                                                                ],
+                                                                                            )?;
+                                                                                            ctx.lines_as("Errende", args!["Mm? Ah yes. I am merely another wandering poet who goes where the wind takes him. Please call me ^483D8BErrende^000000, the Bard who wishes to please you."])?;
                                                                                             ctx.next()?;
-                                                                                            let (input, status) =
-                                                                                                runtime::input_text(ctx, None, None)?;
-                                                                                            l_inputstr_s = input;
-                                                                                            if l_inputstr_s.clone() == "Kino Kitty" {
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("bard_eland01"),
-                                                                                                        Val::from(2),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Errende",
-                                                                                                    args![
-                                                                                                        "Ah! Of course!",
-                                                                                                        "I think you're right!",
-                                                                                                        "How could I not think of that?"
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.lines_as("Errende", args!["It all makes sense now. After all, he used to be a member of the Invincible Single Army. His changes might have been a little mean, since this song used to be about a happy couple..."])?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.lines_as("Errende", args!["Ummm...", "I'm sorry to ask a favor of you again, but in your travels, do you think you could find the original lyrics for this song? I can wait for it..."])?;
-                                                                                                ctx.next()?;
-                                                                                                if Val::from(runtime::select_values(
-                                                                                                    ctx,
-                                                                                                    &[Val::from(
-                                                                                                        "No, thanks.:I can, so stop crying.",
-                                                                                                    )],
-                                                                                                )?) == 1
-                                                                                                {
-                                                                                                    ctx.lines_as("Errende", args!["Ah, I guess it was too much to ask of you. My apologies. Don't worry about it, I'll find out some other way."])?;
-                                                                                                    ctx.var("gef_bard_q")
-                                                                                                        .set(Val::from(5))?;
-                                                                                                } else {
-                                                                                                    ctx.lines_as("Errende", args!["Are you serious? Oh, thank you so much! You must be an angel! An angel that truly understands the heart of a poet!"])?;
-                                                                                                    ctx.next()?;
-                                                                                                    ctx.lines_as("Errende", args!["I'll pay you back somehow! Thank you for your trouble in advance~"])?;
-                                                                                                    ctx.var("gef_bard_q")
-                                                                                                        .set(Val::from(4))?;
-                                                                                                }
-                                                                                                ctx.close_window()?;
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![Val::from(""), Val::from(255)],
-                                                                                                )?;
-                                                                                                return Err(Stop::End);
-                                                                                            } else {
-                                                                                                if l_inputstr_s.clone() == "Gunther" {
-                                                                                                    ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
-                                                                                                    ctx.var("gef_bard_q")
-                                                                                                        .set(Val::from(6))?;
-                                                                                                    ctx.close_window()?;
-                                                                                                    ctx.call(
-                                                                                                        Function::Cutin,
-                                                                                                        vec![Val::from(""), Val::from(255)],
-                                                                                                    )?;
-                                                                                                    return Err(Stop::End);
-                                                                                                } else {
-                                                                                                    if l_inputstr_s.clone()
-                                                                                                        == "Gunther Doubleharmony"
-                                                                                                    {
-                                                                                                        ctx.lines_as("Errende", args!["Gunther? I don't think he would do this. He always puts lines in his songs like 'doubleharmony for you.' Plus, he's too silly for that."])?;
-                                                                                                        ctx.var("gef_bard_q")
-                                                                                                            .set(Val::from(6))?;
-                                                                                                        ctx.close_window()?;
-                                                                                                        ctx.call(
-                                                                                                            Function::Cutin,
-                                                                                                            vec![
-                                                                                                                Val::from(""),
-                                                                                                                Val::from(255),
-                                                                                                            ],
-                                                                                                        )?;
-                                                                                                        return Err(Stop::End);
-                                                                                                    } else {
-                                                                                                        if l_inputstr_s.clone() == "Errende"
-                                                                                                        {
-                                                                                                            ctx.call(
-                                                                                                                Function::Cutin,
-                                                                                                                vec![
-                                                                                                                    Val::from(
-                                                                                                                        "bard_eland04",
-                                                                                                                    ),
-                                                                                                                    Val::from(2),
-                                                                                                                ],
-                                                                                                            )?;
-                                                                                                            ctx.lines_as("Errende", args!["Surely you jest! If I did, why would I not know what this song is about?"])?;
-                                                                                                            ctx.var("gef_bard_q")
-                                                                                                                .set(Val::from(6))?;
-                                                                                                            ctx.close_window()?;
-                                                                                                            ctx.call(
-                                                                                                                Function::Cutin,
-                                                                                                                vec![
-                                                                                                                    Val::from(""),
-                                                                                                                    Val::from(255),
-                                                                                                                ],
-                                                                                                            )?;
-                                                                                                            return Err(Stop::End);
-                                                                                                        } else {
-                                                                                                            ctx.lines_as("Errende", args![((Val::from("") + l_inputstr_s.clone()) + Val::from("...?")), "I don't think I know that person. Maybe you misunderstood something? *Sigh...*"])?;
-                                                                                                            ctx.next()?;
-                                                                                                            ctx.lines_as(
-                                                                                                                "Errende",
-                                                                                                                args![
-                                                                                                                    "What was the line...?",
-                                                                                                                    "How could I forget",
-                                                                                                                    "the 8th love?"
-                                                                                                                ],
-                                                                                                            )?;
-                                                                                                            ctx.var("gef_bard_q")
-                                                                                                                .set(Val::from(6))?;
-                                                                                                            ctx.close_window()?;
-                                                                                                            ctx.call(
-                                                                                                                Function::Cutin,
-                                                                                                                vec![
-                                                                                                                    Val::from(""),
-                                                                                                                    Val::from(255),
-                                                                                                                ],
-                                                                                                            )?;
-                                                                                                            return Err(Stop::End);
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                            }
+                                                                                            ctx.lines_as("Errende", args!["If you will let me, I will tell you of my travels. By your leave,", "I will play a song that will help you forget your troubles."])?;
+                                                                                            ctx.var("gef_bard_q")
+                                                                                                .set(Val::from(1))?;
+                                                                                            bard_2_run(
+                                                                                                ctx,
+                                                                                                Bard2Step::SStorySong,
+                                                                                                vec![Val::from(5)],
+                                                                                            )?;
                                                                                         } else {
-                                                                                            if ctx.var("gef_bard_q").get()? == 1 {
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("bard_eland01"),
-                                                                                                        Val::from(2),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines_as(
-                                                                                                    "Errende",
-                                                                                                    args![
-                                                                                                        "Welcome back,",
-                                                                                                        ((Val::from("")
-                                                                                                            + ctx.var("@name$").get()?)
-                                                                                                            + Val::from("~")),
-                                                                                                        "What would you like",
-                                                                                                        "me to do for you?",
-                                                                                                        "Would you like to hear",
-                                                                                                        "a tale or listen to a song?"
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                bard_2_run(
-                                                                                                    ctx,
-                                                                                                    Bard2Step::SStorySong,
-                                                                                                    vec![Val::from(4)],
-                                                                                                )?;
-                                                                                            } else {
-                                                                                                ctx.call(
-                                                                                                    Function::Cutin,
-                                                                                                    vec![
-                                                                                                        Val::from("bard_eland03"),
-                                                                                                        Val::from(2),
-                                                                                                    ],
-                                                                                                )?;
-                                                                                                ctx.lines(args![
-                                                                                                    "^483D8BWhat day is",
-                                                                                                    "best for drinking?",
-                                                                                                    "La la la~",
-                                                                                                    "It's the day of",
-                                                                                                    "the earth, the sun",
-                                                                                                    "And the moon~",
-                                                                                                    "La la la~^000000"
-                                                                                                ])?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.lines(args![
-                                                                                                    "^483D8BLa la la~",
-                                                                                                    "I'll only",
-                                                                                                    "drink on one day~",
-                                                                                                    "So if you'll tell me",
-                                                                                                    "when you'll drink",
-                                                                                                    "I'll tell you when",
-                                                                                                    "I'll drink with you~^000000"
-                                                                                                ])?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.lines(args![
-                                                                                                    "^483D8BLet's get together",
-                                                                                                    "Yea yea ye-^000000 Hmmmmm...?"
-                                                                                                ])?;
-                                                                                                ctx.next()?;
-                                                                                                ctx.lines_as("Bard", args!["Why, hello there. Oh, have you come to listen to my song and forget your worries?"])?;
-                                                                                                ctx.next()?;
-                                                                                                if Val::from(runtime::select_values(
-                                                                                                    ctx,
-                                                                                                    &[Val::from(
-                                                                                                        "Who are you?:Ignore him.",
-                                                                                                    )],
-                                                                                                )?) == 1
-                                                                                                {
-                                                                                                    ctx.call(
-                                                                                                        Function::Cutin,
-                                                                                                        vec![
-                                                                                                            Val::from("bard_eland04"),
-                                                                                                            Val::from(2),
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.lines_as(
-                                                                                                        ctx.var("@name$").get()?,
-                                                                                                        args![
-                                                                                                            "You seem to be",
-                                                                                                            "new around here...",
-                                                                                                            "Who are you?"
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.next()?;
-                                                                                                    ctx.call(
-                                                                                                        Function::Cutin,
-                                                                                                        vec![
-                                                                                                            Val::from("bard_eland02"),
-                                                                                                            Val::from(2),
-                                                                                                        ],
-                                                                                                    )?;
-                                                                                                    ctx.lines_as("Errende", args!["Mm? Ah yes. I am merely another wandering poet who goes where the wind takes him. Please call me ^483D8BErrende^000000, the Bard who wishes to please you."])?;
-                                                                                                    ctx.next()?;
-                                                                                                    ctx.lines_as("Errende", args!["If you will let me, I will tell you of my travels. By your leave,", "I will play a song that will help you forget your troubles."])?;
-                                                                                                    ctx.var("gef_bard_q")
-                                                                                                        .set(Val::from(1))?;
-                                                                                                    bard_2_run(
-                                                                                                        ctx,
-                                                                                                        Bard2Step::SStorySong,
-                                                                                                        vec![Val::from(5)],
-                                                                                                    )?;
-                                                                                                } else {
-                                                                                                    ctx.lines_as("Errende", args!["Waaah, wah~", "You can't just ignore me like that! Where's your sense of merriment, your sense of romance?"])?;
-                                                                                                }
-                                                                                            }
+                                                                                            ctx.lines_as("Errende", args!["Waaah, wah~", "You can't just ignore me like that! Where's your sense of merriment, your sense of romance?"])?;
                                                                                         }
                                                                                     }
                                                                                 }
@@ -1478,45 +1442,41 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                 ctx.lines_as("Errende", args!["Geffenia is related to the two attractive ladies I mentioned earlier. It seems their father, William, entered Geffen Tower with a party to exterminate monsters, but he never returned."])?;
                                 ctx.next()?;
                                 ctx.lines_as("Errende", args!["It's tragic that he left his family behind in that way. But perhaps, it is more tragic that his spirit scares away anyone interested in those girls."])?;
-                            } else {
-                                if l_random.clone() == 2 {
-                                    ctx.mes("Okay, let me tell you a story about Morocc, city of the desert. Adventurers worth their salt are expected to have explored the city and its surrounding desert.")?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Errende", args!["The Sphinx and the Pyramids are especially popular areas of exploration for adventurers. Have you been there before? I haven't yet, but perhaps someday I'll go."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Errende", args!["While I was in Morocc, I found a Merchant that sells Sword Maces to Priests and Priestess. Aside from those, Priests are prohibited from using any kind of weapon with blades."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Errende", args!["I also saw an energetic little boy who kept begging his father to tame a Munak for him. I heard the father speak a bit, and it seems that one of his friends from Morocc is lost in Alberta."])?;
-                                    ctx.next()?;
-                                    ctx.call(Function::Cutin, vec![Val::from("bard_eland02"), Val::from(2)])?;
-                                    ctx.lines_as("Errende", args!["In any case, I helped the father with an errand, and he gave me a mysterious box in return. When I opened that box, I found a strange feather. I'm unaware of how it works, though..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Errende",
-                                        args!["I wonder if that man's friend, Pandger Mayer, ever found", "his way back home..."],
-                                    )?;
-                                } else {
-                                    if l_random.clone() == 3 {
-                                        ctx.mes("Why don't we talk about Alberta? There is a sunken ship developed by an event agency as a place where adventurers may go on expeditions. It seems they're making a lot of money.")?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Errende", args!["When the sunken ship first drifted near Alberta, it was immediately found by one of the Alberta Security Knights."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Errende", args!["That Security Knight ventured inside and found an infant deep inside one of the rooms. Next to the baby was a music box."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Errende", args!["This baby was the one and only survivor from the sunken ship. He was brought up in Alberta, although he was treated with contempt when he was a child. He's fine now, but I digress."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Errende", args!["As for the sunken ship, I'm unsure of whether or not it was a pirate ship. It is said that skeleton monsters wearing pirate costumes roam its remains."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Errende", args!["One of Alberta's other mysteries is the elusive Turtle Island. It seems that one seafarer has found a dependable route to that place and is giving passage to adventurers."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Errende", args!["Still, it seems Turtle Island is not quite safe. Two squads of Alberta Security Knights have already traveled there, but have not yet returned. Verily, this is cause for concern."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Errende", args!["Still, that didn't stop me from visiting that place. By sheer accident, I found the journal of an adventurer who had already been there. It seems he's a famous scholar now."])?;
-                                        ctx.next()?;
-                                        ctx.call(Function::Cutin, vec![Val::from("bard_eland02"), Val::from(2)])?;
-                                        ctx.lines_as("Errende", args!["In that journal are details about an ultimate swordsman, and the exploration of Turtle Island. I'm sure that anyone seeking treasure in that place will find exciting adventure."])?;
-                                    }
-                                }
+                            } else if l_random.clone() == 2 {
+                                ctx.mes("Okay, let me tell you a story about Morocc, city of the desert. Adventurers worth their salt are expected to have explored the city and its surrounding desert.")?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["The Sphinx and the Pyramids are especially popular areas of exploration for adventurers. Have you been there before? I haven't yet, but perhaps someday I'll go."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["While I was in Morocc, I found a Merchant that sells Sword Maces to Priests and Priestess. Aside from those, Priests are prohibited from using any kind of weapon with blades."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["I also saw an energetic little boy who kept begging his father to tame a Munak for him. I heard the father speak a bit, and it seems that one of his friends from Morocc is lost in Alberta."])?;
+                                ctx.next()?;
+                                ctx.call(Function::Cutin, vec![Val::from("bard_eland02"), Val::from(2)])?;
+                                ctx.lines_as("Errende", args!["In any case, I helped the father with an errand, and he gave me a mysterious box in return. When I opened that box, I found a strange feather. I'm unaware of how it works, though..."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Errende",
+                                    args!["I wonder if that man's friend, Pandger Mayer, ever found", "his way back home..."],
+                                )?;
+                            } else if l_random.clone() == 3 {
+                                ctx.mes("Why don't we talk about Alberta? There is a sunken ship developed by an event agency as a place where adventurers may go on expeditions. It seems they're making a lot of money.")?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["When the sunken ship first drifted near Alberta, it was immediately found by one of the Alberta Security Knights."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["That Security Knight ventured inside and found an infant deep inside one of the rooms. Next to the baby was a music box."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["This baby was the one and only survivor from the sunken ship. He was brought up in Alberta, although he was treated with contempt when he was a child. He's fine now, but I digress."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["As for the sunken ship, I'm unsure of whether or not it was a pirate ship. It is said that skeleton monsters wearing pirate costumes roam its remains."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["One of Alberta's other mysteries is the elusive Turtle Island. It seems that one seafarer has found a dependable route to that place and is giving passage to adventurers."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["Still, it seems Turtle Island is not quite safe. Two squads of Alberta Security Knights have already traveled there, but have not yet returned. Verily, this is cause for concern."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Errende", args!["Still, that didn't stop me from visiting that place. By sheer accident, I found the journal of an adventurer who had already been there. It seems he's a famous scholar now."])?;
+                                ctx.next()?;
+                                ctx.call(Function::Cutin, vec![Val::from("bard_eland02"), Val::from(2)])?;
+                                ctx.lines_as("Errende", args!["In that journal are details about an ultimate swordsman, and the exploration of Turtle Island. I'm sure that anyone seeking treasure in that place will find exciting adventure."])?;
                             }
                         } else {
                             ctx.call(Function::Cutin, vec![Val::from("bard_eland01"), Val::from(2)])?;
@@ -1559,12 +1519,10 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                     l_random = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
                                     if l_random.clone() == 1 {
                                         ctx.call(Function::SoundEffect, vec![Val::from("ring_of_nibelungen.wav"), Val::from(0)])?;
+                                    } else if l_random.clone() == 2 {
+                                        ctx.call(Function::SoundEffect, vec![Val::from("dont_forget_me_not.wav"), Val::from(0)])?;
                                     } else {
-                                        if l_random.clone() == 2 {
-                                            ctx.call(Function::SoundEffect, vec![Val::from("dont_forget_me_not.wav"), Val::from(0)])?;
-                                        } else {
-                                            ctx.call(Function::SoundEffect, vec![Val::from("in_to_the_abyss.wav"), Val::from(0)])?;
-                                        }
+                                        ctx.call(Function::SoundEffect, vec![Val::from("in_to_the_abyss.wav"), Val::from(0)])?;
                                     }
                                 } else {
                                     ctx.call(Function::Cutin, vec![Val::from("bard_eland04"), Val::from(2)])?;
@@ -1657,157 +1615,155 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                     ctx.close_window()?;
                                     ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                                     return Err(Stop::End);
+                                } else if l_random.clone() == 2 {
+                                    ctx.lines(args![
+                                        "^483D8BThe sounds of galloping",
+                                        "Echo in the distance.",
+                                        "A cloud of hazy dust",
+                                        "Fills the setting sun.",
+                                        "Thousands of eyes open",
+                                        "Torches on the castle",
+                                        "Flare like thousands of Ifrits."
+                                    ])?;
+                                    ctx.next()?;
+                                    ctx.lines(args![
+                                        "^483D8BHear the throbbing of my heart,",
+                                        "The blood flowing in my veins.",
+                                        "Feeling the heaviness of my armor.",
+                                        "The enemy has appeared before us.^000000"
+                                    ])?;
+                                    ctx.next()?;
+                                    ctx.lines(args![
+                                        "^483D8BBeat the drums hard, harder!",
+                                        "Courage, soldiers, march forward!",
+                                        "Shout loud, soldiers, louder!",
+                                        "Today will never come back!^000000"
+                                    ])?;
+                                    ctx.next()?;
+                                    ctx.lines(args![
+                                        "^483D8BStun the sky",
+                                        "Provoke the earth.",
+                                        "I feel my heartbeat again.",
+                                        "Blow the bugle to",
+                                        "Sway the fortress.",
+                                        "Today will never come back!^000000"
+                                    ])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Errende", args!["Ah, this is called 'Drumming in the Battlefield,' which was written by Mr. Iolo. Yes, I rather like this song."])?;
                                 } else {
-                                    if l_random.clone() == 2 {
-                                        ctx.lines(args![
-                                            "^483D8BThe sounds of galloping",
-                                            "Echo in the distance.",
-                                            "A cloud of hazy dust",
-                                            "Fills the setting sun.",
-                                            "Thousands of eyes open",
-                                            "Torches on the castle",
-                                            "Flare like thousands of Ifrits."
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines(args![
-                                            "^483D8BHear the throbbing of my heart,",
-                                            "The blood flowing in my veins.",
-                                            "Feeling the heaviness of my armor.",
-                                            "The enemy has appeared before us.^000000"
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines(args![
-                                            "^483D8BBeat the drums hard, harder!",
-                                            "Courage, soldiers, march forward!",
-                                            "Shout loud, soldiers, louder!",
-                                            "Today will never come back!^000000"
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines(args![
-                                            "^483D8BStun the sky",
-                                            "Provoke the earth.",
-                                            "I feel my heartbeat again.",
-                                            "Blow the bugle to",
-                                            "Sway the fortress.",
-                                            "Today will never come back!^000000"
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Errende", args!["Ah, this is called 'Drumming in the Battlefield,' which was written by Mr. Iolo. Yes, I rather like this song."])?;
-                                    } else {
-                                        if (l_num.clone() == 3 || l_num.clone() == 4) {
-                                            ctx.mes("[Errende]")?;
-                                            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                                ctx.mes("Heroic warrior,")?;
-                                            } else {
-                                                ctx.mes("My fair lady,")?;
-                                            }
-                                            ctx.mes("Please listen to my song. If you have a flower in hand and are in love, let's count the flower petals as we go along.")?;
-                                            ctx.next()?;
-                                            ctx.lines(args![
-                                                "^483D8BAt One, I fall in love.",
-                                                "At Two, you give me your smile.",
-                                                "At Three, I adore your touch.",
-                                                "At Four, a tender kiss.",
-                                                "At Five, we change our minds.",
-                                                "A petal scatters through the air.^000000"
-                                            ])?;
-                                            ctx.next()?;
-                                            ctx.call(Function::Cutin, vec![Val::from("bard_eland04"), Val::from(2)])?;
-                                            ctx.lines(args![
-                                                "^483D8BAt Six, I fall in love~",
-                                                "At Seven, you fall in love~",
-                                                "At Eight~^000000"
-                                            ])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Errende", args!["At eight~", "At... Eight...", "What was next...?"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Errende",
-                                                args![
-                                                    "Oh my...!",
-                                                    "What was the next part?!",
-                                                    "What was the 8th love?!",
-                                                    "How shameful for a Bard",
-                                                    "to forget the words",
-                                                    "to a song!"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Errende",
-                                                args![
-                                                    "I...",
-                                                    "I can't bear the humiliation!",
-                                                    "Or the suspense of what",
-                                                    "happens next...!"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Errende", args!["You're an adventurer, aren't you? So you must travel quite a bit? It's embarassing for me to ask,", "but I have a favor to ask...!"])?;
-                                            ctx.next()?;
-                                            if Val::from(runtime::select_values(
-                                                ctx,
-                                                &[Val::from("Sure, no problem.:I ain't gonna help you.")],
-                                            )?) == 1
-                                            {
-                                                ctx.call(Function::Cutin, vec![Val::from("bard_eland01"), Val::from(2)])?;
-                                                ctx.lines_as(
-                                                    "Errende",
-                                                    args!["Thank you, so much!", "Let's see, who would know?", "I've got it! Gunther!"],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Errende", args!["If perchance you happen to meet ^483D8BGunther Doubleharmony^000000, please inform him of my dilemna."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Errende", args!["Tell him that ^483D8BMinty Errende^000000 happened to forget a line of the song, ^483D8BAt One, I Fall in Love^000000. The line is called ^483D8B8th love^000000."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Errende", args!["I beseech you, if you meet him, please ask him of the 8th love and inform me of that lyric immediately~"])?;
-                                                if ctx.var("gef_bard_q").get()? == 1 {
-                                                    ctx.var("gef_bard_q").set(Val::from(2))?;
-                                                }
-                                                if ctx.var("gef_bard_q").get()? == 21 {
-                                                    ctx.var("gef_bard_q").set(Val::from(22))?;
-                                                }
-                                            } else {
-                                                ctx.lines_as("Errende", args!["*Sigh...*", "I can't remember the 8th part of this song if my life depended on it. And it does~! *Wahhhh~*"])?;
-                                                if ctx.var("gef_bard_q").get()? == 1 {
-                                                    ctx.var("gef_bard_q").set(Val::from(7))?;
-                                                }
-                                                if ctx.var("gef_bard_q").get()? == 21 {
-                                                    ctx.var("gef_bard_q").set(Val::from(27))?;
-                                                }
-                                            }
-                                            ctx.close_window()?;
-                                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                            return Err(Stop::End);
+                                    if (l_num.clone() == 3 || l_num.clone() == 4) {
+                                        ctx.mes("[Errende]")?;
+                                        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                                            ctx.mes("Heroic warrior,")?;
+                                        } else {
+                                            ctx.mes("My fair lady,")?;
                                         }
-                                        ctx.lines(args![
-                                            "^483D8BA good Bard sings",
-                                            "To please his listener.",
-                                            "So do not expect a sad song",
-                                            "That deepens your anguish.^000000"
-                                        ])?;
+                                        ctx.mes("Please listen to my song. If you have a flower in hand and are in love, let's count the flower petals as we go along.")?;
                                         ctx.next()?;
                                         ctx.lines(args![
-                                            "^483D8BA good Dancer dances",
-                                            "To please her audience.",
-                                            "Shall we dance together?",
-                                            "Just hold my hands.",
-                                            "La la la~ La la la~^000000"
+                                            "^483D8BAt One, I fall in love.",
+                                            "At Two, you give me your smile.",
+                                            "At Three, I adore your touch.",
+                                            "At Four, a tender kiss.",
+                                            "At Five, we change our minds.",
+                                            "A petal scatters through the air.^000000"
                                         ])?;
+                                        ctx.next()?;
+                                        ctx.call(Function::Cutin, vec![Val::from("bard_eland04"), Val::from(2)])?;
+                                        ctx.lines(args![
+                                            "^483D8BAt Six, I fall in love~",
+                                            "At Seven, you fall in love~",
+                                            "At Eight~^000000"
+                                        ])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Errende", args!["At eight~", "At... Eight...", "What was next...?"])?;
                                         ctx.next()?;
                                         ctx.lines_as(
-                                            ctx.var("@name$").get()?,
+                                            "Errende",
                                             args![
-                                                "By the way...",
-                                                "Why do you guys play",
-                                                "discords sometimes?",
-                                                "It sounds weird",
-                                                "when you do that."
+                                                "Oh my...!",
+                                                "What was the next part?!",
+                                                "What was the 8th love?!",
+                                                "How shameful for a Bard",
+                                                "to forget the words",
+                                                "to a song!"
                                             ],
                                         )?;
                                         ctx.next()?;
-                                        ctx.lines_as("Errende", args![((Val::from("H-how can you say such a thing, ") + ctx.var("@name$").get()?) + Val::from("? Have you ever been a Bard before? It's difficult to come up with fresh, original melodies!"))])?;
+                                        ctx.lines_as(
+                                            "Errende",
+                                            args![
+                                                "I...",
+                                                "I can't bear the humiliation!",
+                                                "Or the suspense of what",
+                                                "happens next...!"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Errende", args!["You're an adventurer, aren't you? So you must travel quite a bit? It's embarassing for me to ask,", "but I have a favor to ask...!"])?;
+                                        ctx.next()?;
+                                        if Val::from(runtime::select_values(
+                                            ctx,
+                                            &[Val::from("Sure, no problem.:I ain't gonna help you.")],
+                                        )?) == 1
+                                        {
+                                            ctx.call(Function::Cutin, vec![Val::from("bard_eland01"), Val::from(2)])?;
+                                            ctx.lines_as(
+                                                "Errende",
+                                                args!["Thank you, so much!", "Let's see, who would know?", "I've got it! Gunther!"],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Errende", args!["If perchance you happen to meet ^483D8BGunther Doubleharmony^000000, please inform him of my dilemna."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Errende", args!["Tell him that ^483D8BMinty Errende^000000 happened to forget a line of the song, ^483D8BAt One, I Fall in Love^000000. The line is called ^483D8B8th love^000000."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Errende", args!["I beseech you, if you meet him, please ask him of the 8th love and inform me of that lyric immediately~"])?;
+                                            if ctx.var("gef_bard_q").get()? == 1 {
+                                                ctx.var("gef_bard_q").set(Val::from(2))?;
+                                            }
+                                            if ctx.var("gef_bard_q").get()? == 21 {
+                                                ctx.var("gef_bard_q").set(Val::from(22))?;
+                                            }
+                                        } else {
+                                            ctx.lines_as("Errende", args!["*Sigh...*", "I can't remember the 8th part of this song if my life depended on it. And it does~! *Wahhhh~*"])?;
+                                            if ctx.var("gef_bard_q").get()? == 1 {
+                                                ctx.var("gef_bard_q").set(Val::from(7))?;
+                                            }
+                                            if ctx.var("gef_bard_q").get()? == 21 {
+                                                ctx.var("gef_bard_q").set(Val::from(27))?;
+                                            }
+                                        }
+                                        ctx.close_window()?;
+                                        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                                        return Err(Stop::End);
                                     }
+                                    ctx.lines(args![
+                                        "^483D8BA good Bard sings",
+                                        "To please his listener.",
+                                        "So do not expect a sad song",
+                                        "That deepens your anguish.^000000"
+                                    ])?;
+                                    ctx.next()?;
+                                    ctx.lines(args![
+                                        "^483D8BA good Dancer dances",
+                                        "To please her audience.",
+                                        "Shall we dance together?",
+                                        "Just hold my hands.",
+                                        "La la la~ La la la~^000000"
+                                    ])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        ctx.var("@name$").get()?,
+                                        args![
+                                            "By the way...",
+                                            "Why do you guys play",
+                                            "discords sometimes?",
+                                            "It sounds weird",
+                                            "when you do that."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Errende", args![((Val::from("H-how can you say such a thing, ") + ctx.var("@name$").get()?) + Val::from("? Have you ever been a Bard before? It's difficult to come up with fresh, original melodies!"))])?;
                                 }
                                 ctx.close_window()?;
                                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
@@ -1968,72 +1924,70 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
+                } else if l_random.clone() == 2 {
+                    ctx.lines_as(
+                        "Kino Kitty",
+                        args![
+                            "Ah...",
+                            "I do feel like singing a song. You know, every song has its own story. ^333333*Cough Cough*^000000"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.mes("^3355FFKino Kitty coughed a few times, wiping his mouth with his sleeve. As he adjusts the guitar strings, you notice small stains of blood on his sleeve. Then, he began to sing.^000000")?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^D43D1ABrave hero Siegfried ",
+                        "Vanquished a mighty dragon\t",
+                        "Its blood coated his skin",
+                        "Making it impenetrable",
+                        "Save for one tender spot",
+                        "Blocked by a single leaf",
+                        "From a linden tree.^000000"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^D43D1ASiegfried was powerful",
+                        "Clearly invincible, save for",
+                        "those who knew of his secret.",
+                        "In the end he was killed, by",
+                        "A spear flung into his back",
+                        "set into motion by the wrath",
+                        "And jealousy of a woman.^000000"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Jorti",
+                        args![
+                            "Bravo, Bravo~!",
+                            "Uncle Kino is the best Bard in the world~! Jorti likes Uncle Kino's singing!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Kino Kitty", args!["Thank you, Jorti.", "Anytime for my", "little princess."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Kino Kitty", args!["This song is about Sigfried, who was invincible, except for a single spot on his back. Just singing this reminds me of the influence women have over the world."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if l_random.clone() == 2 {
-                        ctx.lines_as(
-                            "Kino Kitty",
-                            args![
-                                "Ah...",
-                                "I do feel like singing a song. You know, every song has its own story. ^333333*Cough Cough*^000000"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.mes("^3355FFKino Kitty coughed a few times, wiping his mouth with his sleeve. As he adjusts the guitar strings, you notice small stains of blood on his sleeve. Then, he began to sing.^000000")?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^D43D1ABrave hero Siegfried ",
-                            "Vanquished a mighty dragon\t",
-                            "Its blood coated his skin",
-                            "Making it impenetrable",
-                            "Save for one tender spot",
-                            "Blocked by a single leaf",
-                            "From a linden tree.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^D43D1ASiegfried was powerful",
-                            "Clearly invincible, save for",
-                            "those who knew of his secret.",
-                            "In the end he was killed, by",
-                            "A spear flung into his back",
-                            "set into motion by the wrath",
-                            "And jealousy of a woman.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jorti",
-                            args![
-                                "Bravo, Bravo~!",
-                                "Uncle Kino is the best Bard in the world~! Jorti likes Uncle Kino's singing!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Kino Kitty", args!["Thank you, Jorti.", "Anytime for my", "little princess."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Kino Kitty", args!["This song is about Sigfried, who was invincible, except for a single spot on his back. Just singing this reminds me of the influence women have over the world."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as("Kino Kitty", args!["You want to", "listen to a story?", "Mmm, let me think..."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Kino Kitty", args!["When you go venture Southwest from Morocc, you will arrive at Fortress Sandarman. Did you know that the fortress is built on a sand hill, which serves as a natural defense?"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Kino Kitty", args!["When you go South of Sandarman, you will see Paros Lighthouse. East from the Lighthouse, you will see Kokomo Beach. North of the beach is Papuchica Forest."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Kino Kitty", args!["I'm not boring you, am I? I just wanted to tell you about the village of Umbala, which is above that last place I was telling you about. Have you ever been there?"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Kino Kitty", args!["Umbala itself is a pretty interesting place. But I'm really interested in this giant tree in Umbala. I've heard that it leads to Niffheim..."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Kino Kitty",
-                            args![
-                                "I wonder...",
-                                "Could that tree be Yggdrasil? Is it possible that I could meet her in the Niffheim, realm of the dead?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.lines_as("Kino Kitty", args!["You want to", "listen to a story?", "Mmm, let me think..."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Kino Kitty", args!["When you go venture Southwest from Morocc, you will arrive at Fortress Sandarman. Did you know that the fortress is built on a sand hill, which serves as a natural defense?"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Kino Kitty", args!["When you go South of Sandarman, you will see Paros Lighthouse. East from the Lighthouse, you will see Kokomo Beach. North of the beach is Papuchica Forest."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Kino Kitty", args!["I'm not boring you, am I? I just wanted to tell you about the village of Umbala, which is above that last place I was telling you about. Have you ever been there?"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Kino Kitty", args!["Umbala itself is a pretty interesting place. But I'm really interested in this giant tree in Umbala. I've heard that it leads to Niffheim..."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Kino Kitty",
+                        args![
+                            "I wonder...",
+                            "Could that tree be Yggdrasil? Is it possible that I could meet her in the Niffheim, realm of the dead?"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -2137,96 +2091,94 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.lines_as("Kino Kitty", args!["This song is about Sigfried, who was invincible, except for a single spot on his back. Just singing this reminds me of the influence women have over the world."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
+                    } else if l_random.clone() == 2 {
+                        ctx.lines_as(
+                            "Kino Kitty",
+                            args![
+                                "Ah...",
+                                "I do feel like singing a song. You know, every song has its own story. ^333333*Cough Cough*^000000"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.mes("^3355FFKino Kitty coughed a few times, wiping his mouth with his sleeve. As he adjusts the guitar strings, you notice small stains of blood on his sleeve. Then, he began to sing.^000000")?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^D43D1AI still remember feeling",
+                            "Your shoulder's warmth",
+                            "As I leaned on it.",
+                            "You held my hands",
+                            "until the final moment.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^D43D1ACrying on the inside,",
+                            "I saw you off with a smile.",
+                            "Things would never be the same,",
+                            "But I'd remember every single",
+                            "Moment we shared.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^D43D1AI still remember the clear chimes",
+                            "Of the Prontera Church Bells",
+                            "The ice cream we shared in Morocc,",
+                            "Being chased by bats",
+                            "In Payon dungeon.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^D43D1AGazing together at",
+                            "Comodo's fireworks",
+                            "Snuggles under the",
+                            "Gently falling Lutie",
+                            "Snowflakes...^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^D43D1AYour beautiful soul",
+                            "Will be with Odin.",
+                            "When the day",
+                            "Of the dusk comes,",
+                            "A brand new place",
+                            "Will be before your eyes.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^D43D1AI will remember you forever.",
+                            "Forget me not, call my name.",
+                            "I'll hear you, and look to the skies.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Jorti",
+                            args!["Ah, Uncle Kino, isn't this the song my mom always sang? Sing more songs, please! Please~!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Kino Kitty", args!["You're right...", "She always used to sing this song... ^333333*Cough*^000000 There are always people waiting for their beloved to return..."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Kino Kitty", args!["If you have someone who you've left behind, someone that is waiting for you, make sure you come back to that person. You'll regret it if you don't."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     } else {
-                        if l_random.clone() == 2 {
-                            ctx.lines_as(
-                                "Kino Kitty",
-                                args![
-                                    "Ah...",
-                                    "I do feel like singing a song. You know, every song has its own story. ^333333*Cough Cough*^000000"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.mes("^3355FFKino Kitty coughed a few times, wiping his mouth with his sleeve. As he adjusts the guitar strings, you notice small stains of blood on his sleeve. Then, he began to sing.^000000")?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^D43D1AI still remember feeling",
-                                "Your shoulder's warmth",
-                                "As I leaned on it.",
-                                "You held my hands",
-                                "until the final moment.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^D43D1ACrying on the inside,",
-                                "I saw you off with a smile.",
-                                "Things would never be the same,",
-                                "But I'd remember every single",
-                                "Moment we shared.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^D43D1AI still remember the clear chimes",
-                                "Of the Prontera Church Bells",
-                                "The ice cream we shared in Morocc,",
-                                "Being chased by bats",
-                                "In Payon dungeon.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^D43D1AGazing together at",
-                                "Comodo's fireworks",
-                                "Snuggles under the",
-                                "Gently falling Lutie",
-                                "Snowflakes...^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^D43D1AYour beautiful soul",
-                                "Will be with Odin.",
-                                "When the day",
-                                "Of the dusk comes,",
-                                "A brand new place",
-                                "Will be before your eyes.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^D43D1AI will remember you forever.",
-                                "Forget me not, call my name.",
-                                "I'll hear you, and look to the skies.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Jorti",
-                                args!["Ah, Uncle Kino, isn't this the song my mom always sang? Sing more songs, please! Please~!"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Kino Kitty", args!["You're right...", "She always used to sing this song... ^333333*Cough*^000000 There are always people waiting for their beloved to return..."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Kino Kitty", args!["If you have someone who you've left behind, someone that is waiting for you, make sure you come back to that person. You'll regret it if you don't."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as("Kino Kitty", args!["You want to", "listen to a story?", "Mmm, let me think..."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Kino Kitty", args!["When you go venture Southwest from Morocc, you will arrive at Fortress Sandarman. Did you know that the fortress is built on a sand hill, which serves as a natural defense?"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Kino Kitty", args!["When you go South of Sandarman, you will see Paros Lighthouse. East from the Lighthouse, you will see Kokomo Beach. North of the beach is Papuchica Forest."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Kino Kitty", args!["I'm not boring you, am I? I just wanted to tell you about the village of Umbala, which is above that last place I was telling you about. Have you ever been there?"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Kino Kitty", args!["Umbala itself is a pretty interesting place. But I'm really interested in this giant tree in Umbala. I've heard that it leads to Niffheim..."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Kino Kitty",
-                                args![
-                                    "I wonder...",
-                                    "Could that tree be Yggdrasil? Is it possible that I could meet her in the Niffheim, realm of the dead?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                        ctx.lines_as("Kino Kitty", args!["You want to", "listen to a story?", "Mmm, let me think..."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Kino Kitty", args!["When you go venture Southwest from Morocc, you will arrive at Fortress Sandarman. Did you know that the fortress is built on a sand hill, which serves as a natural defense?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Kino Kitty", args!["When you go South of Sandarman, you will see Paros Lighthouse. East from the Lighthouse, you will see Kokomo Beach. North of the beach is Papuchica Forest."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Kino Kitty", args!["I'm not boring you, am I? I just wanted to tell you about the village of Umbala, which is above that last place I was telling you about. Have you ever been there?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Kino Kitty", args!["Umbala itself is a pretty interesting place. But I'm really interested in this giant tree in Umbala. I've heard that it leads to Niffheim..."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Kino Kitty",
+                            args![
+                                "I wonder...",
+                                "Could that tree be Yggdrasil? Is it possible that I could meet her in the Niffheim, realm of the dead?"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
                 if !matched2 && subject2.loosely_equals(&Val::from(2)) {
@@ -2558,26 +2510,18 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.mes(
                                             "There's no reason to be scared. The scary people with swords only use them on monsters, okay?",
                                         )?;
+                                    } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
+                                        ctx.mes("You don't need to be scared, that person is a servant of God, okay?")?;
+                                    } else if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
+                                        || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
+                                    {
+                                        ctx.mes("There's no reason to be afraid of this riffraff, your Uncle Kino is here, okay?")?;
+                                    } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?) {
+                                        ctx.mes("There's no reason to be afraid. I know that person looks scary, but you're a good girl, so you'll be okay.")?;
+                                    } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?) {
+                                        ctx.mes("There's no reason to be scared, honey. It's just a Blacksmith.")?;
                                     } else {
-                                        if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
-                                            ctx.mes("You don't need to be scared, that person is a servant of God, okay?")?;
-                                        } else {
-                                            if (ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_THIEF")?)
-                                                || ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_ROGUE")?))
-                                            {
-                                                ctx.mes("There's no reason to be afraid of this riffraff, your Uncle Kino is here, okay?")?;
-                                            } else {
-                                                if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?) {
-                                                    ctx.mes("There's no reason to be afraid. I know that person looks scary, but you're a good girl, so you'll be okay.")?;
-                                                } else {
-                                                    if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_BLACKSMITH")?) {
-                                                        ctx.mes("There's no reason to be scared, honey. It's just a Blacksmith.")?;
-                                                    } else {
-                                                        ctx.mes("There's no reason to be scared. See...? That person won't hurt you.")?;
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        ctx.mes("There's no reason to be scared. See...? That person won't hurt you.")?;
                                     }
                                     ctx.next()?;
                                     ctx.lines_as(
@@ -2586,115 +2530,107 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     )?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
-                                } else {
-                                    if ctx.var("gef_bard_q").get()? == 2 {
-                                        ctx.lines_as("Mysterious Bard", args!["You're such a kind, young person. I will remember your name. I would much appreciate it if you would also remember mine."])?;
+                                } else if ctx.var("gef_bard_q").get()? == 2 {
+                                    ctx.lines_as("Mysterious Bard", args!["You're such a kind, young person. I will remember your name. I would much appreciate it if you would also remember mine."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Mysterious Bard", args!["I am known as Kino Kitty. I am a wandering poet who wishes to rediscover wishes and dreams."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Kino Kitty", args!["When next we meet, I will tell you what I have heard and experienced. That is, I am willing to spend my time with you."])?;
+                                    ctx.var("gef_bard_q").set(Val::from(22))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if ctx.var("gef_bard_q").get()? == 3 {
+                                    ctx.lines_as("Mysterious Bard", args!["You're such a kind, young person. I will remember your name. I would much appreciate it if you would also remember mine."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Mysterious Bard", args!["I am known as Kino Kitty. I am a wandering poet who wishes to rediscover wishes and dreams."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Kino Kitty", args!["When next we meet, I will tell you what I have heard and experienced. That is, I am willing to spend my time with you."])?;
+                                    ctx.var("gef_bard_q").set(Val::from(23))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if ctx.var("gef_bard_q").get()? == 4 {
+                                    ctx.lines_as(
+                                        "Mysterious Bard",
+                                        args!["Oh, you're most admirable. You truly do respect Bards, don't you?"],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Mysterious Bard", args!["Now that I think about it, are you look for anything, or is there a reason you wish to speak to me?"])?;
+                                    ctx.next()?;
+                                    if Val::from(runtime::select_values(
+                                        ctx,
+                                        &[Val::from("I'm looking for Kino Kitty...:Nothing, really.")],
+                                    )?) == 1
+                                    {
+                                        ctx.lines_as(
+                                            "Kino Kitty",
+                                            args![
+                                                "How do you",
+                                                "know my name?",
+                                                "Ah, I'm flattered",
+                                                "that my reputation",
+                                                "precedes me."
+                                            ],
+                                        )?;
                                         ctx.next()?;
-                                        ctx.lines_as("Mysterious Bard", args!["I am known as Kino Kitty. I am a wandering poet who wishes to rediscover wishes and dreams."])?;
+                                        ctx.mes("^3355FFYou give some candy to the crying girl and relate your tale regarding the lyrics for the song 'At One, I Fall in Love.'^000000")?;
                                         ctx.next()?;
-                                        ctx.lines_as("Kino Kitty", args!["When next we meet, I will tell you what I have heard and experienced. That is, I am willing to spend my time with you."])?;
-                                        ctx.var("gef_bard_q").set(Val::from(22))?;
+                                        ctx.lines_as("Kino Kitty", args!["Hmm...", "I'm insulted that Errende does not like the words I wrote for 'At One, I Fall in Love.' But, I suppose he is a romantic at heart."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            ctx.var("@name$").get()?,
+                                            args!["So...", "Do you know the", "original words", "for the song?"],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Kino Kitty", args!["The original lyrics were horrible. There's not enough room in my mind to remember so romantic nonsense. ^333333*Cries*...^000000"])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Kino Kitty", args!["Romance is for foolish dreamers! I refuse to sing or even remember such vapid lyrics!"])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Jorti",
+                                            args![
+                                                "U-uncle Kino",
+                                                "You're scaring me.",
+                                                "Please don't yell!",
+                                                "It makes me want",
+                                                "to cry..."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Kino Kitty", args!["Oh...", "I'm sorry, princess. It won't happen again. Your Unclde Kino will try to be good from now on."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Kino Kitty", args!["*Sigh...*", "Alright, listen."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Kino Kitty", args!["You'll need an old book of edda lyrics for the original words to the song. All the new books no longer contain the original version."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Kino Kitty", args!["I wonder...", "How did Errende happen to know the original lyrics? In any case, I'm sorry about all this. I supposed I'm a little jaded."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Kino Kitty", args!["You know, maybe you should go to Juno. There's a small book store on the book street, and you can probably find the song in that store."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Kino Kitty", args!["^333333^333333*Cough Cough*^000000^000000", "Wh-why do I have to suffer? Are my final days as a Bard on this earth soon approaching? I feel so pathetic..."])?;
+                                        ctx.var("gef_bard_q").set(Val::from(10))?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     } else {
-                                        if ctx.var("gef_bard_q").get()? == 3 {
-                                            ctx.lines_as("Mysterious Bard", args!["You're such a kind, young person. I will remember your name. I would much appreciate it if you would also remember mine."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Mysterious Bard", args!["I am known as Kino Kitty. I am a wandering poet who wishes to rediscover wishes and dreams."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Kino Kitty", args!["When next we meet, I will tell you what I have heard and experienced. That is, I am willing to spend my time with you."])?;
-                                            ctx.var("gef_bard_q").set(Val::from(23))?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if ctx.var("gef_bard_q").get()? == 4 {
-                                                ctx.lines_as(
-                                                    "Mysterious Bard",
-                                                    args!["Oh, you're most admirable. You truly do respect Bards, don't you?"],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Mysterious Bard", args!["Now that I think about it, are you look for anything, or is there a reason you wish to speak to me?"])?;
-                                                ctx.next()?;
-                                                if Val::from(runtime::select_values(
-                                                    ctx,
-                                                    &[Val::from("I'm looking for Kino Kitty...:Nothing, really.")],
-                                                )?) == 1
-                                                {
-                                                    ctx.lines_as(
-                                                        "Kino Kitty",
-                                                        args![
-                                                            "How do you",
-                                                            "know my name?",
-                                                            "Ah, I'm flattered",
-                                                            "that my reputation",
-                                                            "precedes me."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.mes("^3355FFYou give some candy to the crying girl and relate your tale regarding the lyrics for the song 'At One, I Fall in Love.'^000000")?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["Hmm...", "I'm insulted that Errende does not like the words I wrote for 'At One, I Fall in Love.' But, I suppose he is a romantic at heart."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        ctx.var("@name$").get()?,
-                                                        args!["So...", "Do you know the", "original words", "for the song?"],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["The original lyrics were horrible. There's not enough room in my mind to remember so romantic nonsense. ^333333*Cries*...^000000"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["Romance is for foolish dreamers! I refuse to sing or even remember such vapid lyrics!"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Jorti",
-                                                        args![
-                                                            "U-uncle Kino",
-                                                            "You're scaring me.",
-                                                            "Please don't yell!",
-                                                            "It makes me want",
-                                                            "to cry..."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["Oh...", "I'm sorry, princess. It won't happen again. Your Unclde Kino will try to be good from now on."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["*Sigh...*", "Alright, listen."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["You'll need an old book of edda lyrics for the original words to the song. All the new books no longer contain the original version."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["I wonder...", "How did Errende happen to know the original lyrics? In any case, I'm sorry about all this. I supposed I'm a little jaded."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["You know, maybe you should go to Juno. There's a small book store on the book street, and you can probably find the song in that store."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["^333333^333333*Cough Cough*^000000^000000", "Wh-why do I have to suffer? Are my final days as a Bard on this earth soon approaching? I feel so pathetic..."])?;
-                                                    ctx.var("gef_bard_q").set(Val::from(10))?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    ctx.lines_as("Mysterious Bard", args!["Really now?", "That's strange.", "You adventurers are always one some kind of adventure, aren't you? I mean, that's the very definition of the word."])?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            } else {
-                                                if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                                    ctx.lines_as("Kino Kitty", args!["You're such a nice young man. I will remember your name. I would much appreciate it if you would also remember mine."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Mysterious Bard", args!["I am known as Kino Kitty. I am a wandering poet who wishes to rediscover wishes and dreams."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Kino Kitty", args!["When next we meet, I will tell you what I have heard and experienced. That is, I am willing to spend my time with you."])?;
-                                                    ctx.var("gef_bard_q").set(Val::from(20))?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    ctx.lines_as("Mysterious Bard", args!["Ah, it is a privilege to meet a noble woman such as yourself. By your leave, I shall give you my name."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Mysterious Bard", args!["My lady, fair as wisteria, whose beauty rivals that of the goddess Freya, let me introduce myself as the poor poet who wanders the earth, Kino Kitty. I hope you remember me."])?;
-                                                    ctx.var("gef_bard_q").set(Val::from(20))?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
+                                        ctx.lines_as("Mysterious Bard", args!["Really now?", "That's strange.", "You adventurers are always one some kind of adventure, aren't you? I mean, that's the very definition of the word."])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
+                                } else if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                                    ctx.lines_as("Kino Kitty", args!["You're such a nice young man. I will remember your name. I would much appreciate it if you would also remember mine."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Mysterious Bard", args!["I am known as Kino Kitty. I am a wandering poet who wishes to rediscover wishes and dreams."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Kino Kitty", args!["When next we meet, I will tell you what I have heard and experienced. That is, I am willing to spend my time with you."])?;
+                                    ctx.var("gef_bard_q").set(Val::from(20))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else {
+                                    ctx.lines_as("Mysterious Bard", args!["Ah, it is a privilege to meet a noble woman such as yourself. By your leave, I shall give you my name."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Mysterious Bard", args!["My lady, fair as wisteria, whose beauty rivals that of the goddess Freya, let me introduce myself as the poor poet who wanders the earth, Kino Kitty. I hope you remember me."])?;
+                                    ctx.var("gef_bard_q").set(Val::from(20))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                         }
@@ -2738,84 +2674,80 @@ fn little_girl_jorti_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("gef_bard_q").get()? == 30 {
+        ctx.lines_as(
+            "Jorti",
+            args![
+                "La la la...",
+                "La la la...",
+                "Jorti doesn't cry anymore!",
+                "Jorti is going to enjoy Uncle Kino's songs and stories for as long as she can!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Jorti",
+            args![
+                "The songs Uncle Kino sings are ones that my mommy used to sing. She's not here, but maybe we can visit her someday!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Jorti",
+            args![
+                "Hey... The shiny black cross on your hand means you're a friend of Uncle Kino's. So that means, you're my friend too!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("gef_bard_q").get()?.number()? > 30 {
+        ctx.lines_as(
+            "Jorti",
+            args![
+                "Jorti tries not to cry anymore because it hurts Uncle Kino and then he coughs up more blood.",
+                "I miss my mommy a lot, but when I'm worried, it makes Uncle Kino worry a lot too."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Jorti",
+            args!["My mommy and daddy aren't here anymore, and I don't want Uncle Jorti to go away either."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Jorti",
+            args!["Um, I don't remember my daddy, but mommy lives far away, somewhere near the sky. That's what Uncle Kino says."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Jorti",
+            args!["U-Uncle Kino says we can't go see her yet because there are no flying boats yet..."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("gef_bard_q").get()? == 30 {
-            ctx.lines_as(
-                "Jorti",
-                args![
-                    "La la la...",
-                    "La la la...",
-                    "Jorti doesn't cry anymore!",
-                    "Jorti is going to enjoy Uncle Kino's songs and stories for as long as she can!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Jorti",
-                args![
-                    "The songs Uncle Kino sings are ones that my mommy used to sing. She's not here, but maybe we can visit her someday!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Jorti",
-                args![
-                    "Hey... The shiny black cross on your hand means you're a friend of Uncle Kino's. So that means, you're my friend too!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("gef_bard_q").get()?.number()? > 30 {
-                ctx.lines_as(
-                    "Jorti",
-                    args![
-                        "Jorti tries not to cry anymore because it hurts Uncle Kino and then he coughs up more blood.",
-                        "I miss my mommy a lot, but when I'm worried, it makes Uncle Kino worry a lot too."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Jorti",
-                    args!["My mommy and daddy aren't here anymore, and I don't want Uncle Jorti to go away either."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Jorti",
-                    args!["Um, I don't remember my daddy, but mommy lives far away, somewhere near the sky. That's what Uncle Kino says."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Jorti",
-                    args!["U-Uncle Kino says we can't go see her yet because there are no flying boats yet..."],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Mysterious Bard",
-                    args![
-                        "Even in the sandy wind,",
-                        "Even in the pouring rain,",
-                        "Even in the falling snow,",
-                        "I know it's--",
-                        "........"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Jorti", args!["Uncle...?", "Are you okay?"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Mysterious Bard",
-                    args![
-                        "Hmmm...",
-                        "I'm sorry, but this is a private performance. This song is only intended for my little Jorti."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
+        ctx.lines_as(
+            "Mysterious Bard",
+            args![
+                "Even in the sandy wind,",
+                "Even in the pouring rain,",
+                "Even in the falling snow,",
+                "I know it's--",
+                "........"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Jorti", args!["Uncle...?", "Are you okay?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Mysterious Bard",
+            args![
+                "Hmmm...",
+                "I'm sorry, but this is a private performance. This song is only intended for my little Jorti."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2828,68 +2760,62 @@ fn old_man_bq1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Sketzi Bundin", args!["Well, did you find what you were seeking for? Although all we have are old, dusty books, I hope you come by to visit. And please give my regards to your Bard friends."])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("gef_bard_q").get()? == 30 {
-            ctx.lines_as("Sketzi Bundin", args!["Interesting...", "You have a black cross seal on your hand. Is Kitty still around? I'm glad to see he's still alive. If you're a friend of his, then you are most welcome here."])?;
+    } else if ctx.var("gef_bard_q").get()? == 30 {
+        ctx.lines_as("Sketzi Bundin", args!["Interesting...", "You have a black cross seal on your hand. Is Kitty still around? I'm glad to see he's still alive. If you're a friend of his, then you are most welcome here."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("gef_bard_q").get()? == 31 {
+        ctx.lines_as("Sketzi Bundin", args!["Well, well, well. You're here again. So, what kind of books are you seeking today? Of course, all we have are old, dusty tomes full of eddas. Hahahaha~"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("gef_bard_q").get()? == 11 {
+        ctx.lines_as("Sketzi Bundin", args!["Welcome.", "You must be looking for something special. Well, we have almost every Norse poem, or 'edda.' This is the only place where you can find those kinds of old songs."])?;
+        ctx.next()?;
+        ctx.lines_as("Sketzi Bundin", args!["However, I cannot show these fragile books to just anybody. For the sake of preservation, I can only show these works to preferred customers."])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("Show him your left hand.:Show him your right hand.")],
+        )?) == 1
+        {
+            ctx.lines_as(
+                "Sketzi Bundin",
+                args![
+                    "Ah~! You must be the friend of a high ranking Bard! I see, I see. You must be a friend of Minty Errende."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sketzi Bundin",
+                args!["So, what is it that you're looking for? Well, I suppose I don't really need to ask that. Hahahaha~"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sketzi Bundin",
+                args!["Please...", "Take your time.", "I hope you find", "what you're", "looking for."],
+            )?;
+            ctx.var("gef_bard_q").set(Val::from(12))?;
             ctx.close_window()?;
             return Err(Stop::End);
         } else {
-            if ctx.var("gef_bard_q").get()? == 31 {
-                ctx.lines_as("Sketzi Bundin", args!["Well, well, well. You're here again. So, what kind of books are you seeking today? Of course, all we have are old, dusty tomes full of eddas. Hahahaha~"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("gef_bard_q").get()? == 11 {
-                    ctx.lines_as("Sketzi Bundin", args!["Welcome.", "You must be looking for something special. Well, we have almost every Norse poem, or 'edda.' This is the only place where you can find those kinds of old songs."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Sketzi Bundin", args!["However, I cannot show these fragile books to just anybody. For the sake of preservation, I can only show these works to preferred customers."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Show him your left hand.:Show him your right hand.")],
-                    )?) == 1
-                    {
-                        ctx.lines_as(
-                            "Sketzi Bundin",
-                            args![
-                                "Ah~! You must be the friend of a high ranking Bard! I see, I see. You must be a friend of Minty Errende."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Sketzi Bundin",
-                            args!["So, what is it that you're looking for? Well, I suppose I don't really need to ask that. Hahahaha~"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Sketzi Bundin",
-                            args!["Please...", "Take your time.", "I hope you find", "what you're", "looking for."],
-                        )?;
-                        ctx.var("gef_bard_q").set(Val::from(12))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as("Sketzi Bundin", args!["Let's see... Okay.", "Well, your heartbeat is a little faster than normal. You might want to look into that. You know, for the sake of your health?"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Sketzi Bundin", args!["You're not looking for any medical or health related books, are you? I'm sorry, but we don't carry any of those."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                } else {
-                    ctx.lines_as(
-                        "Sketzi Bundin",
-                        args![
-                            "Welcome.",
-                            "You must be looking for something special and rare. But we only carry one kind of book around here."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Sketzi Bundin", args!["If you're looking for monster information, why don't you check the Pronrera Library or the Monster Museum here in Juno?"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
+            ctx.lines_as("Sketzi Bundin", args!["Let's see... Okay.", "Well, your heartbeat is a little faster than normal. You might want to look into that. You know, for the sake of your health?"])?;
+            ctx.next()?;
+            ctx.lines_as("Sketzi Bundin", args!["You're not looking for any medical or health related books, are you? I'm sorry, but we don't carry any of those."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+    } else {
+        ctx.lines_as(
+            "Sketzi Bundin",
+            args![
+                "Welcome.",
+                "You must be looking for something special and rare. But we only carry one kind of book around here."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Sketzi Bundin", args!["If you're looking for monster information, why don't you check the Pronrera Library or the Monster Museum here in Juno?"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -3383,323 +3309,321 @@ fn bard_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+    } else if (ctx.var("gef_bard_q").get()? == 6 || ctx.var("gef_bard_q").get()? == 26) {
+        ctx.lines_as(
+            "Gunther Doubleharmony",
+            args![
+                "You came back again!",
+                "Huh, the song I wrote on your back? Hold on, hold on, let me think let me--ah, right, I got it!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Gunther Doubleharmony", args!["The words I wrote down on your back were written by Mr. Kitty, my idol, my hero! That song is the art of ^228B22Kino Kitty^000000!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Gunther Doubleharmony",
+            args!["I wish that someday I could be as great a Bard as him!"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if (ctx.var("gef_bard_q").get()? == 6 || ctx.var("gef_bard_q").get()? == 26) {
+        ctx.lines_as("Gunther Doubleharmony", args!["Hahaha~!", "Listen, listen!"])?;
+        ctx.next()?;
+        ctx.lines_as("Gunther Doubleharmony", args!["I was told this song from one of my friends about this Merchant who lives in Payon and everyone loves this song, especially because I'm singing it and you know that..."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Gunther Doubleharmony",
+            args![
+                "Oh, right...!",
+                "Do you wanna listen",
+                "to my song or a story?",
+                "I know you want to!",
+                "Right, right?"
+            ],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Show some interest.:Ignore him.")])?) == 1 {
             ctx.lines_as(
                 "Gunther Doubleharmony",
-                args![
-                    "You came back again!",
-                    "Huh, the song I wrote on your back? Hold on, hold on, let me think let me--ah, right, I got it!"
-                ],
+                args!["Yay~! I knew it!", "So you wanna hear", "a song or a story?"],
             )?;
             ctx.next()?;
-            ctx.lines_as("Gunther Doubleharmony", args!["The words I wrote down on your back were written by Mr. Kitty, my idol, my hero! That song is the art of ^228B22Kino Kitty^000000!"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Gunther Doubleharmony",
-                args!["I wish that someday I could be as great a Bard as him!"],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as("Gunther Doubleharmony", args!["Hahaha~!", "Listen, listen!"])?;
-            ctx.next()?;
-            ctx.lines_as("Gunther Doubleharmony", args!["I was told this song from one of my friends about this Merchant who lives in Payon and everyone loves this song, especially because I'm singing it and you know that..."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Gunther Doubleharmony",
-                args![
-                    "Oh, right...!",
-                    "Do you wanna listen",
-                    "to my song or a story?",
-                    "I know you want to!",
-                    "Right, right?"
-                ],
-            )?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("Show some interest.:Ignore him.")])?) == 1 {
-                ctx.lines_as(
-                    "Gunther Doubleharmony",
-                    args!["Yay~! I knew it!", "So you wanna hear", "a song or a story?"],
-                )?;
-                ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("A song:A story:Maybe some other time")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        'b2: {
-                            let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.lines_as(
-                                    "Gunther Doubleharmony",
-                                    args![
-                                        "Gunther sings!",
-                                        "Gunther dances!",
-                                        "The tile of this song is~",
-                                        "'The Rich Mr. Kim~!'"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Merchant of Payon",
-                                    "So poooooooor~",
-                                    "No money for armor",
-                                    "No money to make."
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Sold the",
-                                    "Cotton Shirt",
-                                    "Off his back",
-                                    "No pity he'll take.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22First he only sold Red Pots",
-                                    "At first, he only sold red pots.",
-                                    "Then he moved up to Carrots, whoohoo~",
-                                    "He could afford new armor",
-                                    "and even wear it,",
-                                    "whoohoo~^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22But one day, he was scammed",
-                                    "Scammed by a wicked guild.",
-                                    "Made poor once again.",
-                                    "He decided to go to Ant Hell",
-                                    "Right there",
-                                    "And right then."
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Bats, Dwarves, Eggs, Ants!",
-                                    "He battled them all~",
-                                    "Worm Peelings, Jellopy!",
-                                    "He gathered loot great and small."
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Then the glorious day came",
-                                    "When he found a valuable card",
-                                    "That'd bring great wealth to his naaaame~^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22But he kept it dear to him",
-                                    "To remember his times of",
-                                    "working so hard.",
-                                    "He never sold it, never sold",
-                                    "his precious card~^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["That's a very old story about rich Mr. Kim, and his rise from rags to riches to rags to riches. Is it true or is it fiction? Oh, please don't ask me! I've no clue!"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.lines_as("Gunther Doubleharmony", args!["*Ahem*", "Gunther sings ", "of Yggdrasil~"])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Evergreen Yggdrasil~",
-                                    "Giant ashen tree",
-                                    "reaching for the sky.",
-                                    "Crystal, morning dew",
-                                    "From its leaves",
-                                    "Formed Urd's Pond.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Three wise girls.",
-                                    "Seated beneath its boughs.",
-                                    "Urd of the past,",
-                                    "Belldandy of the present",
-                                    "Skuld the future.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Spinning, weaving",
-                                    "Threads of destiny.",
-                                    "Evergreen Yggdrasil~",
-                                    "Giant ashen tree",
-                                    "reaching for the sky.",
-                                    "Its roots soaked with tears.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Death in Hvergelmir.",
-                                    "An evil dragon",
-                                    "Burning its roots",
-                                    "With eternal flame.",
-                                    "The evil dragon Nidhogg",
-                                    "Living between Yggdrasil",
-                                    "and Niffheim.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Evergreen Yggdrasil~",
-                                    "Giant ashen tree",
-                                    "reaching for the sky.",
-                                    "Wisdom in its roots",
-                                    "Roots reaching",
-                                    "Mimir's pond.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22Guarded by a wise giant.",
-                                    "Odin sacrificed one",
-                                    "of his eyes for the wisdom.",
-                                    "Heimdall's horn hidden",
-                                    "In Yggdrasil's roots",
-                                    "Will sound one last time",
-                                    "Signaling Ragnarok.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Gunther Doubleharmony",
-                                    args![
-                                        "This is a very old story...",
-                                        "Is it truth or fiction? But please don't ask me, I have no idea~!"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.lines_as("Gunther Doubleharmony", args!["I will sing one of Luke's songs, you know, Luke, one of the greatest Bards of his time? But I changed the words a little bit."])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22I found it in a drawer.",
-                                    "Old, worn letters",
-                                    "Forming elaborate words.",
-                                    "Sincere reflection",
-                                    "Of a sincere mind.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22I found it in a drawer.",
-                                    "Was I really like that once?",
-                                    "Was I really that childish?",
-                                    "My memories are tarnished."
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22I found it in a drawer.",
-                                    "Love I had forgotten.",
-                                    "She never got this letter.",
-                                    "But both of us were too shy."
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^228B22I found it in a drawer.",
-                                    "Love I had forgotten.",
-                                    "I never gave her this letter.",
-                                    "But both of us were too proud."
-                                ])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["Do you have anyone in mind? Do you? If you ever write a love letter, you must send it and express yourself."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["If you've written love letters that you'll never send, throw them away. Throw your goddamn pride away."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+            'b1: {
+                let subject1 = Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("A song:A story:Maybe some other time")],
+                )?);
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                    && !subject1.loosely_equals(&Val::from(2))
+                    && !subject1.loosely_equals(&Val::from(3));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    'b2: {
+                        let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                            && !subject2.loosely_equals(&Val::from(2))
+                            && !subject2.loosely_equals(&Val::from(3));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
                         }
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        'b3: {
-                            let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.lines_as("Gunther Doubleharmony", args!["Um, have you ever", "tasted Comodo cheese?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["You can only taste it in Comodo, but you need to have a good strong stomach to digest it. Oh! And the cheese has a secret!"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["You ^228B22might^000000 be invulnerable to the power of the doomed swords, which come from the other world, if you eat it!"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["Why don't you go taste it if you haven't yet? I tried to taste it once. It was kind of yummy, but then I fainted. Hahahaha~!"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.lines_as("Gunther Doubleharmony", args!["I was passing Prontera the other day at the place where it used to be the Swordman training ground."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["I saw some kid training really really hard and he didn't notice me watching him, so I guess he was really really serious!"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["He looked like he wanted to be a professional Swordman, but he was also giving his gear away to other Novices."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["I got bored watching him do the same thing over and over and over again, but I think the Monster Research Organization would like him if I introduced him."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.lines_as(
-                                    "Gunther Doubleharmony",
-                                    args!["Have you ever been in Lutie,", "land of year round snow?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["There is a snowman named", "SnowySnow and if you met him, you'd know all sorts of things about him like he can talk! It's so strange and mysterious~!"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["He has a mysterious bag where endless gifts come out, and he's got a mysterious past involving some colder town and something about a nasty witch."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Gunther Doubleharmony", args!["But it's okay because he was rescued by some Alchemist and came back to life, but you should go to Lutie if you wanna know more about him, okay?"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                        if matched2 {
+                            ctx.lines_as(
+                                "Gunther Doubleharmony",
+                                args![
+                                    "Gunther sings!",
+                                    "Gunther dances!",
+                                    "The tile of this song is~",
+                                    "'The Rich Mr. Kim~!'"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Merchant of Payon",
+                                "So poooooooor~",
+                                "No money for armor",
+                                "No money to make."
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Sold the",
+                                "Cotton Shirt",
+                                "Off his back",
+                                "No pity he'll take.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22First he only sold Red Pots",
+                                "At first, he only sold red pots.",
+                                "Then he moved up to Carrots, whoohoo~",
+                                "He could afford new armor",
+                                "and even wear it,",
+                                "whoohoo~^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22But one day, he was scammed",
+                                "Scammed by a wicked guild.",
+                                "Made poor once again.",
+                                "He decided to go to Ant Hell",
+                                "Right there",
+                                "And right then."
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Bats, Dwarves, Eggs, Ants!",
+                                "He battled them all~",
+                                "Worm Peelings, Jellopy!",
+                                "He gathered loot great and small."
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Then the glorious day came",
+                                "When he found a valuable card",
+                                "That'd bring great wealth to his naaaame~^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22But he kept it dear to him",
+                                "To remember his times of",
+                                "working so hard.",
+                                "He never sold it, never sold",
+                                "his precious card~^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["That's a very old story about rich Mr. Kim, and his rise from rags to riches to rags to riches. Is it true or is it fiction? Oh, please don't ask me! I've no clue!"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as("Gunther Doubleharmony", args!["You're gonna leave right now and not even listen to me a little bit? Okay, I'm cool, but promise you'll come back and listen to just one of my songs, okay?"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.lines_as("Gunther Doubleharmony", args!["*Ahem*", "Gunther sings ", "of Yggdrasil~"])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Evergreen Yggdrasil~",
+                                "Giant ashen tree",
+                                "reaching for the sky.",
+                                "Crystal, morning dew",
+                                "From its leaves",
+                                "Formed Urd's Pond.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Three wise girls.",
+                                "Seated beneath its boughs.",
+                                "Urd of the past,",
+                                "Belldandy of the present",
+                                "Skuld the future.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Spinning, weaving",
+                                "Threads of destiny.",
+                                "Evergreen Yggdrasil~",
+                                "Giant ashen tree",
+                                "reaching for the sky.",
+                                "Its roots soaked with tears.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Death in Hvergelmir.",
+                                "An evil dragon",
+                                "Burning its roots",
+                                "With eternal flame.",
+                                "The evil dragon Nidhogg",
+                                "Living between Yggdrasil",
+                                "and Niffheim.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Evergreen Yggdrasil~",
+                                "Giant ashen tree",
+                                "reaching for the sky.",
+                                "Wisdom in its roots",
+                                "Roots reaching",
+                                "Mimir's pond.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22Guarded by a wise giant.",
+                                "Odin sacrificed one",
+                                "of his eyes for the wisdom.",
+                                "Heimdall's horn hidden",
+                                "In Yggdrasil's roots",
+                                "Will sound one last time",
+                                "Signaling Ragnarok.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Gunther Doubleharmony",
+                                args![
+                                    "This is a very old story...",
+                                    "Is it truth or fiction? But please don't ask me, I have no idea~!"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.lines_as("Gunther Doubleharmony", args!["I will sing one of Luke's songs, you know, Luke, one of the greatest Bards of his time? But I changed the words a little bit."])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22I found it in a drawer.",
+                                "Old, worn letters",
+                                "Forming elaborate words.",
+                                "Sincere reflection",
+                                "Of a sincere mind.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22I found it in a drawer.",
+                                "Was I really like that once?",
+                                "Was I really that childish?",
+                                "My memories are tarnished."
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22I found it in a drawer.",
+                                "Love I had forgotten.",
+                                "She never got this letter.",
+                                "But both of us were too shy."
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^228B22I found it in a drawer.",
+                                "Love I had forgotten.",
+                                "I never gave her this letter.",
+                                "But both of us were too proud."
+                            ])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["Do you have anyone in mind? Do you? If you ever write a love letter, you must send it and express yourself."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["If you've written love letters that you'll never send, throw them away. Throw your goddamn pride away."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
                     }
                 }
-            } else {
-                ctx.lines_as(ctx.var("@name$").get()?, args!["..."])?;
-                ctx.next()?;
-                ctx.lines_as("Gunther Doubleharmony", args!["Wow, you're ignoring me, huh? Alright, that's fine by me! Unless you have some kind of problem where you can't talk, then I'm really really sorry."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    'b3: {
+                        let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                        let mut matched3 = false;
+                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                            && !subject3.loosely_equals(&Val::from(2))
+                            && !subject3.loosely_equals(&Val::from(3));
+                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.lines_as("Gunther Doubleharmony", args!["Um, have you ever", "tasted Comodo cheese?"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["You can only taste it in Comodo, but you need to have a good strong stomach to digest it. Oh! And the cheese has a secret!"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["You ^228B22might^000000 be invulnerable to the power of the doomed swords, which come from the other world, if you eat it!"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["Why don't you go taste it if you haven't yet? I tried to taste it once. It was kind of yummy, but then I fainted. Hahahaha~!"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.lines_as("Gunther Doubleharmony", args!["I was passing Prontera the other day at the place where it used to be the Swordman training ground."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["I saw some kid training really really hard and he didn't notice me watching him, so I guess he was really really serious!"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["He looked like he wanted to be a professional Swordman, but he was also giving his gear away to other Novices."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["I got bored watching him do the same thing over and over and over again, but I think the Monster Research Organization would like him if I introduced him."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.lines_as(
+                                "Gunther Doubleharmony",
+                                args!["Have you ever been in Lutie,", "land of year round snow?"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["There is a snowman named", "SnowySnow and if you met him, you'd know all sorts of things about him like he can talk! It's so strange and mysterious~!"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["He has a mysterious bag where endless gifts come out, and he's got a mysterious past involving some colder town and something about a nasty witch."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Gunther Doubleharmony", args!["But it's okay because he was rescued by some Alchemist and came back to life, but you should go to Lutie if you wanna know more about him, okay?"])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    }
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.lines_as("Gunther Doubleharmony", args!["You're gonna leave right now and not even listen to me a little bit? Okay, I'm cool, but promise you'll come back and listen to just one of my songs, okay?"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
             }
+        } else {
+            ctx.lines_as(ctx.var("@name$").get()?, args!["..."])?;
+            ctx.next()?;
+            ctx.lines_as("Gunther Doubleharmony", args!["Wow, you're ignoring me, huh? Alright, that's fine by me! Unless you have some kind of problem where you can't talk, then I'm really really sorry."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     Ok(Val::from(0))
@@ -3829,33 +3753,29 @@ fn representative_bq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.lines_as("Marlin Putiur", args!["He's a very kind, friendly person. Errende's always doing his best to provide us with the information we need. When you get a chance, would you please give him my regards?"])?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if l_inputstr_s.clone() == "Kino Kitty" {
+            ctx.lines_as("Marlin Putiur", args!["Kino Kitty, Kino Kitty... Oh, here we are. He sent us a letter that says, 'I will stay in the desert until I find my real self.'"])?;
+            ctx.next()?;
+            ctx.lines_as("Marlin Putiur", args!["He doesn't seem healthy, but I guess he's still traveling. Trying seeking him out in Morocc, and give my regards to him if you get the chance."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if l_inputstr_s.clone() == "Gunther Doubleharmony" {
+            ctx.lines_as("Marlin Putiur", args!["Ah, are you a friend of Gunther's? Haha, he's a very funny guy, if a little excitable. Let's see, Gunther, Gunther..."])?;
+            ctx.next()?;
+            ctx.lines_as("Marlin Putiur", args!["Ah, it says here that he wanted to look around Payon and Alberta. So he'll be at one of those places. I'm sorry I can't be more specific."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if l_inputstr_s.clone() == "Kino Kitty" {
-                ctx.lines_as("Marlin Putiur", args!["Kino Kitty, Kino Kitty... Oh, here we are. He sent us a letter that says, 'I will stay in the desert until I find my real self.'"])?;
-                ctx.next()?;
-                ctx.lines_as("Marlin Putiur", args!["He doesn't seem healthy, but I guess he's still traveling. Trying seeking him out in Morocc, and give my regards to him if you get the chance."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if l_inputstr_s.clone() == "Gunther Doubleharmony" {
-                    ctx.lines_as("Marlin Putiur", args!["Ah, are you a friend of Gunther's? Haha, he's a very funny guy, if a little excitable. Let's see, Gunther, Gunther..."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Marlin Putiur", args!["Ah, it says here that he wanted to look around Payon and Alberta. So he'll be at one of those places. I'm sorry I can't be more specific."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as(
-                        "Marlin Putiur",
-                        args![
-                            ((Val::from(" ") + l_inputstr_s.clone()) + Val::from("...?")),
-                            "Ummm hmm...",
-                            "I'm sorry, but we don't have any records for that person."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
+            ctx.lines_as(
+                "Marlin Putiur",
+                args![
+                    ((Val::from(" ") + l_inputstr_s.clone()) + Val::from("...?")),
+                    "Ummm hmm...",
+                    "I'm sorry, but we don't have any records for that person."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.next()?;

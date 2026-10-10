@@ -399,255 +399,239 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                             }
                         }
                     }
-                } else {
-                    if (ctx.var("rebirth_moc_edq").get()?.number()? > 3 && ctx.var("rebirth_moc_edq").get()?.number()? < 8) {
-                        ctx.lines_as(
-                            "Continental Guard",
-                            args![
-                                "No commoners are allowed in the area beyond this point.",
-                                "This place is extremely dangerous so you are restricted from entering."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        'b4: {
-                            let subject4 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from(
-                                    "Cancel Conversation:Enter the Field to Investigate:Move to Morocc's Accident Site",
-                                )],
-                            )?);
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                && !subject4.loosely_equals(&Val::from(2))
-                                && !subject4.loosely_equals(&Val::from(3));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                if ctx.var("$@re_moc").get()?.number()? < 3 {
-                                    runtime::party_members(ctx, ctx.call(Function::GetCharacterId, vec![Val::from(1)])?, Val::from(1))?;
-                                    l_partymembercount = ctx.var("$@partymembercount").get()?;
-                                    l_i = Val::from(0);
-                                    'l5: loop {
-                                        if !(runtime::op(&l_i.clone(), "<", &l_partymembercount.clone())?.is_true()) {
-                                            break 'l5;
-                                        }
-                                        'b5: {
-                                            if ctx
-                                                .call(
-                                                    Function::ConvertPcInfo,
-                                                    vec![
-                                                        runtime::local_get(&l_partymembercid, &l_i.clone(), false),
-                                                        ctx.constant("CPC_ACCOUNT")?,
-                                                    ],
-                                                )?
-                                                .is_true()
-                                            {
-                                                l_onlinemembers = (l_onlinemembers.clone() + Val::from(1));
-                                            }
-                                        }
-                                        l_i = (l_i.clone() + Val::from(1));
+                } else if (ctx.var("rebirth_moc_edq").get()?.number()? > 3 && ctx.var("rebirth_moc_edq").get()?.number()? < 8) {
+                    ctx.lines_as(
+                        "Continental Guard",
+                        args![
+                            "No commoners are allowed in the area beyond this point.",
+                            "This place is extremely dangerous so you are restricted from entering."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    'b4: {
+                        let subject4 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from(
+                                "Cancel Conversation:Enter the Field to Investigate:Move to Morocc's Accident Site",
+                            )],
+                        )?);
+                        let mut matched4 = false;
+                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                            && !subject4.loosely_equals(&Val::from(2))
+                            && !subject4.loosely_equals(&Val::from(3));
+                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            if ctx.var("$@re_moc").get()?.number()? < 3 {
+                                runtime::party_members(ctx, ctx.call(Function::GetCharacterId, vec![Val::from(1)])?, Val::from(1))?;
+                                l_partymembercount = ctx.var("$@partymembercount").get()?;
+                                l_i = Val::from(0);
+                                'l5: loop {
+                                    if !(runtime::op(&l_i.clone(), "<", &l_partymembercount.clone())?.is_true()) {
+                                        break 'l5;
                                     }
-                                    if (l_onlinemembers.clone().number()? > 1
-                                        && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
-                                    {
-                                        ctx.lines_as("Continental Guard", args!["......"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Continental Guard", args!["Yes, I've confirmed that you're a member of the Continental Guards. I wish you good luck in accomplishing your mission."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Continental Guard", args!["I'll send you to the field shortly. Please use the warp at the field entrance to come back to this area."])?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::Warp, vec![Val::from("moc_fild21"), Val::from(38), Val::from(193)])?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if (l_onlinemembers.clone().number()? < 2
-                                            && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
+                                    'b5: {
+                                        if ctx
+                                            .call(
+                                                Function::ConvertPcInfo,
+                                                vec![
+                                                    runtime::local_get(&l_partymembercid, &l_i.clone(), false),
+                                                    ctx.constant("CPC_ACCOUNT")?,
+                                                ],
+                                            )?
+                                            .is_true()
                                         {
-                                            ctx.lines_as("Continental Guard", args!["Welcome, members of the Continental Guards. I have a special order from Chief Balrog for you, so let me read it for you."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Continental Guard", args!["'Due to the dangers of this area, I hereby prohibit members of the Continental Guard to investigate the area alone. You must organize a party of at least 2 members to carry out your missions from now on.'"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Continental Guard", args!["...You understand that, right? Please go back to the site, and come back in a party of at least 2 members. Thank you."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? < 1 {
-                                                ctx.lines_as("Continental Guard", args!["Only members of the Continental Guards with Continental Guard Certificates are allowed to proceed beyond this point."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
+                                            l_onlinemembers = (l_onlinemembers.clone() + Val::from(1));
                                         }
                                     }
-                                } else {
-                                    ctx.lines_as("Continental Guard", args!["We've received orders from Headquarters to block access to this area since an unusual space-time phenomenon has been detected from the Morocc field."])?;
+                                    l_i = (l_i.clone() + Val::from(1));
+                                }
+                                if (l_onlinemembers.clone().number()? > 1
+                                    && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
+                                {
+                                    ctx.lines_as("Continental Guard", args!["......"])?;
                                     ctx.next()?;
-                                    ctx.lines_as("Continental Guard", args!["We need to wait until the phenomenon is over, and then we'll let you proceed with your investigation."])?;
+                                    ctx.lines_as("Continental Guard", args!["Yes, I've confirmed that you're a member of the Continental Guards. I wish you good luck in accomplishing your mission."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Continental Guard", args!["I'll send you to the field shortly. Please use the warp at the field entrance to come back to this area."])?;
+                                    ctx.close_window()?;
+                                    ctx.call(Function::Warp, vec![Val::from("moc_fild21"), Val::from(38), Val::from(193)])?;
+                                    return Err(Stop::End);
+                                } else if (l_onlinemembers.clone().number()? < 2
+                                    && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
+                                {
+                                    ctx.lines_as("Continental Guard", args!["Welcome, members of the Continental Guards. I have a special order from Chief Balrog for you, so let me read it for you."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Continental Guard", args!["'Due to the dangers of this area, I hereby prohibit members of the Continental Guard to investigate the area alone. You must organize a party of at least 2 members to carry out your missions from now on.'"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Continental Guard", args!["...You understand that, right? Please go back to the site, and come back in a party of at least 2 members. Thank you."])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? < 1 {
+                                    ctx.lines_as("Continental Guard", args!["Only members of the Continental Guards with Continental Guard Certificates are allowed to proceed beyond this point."])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as(
-                                    "Continental Guard",
-                                    args!["Great. I'll send you to Morocc Village's accident site shortly."],
-                                )?;
+                            } else {
+                                ctx.lines_as("Continental Guard", args!["We've received orders from Headquarters to block access to this area since an unusual space-time phenomenon has been detected from the Morocc field."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Continental Guard", args!["We need to wait until the phenomenon is over, and then we'll let you proceed with your investigation."])?;
                                 ctx.close_window()?;
-                                ctx.call(Function::Warp, vec![Val::from("morocc"), Val::from(160), Val::from(61)])?;
                                 return Err(Stop::End);
                             }
                         }
-                    } else {
-                        if ctx.var("rebirth_moc_edq").get()? == 8 {
-                            ctx.lines_as("Continental Guard", args!["Ah, you're an adventurer working for the Continental Guard. Nice to meet you. Feel free to ask me if you need my assistance."])?;
-                            ctx.next()?;
-                            runtime::party_members(ctx, ctx.call(Function::GetCharacterId, vec![Val::from(1)])?, Val::from(1))?;
-                            l_partymembercount = ctx.var("$@partymembercount").get()?;
-                            l_i = Val::from(0);
-                            'l6: loop {
-                                if !(runtime::op(&l_i.clone(), "<", &l_partymembercount.clone())?.is_true()) {
-                                    break 'l6;
-                                }
-                                'b6: {
-                                    if ctx
-                                        .call(
-                                            Function::ConvertPcInfo,
-                                            vec![
-                                                runtime::local_get(&l_partymembercid, &l_i.clone(), false),
-                                                ctx.constant("CPC_ACCOUNT")?,
-                                            ],
-                                        )?
-                                        .is_true()
-                                    {
-                                        l_onlinemembers = (l_onlinemembers.clone() + Val::from(1));
-                                    }
-                                }
-                                l_i = (l_i.clone() + Val::from(1));
-                            }
-                            'b7: {
-                                let subject7 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from(
-                                        "Enter the First Field to Investigate:Enter the Second Field to Investigate:Return to Morocc's Accident Site:Cancel Conversation",
-                                    )],
-                                )?);
-                                let mut matched7 = false;
-                                let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                                    && !subject7.loosely_equals(&Val::from(2))
-                                    && !subject7.loosely_equals(&Val::from(3))
-                                    && !subject7.loosely_equals(&Val::from(4));
-                                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    if (l_onlinemembers.clone().number()? > 1
-                                        && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
-                                    {
-                                        ctx.lines_as("Continental Guard", args!["......"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Continental Guard", args!["Yes, I've confirmed that you're a member of the Continental Guards. I wish you good luck in accomplishing your mission."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Continental Guard", args!["I'll send you to the field shortly. Please use the warp at the field entrance to come back to this area."])?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::Warp, vec![Val::from("moc_fild21"), Val::from(38), Val::from(193)])?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if (l_onlinemembers.clone().number()? < 2
-                                            && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
-                                        {
-                                            ctx.lines_as("Continental Guard", args!["Welcome, members of the Continental Guards. I have a special order from Chief Balrog for you, so let me read it for you."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Continental Guard", args!["'Due to the dangers of this area, I hereby prohibit members of the Continental Guard to investigate the area alone. You must organize a party of at least 2 members to carry out your missions from now on.'"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Continental Guard", args!["...You understand that, right? Please go back to the site, and come back in a party of at least 2 members. Thank you."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? < 1 {
-                                                ctx.lines_as("Continental Guard", args!["Only members of the Continental Guards with Continental Guard Certificates are allowed to proceed beyond this point."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
-                                    }
-                                }
-                                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    if (l_onlinemembers.clone().number()? > 1
-                                        && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
-                                    {
-                                        ctx.lines_as("Continental Guard", args!["......"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Continental Guard", args!["Yes, I've confirmed that you're a member of the Continental Guards. I wish you good luck in accomplishing your mission."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Continental Guard", args!["I'll send you to the field shortly. Please use the warp at the field entrance to come back to this area."])?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::Warp, vec![Val::from("moc_fild22"), Val::from(38), Val::from(193)])?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if (l_onlinemembers.clone().number()? < 2
-                                            && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
-                                        {
-                                            ctx.lines_as("Continental Guard", args!["Welcome, members of the Continental Guards. I have a special order from Chief Balrog for you, so let me read it for you."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Continental Guard", args!["'Due to the dangers of this area, I hereby prohibit members of the Continental Guard to investigate the area alone. You must organize a party of at least 2 members to carry out your missions from now on.'"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Continental Guard", args!["...So please go back to the site, and come back in a party of at least 2 members. Thank you."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? < 1 {
-                                                ctx.lines_as("Continental Guard", args!["Only members of the Continental Guards with Continental Guard Certificates are allowed to proceed beyond this point."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
-                                    }
-                                }
-                                if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    ctx.lines_as(
-                                        "Continental Guard",
-                                        args!["Great. I'll send you to Morocc Village's accident site shortly."],
-                                    )?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::Warp, vec![Val::from("morocc"), Val::from(160), Val::from(61)])?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        } else {
+                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as(
+                                "Continental Guard",
+                                args!["Great. I'll send you to Morocc Village's accident site shortly."],
+                            )?;
+                            ctx.close_window()?;
+                            ctx.call(Function::Warp, vec![Val::from("morocc"), Val::from(160), Val::from(61)])?;
                             return Err(Stop::End);
                         }
                     }
+                } else if ctx.var("rebirth_moc_edq").get()? == 8 {
+                    ctx.lines_as("Continental Guard", args!["Ah, you're an adventurer working for the Continental Guard. Nice to meet you. Feel free to ask me if you need my assistance."])?;
+                    ctx.next()?;
+                    runtime::party_members(ctx, ctx.call(Function::GetCharacterId, vec![Val::from(1)])?, Val::from(1))?;
+                    l_partymembercount = ctx.var("$@partymembercount").get()?;
+                    l_i = Val::from(0);
+                    'l6: loop {
+                        if !(runtime::op(&l_i.clone(), "<", &l_partymembercount.clone())?.is_true()) {
+                            break 'l6;
+                        }
+                        'b6: {
+                            if ctx
+                                .call(
+                                    Function::ConvertPcInfo,
+                                    vec![
+                                        runtime::local_get(&l_partymembercid, &l_i.clone(), false),
+                                        ctx.constant("CPC_ACCOUNT")?,
+                                    ],
+                                )?
+                                .is_true()
+                            {
+                                l_onlinemembers = (l_onlinemembers.clone() + Val::from(1));
+                            }
+                        }
+                        l_i = (l_i.clone() + Val::from(1));
+                    }
+                    'b7: {
+                        let subject7 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from(
+                                "Enter the First Field to Investigate:Enter the Second Field to Investigate:Return to Morocc's Accident Site:Cancel Conversation",
+                            )],
+                        )?);
+                        let mut matched7 = false;
+                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
+                            && !subject7.loosely_equals(&Val::from(2))
+                            && !subject7.loosely_equals(&Val::from(3))
+                            && !subject7.loosely_equals(&Val::from(4));
+                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            if (l_onlinemembers.clone().number()? > 1
+                                && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
+                            {
+                                ctx.lines_as("Continental Guard", args!["......"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Continental Guard", args!["Yes, I've confirmed that you're a member of the Continental Guards. I wish you good luck in accomplishing your mission."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Continental Guard", args!["I'll send you to the field shortly. Please use the warp at the field entrance to come back to this area."])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::Warp, vec![Val::from("moc_fild21"), Val::from(38), Val::from(193)])?;
+                                return Err(Stop::End);
+                            } else if (l_onlinemembers.clone().number()? < 2
+                                && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
+                            {
+                                ctx.lines_as("Continental Guard", args!["Welcome, members of the Continental Guards. I have a special order from Chief Balrog for you, so let me read it for you."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Continental Guard", args!["'Due to the dangers of this area, I hereby prohibit members of the Continental Guard to investigate the area alone. You must organize a party of at least 2 members to carry out your missions from now on.'"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Continental Guard", args!["...You understand that, right? Please go back to the site, and come back in a party of at least 2 members. Thank you."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? < 1 {
+                                ctx.lines_as("Continental Guard", args!["Only members of the Continental Guards with Continental Guard Certificates are allowed to proceed beyond this point."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        }
+                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            if (l_onlinemembers.clone().number()? > 1
+                                && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
+                            {
+                                ctx.lines_as("Continental Guard", args!["......"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Continental Guard", args!["Yes, I've confirmed that you're a member of the Continental Guards. I wish you good luck in accomplishing your mission."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Continental Guard", args!["I'll send you to the field shortly. Please use the warp at the field entrance to come back to this area."])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::Warp, vec![Val::from("moc_fild22"), Val::from(38), Val::from(193)])?;
+                                return Err(Stop::End);
+                            } else if (l_onlinemembers.clone().number()? < 2
+                                && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
+                            {
+                                ctx.lines_as("Continental Guard", args!["Welcome, members of the Continental Guards. I have a special order from Chief Balrog for you, so let me read it for you."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Continental Guard", args!["'Due to the dangers of this area, I hereby prohibit members of the Continental Guard to investigate the area alone. You must organize a party of at least 2 members to carry out your missions from now on.'"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Continental Guard", args!["...So please go back to the site, and come back in a party of at least 2 members. Thank you."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? < 1 {
+                                ctx.lines_as("Continental Guard", args!["Only members of the Continental Guards with Continental Guard Certificates are allowed to proceed beyond this point."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        }
+                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            ctx.lines_as(
+                                "Continental Guard",
+                                args!["Great. I'll send you to Morocc Village's accident site shortly."],
+                            )?;
+                            ctx.close_window()?;
+                            ctx.call(Function::Warp, vec![Val::from("morocc"), Val::from(160), Val::from(61)])?;
+                            return Err(Stop::End);
+                        }
+                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    }
+                } else {
+                    return Err(Stop::End);
                 }
                 step = ContinentalGuard01Step::OnTouch;
                 continue 'machine;
@@ -681,22 +665,14 @@ fn continental_messenger_00_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
     l_area_s = ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?;
     if l_area_s.clone() == "01" {
         l_area_s = Val::from("Prontera");
-    } else {
-        if l_area_s.clone() == "02" {
-            l_area_s = Val::from("Geffen");
-        } else {
-            if l_area_s.clone() == "03" {
-                l_area_s = Val::from("Payon");
-            } else {
-                if l_area_s.clone() == "04" {
-                    l_area_s = Val::from("Alberta");
-                } else {
-                    if l_area_s.clone() == "05" {
-                        l_area_s = Val::from("Al De Baran");
-                    }
-                }
-            }
-        }
+    } else if l_area_s.clone() == "02" {
+        l_area_s = Val::from("Geffen");
+    } else if l_area_s.clone() == "03" {
+        l_area_s = Val::from("Payon");
+    } else if l_area_s.clone() == "04" {
+        l_area_s = Val::from("Alberta");
+    } else if l_area_s.clone() == "05" {
+        l_area_s = Val::from("Al De Baran");
     }
     if ctx.var("BaseLevel").get()?.number()? > 79 {
         ctx.lines_as(
@@ -847,101 +823,99 @@ fn continental_official_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("rebirth_moc_edq").get()? == 0 {
-            ctx.lines_as(
-                "Continental Guard Official",
-                args!["Welcome to the Morocc Subjugation Information Center. How may I help you?"],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from(
-                        "What is this place for?:I'm here to volunteer.:Tell me about the village situation.",
-                    )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as("Continental Guard Official", args!["I'm stationed here to assist adventurers who wish to volunteer and help the Continental Guard fight Satan Morocc."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Continental Guard Official", args!["I am sure you are already aware that Satan Morocc's revival threatens the peace of the Rune-Midgarts kingdom, and if Satan Morocc is allowed to roam free, it will devour the entire world."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Continental Guard Official", args!["The Continental Guard is currently planning an array of countermeasures to suppress Satan Morocc under the order of the kingdom."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Continental Guard Official", args!["If you have been invited by our messenger, or are confident in your skills, we encourage you to volunteer for the Continental Guards and bring peace back to this continent."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.var("BaseLevel").get()?.number()? > 79 {
-                        ctx.lines_as(
-                            "Continental Guard Official",
-                            args![
-                                ((Val::from("Welcome, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                    + Val::from(". I've been waiting for you. I assume our messenger informed you of our situation."))
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Continental Guard Official",
-                            args!["Let me process your application immediately. Please wait."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Continental Guard Official",
-                            args!["Now please go speak to Chief Balrog of the Continental Guard. You can find him in the center."],
-                        )?;
-                        ctx.var("rebirth_moc_edq").set(Val::from(1))?;
-                        ctx.call(Function::SetQuest, vec![Val::from(3050)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Continental Guard Official",
-                            args!["I applaud you for your courage, but you will need more than just courage to help us."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Continental Guard Official", args!["Satan Morocc is most powerful evil that exists in the mortal world. Snuffing out your life would be so trivial to him."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Continental Guard Official", args!["I strongly recommend that you just think about your own safety for now. When the final battle comes, I am sure that no place will be safe."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as("Continental Guard Official", args!["As you can see, the situation can't be worse. The village and the surrounding area were irreparably damaged by Satan Morocc's resurrection."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Continental Guard Official", args!["Since the kingdom has dispatched Continental Guard Messengers everywhere, many able adventurers have flocked to this place, but... I'm afraid they still might not be enough to defeat the demon."])?;
+    } else if ctx.var("rebirth_moc_edq").get()? == 0 {
+        ctx.lines_as(
+            "Continental Guard Official",
+            args!["Welcome to the Morocc Subjugation Information Center. How may I help you?"],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from(
+                    "What is this place for?:I'm here to volunteer.:Tell me about the village situation.",
+                )],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Continental Guard Official", args!["I'm stationed here to assist adventurers who wish to volunteer and help the Continental Guard fight Satan Morocc."])?;
+                ctx.next()?;
+                ctx.lines_as("Continental Guard Official", args!["I am sure you are already aware that Satan Morocc's revival threatens the peace of the Rune-Midgarts kingdom, and if Satan Morocc is allowed to roam free, it will devour the entire world."])?;
+                ctx.next()?;
+                ctx.lines_as("Continental Guard Official", args!["The Continental Guard is currently planning an array of countermeasures to suppress Satan Morocc under the order of the kingdom."])?;
+                ctx.next()?;
+                ctx.lines_as("Continental Guard Official", args!["If you have been invited by our messenger, or are confident in your skills, we encourage you to volunteer for the Continental Guards and bring peace back to this continent."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.var("BaseLevel").get()?.number()? > 79 {
+                    ctx.lines_as(
+                        "Continental Guard Official",
+                        args![
+                            ((Val::from("Welcome, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                + Val::from(". I've been waiting for you. I assume our messenger informed you of our situation."))
+                        ],
+                    )?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Continental Guard Official",
-                        args!["Please follow our instructions, at least around this area, and stay out of danger for now."],
+                        args!["Let me process your application immediately. Please wait."],
                     )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Continental Guard Official",
+                        args!["Now please go speak to Chief Balrog of the Continental Guard. You can find him in the center."],
+                    )?;
+                    ctx.var("rebirth_moc_edq").set(Val::from(1))?;
+                    ctx.call(Function::SetQuest, vec![Val::from(3050)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as(
+                        "Continental Guard Official",
+                        args!["I applaud you for your courage, but you will need more than just courage to help us."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Continental Guard Official", args!["Satan Morocc is most powerful evil that exists in the mortal world. Snuffing out your life would be so trivial to him."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Continental Guard Official", args!["I strongly recommend that you just think about your own safety for now. When the final battle comes, I am sure that no place will be safe."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             }
-        } else {
-            ctx.lines_as(
-                "Continental Guard Official",
-                args!["Your application already has been registered. Please go speak to Chief Balrog."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Continental Guard Official", args!["As you can see, the situation can't be worse. The village and the surrounding area were irreparably damaged by Satan Morocc's resurrection."])?;
+                ctx.next()?;
+                ctx.lines_as("Continental Guard Official", args!["Since the kingdom has dispatched Continental Guard Messengers everywhere, many able adventurers have flocked to this place, but... I'm afraid they still might not be enough to defeat the demon."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Continental Guard Official",
+                    args!["Please follow our instructions, at least around this area, and stay out of danger for now."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.lines_as(
+            "Continental Guard Official",
+            args!["Your application already has been registered. Please go speak to Chief Balrog."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -1349,12 +1323,216 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 return Err(Stop::End);
                             }
                         }
-                    } else {
-                        if ctx.var("rebirth_moc_edq").get()? == 5 {
-                            ctx.lines_as("Chief Balrog", args!["Wah... What? Did you really defeat Satan Morocc?"])?;
+                    } else if ctx.var("rebirth_moc_edq").get()? == 5 {
+                        ctx.lines_as("Chief Balrog", args!["Wah... What? Did you really defeat Satan Morocc?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Chief Balrog", args!["How? Do you have any proof of your victory?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Chief Balrog", args!["...No, I can't just accept and trust your verbal account. I mean, if you've completed such an important mission, you must bring me some evidence."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Chief Balrog",
+                            args!["Go back, bring proof of your victory, and then come back."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("rebirth_moc_edq").get()? == 6 {
+                        ctx.lines_as("Chief Balrog", args!["What? Did you really defeat Satan Morocc?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Chief Balrog", args!["How? Do you have any proof of your victory?"])?;
+                        ctx.next()?;
+                        if ctx.call(Function::CountItem, vec![Val::from(7820)])?.number()? > 0 {
+                            ctx.lines_as("Chief Balrog", args!["Is... Isn't this?"])?;
                             ctx.next()?;
-                            ctx.lines_as("Chief Balrog", args!["How? Do you have any proof of your victory?"])?;
+                            ctx.lines_as("Chief Balrog", args!["Wow... I think this is really the skin of Satan Morocc. Congratulations, soldier. You just saved this world and people from being consumed by destruction and evil."])?;
                             ctx.next()?;
+                            ctx.lines_as("Chief Balrog", args!["I guess you seriously wounded Satan Morocc, and it retreated to a time-space gap. No doubt it's trying to recoup its strength."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Chief Balrog", args!["My only regret is that we can't pursue Morocc beyond this dimension. I'm glad, however, that you defeated Satan Morocc and kept it from regaining its full strength. For now, anyway..."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Chief Balrog", args!["Our researchers might be able to learn some important new facts from this piece of skin... We need to learn all we can about that monster if peace is to be possible in our world's future."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Chief Balrog", args!["Once again, I thank you for your distinguished service on behalf of the Continental Guard and the Rune-Midgarts Kingdom. I'll report your great achievement to His Majesty right away."])?;
+                            ctx.next()?;
+                            ctx.call(Function::DelItem, vec![Val::from(7820), Val::from(1)])?;
+                            ctx.call(Function::GetExperience, vec![Val::from(2000000), Val::from(0)])?;
+                            ctx.var("rebirth_moc_edq").set(Val::from(7))?;
+                            ctx.call(Function::ChangeQuest, vec![Val::from(3055), Val::from(3056)])?;
+                            ctx.lines_as("Chief Balrog", args!["I've prepared a few things to give as a reward for you. Let's see... I have three items. Which one do you like to receive?"])?;
+                            ctx.next()?;
+                            'b8: {
+                                let subject8 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("1. Seal of Continental Guard:2. Morocc Charm Stone:3. Morocc Ring")],
+                                )?);
+                                let mut matched8 = false;
+                                let no_case8 = !subject8.loosely_equals(&Val::from(1))
+                                    && !subject8.loosely_equals(&Val::from(2))
+                                    && !subject8.loosely_equals(&Val::from(3));
+                                if !matched8 && subject8.loosely_equals(&Val::from(1)) {
+                                    matched8 = true;
+                                }
+                                if matched8 {
+                                    ctx.lines_as("Chief Balrog", args!["The Seal of Continental Guard is an extremely valuable reward given directly from the kingdom court. It is a symbol of strength."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Chief Balrog",
+                                        args!["The accessory's options are: ^0000FF MHP+50, +3% Attack Speed^000000."],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Chief Balrog", args!["Do you really want the Seal of Continental Guard?"])?;
+                                    ctx.next()?;
+                                    'b9: {
+                                        let subject9 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
+                                        let mut matched9 = false;
+                                        let no_case9 =
+                                            !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
+                                        if !matched9 && subject9.loosely_equals(&Val::from(1)) {
+                                            matched9 = true;
+                                        }
+                                        if matched9 {
+                                            ctx.lines_as("Chief Balrog", args!["Great, then I'll reward you with the Seal of Continental Guard. Congratulations."])?;
+                                            ctx.next()?;
+                                            ctx.call(Function::GetItem, vec![Val::from(2730), Val::from(1)])?;
+                                            ctx.var("rebirth_moc_edq").set(Val::from(8))?;
+                                            ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
+                                            ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Chief Balrog",
+                                                args![
+                                                    "You should go rest now. Don't worry, we'll take care of everything else here."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched9 && subject9.loosely_equals(&Val::from(2)) {
+                                            matched9 = true;
+                                        }
+                                        if matched9 {
+                                            ctx.lines_as(
+                                                "Chief Balrog",
+                                                args!["No problem. Take your time to think, and then speak to me again."],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                    }
+                                }
+                                if !matched8 && subject8.loosely_equals(&Val::from(2)) {
+                                    matched8 = true;
+                                }
+                                if matched8 {
+                                    ctx.lines_as("Chief Balrog", args!["The Morocc Charm Stone is an extremely valuable reward given directly from the kingdom court, and it is a symbol of prosperity and mana."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Chief Balrog",
+                                        args!["The accessory's options are: ^0000FF MSP+50, -1% Casting Speed^000000."],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Charm Stone?"])?;
+                                    ctx.next()?;
+                                    'b10: {
+                                        let subject10 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
+                                        let mut matched10 = false;
+                                        let no_case10 =
+                                            !subject10.loosely_equals(&Val::from(1)) && !subject10.loosely_equals(&Val::from(2));
+                                        if !matched10 && subject10.loosely_equals(&Val::from(1)) {
+                                            matched10 = true;
+                                        }
+                                        if matched10 {
+                                            ctx.lines_as(
+                                                "Chief Balrog",
+                                                args!["Great, then I'll reward you with a Morocc Charm Stone. Congratulations."],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.call(Function::GetItem, vec![Val::from(2731), Val::from(1)])?;
+                                            ctx.var("rebirth_moc_edq").set(Val::from(8))?;
+                                            ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
+                                            ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Chief Balrog",
+                                                args![
+                                                    "You should go rest now. Don't worry, we'll take care of everything else here."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched10 && subject10.loosely_equals(&Val::from(2)) {
+                                            matched10 = true;
+                                        }
+                                        if matched10 {
+                                            ctx.lines_as(
+                                                "Chief Balrog",
+                                                args!["No problem. Take your time to think, and then speak to me again."],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                    }
+                                }
+                                if !matched8 && subject8.loosely_equals(&Val::from(3)) {
+                                    matched8 = true;
+                                }
+                                if matched8 {
+                                    ctx.lines_as("Chief Balrog", args!["The Morocc Ring is an extremely valuable reward given directly from the kingdom court that symbolizes critical power."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Chief Balrog", args!["The accessory's option is: ^0000FF CRI + 5^000000."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Ring?"])?;
+                                    ctx.next()?;
+                                    'b11: {
+                                        let subject11 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
+                                        let mut matched11 = false;
+                                        let no_case11 =
+                                            !subject11.loosely_equals(&Val::from(1)) && !subject11.loosely_equals(&Val::from(2));
+                                        if !matched11 && subject11.loosely_equals(&Val::from(1)) {
+                                            matched11 = true;
+                                        }
+                                        if matched11 {
+                                            ctx.lines_as(
+                                                "Chief Balrog",
+                                                args!["Great, then I'll reward you with a Morocc Ring. Congratulations."],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.call(Function::GetItem, vec![Val::from(2732), Val::from(1)])?;
+                                            ctx.var("rebirth_moc_edq").set(Val::from(8))?;
+                                            ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
+                                            ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Chief Balrog",
+                                                args![
+                                                    "You should go rest now. Don't worry, we'll take care of everything else here."
+                                                ],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched11 && subject11.loosely_equals(&Val::from(2)) {
+                                            matched11 = true;
+                                        }
+                                        if matched11 {
+                                            ctx.lines_as(
+                                                "Chief Balrog",
+                                                args!["No problem. Take your time to think about it, and then speak to me again."],
+                                            )?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
                             ctx.lines_as("Chief Balrog", args!["...No, I can't just accept and trust your verbal account. I mean, if you've completed such an important mission, you must bring me some evidence."])?;
                             ctx.next()?;
                             ctx.lines_as(
@@ -1363,410 +1541,198 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.var("rebirth_moc_edq").get()? == 6 {
-                                ctx.lines_as("Chief Balrog", args!["What? Did you really defeat Satan Morocc?"])?;
+                        }
+                    } else if ctx.var("rebirth_moc_edq").get()? == 7 {
+                        ctx.lines_as("Chief Balrog", args!["I've prepared a few things to give as a reward for you. Let's see... I have three items. Which one do you like to receive?"])?;
+                        ctx.next()?;
+                        'b12: {
+                            let subject12 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("1. Seal of Continental Guard:2. Morocc Charm Stone:3. Morocc Ring")],
+                            )?);
+                            let mut matched12 = false;
+                            let no_case12 = !subject12.loosely_equals(&Val::from(1))
+                                && !subject12.loosely_equals(&Val::from(2))
+                                && !subject12.loosely_equals(&Val::from(3));
+                            if !matched12 && subject12.loosely_equals(&Val::from(1)) {
+                                matched12 = true;
+                            }
+                            if matched12 {
+                                ctx.lines_as("Chief Balrog", args!["The Seal of Continental Guard is an extremely valuable reward given directly from the kingdom court. It is a symbol of strength."])?;
                                 ctx.next()?;
-                                ctx.lines_as("Chief Balrog", args!["How? Do you have any proof of your victory?"])?;
+                                ctx.lines_as(
+                                    "Chief Balrog",
+                                    args!["The accessory's options are: ^0000FF MHP+50, +3% Attack Speed^000000."],
+                                )?;
                                 ctx.next()?;
-                                if ctx.call(Function::CountItem, vec![Val::from(7820)])?.number()? > 0 {
-                                    ctx.lines_as("Chief Balrog", args!["Is... Isn't this?"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Chief Balrog", args!["Wow... I think this is really the skin of Satan Morocc. Congratulations, soldier. You just saved this world and people from being consumed by destruction and evil."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Chief Balrog", args!["I guess you seriously wounded Satan Morocc, and it retreated to a time-space gap. No doubt it's trying to recoup its strength."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Chief Balrog", args!["My only regret is that we can't pursue Morocc beyond this dimension. I'm glad, however, that you defeated Satan Morocc and kept it from regaining its full strength. For now, anyway..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Chief Balrog", args!["Our researchers might be able to learn some important new facts from this piece of skin... We need to learn all we can about that monster if peace is to be possible in our world's future."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Chief Balrog", args!["Once again, I thank you for your distinguished service on behalf of the Continental Guard and the Rune-Midgarts Kingdom. I'll report your great achievement to His Majesty right away."])?;
-                                    ctx.next()?;
-                                    ctx.call(Function::DelItem, vec![Val::from(7820), Val::from(1)])?;
-                                    ctx.call(Function::GetExperience, vec![Val::from(2000000), Val::from(0)])?;
-                                    ctx.var("rebirth_moc_edq").set(Val::from(7))?;
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(3055), Val::from(3056)])?;
-                                    ctx.lines_as("Chief Balrog", args!["I've prepared a few things to give as a reward for you. Let's see... I have three items. Which one do you like to receive?"])?;
-                                    ctx.next()?;
-                                    'b8: {
-                                        let subject8 = Val::from(runtime::select_values(
-                                            ctx,
-                                            &[Val::from("1. Seal of Continental Guard:2. Morocc Charm Stone:3. Morocc Ring")],
-                                        )?);
-                                        let mut matched8 = false;
-                                        let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                                            && !subject8.loosely_equals(&Val::from(2))
-                                            && !subject8.loosely_equals(&Val::from(3));
-                                        if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                                            matched8 = true;
-                                        }
-                                        if matched8 {
-                                            ctx.lines_as("Chief Balrog", args!["The Seal of Continental Guard is an extremely valuable reward given directly from the kingdom court. It is a symbol of strength."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Chief Balrog",
-                                                args!["The accessory's options are: ^0000FF MHP+50, +3% Attack Speed^000000."],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Chief Balrog", args!["Do you really want the Seal of Continental Guard?"])?;
-                                            ctx.next()?;
-                                            'b9: {
-                                                let subject9 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                                let mut matched9 = false;
-                                                let no_case9 =
-                                                    !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
-                                                if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                                                    matched9 = true;
-                                                }
-                                                if matched9 {
-                                                    ctx.lines_as("Chief Balrog", args!["Great, then I'll reward you with the Seal of Continental Guard. Congratulations."])?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(2730), Val::from(1)])?;
-                                                    ctx.var("rebirth_moc_edq").set(Val::from(8))?;
-                                                    ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
-                                                    ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args![
-                                                            "You should go rest now. Don't worry, we'll take care of everything else here."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                                                    matched9 = true;
-                                                }
-                                                if matched9 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["No problem. Take your time to think, and then speak to me again."],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                        if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                                            matched8 = true;
-                                        }
-                                        if matched8 {
-                                            ctx.lines_as("Chief Balrog", args!["The Morocc Charm Stone is an extremely valuable reward given directly from the kingdom court, and it is a symbol of prosperity and mana."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Chief Balrog",
-                                                args!["The accessory's options are: ^0000FF MSP+50, -1% Casting Speed^000000."],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Charm Stone?"])?;
-                                            ctx.next()?;
-                                            'b10: {
-                                                let subject10 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                                let mut matched10 = false;
-                                                let no_case10 =
-                                                    !subject10.loosely_equals(&Val::from(1)) && !subject10.loosely_equals(&Val::from(2));
-                                                if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                                                    matched10 = true;
-                                                }
-                                                if matched10 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["Great, then I'll reward you with a Morocc Charm Stone. Congratulations."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(2731), Val::from(1)])?;
-                                                    ctx.var("rebirth_moc_edq").set(Val::from(8))?;
-                                                    ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
-                                                    ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args![
-                                                            "You should go rest now. Don't worry, we'll take care of everything else here."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                                                    matched10 = true;
-                                                }
-                                                if matched10 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["No problem. Take your time to think, and then speak to me again."],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                        if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                                            matched8 = true;
-                                        }
-                                        if matched8 {
-                                            ctx.lines_as("Chief Balrog", args!["The Morocc Ring is an extremely valuable reward given directly from the kingdom court that symbolizes critical power."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Chief Balrog", args!["The accessory's option is: ^0000FF CRI + 5^000000."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Ring?"])?;
-                                            ctx.next()?;
-                                            'b11: {
-                                                let subject11 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                                let mut matched11 = false;
-                                                let no_case11 =
-                                                    !subject11.loosely_equals(&Val::from(1)) && !subject11.loosely_equals(&Val::from(2));
-                                                if !matched11 && subject11.loosely_equals(&Val::from(1)) {
-                                                    matched11 = true;
-                                                }
-                                                if matched11 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["Great, then I'll reward you with a Morocc Ring. Congratulations."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(2732), Val::from(1)])?;
-                                                    ctx.var("rebirth_moc_edq").set(Val::from(8))?;
-                                                    ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
-                                                    ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args![
-                                                            "You should go rest now. Don't worry, we'll take care of everything else here."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched11 && subject11.loosely_equals(&Val::from(2)) {
-                                                    matched11 = true;
-                                                }
-                                                if matched11 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["No problem. Take your time to think about it, and then speak to me again."],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
+                                ctx.lines_as("Chief Balrog", args!["Do you really want the Seal of Continental Guard?"])?;
+                                ctx.next()?;
+                                'b13: {
+                                    let subject13 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
+                                    let mut matched13 = false;
+                                    let no_case13 =
+                                        !subject13.loosely_equals(&Val::from(1)) && !subject13.loosely_equals(&Val::from(2));
+                                    if !matched13 && subject13.loosely_equals(&Val::from(1)) {
+                                        matched13 = true;
                                     }
-                                } else {
-                                    ctx.lines_as("Chief Balrog", args!["...No, I can't just accept and trust your verbal account. I mean, if you've completed such an important mission, you must bring me some evidence."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Chief Balrog",
-                                        args!["Go back, bring proof of your victory, and then come back."],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            } else {
-                                if ctx.var("rebirth_moc_edq").get()? == 7 {
-                                    ctx.lines_as("Chief Balrog", args!["I've prepared a few things to give as a reward for you. Let's see... I have three items. Which one do you like to receive?"])?;
-                                    ctx.next()?;
-                                    'b12: {
-                                        let subject12 = Val::from(runtime::select_values(
-                                            ctx,
-                                            &[Val::from("1. Seal of Continental Guard:2. Morocc Charm Stone:3. Morocc Ring")],
-                                        )?);
-                                        let mut matched12 = false;
-                                        let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                                            && !subject12.loosely_equals(&Val::from(2))
-                                            && !subject12.loosely_equals(&Val::from(3));
-                                        if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                                            matched12 = true;
-                                        }
-                                        if matched12 {
-                                            ctx.lines_as("Chief Balrog", args!["The Seal of Continental Guard is an extremely valuable reward given directly from the kingdom court. It is a symbol of strength."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Chief Balrog",
-                                                args!["The accessory's options are: ^0000FF MHP+50, +3% Attack Speed^000000."],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Chief Balrog", args!["Do you really want the Seal of Continental Guard?"])?;
-                                            ctx.next()?;
-                                            'b13: {
-                                                let subject13 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                                let mut matched13 = false;
-                                                let no_case13 =
-                                                    !subject13.loosely_equals(&Val::from(1)) && !subject13.loosely_equals(&Val::from(2));
-                                                if !matched13 && subject13.loosely_equals(&Val::from(1)) {
-                                                    matched13 = true;
-                                                }
-                                                if matched13 {
-                                                    ctx.lines_as("Chief Balrog", args!["Great, then I'll reward you with the Seal of Continental Guard. Congratulations."])?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(2730), Val::from(1)])?;
-                                                    ctx.var("rebirth_moc_edq").set(Val::from(8))?;
-                                                    ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
-                                                    ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args![
-                                                            "You should go rest now. Don't worry, we'll take care of everything else here."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched13 && subject13.loosely_equals(&Val::from(2)) {
-                                                    matched13 = true;
-                                                }
-                                                if matched13 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["No problem. Take your time to think, and then speak to me again."],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                        if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                                            matched12 = true;
-                                        }
-                                        if matched12 {
-                                            ctx.lines_as("Chief Balrog", args!["The Morocc Charm Stone is an extremely valuable reward given directly from the kingdom court, and it is a symbol of prosperity and mana."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Chief Balrog",
-                                                args!["The accessory's options are: ^0000FF MSP+50, -1% Casting Speed^000000."],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Charm Stone?"])?;
-                                            ctx.next()?;
-                                            'b14: {
-                                                let subject14 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                                let mut matched14 = false;
-                                                let no_case14 =
-                                                    !subject14.loosely_equals(&Val::from(1)) && !subject14.loosely_equals(&Val::from(2));
-                                                if !matched14 && subject14.loosely_equals(&Val::from(1)) {
-                                                    matched14 = true;
-                                                }
-                                                if matched14 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["Great, then I'll reward you with a Morocc Charm Stone. Congratulations."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(2731), Val::from(1)])?;
-                                                    ctx.var("rebirth_moc_edq").set(Val::from(8))?;
-                                                    ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
-                                                    ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args![
-                                                            "You should go rest now. Don't worry, we'll take care of everything else here."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched14 && subject14.loosely_equals(&Val::from(2)) {
-                                                    matched14 = true;
-                                                }
-                                                if matched14 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["No problem. Take your time to think, and then speak to me again."],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                        if !matched12 && subject12.loosely_equals(&Val::from(3)) {
-                                            matched12 = true;
-                                        }
-                                        if matched12 {
-                                            ctx.lines_as("Chief Balrog", args!["The Morocc Ring is an extremely valuable reward given directly from the kingdom court that symbolizes critical power."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Chief Balrog", args!["The accessory's option is: ^0000FF CRI + 5^000000."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Ring?"])?;
-                                            ctx.next()?;
-                                            'b15: {
-                                                let subject15 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                                let mut matched15 = false;
-                                                let no_case15 =
-                                                    !subject15.loosely_equals(&Val::from(1)) && !subject15.loosely_equals(&Val::from(2));
-                                                if !matched15 && subject15.loosely_equals(&Val::from(1)) {
-                                                    matched15 = true;
-                                                }
-                                                if matched15 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["Great, then I'll reward you with a Morocc Ring. Congratulations."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(2732), Val::from(1)])?;
-                                                    ctx.var("rebirth_moc_edq").set(Val::from(8))?;
-                                                    ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
-                                                    ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args![
-                                                            "You should go rest now. Don't worry, we'll take care of everything else here."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched15 && subject15.loosely_equals(&Val::from(2)) {
-                                                    matched15 = true;
-                                                }
-                                                if matched15 {
-                                                    ctx.lines_as(
-                                                        "Chief Balrog",
-                                                        args!["No problem. Take your time to think about it, and then speak to me again."],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    if ctx.var("rebirth_moc_edq").get()? == 8 {
-                                        ctx.lines_as("Chief Balrog", args!["I've heard that the kingdom is planning to send out a large group of researchers to investigate the other world to which Satan Morocc has escaped."])?;
+                                    if matched13 {
+                                        ctx.lines_as("Chief Balrog", args!["Great, then I'll reward you with the Seal of Continental Guard. Congratulations."])?;
                                         ctx.next()?;
-                                        ctx.lines_as("Chief Balrog", args!["That means it's time for both of us -- you and I -- to get to work. Who knows when Morocc will return to plague us?"])?;
+                                        ctx.call(Function::GetItem, vec![Val::from(2730), Val::from(1)])?;
+                                        ctx.var("rebirth_moc_edq").set(Val::from(8))?;
+                                        ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
+                                        ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
                                         ctx.next()?;
-                                        ctx.lines_as("Chief Balrog", args!["Please keep up the good work, and don't forget that the future of the continent and the kingdom relies on us."])?;
+                                        ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Chief Balrog",
+                                            args![
+                                                "You should go rest now. Don't worry, we'll take care of everything else here."
+                                            ],
+                                        )?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as("Chief Balrog", args!["You've come here at a bad time, but it's nice to meet you. I'm Continental Guard Chief Balrog. We've been dispatched to Morocc in order to suppress Satan Morocc... We'll need all the strength and luck we can gather."])?;
+                                    }
+                                    if !matched13 && subject13.loosely_equals(&Val::from(2)) {
+                                        matched13 = true;
+                                    }
+                                    if matched13 {
+                                        ctx.lines_as(
+                                            "Chief Balrog",
+                                            args!["No problem. Take your time to think, and then speak to me again."],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                }
+                            }
+                            if !matched12 && subject12.loosely_equals(&Val::from(2)) {
+                                matched12 = true;
+                            }
+                            if matched12 {
+                                ctx.lines_as("Chief Balrog", args!["The Morocc Charm Stone is an extremely valuable reward given directly from the kingdom court, and it is a symbol of prosperity and mana."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Chief Balrog",
+                                    args!["The accessory's options are: ^0000FF MSP+50, -1% Casting Speed^000000."],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Charm Stone?"])?;
+                                ctx.next()?;
+                                'b14: {
+                                    let subject14 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
+                                    let mut matched14 = false;
+                                    let no_case14 =
+                                        !subject14.loosely_equals(&Val::from(1)) && !subject14.loosely_equals(&Val::from(2));
+                                    if !matched14 && subject14.loosely_equals(&Val::from(1)) {
+                                        matched14 = true;
+                                    }
+                                    if matched14 {
+                                        ctx.lines_as(
+                                            "Chief Balrog",
+                                            args!["Great, then I'll reward you with a Morocc Charm Stone. Congratulations."],
+                                        )?;
                                         ctx.next()?;
-                                        ctx.lines_as("Chief Balrog", args!["I'm sorry, but I'm too busy checking through all these applications for future Continental Guards to greet you adventurers one by one."])?;
+                                        ctx.call(Function::GetItem, vec![Val::from(2731), Val::from(1)])?;
+                                        ctx.var("rebirth_moc_edq").set(Val::from(8))?;
+                                        ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
+                                        ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
                                         ctx.next()?;
-                                        ctx.lines_as("Chief Balrog", args!["Listen, it might be more helpful if you talk to some other people first. I'm sure one of the other Continental Guards or our messengers will be better equipped to help you out."])?;
+                                        ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Chief Balrog",
+                                            args![
+                                                "You should go rest now. Don't worry, we'll take care of everything else here."
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched14 && subject14.loosely_equals(&Val::from(2)) {
+                                        matched14 = true;
+                                    }
+                                    if matched14 {
+                                        ctx.lines_as(
+                                            "Chief Balrog",
+                                            args!["No problem. Take your time to think, and then speak to me again."],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                }
+                            }
+                            if !matched12 && subject12.loosely_equals(&Val::from(3)) {
+                                matched12 = true;
+                            }
+                            if matched12 {
+                                ctx.lines_as("Chief Balrog", args!["The Morocc Ring is an extremely valuable reward given directly from the kingdom court that symbolizes critical power."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Chief Balrog", args!["The accessory's option is: ^0000FF CRI + 5^000000."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Ring?"])?;
+                                ctx.next()?;
+                                'b15: {
+                                    let subject15 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
+                                    let mut matched15 = false;
+                                    let no_case15 =
+                                        !subject15.loosely_equals(&Val::from(1)) && !subject15.loosely_equals(&Val::from(2));
+                                    if !matched15 && subject15.loosely_equals(&Val::from(1)) {
+                                        matched15 = true;
+                                    }
+                                    if matched15 {
+                                        ctx.lines_as(
+                                            "Chief Balrog",
+                                            args!["Great, then I'll reward you with a Morocc Ring. Congratulations."],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.call(Function::GetItem, vec![Val::from(2732), Val::from(1)])?;
+                                        ctx.var("rebirth_moc_edq").set(Val::from(8))?;
+                                        ctx.call(Function::CompleteQuest, vec![Val::from(3056)])?;
+                                        ctx.lines_as("Chief Balrog", args!["I hope you keep in mind that our battle is far from over. Our enemy is the king of demons... I fear that Satan Morocc will return someday soon."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Chief Balrog", args!["Enjoy your victory, but be ever watchful and vigilant. I will always be here to help and reward you for your service."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Chief Balrog",
+                                            args![
+                                                "You should go rest now. Don't worry, we'll take care of everything else here."
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched15 && subject15.loosely_equals(&Val::from(2)) {
+                                        matched15 = true;
+                                    }
+                                    if matched15 {
+                                        ctx.lines_as(
+                                            "Chief Balrog",
+                                            args!["No problem. Take your time to think about it, and then speak to me again."],
+                                        )?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
                                 }
                             }
                         }
+                    } else if ctx.var("rebirth_moc_edq").get()? == 8 {
+                        ctx.lines_as("Chief Balrog", args!["I've heard that the kingdom is planning to send out a large group of researchers to investigate the other world to which Satan Morocc has escaped."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Chief Balrog", args!["That means it's time for both of us -- you and I -- to get to work. Who knows when Morocc will return to plague us?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Chief Balrog", args!["Please keep up the good work, and don't forget that the future of the continent and the kingdom relies on us."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as("Chief Balrog", args!["You've come here at a bad time, but it's nice to meet you. I'm Continental Guard Chief Balrog. We've been dispatched to Morocc in order to suppress Satan Morocc... We'll need all the strength and luck we can gather."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Chief Balrog", args!["I'm sorry, but I'm too busy checking through all these applications for future Continental Guards to greet you adventurers one by one."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Chief Balrog", args!["Listen, it might be more helpful if you talk to some other people first. I'm sure one of the other Continental Guards or our messengers will be better equipped to help you out."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -2170,39 +2136,33 @@ fn morocc_globalvar_admin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 "^3131FF<Continental Guards>^000000",
                 "Enable to enter to moc_fild21 field."
             ])?;
+        } else if ctx.var("$@re_moc").get()? == 1 {
+            ctx.lines(args![
+                "^3131FF<Morocc>^000000",
+                "Some warrior entered after the reset. However, the warrior hasn't started the quest yet.",
+                "The warrior who has rebirth_moc_edq 4 and 7 is now enabled to summon Morocc.",
+                "^3131FF<Continental Guards>^000000",
+                "The warrior who has rebirth_moc_edq 4 ~ 7 is now enabled to enter to moc_fild21."
+            ])?;
+        } else if ctx.var("$@re_moc").get()? == 2 {
+            ctx.lines(args![
+                "^3131FF<Morocc>^000000",
+                "Morocc has been summoned. After 90 minutes has passed, it will revert back to reset status.",
+                "^3131FF<Continental Guards>^000000",
+                "The warrior who has rebirth_moc_edq 4 ~ 7 is now enabled to enter to moc_fild21."
+            ])?;
+        } else if ctx.var("$@re_moc").get()? == 3 {
+            ctx.lines(args![
+                "^3131FF<Morocc>^000000",
+                ((Val::from("Morocc has been killed. Death time is ") + ctx.var("$@re_moc_time$").get()?)
+                    + Val::from("(00 hr/00 min/00 sec).")),
+                "After 6 hours later since the death time, it will be reset.",
+                "The warriors whom has remained in the field can continue the quest via Time Space Gap.",
+                "^3131FF<Continental Guards>^000000",
+                "Disabled to enter to moc_fild21 from outside of the field."
+            ])?;
         } else {
-            if ctx.var("$@re_moc").get()? == 1 {
-                ctx.lines(args![
-                    "^3131FF<Morocc>^000000",
-                    "Some warrior entered after the reset. However, the warrior hasn't started the quest yet.",
-                    "The warrior who has rebirth_moc_edq 4 and 7 is now enabled to summon Morocc.",
-                    "^3131FF<Continental Guards>^000000",
-                    "The warrior who has rebirth_moc_edq 4 ~ 7 is now enabled to enter to moc_fild21."
-                ])?;
-            } else {
-                if ctx.var("$@re_moc").get()? == 2 {
-                    ctx.lines(args![
-                        "^3131FF<Morocc>^000000",
-                        "Morocc has been summoned. After 90 minutes has passed, it will revert back to reset status.",
-                        "^3131FF<Continental Guards>^000000",
-                        "The warrior who has rebirth_moc_edq 4 ~ 7 is now enabled to enter to moc_fild21."
-                    ])?;
-                } else {
-                    if ctx.var("$@re_moc").get()? == 3 {
-                        ctx.lines(args![
-                            "^3131FF<Morocc>^000000",
-                            ((Val::from("Morocc has been killed. Death time is ") + ctx.var("$@re_moc_time$").get()?)
-                                + Val::from("(00 hr/00 min/00 sec).")),
-                            "After 6 hours later since the death time, it will be reset.",
-                            "The warriors whom has remained in the field can continue the quest via Time Space Gap.",
-                            "^3131FF<Continental Guards>^000000",
-                            "Disabled to enter to moc_fild21 from outside of the field."
-                        ])?;
-                    } else {
-                        ctx.lines(args!["^3131FF<Morocc>^000000", ((Val::from("Morocc has been killed. Death time is ") + ctx.var("$@re_moc_time$").get()?) + Val::from("(00 hr/00 min/00 sec).")), "After 6 hours later since the death time, it will be reset.", "It has been already passed 30 minutes after Morocc's death, so warriors can not continue the quest even if they click the Time Space Gap.", "^3131FF<Continental Guards>^000000", "Disabled to enter to moc_fild21 from outside of the field."])?;
-                    }
-                }
-            }
+            ctx.lines(args!["^3131FF<Morocc>^000000", ((Val::from("Morocc has been killed. Death time is ") + ctx.var("$@re_moc_time$").get()?) + Val::from("(00 hr/00 min/00 sec).")), "After 6 hours later since the death time, it will be reset.", "It has been already passed 30 minutes after Morocc's death, so warriors can not continue the quest even if they click the Time Space Gap.", "^3131FF<Continental Guards>^000000", "Disabled to enter to moc_fild21 from outside of the field."])?;
         }
         ctx.next()?;
         ctx.lines_as("Helper", args!["What do you want?"])?;
@@ -2437,225 +2397,217 @@ fn book_touching_man_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if ctx.var("barmunt_crow").get()? == 1 {
-                ctx.lines_as("Benjamin", args!["Don't you forget this title: 'The Crow of the Fate' written by 'Oliver Hilpert.' I'm sure you can find it in Prontera Library."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("barmunt_crow").get()? == 10 {
-                    ctx.lines_as("Benjamin", args!["Oh... Mammi... My Mammi..."])?;
+        } else if ctx.var("barmunt_crow").get()? == 1 {
+            ctx.lines_as("Benjamin", args!["Don't you forget this title: 'The Crow of the Fate' written by 'Oliver Hilpert.' I'm sure you can find it in Prontera Library."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("barmunt_crow").get()? == 10 {
+            ctx.lines_as("Benjamin", args!["Oh... Mammi... My Mammi..."])?;
+            ctx.next()?;
+            ctx.mes("^660000Just like the last time that you saw him, Bejamin is living in his dreams, rubbing a book on his face.^000000")?;
+            ctx.next()?;
+            ctx.mes("^660000You carefully approached him, and then gave him a pat on the shoulder.^000000")?;
+            ctx.next()?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
+            ctx.lines_as("Benjamin", args!["Grrrr! Who dares touch me?!"])?;
+            ctx.next()?;
+            ctx.mes("^660000...Umm... Obviously you weren't careful enough... ^000000")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Benjamin",
+                args![
+                    "Who dares interrupt me from feeling Mammi? Do you want a piece of me... Err?",
+                    "Gosh, it's you. What took you so long? Wasn't Prontera Library, like, five minutes away?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Ahchoo! Thanks to you, I couldn't find it from the library. So I travelled all the way up to Schwarzwald... Ahchoo!"])?;
+            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+            ctx.next()?;
+            ctx.mes("^660000Feeling angry at him, you exaggerated a fit of sneezing which you have had for quite a while.^000000")?;
+            ctx.next()?;
+            ctx.lines_as("Benjamin", args!["Oh... you did?", "Hehehe, you're more reliable than I thought. Thanks for the book... Wait, does that mean I have to go up to Schwarzwald to return this? Man!"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Benjamin",
+                args![
+                    "...No, I can do anything as long as it's for Mammi. Heh heh, you're a kind adventurer. Thanks.",
+                    "Was it cold up there? I guess it is since Schwarzwald is located up north from here."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args![".................."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Benjamin", args!["Let me think. If this book is not yet available in Prontera Library, it must mean that not many people of Rune-Midgarts have read this book."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Benjamin",
+                args!["Grrrr... Mammi! Here I am, following your noble tastes to read such a rare book! Mammi...!"],
+            )?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_BIGTHROB")?])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Benjamin",
+                args![
+                    "I feel so excited to think about having a deep conversation with Mammi about literature! Yay!",
+                    "I should go read this book right away. Hehehe!"
+                ],
+            )?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_DELIGHT")?])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Benjamin",
+                args!["Oops, I must not forget to repay you. You know, I'm a polite man."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Benjamin", args!["Look, it's the picture book of Mammi I told you about."])?;
+            ctx.next()?;
+            ctx.call(Function::Cutin, vec![Val::from("mami01"), Val::from(4)])?;
+            ctx.lines_as("Benjamin", args!["Ah... Look at this picture of her wearing the rolled-up puppy ears! Doesn't she look like a sad puppy wandering Comodo, the City of Lovers, all by herself?!", "How could no one shed a tear after watching this sad picture of her?! Argh, Mammi! I'm coming to make you the happiest woman in the world!"])?;
+            ctx.next()?;
+            ctx.call(Function::Cutin, vec![Val::from("mami02"), Val::from(4)])?;
+            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["'She looks different than I thought with these glasses and pony tails... She really looks like someone who loves literature.", "Wait, when did people start calling Comodo the City of Lovers? Hmm... This guy really thinks weird things!'"])?;
+            ctx.next()?;
+            ctx.lines_as("Benjamin", args!["I've decided to give you this <Angel Mammi's Special picture book: In Comodo> which is full of her beautiful pictures in return of your favor. Ahem... What do you say?"])?;
+            ctx.next()?;
+            ctx.mes("^660000He is staring at you arrogantly. Obviously, he doesn't care if you like the book or not.^000000")?;
+            ctx.next()?;
+            'b3: {
+                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("I'll take it.:No, thanks.")])?);
+                let mut matched3 = false;
+                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    ctx.mes("'^660000Well, if it's for free, and there's no harm keeping it.'^000000")?;
                     ctx.next()?;
-                    ctx.mes("^660000Just like the last time that you saw him, Bejamin is living in his dreams, rubbing a book on his face.^000000")?;
-                    ctx.next()?;
-                    ctx.mes("^660000You carefully approached him, and then gave him a pat on the shoulder.^000000")?;
-                    ctx.next()?;
-                    ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
-                    ctx.lines_as("Benjamin", args!["Grrrr! Who dares touch me?!"])?;
-                    ctx.next()?;
-                    ctx.mes("^660000...Umm... Obviously you weren't careful enough... ^000000")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Benjamin",
-                        args![
-                            "Who dares interrupt me from feeling Mammi? Do you want a piece of me... Err?",
-                            "Gosh, it's you. What took you so long? Wasn't Prontera Library, like, five minutes away?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Ahchoo! Thanks to you, I couldn't find it from the library. So I travelled all the way up to Schwarzwald... Ahchoo!"])?;
-                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-                    ctx.next()?;
-                    ctx.mes("^660000Feeling angry at him, you exaggerated a fit of sneezing which you have had for quite a while.^000000")?;
-                    ctx.next()?;
-                    ctx.lines_as("Benjamin", args!["Oh... you did?", "Hehehe, you're more reliable than I thought. Thanks for the book... Wait, does that mean I have to go up to Schwarzwald to return this? Man!"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Benjamin",
-                        args![
-                            "...No, I can do anything as long as it's for Mammi. Heh heh, you're a kind adventurer. Thanks.",
-                            "Was it cold up there? I guess it is since Schwarzwald is located up north from here."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![".................."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Benjamin", args!["Let me think. If this book is not yet available in Prontera Library, it must mean that not many people of Rune-Midgarts have read this book."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Benjamin",
-                        args!["Grrrr... Mammi! Here I am, following your noble tastes to read such a rare book! Mammi...!"],
-                    )?;
-                    ctx.call(Function::Emotion, vec![ctx.constant("ET_BIGTHROB")?])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Benjamin",
-                        args![
-                            "I feel so excited to think about having a deep conversation with Mammi about literature! Yay!",
-                            "I should go read this book right away. Hehehe!"
-                        ],
-                    )?;
-                    ctx.call(Function::Emotion, vec![ctx.constant("ET_DELIGHT")?])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Benjamin",
-                        args!["Oops, I must not forget to repay you. You know, I'm a polite man."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Benjamin", args!["Look, it's the picture book of Mammi I told you about."])?;
-                    ctx.next()?;
-                    ctx.call(Function::Cutin, vec![Val::from("mami01"), Val::from(4)])?;
-                    ctx.lines_as("Benjamin", args!["Ah... Look at this picture of her wearing the rolled-up puppy ears! Doesn't she look like a sad puppy wandering Comodo, the City of Lovers, all by herself?!", "How could no one shed a tear after watching this sad picture of her?! Argh, Mammi! I'm coming to make you the happiest woman in the world!"])?;
-                    ctx.next()?;
-                    ctx.call(Function::Cutin, vec![Val::from("mami02"), Val::from(4)])?;
-                    ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["'She looks different than I thought with these glasses and pony tails... She really looks like someone who loves literature.", "Wait, when did people start calling Comodo the City of Lovers? Hmm... This guy really thinks weird things!'"])?;
-                    ctx.next()?;
-                    ctx.lines_as("Benjamin", args!["I've decided to give you this <Angel Mammi's Special picture book: In Comodo> which is full of her beautiful pictures in return of your favor. Ahem... What do you say?"])?;
-                    ctx.next()?;
-                    ctx.mes("^660000He is staring at you arrogantly. Obviously, he doesn't care if you like the book or not.^000000")?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("I'll take it.:No, thanks.")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.mes("'^660000Well, if it's for free, and there's no harm keeping it.'^000000")?;
-                            ctx.next()?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args!["No, thanks. I'm not interested in her as much as you."],
-                            )?;
-                            ctx.next()?;
-                            ctx.mes("...^660000Was what you were about to say, but you could not refuse his offer. Looking at his fanatical eyes, burning with love for her, even Odin could not refuse...^000000")?;
-                            ctx.next()?;
-                            break 'b3;
-                        }
-                    }
-                    ctx.lines(args![
-                        "^660000Quickly blinking his eyes, he made you take Mammi's picture book in your arms",
-                        "demanding that you must encase the book so it would not be damaged.^000000"
-                    ])?;
-                    ctx.var("barmunt_crow").set(Val::from(11))?;
-                    ctx.call(Function::GetItem, vec![Val::from(7795), Val::from(1)])?;
-                    ctx.next()?;
-                    ctx.lines_as("Benjamin", args!["Oh, right. If you're interested in this author, Oliver Hilpert, I suggest you read the prequel of <The Crow of the Fate>, ^3131FF<The Trace of the Fate>^000000 as well as the sequel."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Benjamin", args!["That was also a bestseller."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Benjamin",
-                        args!["Now I need to start reading this book for the moment that I'll meet my Mammi, so please leave me alone."],
-                    )?;
-                    ctx.next()?;
-                    ctx.mes("^660000As soon as he finished, he returned to escaping reality by indulging himself in his dreams of Mammi.^000000")?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^660000The Trace of the Fate, huh?",
-                        "Well, I don't have anything else to do. I might want to read the book...^000000"
-                    ])?;
-                    ctx.next()?;
+                    break 'b3;
+                }
+                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                    matched3 = true;
+                }
+                if matched3 {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["Wait, does it mean that I have to go back to Juno Library?"],
+                        args!["No, thanks. I'm not interested in her as much as you."],
                     )?;
                     ctx.next()?;
-                    ctx.mes("^660000Thinking of travelling back to Juno made you sigh in frustration.^000000")?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(2067), Val::from(2068)])?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("barmunt_crow").get()? == 11 {
-                        ctx.mes("^660000You have embarked on a journey to Juno to read the prequel of <The Crow of the Fate>: <The Trace of the Fate>.^000000")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("barmunt_crow").get()? == 15 {
-                            if (ctx.call(Function::CountItem, vec![Val::from(7797)])? == 1
-                                && ctx.call(Function::CountItem, vec![Val::from(7796)])? == 1)
-                            {
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args![
-                                        "Hey, Benjamin!",
-                                        "I've got the perfect thing to help you appeal to Mammi. Do you want to see?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Benjamin", args!["WH... WHAT?!", "What is they? Show me!?"])?;
-                                ctx.next()?;
-                                ctx.mes("^660000You have shown him an autograph and a written note by Oliver Hilpert.^000000")?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Benjamin",
-                                    args!["Oh, my god!", "These will surely help me get closer to Mammi!", "Give them to me!"],
-                                )?;
-                                ctx.next()?;
-                                'b4: {
-                                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Give:Don't Give")])?);
-                                    let mut matched4 = false;
-                                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as(
-                                            "Benjamin",
-                                            args![
-                                                ((Val::from("Oh, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                    + Val::from("!")),
-                                                "You are the best! Thanks!"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Benjamin",
-                                            args![
-                                                "Maaaammmiii!",
-                                                "I'm going to see her tomorrow as soon as the morning comes! Mammi, I'm coming!"
-                                            ],
-                                        )?;
-                                        ctx.call(Function::DelItem, vec![Val::from(7797), Val::from(1)])?;
-                                        ctx.call(Function::DelItem, vec![Val::from(7796), Val::from(1)])?;
-                                        ctx.var("barmunt_crow").set(Val::from(16))?;
-                                        ctx.call(Function::GetExperience, vec![Val::from(900000), Val::from(900000)])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as("Benjamin", args!["Huh? What, are you kidding me?"])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            } else {
-                                ctx.lines_as("Benjamin", args!["Oh... Mammi... Oh..."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        } else {
-                            ctx.lines_as("Benjamin", args!["Oh... Mammi... Oh..."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
+                    ctx.mes("...^660000Was what you were about to say, but you could not refuse his offer. Looking at his fanatical eyes, burning with love for her, even Odin could not refuse...^000000")?;
+                    ctx.next()?;
+                    break 'b3;
                 }
             }
+            ctx.lines(args![
+                "^660000Quickly blinking his eyes, he made you take Mammi's picture book in your arms",
+                "demanding that you must encase the book so it would not be damaged.^000000"
+            ])?;
+            ctx.var("barmunt_crow").set(Val::from(11))?;
+            ctx.call(Function::GetItem, vec![Val::from(7795), Val::from(1)])?;
+            ctx.next()?;
+            ctx.lines_as("Benjamin", args!["Oh, right. If you're interested in this author, Oliver Hilpert, I suggest you read the prequel of <The Crow of the Fate>, ^3131FF<The Trace of the Fate>^000000 as well as the sequel."])?;
+            ctx.next()?;
+            ctx.lines_as("Benjamin", args!["That was also a bestseller."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Benjamin",
+                args!["Now I need to start reading this book for the moment that I'll meet my Mammi, so please leave me alone."],
+            )?;
+            ctx.next()?;
+            ctx.mes("^660000As soon as he finished, he returned to escaping reality by indulging himself in his dreams of Mammi.^000000")?;
+            ctx.next()?;
+            ctx.lines(args![
+                "^660000The Trace of the Fate, huh?",
+                "Well, I don't have anything else to do. I might want to read the book...^000000"
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["Wait, does it mean that I have to go back to Juno Library?"],
+            )?;
+            ctx.next()?;
+            ctx.mes("^660000Thinking of travelling back to Juno made you sigh in frustration.^000000")?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(2067), Val::from(2068)])?;
+            ctx.close_window()?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            return Err(Stop::End);
+        } else if ctx.var("barmunt_crow").get()? == 11 {
+            ctx.mes("^660000You have embarked on a journey to Juno to read the prequel of <The Crow of the Fate>: <The Trace of the Fate>.^000000")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("barmunt_crow").get()? == 15 {
+            if (ctx.call(Function::CountItem, vec![Val::from(7797)])? == 1
+                && ctx.call(Function::CountItem, vec![Val::from(7796)])? == 1)
+            {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Hey, Benjamin!",
+                        "I've got the perfect thing to help you appeal to Mammi. Do you want to see?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Benjamin", args!["WH... WHAT?!", "What is they? Show me!?"])?;
+                ctx.next()?;
+                ctx.mes("^660000You have shown him an autograph and a written note by Oliver Hilpert.^000000")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Benjamin",
+                    args!["Oh, my god!", "These will surely help me get closer to Mammi!", "Give them to me!"],
+                )?;
+                ctx.next()?;
+                'b4: {
+                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Give:Don't Give")])?);
+                    let mut matched4 = false;
+                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.lines_as(
+                            "Benjamin",
+                            args![
+                                ((Val::from("Oh, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("!")),
+                                "You are the best! Thanks!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Benjamin",
+                            args![
+                                "Maaaammmiii!",
+                                "I'm going to see her tomorrow as soon as the morning comes! Mammi, I'm coming!"
+                            ],
+                        )?;
+                        ctx.call(Function::DelItem, vec![Val::from(7797), Val::from(1)])?;
+                        ctx.call(Function::DelItem, vec![Val::from(7796), Val::from(1)])?;
+                        ctx.var("barmunt_crow").set(Val::from(16))?;
+                        ctx.call(Function::GetExperience, vec![Val::from(900000), Val::from(900000)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.lines_as("Benjamin", args!["Huh? What, are you kidding me?"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+            } else {
+                ctx.lines_as("Benjamin", args!["Oh... Mammi... Oh..."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        } else {
+            ctx.lines_as("Benjamin", args!["Oh... Mammi... Oh..."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.mes("With dreamy eyes, the man is looking down at a book in his hand.")?;
@@ -2683,184 +2635,180 @@ fn library_curator_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("barmunt_crow").get()? == 1 {
-            ctx.lines_as("Curator Guys", args!["Our library's Monster Encyclopedia has every monster in the Rune-Midgarts Kingdom categorized by dungeon, to help our readers find them easily.", "We also have many essential books for adventurers. Why don't you take a look?"])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Search books.:Look around the library.")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Curator Guys",
-                        args![
-                            "Do you have a specific book in mind?",
-                            "No problem, I'm here to assist you.",
-                            "What kind of book are you looking for?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Say the title.:Say the author.:Search by keyword.")],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Curator Guys",
-                                args!["Oh, do you know the title?", "Sure, now what's the name?"],
-                            )?;
-                            let (input, status) = runtime::input_text(ctx, None, None)?;
-                            l_input_s = input;
-                            ctx.next()?;
-                            if runtime::compare(&l_input_s.clone(), &Val::from("The Crow of the Fate")) == 1 {
-                                ctx.lines_as(
-                                    "Curator Guys",
-                                    args![((Val::from("") + l_input_s.clone()) + Val::from("...?")), "Alright, let me see..."],
-                                )?;
-                                ctx.next()?;
-                            } else {
-                                ctx.lines_as("Curator Guys", args!["Hmm... I'm sorry. I've worked at this place for a few decades, but I don't think I've ever seen such a book."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Curator Guys",
-                                args!["Oh, do you know the author?", "Sure, now what's the name?"],
-                            )?;
-                            let (input, status) = runtime::input_text(ctx, None, None)?;
-                            l_input_s = input;
-                            ctx.next()?;
-                            if runtime::compare(&l_input_s.clone(), &Val::from("Oliver Hilpert")) == 1 {
-                                ctx.lines_as(
-                                    "Curator Guys",
-                                    args![((Val::from("") + l_input_s.clone()) + Val::from("...?")), "Alright, let me see..."],
-                                )?;
-                                ctx.next()?;
-                            } else {
-                                ctx.lines_as("Curator Guys", args!["Hmm... I'm sorry. I've worked at this place for a few decades, but I don't think I've ever heard of such an author."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Curator Guys",
-                                args![
-                                    "You must be having a hard time remembering the book's title or author.",
-                                    "No problem; why don't you tell me at least a little bit of what you remember?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            let (input, status) = runtime::input_text(ctx, None, None)?;
-                            l_input_s = input;
-                            if (((runtime::compare(&l_input_s.clone(), &Val::from("Fate")) == 1
-                                || runtime::compare(&l_input_s.clone(), &Val::from("Crow")) == 1)
-                                || runtime::compare(&l_input_s.clone(), &Val::from("Oliver")) == 1)
-                                || runtime::compare(&l_input_s.clone(), &Val::from("Hilpert")) == 1)
-                            {
-                                ctx.lines_as(
-                                    "Curator Guys",
-                                    args![((Val::from("") + l_input_s.clone()) + Val::from("...?")), "Alright, let me see..."],
-                                )?;
-                                ctx.next()?;
-                            } else {
-                                ctx.lines_as("Curator Guys", args!["Hmm... I'm sorry. I've worked at this place for a few decades, but I don't think I've ever seen a book whose name is even close to the words you said."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            break 'b2;
-                        }
-                    }
-                    ctx.call(Function::Emotion, vec![ctx.constant("ET_AHA")?])?;
-                    ctx.lines_as("Curator Guys", args!["Oh, right! I think I know the book:"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Curator Guys",
-                        args!["^3131FFOliver Hilpert's", "<The Crow of the Fate>^000000!"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["That's right! That's what I'm looking for!"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Curator Guys", args!["Haha... But I have bad news for you.", "The book has become so popular that you can't even find it from Schwarzwald, the author's country.", "We tried to get a hold of the book, but it was too late. It'll take a while for the next editon to be published, so why don't you read a different book for now?"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Curator Guys",
-                        args![
-                            "If you are not busy and really want to read the book, I have a suggestion: try Juno Library.",
-                            "You can find every book published in Schwarzwald from the library. Chances are, you'll find it there."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Curator Guys", args!["Well, Juno is quite far from here, but if you're really enthusiastic about reading such a popular book, it should be worthwile."])?;
-                    ctx.next()?;
-                    ctx.mes("^660000The book isn't for you, but you believe in 100% customer satisfaction. Let's go to Juno Library now.^000000")?;
-                    ctx.var("barmunt_crow").set(Val::from(2))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(2063), Val::from(2064)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Curator Guys",
-                        args![
-                            "Each book tells you a story of life, wisdom, happiness, and sensation.",
-                            "Look around! They are the witnesses of mankind. And everyday, we have new ones joining them."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("barmunt_crow").get()? == 1 {
+        ctx.lines_as("Curator Guys", args!["Our library's Monster Encyclopedia has every monster in the Rune-Midgarts Kingdom categorized by dungeon, to help our readers find them easily.", "We also have many essential books for adventurers. Why don't you take a look?"])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Search books.:Look around the library.")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if ctx.var("barmunt_crow").get()? == 2 {
-                ctx.lines_as("Curator Guys", args!["^3131FFThe Crow of the Fate^000000 was sold out even before we got a hold of one copy. You won't be able to find the book anywhere in the Rune-Midgarts Kingdom.", "If you really want to read the book, you should try Juno Library."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Curator Guys", args!["Our library's Monster Encyclopedia has every monster in the Rune-Midgarts Kingdom, categorized by dungeon to help the readers find them easily.", "We also have many essential books for adventurers. Why don't you take a look?"])?;
+            if matched1 {
+                ctx.lines_as(
+                    "Curator Guys",
+                    args![
+                        "Do you have a specific book in mind?",
+                        "No problem, I'm here to assist you.",
+                        "What kind of book are you looking for?"
+                    ],
+                )?;
+                ctx.next()?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Say the title.:Say the author.:Search by keyword.")],
+                    )?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                        && !subject2.loosely_equals(&Val::from(2))
+                        && !subject2.loosely_equals(&Val::from(3));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines_as(
+                            "Curator Guys",
+                            args!["Oh, do you know the title?", "Sure, now what's the name?"],
+                        )?;
+                        let (input, status) = runtime::input_text(ctx, None, None)?;
+                        l_input_s = input;
+                        ctx.next()?;
+                        if runtime::compare(&l_input_s.clone(), &Val::from("The Crow of the Fate")) == 1 {
+                            ctx.lines_as(
+                                "Curator Guys",
+                                args![((Val::from("") + l_input_s.clone()) + Val::from("...?")), "Alright, let me see..."],
+                            )?;
+                            ctx.next()?;
+                        } else {
+                            ctx.lines_as("Curator Guys", args!["Hmm... I'm sorry. I've worked at this place for a few decades, but I don't think I've ever seen such a book."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines_as(
+                            "Curator Guys",
+                            args!["Oh, do you know the author?", "Sure, now what's the name?"],
+                        )?;
+                        let (input, status) = runtime::input_text(ctx, None, None)?;
+                        l_input_s = input;
+                        ctx.next()?;
+                        if runtime::compare(&l_input_s.clone(), &Val::from("Oliver Hilpert")) == 1 {
+                            ctx.lines_as(
+                                "Curator Guys",
+                                args![((Val::from("") + l_input_s.clone()) + Val::from("...?")), "Alright, let me see..."],
+                            )?;
+                            ctx.next()?;
+                        } else {
+                            ctx.lines_as("Curator Guys", args!["Hmm... I'm sorry. I've worked at this place for a few decades, but I don't think I've ever heard of such an author."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines_as(
+                            "Curator Guys",
+                            args![
+                                "You must be having a hard time remembering the book's title or author.",
+                                "No problem; why don't you tell me at least a little bit of what you remember?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        let (input, status) = runtime::input_text(ctx, None, None)?;
+                        l_input_s = input;
+                        if (((runtime::compare(&l_input_s.clone(), &Val::from("Fate")) == 1
+                            || runtime::compare(&l_input_s.clone(), &Val::from("Crow")) == 1)
+                            || runtime::compare(&l_input_s.clone(), &Val::from("Oliver")) == 1)
+                            || runtime::compare(&l_input_s.clone(), &Val::from("Hilpert")) == 1)
+                        {
+                            ctx.lines_as(
+                                "Curator Guys",
+                                args![((Val::from("") + l_input_s.clone()) + Val::from("...?")), "Alright, let me see..."],
+                            )?;
+                            ctx.next()?;
+                        } else {
+                            ctx.lines_as("Curator Guys", args!["Hmm... I'm sorry. I've worked at this place for a few decades, but I don't think I've ever seen a book whose name is even close to the words you said."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        break 'b2;
+                    }
+                }
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_AHA")?])?;
+                ctx.lines_as("Curator Guys", args!["Oh, right! I think I know the book:"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Curator Guys",
+                    args!["^3131FFOliver Hilpert's", "<The Crow of the Fate>^000000!"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["That's right! That's what I'm looking for!"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Curator Guys", args!["Haha... But I have bad news for you.", "The book has become so popular that you can't even find it from Schwarzwald, the author's country.", "We tried to get a hold of the book, but it was too late. It'll take a while for the next editon to be published, so why don't you read a different book for now?"])?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Curator Guys",
                     args![
-                        "The other library across the street also has Monster Encyclopedias.",
-                        "If you're interested, feel free to drop by that library as well."
+                        "If you are not busy and really want to read the book, I have a suggestion: try Juno Library.",
+                        "You can find every book published in Schwarzwald from the library. Chances are, you'll find it there."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Curator Guys", args!["Well, Juno is quite far from here, but if you're really enthusiastic about reading such a popular book, it should be worthwile."])?;
+                ctx.next()?;
+                ctx.mes("^660000The book isn't for you, but you believe in 100% customer satisfaction. Let's go to Juno Library now.^000000")?;
+                ctx.var("barmunt_crow").set(Val::from(2))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(2063), Val::from(2064)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Curator Guys",
+                    args![
+                        "Each book tells you a story of life, wisdom, happiness, and sensation.",
+                        "Look around! They are the witnesses of mankind. And everyday, we have new ones joining them."
                     ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
+    } else if ctx.var("barmunt_crow").get()? == 2 {
+        ctx.lines_as("Curator Guys", args!["^3131FFThe Crow of the Fate^000000 was sold out even before we got a hold of one copy. You won't be able to find the book anywhere in the Rune-Midgarts Kingdom.", "If you really want to read the book, you should try Juno Library."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as("Curator Guys", args!["Our library's Monster Encyclopedia has every monster in the Rune-Midgarts Kingdom, categorized by dungeon to help the readers find them easily.", "We also have many essential books for adventurers. Why don't you take a look?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Curator Guys",
+            args![
+                "The other library across the street also has Monster Encyclopedias.",
+                "If you're interested, feel free to drop by that library as well."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -3197,90 +3145,84 @@ fn library_part_timer_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Thanks."])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("barmunt_crow").get()? == 7 {
-            ctx.lines_as("Library Part-Timer", args!["How may I help you?"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args!["Yes, umm... ahchoo! Where can I find old news articles...? Ahchoo!"],
-            )?;
-            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Library Part-Timer",
-                args![
-                    "Oh, you can find them in a corner of the right room.",
-                    "Please be careful when you handle them since most of them are pretty ancient."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Thanks... Ahchoo!"])?;
-            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("barmunt_crow").get()? == 11 {
-                ctx.lines_as(
-                    "Library Part-Timer",
-                    args![
-                        "People should learn to put away books after pulling them out.",
-                        "All these books piled up in the cart make me feel so frustrated, you know? Sigh..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Library Part-Timer", args!["...How may I help you?"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["Cough... I'm looking for a book called <The Crow of the Fate> written by Oliver Hilpert."],
-                )?;
-                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Library Part-Timer",
-                    args![
-                        "Ah, I remember that one... It's the one most frequently left in the cart.",
-                        "Go ^3131FFupstairs^000000, and check the left shelf."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Thanks."])?;
-                ctx.next()?;
-                ctx.lines_as("Library Part-Timer", args!["Oliver Hilpert has attained huge fame despite his young age.", "I've read his <The Trace of the Fate> at least several times. I mean, that book is so captivating that I can never get tired of reading it."])?;
-                ctx.next()?;
-                ctx.lines_as("Library Part-Timer", args!["Umm... The most impressive scene was... Err..."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Library Part-Timer",
-                    args!["Right! When the hero was meeting his end in the burning mansion... ^FF0000-- BEEP --^000000"],
-                )?;
-                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_BASH3D2")?])?;
-                ctx.close_window()?;
-                ctx.call(Function::Warp, vec![Val::from("que_ba"), Val::from(264), Val::from(186)])?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("barmunt_crow").get()? == 12 {
-                    ctx.lines_as(
-                        "Library Part-Timer",
-                        args![
-                            "Excuse me, are you okay? I mean, you just kind of drifted off all of a sudden.",
-                            "You look a little pale."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Library Part-Timer",
-                        args![
-                            "Why don't you go inside and take a rest? Read <The Trace of the Fate> or something.",
-                            "You can find the book at the left bookshelf upstairs."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
-        }
+    } else if ctx.var("barmunt_crow").get()? == 7 {
+        ctx.lines_as("Library Part-Timer", args!["How may I help you?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Yes, umm... ahchoo! Where can I find old news articles...? Ahchoo!"],
+        )?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Library Part-Timer",
+            args![
+                "Oh, you can find them in a corner of the right room.",
+                "Please be careful when you handle them since most of them are pretty ancient."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Thanks... Ahchoo!"])?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("barmunt_crow").get()? == 11 {
+        ctx.lines_as(
+            "Library Part-Timer",
+            args![
+                "People should learn to put away books after pulling them out.",
+                "All these books piled up in the cart make me feel so frustrated, you know? Sigh..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Library Part-Timer", args!["...How may I help you?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Cough... I'm looking for a book called <The Crow of the Fate> written by Oliver Hilpert."],
+        )?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Library Part-Timer",
+            args![
+                "Ah, I remember that one... It's the one most frequently left in the cart.",
+                "Go ^3131FFupstairs^000000, and check the left shelf."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Thanks."])?;
+        ctx.next()?;
+        ctx.lines_as("Library Part-Timer", args!["Oliver Hilpert has attained huge fame despite his young age.", "I've read his <The Trace of the Fate> at least several times. I mean, that book is so captivating that I can never get tired of reading it."])?;
+        ctx.next()?;
+        ctx.lines_as("Library Part-Timer", args!["Umm... The most impressive scene was... Err..."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Library Part-Timer",
+            args!["Right! When the hero was meeting his end in the burning mansion... ^FF0000-- BEEP --^000000"],
+        )?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_BASH3D2")?])?;
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("que_ba"), Val::from(264), Val::from(186)])?;
+        return Err(Stop::End);
+    } else if ctx.var("barmunt_crow").get()? == 12 {
+        ctx.lines_as(
+            "Library Part-Timer",
+            args![
+                "Excuse me, are you okay? I mean, you just kind of drifted off all of a sudden.",
+                "You look a little pale."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Library Part-Timer",
+            args![
+                "Why don't you go inside and take a rest? Read <The Trace of the Fate> or something.",
+                "You can find the book at the left bookshelf upstairs."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -3319,68 +3261,64 @@ fn hot_bestseller_corner_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_BASH3D2")?])?;
         ctx.call(Function::Warp, vec![Val::from("que_ba"), Val::from(247), Val::from(33)])?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("barmunt_crow").get()? == 4 {
-            ctx.mes("^660000The countless number of books filling this room tell you why this place is called the Greatest Library of Juno, the City of Scholars.^000000")?;
-            ctx.next()?;
-            ctx.mes(
-                "^660000Books tagged as 'Bestseller of The Month' are stored in the middle of the shelf that's at your eye level.^000000",
-            )?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^660000It was not that difficult to find 'The Crow of the Fate'",
-                "because it was the only book leaning against the wall of an empty shelf.^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args!["Ah, luckily there's one... Ahchoo!"],
-            )?;
-            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args!["Sniff... So now all I have to do is just check this out and deliver it to that Mammi fanatic."],
-            )?;
-            ctx.next()?;
-            ctx.mes("^FF0000-- BEEP --^000000")?;
-            ctx.next()?;
-            ctx.mes("^660000You were about to pull out the book, complaining and grumbling, when suddenly it felt as if your brain exploded. You black out...^000000")?;
-            ctx.close_window()?;
-            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_BASH3D2")?])?;
-            ctx.call(Function::Warp, vec![Val::from("que_ba"), Val::from(247), Val::from(33)])?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("barmunt_crow").get()? == 5 {
-                ctx.mes("^660000The countless number of books filling this room tell you why this place is called the Greatest Library of Juno, the City of Scholars.^000000")?;
-                ctx.next()?;
-                ctx.mes("^660000Books tagged as 'Bestseller of The Month' are stored in the middle of the shelf that's at your eye level.^000000")?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^660000It was not that difficult to find 'The Crow of the Fate'",
-                    "because it was the only book leaning against the wall of an empty shelf.^000000"
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["Ah, luckily there's one... Ahchoo!"],
-                )?;
-                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["Sniff... So now all I have to do is just check this out and deliver it to that Mammi fanatic."],
-                )?;
-                ctx.next()?;
-                ctx.mes("^FF0000-- BEEP --^000000")?;
-                ctx.next()?;
-                ctx.mes("^660000You were about to pull out the book, complaining and grumbling, when suddenly it felt as if your brain exploded. You black out...^000000")?;
-                ctx.close_window()?;
-                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_BASH3D2")?])?;
-                ctx.call(Function::Warp, vec![Val::from("que_ba"), Val::from(247), Val::from(33)])?;
-                return Err(Stop::End);
-            }
-        }
+    } else if ctx.var("barmunt_crow").get()? == 4 {
+        ctx.mes("^660000The countless number of books filling this room tell you why this place is called the Greatest Library of Juno, the City of Scholars.^000000")?;
+        ctx.next()?;
+        ctx.mes(
+            "^660000Books tagged as 'Bestseller of The Month' are stored in the middle of the shelf that's at your eye level.^000000",
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^660000It was not that difficult to find 'The Crow of the Fate'",
+            "because it was the only book leaning against the wall of an empty shelf.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Ah, luckily there's one... Ahchoo!"],
+        )?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Sniff... So now all I have to do is just check this out and deliver it to that Mammi fanatic."],
+        )?;
+        ctx.next()?;
+        ctx.mes("^FF0000-- BEEP --^000000")?;
+        ctx.next()?;
+        ctx.mes("^660000You were about to pull out the book, complaining and grumbling, when suddenly it felt as if your brain exploded. You black out...^000000")?;
+        ctx.close_window()?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_BASH3D2")?])?;
+        ctx.call(Function::Warp, vec![Val::from("que_ba"), Val::from(247), Val::from(33)])?;
+        return Err(Stop::End);
+    } else if ctx.var("barmunt_crow").get()? == 5 {
+        ctx.mes("^660000The countless number of books filling this room tell you why this place is called the Greatest Library of Juno, the City of Scholars.^000000")?;
+        ctx.next()?;
+        ctx.mes("^660000Books tagged as 'Bestseller of The Month' are stored in the middle of the shelf that's at your eye level.^000000")?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^660000It was not that difficult to find 'The Crow of the Fate'",
+            "because it was the only book leaning against the wall of an empty shelf.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Ah, luckily there's one... Ahchoo!"],
+        )?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Sniff... So now all I have to do is just check this out and deliver it to that Mammi fanatic."],
+        )?;
+        ctx.next()?;
+        ctx.mes("^FF0000-- BEEP --^000000")?;
+        ctx.next()?;
+        ctx.mes("^660000You were about to pull out the book, complaining and grumbling, when suddenly it felt as if your brain exploded. You black out...^000000")?;
+        ctx.close_window()?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_BASH3D2")?])?;
+        ctx.call(Function::Warp, vec![Val::from("que_ba"), Val::from(247), Val::from(33)])?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -3463,15 +3401,13 @@ fn garas_path_run(ctx: &Ctx, mut step: GarasPathStep, args: Vec<Val>) -> Result<
                     ctx.call(Function::ChangeQuest, vec![Val::from(2064), Val::from(2065)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("barmunt_crow").get()? == 7 {
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["If I want to read news articles about fires, which section should I go to?"],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                } else if ctx.var("barmunt_crow").get()? == 7 {
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["If I want to read news articles about fires, which section should I go to?"],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 return Err(Stop::End);
             }
@@ -3530,120 +3466,114 @@ fn old_news_scrapbook_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         " "
                     ])?;
                     ctx.next()?;
+                } else if (l_newspp.clone() == 3 || l_newspp.clone() == 4) {
+                    ctx.lines(args![
+                        "- Page 4 -",
+                        "Fight Scene in Juno",
+                        " ",
+                        "Last night, two young men were witnessed",
+                        "violently fighting each other in Juno Plaza.",
+                        "According to the Juno soldier that arrested them,",
+                        "Mr. B had not been so happy with Mr. A's",
+                        "careless behavior, and it seems",
+                        "that his patience finally ran out last night.",
+                        "It seems the fight started when Mr. A put his bare sweaty feet on Mr. B's thigh,",
+                        "saying that his feet are too sweaty.'",
+                        "Blame the hot weather, people!",
+                        " "
+                    ])?;
+                    ctx.next()?;
+                } else if l_newspp.clone() == 5 {
+                    ctx.lines(args![
+                        "God's Warning: A Secret Lab Reduced to Ashes",
+                        " ",
+                        " The smoke clouding the sky of Juno last night",
+                        "turned out to be from",
+                        "a secret laboratory set on fire.",
+                        " More information about the laboratory",
+                        "has not yet been released, but according to the witnesses,",
+                        "the laboratory was found empty",
+                        "without anybody or anything inside",
+                        "except broken pieces of test tubes",
+                        "which proved that the place was used as a laboratory.",
+                        " Scientist Sion, the accident scene investigator,",
+                        "suspects from the remnants of machines inside",
+                        "that the laboratory must have been used",
+                        "to test biotechnology projects,",
+                        "and expressed his belief that the fire was the wrath of God,",
+                        "righteous punishment for trifling with his creations.",
+                        " "
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args![
+                            "...........................",
+                            "...........................",
+                            "This is the place I've seen in my dream!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.mes("Wait, then what about the place where they escaped...?")?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "You quickly checked the date of the news. It was too long ago",
+                        "for you to find any more information from searching news articles."
+                    ])?;
+                    ctx.next()?;
+                    ctx.mes("What if they have any descendents or successors?")?;
+                    ctx.next()?;
+                    ctx.lines(args!["You feel your heart beating faster with excitement.", "You are now convinced this was not just your dream or illusion. You had a vision of what really happened in the past."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args![
+                            "I can't believe this is happening!",
+                            "Think hard... It was ^FF0000an area connected to a northern cave^000000."
+                        ],
+                    )?;
+                    ctx.var("barmunt_crow").set(Val::from(8))?;
+                    ctx.call(Function::ChangeQuest, vec![Val::from(2065), Val::from(2066)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if (l_newspp.clone() == 6 || l_newspp.clone() == 7) {
+                    ctx.lines(args![
+                        "- Culture Page -",
+                        "- Please Save My Water -",
+                        " ",
+                        "A recently acclaimed young author,",
+                        "Jean Cadoc's new series",
+                        "'Please Save My Water' has been ranked at the top",
+                        "for the most checked-out book in libraries.",
+                        "'Please Save My Water' is about a girl called Ujer",
+                        "who was blessed by Mother Nature.",
+                        "Her father left a will on his deathbed",
+                        " to 'protect the water' against the evil,",
+                        "and she is fighting against a group of evil villains",
+                        "that are contaminating nature so that she can purify the water.",
+                        "This book will be soon selected as an essential academic book of",
+                        "the Schwarzwald Republic for",
+                        "promoting morality and",
+                        "promoting environmental protection throughout the nation.",
+                        " "
+                    ])?;
+                    ctx.next()?;
                 } else {
-                    if (l_newspp.clone() == 3 || l_newspp.clone() == 4) {
-                        ctx.lines(args![
-                            "- Page 4 -",
-                            "Fight Scene in Juno",
-                            " ",
-                            "Last night, two young men were witnessed",
-                            "violently fighting each other in Juno Plaza.",
-                            "According to the Juno soldier that arrested them,",
-                            "Mr. B had not been so happy with Mr. A's",
-                            "careless behavior, and it seems",
-                            "that his patience finally ran out last night.",
-                            "It seems the fight started when Mr. A put his bare sweaty feet on Mr. B's thigh,",
-                            "saying that his feet are too sweaty.'",
-                            "Blame the hot weather, people!",
-                            " "
-                        ])?;
-                        ctx.next()?;
-                    } else {
-                        if l_newspp.clone() == 5 {
-                            ctx.lines(args![
-                                "God's Warning: A Secret Lab Reduced to Ashes",
-                                " ",
-                                " The smoke clouding the sky of Juno last night",
-                                "turned out to be from",
-                                "a secret laboratory set on fire.",
-                                " More information about the laboratory",
-                                "has not yet been released, but according to the witnesses,",
-                                "the laboratory was found empty",
-                                "without anybody or anything inside",
-                                "except broken pieces of test tubes",
-                                "which proved that the place was used as a laboratory.",
-                                " Scientist Sion, the accident scene investigator,",
-                                "suspects from the remnants of machines inside",
-                                "that the laboratory must have been used",
-                                "to test biotechnology projects,",
-                                "and expressed his belief that the fire was the wrath of God,",
-                                "righteous punishment for trifling with his creations.",
-                                " "
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args![
-                                    "...........................",
-                                    "...........................",
-                                    "This is the place I've seen in my dream!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.mes("Wait, then what about the place where they escaped...?")?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "You quickly checked the date of the news. It was too long ago",
-                                "for you to find any more information from searching news articles."
-                            ])?;
-                            ctx.next()?;
-                            ctx.mes("What if they have any descendents or successors?")?;
-                            ctx.next()?;
-                            ctx.lines(args!["You feel your heart beating faster with excitement.", "You are now convinced this was not just your dream or illusion. You had a vision of what really happened in the past."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args![
-                                    "I can't believe this is happening!",
-                                    "Think hard... It was ^FF0000an area connected to a northern cave^000000."
-                                ],
-                            )?;
-                            ctx.var("barmunt_crow").set(Val::from(8))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2065), Val::from(2066)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if (l_newspp.clone() == 6 || l_newspp.clone() == 7) {
-                                ctx.lines(args![
-                                    "- Culture Page -",
-                                    "- Please Save My Water -",
-                                    " ",
-                                    "A recently acclaimed young author,",
-                                    "Jean Cadoc's new series",
-                                    "'Please Save My Water' has been ranked at the top",
-                                    "for the most checked-out book in libraries.",
-                                    "'Please Save My Water' is about a girl called Ujer",
-                                    "who was blessed by Mother Nature.",
-                                    "Her father left a will on his deathbed",
-                                    " to 'protect the water' against the evil,",
-                                    "and she is fighting against a group of evil villains",
-                                    "that are contaminating nature so that she can purify the water.",
-                                    "This book will be soon selected as an essential academic book of",
-                                    "the Schwarzwald Republic for",
-                                    "promoting morality and",
-                                    "promoting environmental protection throughout the nation.",
-                                    " "
-                                ])?;
-                                ctx.next()?;
-                            } else {
-                                ctx.lines(args![
-                                    "Einbech Mine Collapsed (2)",
-                                    " ",
-                                    "According to an employee of Rekenber Corporation,",
-                                    "which has been leading Einbech's mining business,",
-                                    "three dead bodies have been discovered,",
-                                    "but one survivor was admitted into a hospital.",
-                                    "He is in a critical condition,",
-                                    "and also informed us that they are",
-                                    "still searching for survivors,",
-                                    "and have hired specialists to investigate",
-                                    "the cause of the accident.",
-                                    " "
-                                ])?;
-                                ctx.next()?;
-                            }
-                        }
-                    }
+                    ctx.lines(args![
+                        "Einbech Mine Collapsed (2)",
+                        " ",
+                        "According to an employee of Rekenber Corporation,",
+                        "which has been leading Einbech's mining business,",
+                        "three dead bodies have been discovered,",
+                        "but one survivor was admitted into a hospital.",
+                        "He is in a critical condition,",
+                        "and also informed us that they are",
+                        "still searching for survivors,",
+                        "and have hired specialists to investigate",
+                        "the cause of the accident.",
+                        " "
+                    ])?;
+                    ctx.next()?;
                 }
             }
         }
@@ -3674,286 +3604,282 @@ fn suspicious_man_oliver_h_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("barmunt_crow").get()? == 13 {
-            ctx.call(Function::Cutin, vec![Val::from("oliver_pre"), Val::from(2)])?;
-            if ctx.call(Function::CountItem, vec![Val::from(7795)])?.number()? < 1 {
-                ctx.lines_as("Oliver Hilpert", args!["Lady Mammi..."])?;
-                ctx.close_window()?;
-                ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Oliver Hilpert",
-                args!["Did you change your mind about selling Lady Mammi's picture book to me?"],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.call(Function::Cutin, vec![Val::from("oliver_smile"), Val::from(2)])?;
-                    ctx.lines_as("Oliver Hilpert", args!["Wow, thanks!"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Oliver Hilpert",
-                        args!["Umm... I haven't received my publishing advance yet, but do you mind taking this instead?"],
-                    )?;
-                    ctx.next()?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as("Oliver Hilpert", args!["Okay... I see..."])?;
-                    ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                    return Err(Stop::End);
-                }
-            }
-            ctx.lines_as("Oliver Hilpert", args!["I haven't had a chance to open it, but my publisher said it has something very rare inside. I hope that it's enough to pay you for your book."])?;
-            ctx.next()?;
-            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Haha, thanks.", "You know, in Morocc... Ahchoo! ...There's someone who's as big a fan of Mammi's as you... Ahchoo! So why don't you go meet him?"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args!["I got that book from him as a gift. He may have more rare books of her... Ahchoo!"],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Oliver Hilpert", args!["Oh, thank you so much for such valuable information!"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Oliver Hilpert",
-                args!["Wah! I must write down the story that I saw in my dream last night before I forget!"],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Oliver Hilpert",
-                args!["I hope you'll also like my next book. Then I must go... Thank you for the picture book!"],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("oliver_smile"), Val::from(255)])?;
-            ctx.lines(args!["^660000He started running around like a chicken with its head cut off. He quickly opened his bag, took out his notebook, ran to a table, and then started writing down something at a fast speed.", "At first, he looked pretty silly, but now he strikes you as a man that's very serious about his writing.^000000"])?;
-            ctx.next()?;
-            ctx.mes("^660000You were about to leave when you found a piece of paper on the ground.^000000")?;
-            ctx.next()?;
-            ctx.mes("^660000The piece of paper is covered with scribbles, and is labeled <The Crow of the Fate> at the top. Oliver must have dropped this note containing information about his novel, <The Crow of the Fate>.^000000")?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3131FFAncient weapon = Some kind of power source^000000",
-                "^3131FFSeclusion - A female disciple's letter^000000",
-                "^3131FFThe stepmother = Lover from a past life?!^000000"
-            ])?;
+    } else if ctx.var("barmunt_crow").get()? == 13 {
+        ctx.call(Function::Cutin, vec![Val::from("oliver_pre"), Val::from(2)])?;
+        if ctx.call(Function::CountItem, vec![Val::from(7795)])?.number()? < 1 {
+            ctx.lines_as("Oliver Hilpert", args!["Lady Mammi..."])?;
             ctx.close_window()?;
-            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_ENHANCE")?])?;
-            ctx.call(Function::DelItem, vec![Val::from(7795), Val::from(1)])?;
-            ctx.var("barmunt_crow").set(Val::from(14))?;
-            ctx.call(Function::GetItem, vec![Val::from(7796), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(7797), Val::from(1)])?;
-            ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
-            ctx.call(Function::Warp, vec![Val::from("que_ba"), Val::from(270), Val::from(270)])?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("barmunt_crow").get()? == 14 {
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["This dream seems pretty meaningful somehow.", "I'd better give him this note back."],
-                )?;
+        }
+        ctx.lines_as(
+            "Oliver Hilpert",
+            args!["Did you change your mind about selling Lady Mammi's picture book to me?"],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.call(Function::Cutin, vec![Val::from("oliver_smile"), Val::from(2)])?;
+                ctx.lines_as("Oliver Hilpert", args!["Wow, thanks!"])?;
                 ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["Excuse me, Mr. Hilpert."],
-                )?;
-                ctx.next()?;
-                ctx.call(Function::Cutin, vec![Val::from("oliver_think"), Val::from(2)])?;
                 ctx.lines_as(
                     "Oliver Hilpert",
-                    args![".................", ".................", "...........Huh?"],
+                    args!["Umm... I haven't received my publishing advance yet, but do you mind taking this instead?"],
                 )?;
                 ctx.next()?;
-                ctx.call(Function::Cutin, vec![Val::from("oliver_think"), Val::from(255)])?;
-                ctx.mes("You felt sorry for interrupting him from writing.")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["I think you've dropped this."],
-                )?;
-                ctx.next()?;
-                ctx.mes("^660000You rummaged your pocket to find the memo, and then happened to drop the crow feather which you picked up outside the library. Then suddenly...^000000")?;
-                ctx.next()?;
-                ctx.mes("(WHACK)")?;
-                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_DETOXICATION")?])?;
-                ctx.next()?;
-                ctx.mes("^660000Oliver picked up the feather more quickly than you could, and then tore it into pieces before you could even say anything.^000000")?;
-                ctx.next()?;
-                ctx.mes("^660000You looked angrily at him, and found out that he turned into a completely different person; he no longer looked stupid or serious but extremely coldhearted.^000000")?;
-                ctx.next()?;
-                ctx.call(Function::Cutin, vec![Val::from("oliver_hum"), Val::from(2)])?;
-                ctx.lines_as("Oliver Hilpert", args!["Errr?!", "What's happened to this feather?"])?;
-                ctx.next()?;
-                ctx.mes("[Oliver Hilpert]")?;
-                ctx.call(Function::Emotion, vec![ctx.constant("ET_KEK")?])?;
-                ctx.lines(args!["Wah! Did I do this?", "Oh my god, I'm sorry! I'm so sorry!"])?;
-                ctx.next()?;
-                ctx.mes("^660000He changed back to himself, and started apologizing to you for his sudden rage.^000000")?;
-                ctx.next()?;
+                break 'b1;
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Oliver Hilpert", args!["Okay... I see..."])?;
                 ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
-                ctx.lines_as(
-                    "Oliver Hilpert",
-                    args![
-                        "I... I don't know how to apologize...",
-                        "It's just that... I became so angry that I--! Argh, I'm sorry!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["Well, it's okay. I happened to pick it up from the street. You don't have to apologize."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Oliver Hilpert",
-                    args!["If you say so, thank you for your understanding.", "Phew, I felt so guilty..."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["Here, take your memo back."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Oliver Hilpert",
-                    args!["Oh, you can just throw it away. It's no longer useful.", "Phew..."],
-                )?;
-                ctx.next()?;
-                ctx.call(Function::Cutin, vec![Val::from("oliver_pre"), Val::from(2)])?;
-                ctx.lines_as(
-                    "Oliver Hilpert",
-                    args!["I'm having great ideas right now. I'm sorry, but I should go."],
-                )?;
-                ctx.next()?;
-                ctx.call(Function::Cutin, vec![Val::from("oliver_pre"), Val::from(255)])?;
-                ctx.mes(
-                    "^660000As soon as he talked to you, he went back to his writing and became completely absorbed in his work.^000000",
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "He has such amazing concentration.",
-                        "I guess not everyone can make bestselling books, huh?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "...Wait, I'm not sneezing anymore...",
-                        "The headache and the heavy feeling in my chest is gone too!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["What if it was all caused by that crow feather? What if...?"],
-                )?;
-                ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("It was cursed by the pebble.:The crow has something to do with Oliver.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Ah, I see.",
-                                "I think when the crow was hit by the pebble, its wisdom must have turned into disaster."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Argh, that was all because of the library master!",
-                                "Luckily the feather is gone, so hopefuly I won't suffer any more disaster."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["I remember Mr. Zid saying Eva had left a black feather behind her."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Also, the female assistant turned into a crow flying away, and then the crow feather made me sneeze and cough."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![".................."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Yes, Mr. Hilpert's soul is cursed by the Crow!",
-                                "I wonder if he threw rocks at crows like the library master..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["..................", "I guess it's a stupid idea."],
-                        )?;
-                        ctx.next()?;
-                        break 'b2;
-                    }
-                }
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "Oh well, whatever.",
-                        "What matters is that I'm cured!",
-                        "If I have another dream, I'll deal with it then~"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.mes(
-                    "^660000As you left the library, you thought that thinking Mr. Oliver is your half would be a better idea.^000000",
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["That was pretty fun, but also pretty tiring. Where should I head for my next adventure?"],
-                )?;
-                ctx.var("barmunt_crow").set(Val::from(15))?;
-                ctx.call(Function::CompleteQuest, vec![Val::from(2068)])?;
                 ctx.close_window()?;
                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                return Err(Stop::End);
-            } else {
-                ctx.mes("^660000A suspicious-looking young man is searching passing faces as if he is looking for someone.^000000")?;
-                ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
+        ctx.lines_as("Oliver Hilpert", args!["I haven't had a chance to open it, but my publisher said it has something very rare inside. I hope that it's enough to pay you for your book."])?;
+        ctx.next()?;
+        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Haha, thanks.", "You know, in Morocc... Ahchoo! ...There's someone who's as big a fan of Mammi's as you... Ahchoo! So why don't you go meet him?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["I got that book from him as a gift. He may have more rare books of her... Ahchoo!"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Oliver Hilpert", args!["Oh, thank you so much for such valuable information!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Oliver Hilpert",
+            args!["Wah! I must write down the story that I saw in my dream last night before I forget!"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Oliver Hilpert",
+            args!["I hope you'll also like my next book. Then I must go... Thank you for the picture book!"],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("oliver_smile"), Val::from(255)])?;
+        ctx.lines(args!["^660000He started running around like a chicken with its head cut off. He quickly opened his bag, took out his notebook, ran to a table, and then started writing down something at a fast speed.", "At first, he looked pretty silly, but now he strikes you as a man that's very serious about his writing.^000000"])?;
+        ctx.next()?;
+        ctx.mes("^660000You were about to leave when you found a piece of paper on the ground.^000000")?;
+        ctx.next()?;
+        ctx.mes("^660000The piece of paper is covered with scribbles, and is labeled <The Crow of the Fate> at the top. Oliver must have dropped this note containing information about his novel, <The Crow of the Fate>.^000000")?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3131FFAncient weapon = Some kind of power source^000000",
+            "^3131FFSeclusion - A female disciple's letter^000000",
+            "^3131FFThe stepmother = Lover from a past life?!^000000"
+        ])?;
+        ctx.close_window()?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_ENHANCE")?])?;
+        ctx.call(Function::DelItem, vec![Val::from(7795), Val::from(1)])?;
+        ctx.var("barmunt_crow").set(Val::from(14))?;
+        ctx.call(Function::GetItem, vec![Val::from(7796), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(7797), Val::from(1)])?;
+        ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
+        ctx.call(Function::Warp, vec![Val::from("que_ba"), Val::from(270), Val::from(270)])?;
+        return Err(Stop::End);
+    } else if ctx.var("barmunt_crow").get()? == 14 {
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["This dream seems pretty meaningful somehow.", "I'd better give him this note back."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Excuse me, Mr. Hilpert."],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("oliver_think"), Val::from(2)])?;
+        ctx.lines_as(
+            "Oliver Hilpert",
+            args![".................", ".................", "...........Huh?"],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("oliver_think"), Val::from(255)])?;
+        ctx.mes("You felt sorry for interrupting him from writing.")?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["I think you've dropped this."],
+        )?;
+        ctx.next()?;
+        ctx.mes("^660000You rummaged your pocket to find the memo, and then happened to drop the crow feather which you picked up outside the library. Then suddenly...^000000")?;
+        ctx.next()?;
+        ctx.mes("(WHACK)")?;
+        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_DETOXICATION")?])?;
+        ctx.next()?;
+        ctx.mes("^660000Oliver picked up the feather more quickly than you could, and then tore it into pieces before you could even say anything.^000000")?;
+        ctx.next()?;
+        ctx.mes("^660000You looked angrily at him, and found out that he turned into a completely different person; he no longer looked stupid or serious but extremely coldhearted.^000000")?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("oliver_hum"), Val::from(2)])?;
+        ctx.lines_as("Oliver Hilpert", args!["Errr?!", "What's happened to this feather?"])?;
+        ctx.next()?;
+        ctx.mes("[Oliver Hilpert]")?;
+        ctx.call(Function::Emotion, vec![ctx.constant("ET_KEK")?])?;
+        ctx.lines(args!["Wah! Did I do this?", "Oh my god, I'm sorry! I'm so sorry!"])?;
+        ctx.next()?;
+        ctx.mes("^660000He changed back to himself, and started apologizing to you for his sudden rage.^000000")?;
+        ctx.next()?;
+        ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
+        ctx.lines_as(
+            "Oliver Hilpert",
+            args![
+                "I... I don't know how to apologize...",
+                "It's just that... I became so angry that I--! Argh, I'm sorry!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Well, it's okay. I happened to pick it up from the street. You don't have to apologize."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Oliver Hilpert",
+            args!["If you say so, thank you for your understanding.", "Phew, I felt so guilty..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Here, take your memo back."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Oliver Hilpert",
+            args!["Oh, you can just throw it away. It's no longer useful.", "Phew..."],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("oliver_pre"), Val::from(2)])?;
+        ctx.lines_as(
+            "Oliver Hilpert",
+            args!["I'm having great ideas right now. I'm sorry, but I should go."],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("oliver_pre"), Val::from(255)])?;
+        ctx.mes(
+            "^660000As soon as he talked to you, he went back to his writing and became completely absorbed in his work.^000000",
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "He has such amazing concentration.",
+                "I guess not everyone can make bestselling books, huh?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "...Wait, I'm not sneezing anymore...",
+                "The headache and the heavy feeling in my chest is gone too!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["What if it was all caused by that crow feather? What if...?"],
+        )?;
+        ctx.next()?;
+        'b2: {
+            let subject2 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("It was cursed by the pebble.:The crow has something to do with Oliver.")],
+            )?);
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Ah, I see.",
+                        "I think when the crow was hit by the pebble, its wisdom must have turned into disaster."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Argh, that was all because of the library master!",
+                        "Luckily the feather is gone, so hopefuly I won't suffer any more disaster."
+                    ],
+                )?;
+                ctx.next()?;
+                break 'b2;
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["I remember Mr. Zid saying Eva had left a black feather behind her."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Also, the female assistant turned into a crow flying away, and then the crow feather made me sneeze and cough."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![".................."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Yes, Mr. Hilpert's soul is cursed by the Crow!",
+                        "I wonder if he threw rocks at crows like the library master..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["..................", "I guess it's a stupid idea."],
+                )?;
+                ctx.next()?;
+                break 'b2;
+            }
+        }
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Oh well, whatever.",
+                "What matters is that I'm cured!",
+                "If I have another dream, I'll deal with it then~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.mes(
+            "^660000As you left the library, you thought that thinking Mr. Oliver is your half would be a better idea.^000000",
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["That was pretty fun, but also pretty tiring. Where should I head for my next adventure?"],
+        )?;
+        ctx.var("barmunt_crow").set(Val::from(15))?;
+        ctx.call(Function::CompleteQuest, vec![Val::from(2068)])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+        return Err(Stop::End);
+    } else {
+        ctx.mes("^660000A suspicious-looking young man is searching passing faces as if he is looking for someone.^000000")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -4281,30 +4207,28 @@ pub fn bpast_1_1_ontouch(ctx: &Ctx) -> Script {
 fn female_researcher_bpast_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.var("barmunt_crow").get()?.number()? < 4 {
         ctx.call(Function::Warp, vec![Val::from("ama_dun03"), Val::from(119), Val::from(110)])?;
+    } else if ctx.var("barmunt_crow").get()? == 4 {
+        ctx.mes("^660000While trying to remember what happened, you encounter a woman who passes by you. You instinctively reach for her shoulder to get her attention.^000000")?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Ahchoo! Ahchoo! Gosh...", "Hey, where am I...?"],
+        )?;
+        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+        ctx.next()?;
+        ctx.mes("- Pzzzz -")?;
+        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_CLOAKING")?])?;
+        ctx.next()?;
+        ctx.mes("^660000Surprisingly, your arm passed through her body.^000000")?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["...Where the hell am I?"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("barmunt_crow").get()? == 4 {
-            ctx.mes("^660000While trying to remember what happened, you encounter a woman who passes by you. You instinctively reach for her shoulder to get her attention.^000000")?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args!["Ahchoo! Ahchoo! Gosh...", "Hey, where am I...?"],
-            )?;
-            ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-            ctx.next()?;
-            ctx.mes("- Pzzzz -")?;
-            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_CLOAKING")?])?;
-            ctx.next()?;
-            ctx.mes("^660000Surprisingly, your arm passed through her body.^000000")?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args!["...Where the hell am I?"],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.call(Function::Warp, vec![Val::from("yuno_in04"), Val::from(100), Val::from(3)])?;
-        }
+        ctx.call(Function::Warp, vec![Val::from("yuno_in04"), Val::from(100), Val::from(3)])?;
     }
     return Err(Stop::End);
 }
@@ -4831,25 +4755,23 @@ fn cave_settler_g1_run(ctx: &Ctx, mut step: CaveSettlerG1Step, args: Vec<Val>) -
                             }
                         }
                     }
+                } else if ctx.var("barmunt_crow").get()?.number()? < 8 {
+                    ctx.lines_as("Cave Settler", args!["No outsiders are allowed beyond this point."])?;
+                    ctx.next()?;
+                    ctx.mes("^660000His voice is as stern and intimidating as his appearance.^000000")?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("cave"), Val::from(81), Val::from(92)])?;
+                    return Err(Stop::End);
                 } else {
-                    if ctx.var("barmunt_crow").get()?.number()? < 8 {
-                        ctx.lines_as("Cave Settler", args!["No outsiders are allowed beyond this point."])?;
-                        ctx.next()?;
-                        ctx.mes("^660000His voice is as stern and intimidating as his appearance.^000000")?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("cave"), Val::from(81), Val::from(92)])?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Cave Settler",
-                            args![
-                                "Do you still have business with Zid?",
-                                "You'd better finish it quickly because we don't like outsiders running around our village."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.lines_as(
+                        "Cave Settler",
+                        args![
+                            "Do you still have business with Zid?",
+                            "You'd better finish it quickly because we don't like outsiders running around our village."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 step = CaveSettlerG1Step::OnTouch;
                 continue 'machine;
@@ -4938,14 +4860,12 @@ fn cave_settler_g1_run(ctx: &Ctx, mut step: CaveSettlerG1Step, args: Vec<Val>) -
                             }
                         }
                     }
-                } else {
-                    if ctx.var("barmunt_crow").get()?.number()? < 8 {
-                        ctx.lines_as("Cave Settler", args!["No outsiders are allowed beyond this point."])?;
-                        ctx.next()?;
-                        ctx.mes("^660000His voice is as stern and intimidating as his appearance.^000000")?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("cave"), Val::from(81), Val::from(92)])?;
-                    }
+                } else if ctx.var("barmunt_crow").get()?.number()? < 8 {
+                    ctx.lines_as("Cave Settler", args!["No outsiders are allowed beyond this point."])?;
+                    ctx.next()?;
+                    ctx.mes("^660000His voice is as stern and intimidating as his appearance.^000000")?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("cave"), Val::from(81), Val::from(92)])?;
                 }
                 return Err(Stop::End);
             }
@@ -5217,19 +5137,17 @@ fn monsterous_man_zid_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::ChangeQuest, vec![Val::from(2066), Val::from(2067)])?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("barmunt_crow").get()? == 10 {
+        ctx.lines(args![
+            "Zid seemed to have lost his interest in the book.",
+            "You have decided to deliver the book to Benjamin of Morocc."
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("barmunt_crow").get()? == 10 {
-            ctx.lines(args![
-                "Zid seemed to have lost his interest in the book.",
-                "You have decided to deliver the book to Benjamin of Morocc."
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as("Monsterous Man", args!["Don't look at my face..."])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as("Monsterous Man", args!["Don't look at my face..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 

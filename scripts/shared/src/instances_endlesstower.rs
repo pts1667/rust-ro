@@ -6854,32 +6854,24 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                                                         == 25
                                                                                                                     {
                                                                                                                         ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Cecil Damon"), Val::from(1638), Val::from(10), l_label_s.clone()])?;
+                                                                                                                    } else if l_mob_ran.clone()
+                                                                                                                        == 26
+                                                                                                                    {
+                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Bow Master"), Val::from(1830), Val::from(10), l_label_s.clone()])?;
+                                                                                                                    } else if l_mob_ran
+                                                                                                                        .clone()
+                                                                                                                        == 27
+                                                                                                                    {
+                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Kavach Icarus"), Val::from(1656), Val::from(30), l_label_s.clone()])?;
+                                                                                                                    } else if l_mob_ran
+                                                                                                                        .clone()
+                                                                                                                        == 28
+                                                                                                                    {
+                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Baroness of Retribution"), Val::from(1702), Val::from(10), l_label_s.clone()])?;
+                                                                                                                    } else if l_mob_ran.clone() == 29 {
+                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Lady Solace"), Val::from(1703), Val::from(10), l_label_s.clone()])?;
                                                                                                                     } else {
-                                                                                                                        if l_mob_ran.clone()
-                                                                                                                            == 26
-                                                                                                                        {
-                                                                                                                            ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Bow Master"), Val::from(1830), Val::from(10), l_label_s.clone()])?;
-                                                                                                                        } else {
-                                                                                                                            if l_mob_ran
-                                                                                                                                .clone()
-                                                                                                                                == 27
-                                                                                                                            {
-                                                                                                                                ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Kavach Icarus"), Val::from(1656), Val::from(30), l_label_s.clone()])?;
-                                                                                                                            } else {
-                                                                                                                                if l_mob_ran
-                                                                                                                                    .clone()
-                                                                                                                                    == 28
-                                                                                                                                {
-                                                                                                                                    ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Baroness of Retribution"), Val::from(1702), Val::from(10), l_label_s.clone()])?;
-                                                                                                                                } else {
-                                                                                                                                    if l_mob_ran.clone() == 29 {
-                                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Lady Solace"), Val::from(1703), Val::from(10), l_label_s.clone()])?;
-                                                                                                                                    } else {
-                                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("False Angel"), Val::from(1371), Val::from(10), l_label_s.clone()])?;
-                                                                                                                                    }
-                                                                                                                                }
-                                                                                                                            }
-                                                                                                                        }
+                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("False Angel"), Val::from(1371), Val::from(10), l_label_s.clone()])?;
                                                                                                                     }
                                                                                                                 }
                                                                                                             }

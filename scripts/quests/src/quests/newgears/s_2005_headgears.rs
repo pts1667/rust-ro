@@ -817,420 +817,416 @@ fn strange_guy_lhzhat_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("dthatq").set(Val::from(1))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("dthatq").get()? == 1 {
-            ctx.lines_as(
-                "Morris",
-                args![
-                    "So, did you want to",
-                    "buy, er, receive this",
-                    "Renown Detective's Cap",
-                    "and become an honored",
-                    "member of the Young",
-                    "Detective's Club?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Morris",
-                args![
-                    "Remember, make sure",
-                    "that you don't bring any",
-                    "^FF0000slotted Bucket Hats that",
-                    "have been upgraded or have",
-                    "cards compounded to them, or",
-                    "you'll lose those enhancements^000000."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Morris",
-                args![
-                    "Now, if you have only",
-                    "1 Bucket Hat, we can begin.",
-                    "Young Detective's Club... Salute! "
-                ],
-            )?;
-            ctx.next()?;
-            'b8: {
-                let subject8 = Val::from(runtime::select_values(ctx, &[Val::from("Salute."), Val::from("Whatever...")])?);
-                let mut matched8 = false;
-                let no_case8 = !subject8.loosely_equals(&Val::from(1)) && !subject8.loosely_equals(&Val::from(2));
-                if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                    matched8 = true;
-                }
-                if matched8 {
+    } else if ctx.var("dthatq").get()? == 1 {
+        ctx.lines_as(
+            "Morris",
+            args![
+                "So, did you want to",
+                "buy, er, receive this",
+                "Renown Detective's Cap",
+                "and become an honored",
+                "member of the Young",
+                "Detective's Club?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Morris",
+            args![
+                "Remember, make sure",
+                "that you don't bring any",
+                "^FF0000slotted Bucket Hats that",
+                "have been upgraded or have",
+                "cards compounded to them, or",
+                "you'll lose those enhancements^000000."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Morris",
+            args![
+                "Now, if you have only",
+                "1 Bucket Hat, we can begin.",
+                "Young Detective's Club... Salute! "
+            ],
+        )?;
+        ctx.next()?;
+        'b8: {
+            let subject8 = Val::from(runtime::select_values(ctx, &[Val::from("Salute."), Val::from("Whatever...")])?);
+            let mut matched8 = false;
+            let no_case8 = !subject8.loosely_equals(&Val::from(1)) && !subject8.loosely_equals(&Val::from(2));
+            if !matched8 && subject8.loosely_equals(&Val::from(1)) {
+                matched8 = true;
+            }
+            if matched8 {
+                ctx.lines_as(
+                    "Morris",
+                    args![
+                        "Great, done like a pro!",
+                        "Now, I need to check your",
+                        "fee--I mean qualifications.",
+                        "Let's see now, I need to",
+                        "look through your Inventory..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.var("@lhzhatfailed").set(Val::from(0))?;
+                if ctx.call(Function::CountItem, vec![Val::from(611)])?.number()? < 10 {
                     ctx.lines_as(
                         "Morris",
                         args![
-                            "Great, done like a pro!",
-                            "Now, I need to check your",
-                            "fee--I mean qualifications.",
-                            "Let's see now, I need to",
-                            "look through your Inventory..."
+                            "Wait. You don't have",
+                            "enough Magnifiers. You",
+                            "do want to join this club,",
+                            "don't you? Did you need to",
+                            "hear the requirements again?"
                         ],
                     )?;
+                    ctx.var("@lhzhatfailed").set(Val::from(1))?;
                     ctx.next()?;
-                    ctx.var("@lhzhatfailed").set(Val::from(0))?;
-                    if ctx.call(Function::CountItem, vec![Val::from(611)])?.number()? < 10 {
-                        ctx.lines_as(
-                            "Morris",
-                            args![
-                                "Wait. You don't have",
-                                "enough Magnifiers. You",
-                                "do want to join this club,",
-                                "don't you? Did you need to",
-                                "hear the requirements again?"
-                            ],
-                        )?;
-                        ctx.var("@lhzhatfailed").set(Val::from(1))?;
-                        ctx.next()?;
-                    }
-                    if (ctx.call(Function::CountItem, vec![Val::from(7301)])?.number()? < 1887 && ctx.var("@lhzhatfailed").get()? == 0) {
-                        ctx.lines_as("Morris", args!["Magnifiers. Check.", "Not enough Tassels? Check."])?;
-                        ctx.var("@lhzhatfailed").set(Val::from(1))?;
-                        ctx.next()?;
-                    }
-                    if (ctx.call(Function::CountItem, vec![Val::from(5120)])?.number()? < 1 && ctx.var("@lhzhatfailed").get()? == 0) {
-                        ctx.lines_as(
-                            "Morris",
-                            args![
-                                "Magnifiers. Check.",
-                                "Tassels... Check.",
-                                "Hm. You're missing",
-                                "the slotted Bucket Hat.",
-                                "You were so close..."
-                            ],
-                        )?;
-                        ctx.var("@lhzhatfailed").set(Val::from(1))?;
-                        ctx.next()?;
-                    }
-                    if (ctx.var("Zeny").get()?.number()? < 1887 && ctx.var("@lhzhatfailed").get()? == 0) {
-                        ctx.lines_as(
-                            "Morris",
-                            args![
-                                "Magnifiers. Check.",
-                                "Tassels... Check.",
-                                "Slotted Bucket Hat. Got it.",
-                                "Hey. Where's the zeny?!",
-                                "That's the most important,",
-                                "er, qualification of all!"
-                            ],
-                        )?;
-                        ctx.var("@lhzhatfailed").set(Val::from(1))?;
-                        ctx.next()?;
-                    }
-                    if ctx.var("@lhzhatfailed").get()? == 1 {
-                        ctx.lines_as(
-                            "Morris",
-                            args![
-                                "^333333*Sigh*^000000 You need",
-                                "^0000FF10 Magnifiers^000000,",
-                                "^0000FF1887 Tassels^000000,",
-                                "^0000FF1 Slotted Bucket Hat^000000",
-                                "and ^0000FF1,887 zeny^000000. That's all!"
-                            ],
-                        )?;
-                        ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Morris",
-                            args![
-                                "Now, remember everything",
-                                "that you need this time, okay?",
-                                "I'll be waiting to welcome",
-                                "you into the elite ranks of ",
-                                "the Young Detective's Club."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                }
+                if (ctx.call(Function::CountItem, vec![Val::from(7301)])?.number()? < 1887 && ctx.var("@lhzhatfailed").get()? == 0) {
+                    ctx.lines_as("Morris", args!["Magnifiers. Check.", "Not enough Tassels? Check."])?;
+                    ctx.var("@lhzhatfailed").set(Val::from(1))?;
+                    ctx.next()?;
+                }
+                if (ctx.call(Function::CountItem, vec![Val::from(5120)])?.number()? < 1 && ctx.var("@lhzhatfailed").get()? == 0) {
+                    ctx.lines_as(
+                        "Morris",
+                        args![
+                            "Magnifiers. Check.",
+                            "Tassels... Check.",
+                            "Hm. You're missing",
+                            "the slotted Bucket Hat.",
+                            "You were so close..."
+                        ],
+                    )?;
+                    ctx.var("@lhzhatfailed").set(Val::from(1))?;
+                    ctx.next()?;
+                }
+                if (ctx.var("Zeny").get()?.number()? < 1887 && ctx.var("@lhzhatfailed").get()? == 0) {
                     ctx.lines_as(
                         "Morris",
                         args![
                             "Magnifiers. Check.",
                             "Tassels... Check.",
                             "Slotted Bucket Hat. Got it.",
-                            "Aaaand zeny. Heh heh. Perfect."
+                            "Hey. Where's the zeny?!",
+                            "That's the most important,",
+                            "er, qualification of all!"
                         ],
                     )?;
+                    ctx.var("@lhzhatfailed").set(Val::from(1))?;
+                    ctx.next()?;
+                }
+                if ctx.var("@lhzhatfailed").get()? == 1 {
+                    ctx.lines_as(
+                        "Morris",
+                        args![
+                            "^333333*Sigh*^000000 You need",
+                            "^0000FF10 Magnifiers^000000,",
+                            "^0000FF1887 Tassels^000000,",
+                            "^0000FF1 Slotted Bucket Hat^000000",
+                            "and ^0000FF1,887 zeny^000000. That's all!"
+                        ],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Morris",
                         args![
-                            "Great, that's everything!",
-                            "Welcome to the club! Here's",
-                            "your Renown Detective's Cap,",
-                            "so wear it with pride as you",
-                            "take an active part in our club's",
-                            "activities and promotion!"
-                        ],
-                    )?;
-                    ctx.call(Function::DelItem, vec![Val::from(7301), Val::from(1887)])?;
-                    ctx.call(Function::DelItem, vec![Val::from(5120), Val::from(1)])?;
-                    ctx.call(Function::DelItem, vec![Val::from(611), Val::from(10)])?;
-                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(1887))?))?;
-                    ctx.var("dthatq").set(Val::from(2))?;
-                    ctx.call(Function::GetItem, vec![Val::from(5108), Val::from(1)])?;
-                    ctx.next()?;
-                    'b9: {
-                        let subject9 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Wait, promotion?"), Val::from("Hooray!")],
-                        )?);
-                        let mut matched9 = false;
-                        let no_case9 = !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
-                        if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
-                            ctx.lines_as(
-                                "Morris",
-                                args![
-                                    "Of course, isn't it obvious?",
-                                    "As a member, one of your duties",
-                                    "will be to sing accolades of this club so that more members",
-                                    "will join and earn their own",
-                                    "Renown Detective's Caps."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Morris",
-                                args![
-                                    "Alright, scurry off",
-                                    "now and proudly display",
-                                    "your new, rakishly stylish",
-                                    "Renown Detective's Cap",
-                                    "to all of your friends!"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
-                            ctx.lines_as(
-                                "Morris",
-                                args![
-                                    "Alright, scurry off",
-                                    "now and proudly display",
-                                    "your new, rakishly stylish",
-                                    "Renown Detective's Cap",
-                                    "to all of your friends!"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
-                if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                    matched8 = true;
-                }
-                if matched8 {
-                    ctx.lines_as(
-                        "Morris",
-                        args![
-                            "Huh. You just failed",
-                            "the \"Test of Respect.\"",
-                            "You don't deserve the",
-                            "honor of wearing the",
-                            "Renowned Detective's Cap!"
+                            "Now, remember everything",
+                            "that you need this time, okay?",
+                            "I'll be waiting to welcome",
+                            "you into the elite ranks of ",
+                            "the Young Detective's Club."
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-            }
-        } else {
-            if ctx.var("dthatq").get()? == 2 {
                 ctx.lines_as(
                     "Morris",
                     args![
-                        "Have you come to me",
-                        "in order to obtain another",
-                        "Renown Detective's Cap?",
-                        "I realize that such a stylish",
-                        "headgear is in high demand."
+                        "Magnifiers. Check.",
+                        "Tassels... Check.",
+                        "Slotted Bucket Hat. Got it.",
+                        "Aaaand zeny. Heh heh. Perfect."
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Morris",
                     args![
-                        "Remember, make sure",
-                        "that you don't bring any",
-                        "^FF0000slotted Bucket Hats that",
-                        "have been upgraded or have",
-                        "cards compounded to them, or",
-                        "you'll lose those enhancements^000000."
+                        "Great, that's everything!",
+                        "Welcome to the club! Here's",
+                        "your Renown Detective's Cap,",
+                        "so wear it with pride as you",
+                        "take an active part in our club's",
+                        "activities and promotion!"
                     ],
                 )?;
+                ctx.call(Function::DelItem, vec![Val::from(7301), Val::from(1887)])?;
+                ctx.call(Function::DelItem, vec![Val::from(5120), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(611), Val::from(10)])?;
+                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(1887))?))?;
+                ctx.var("dthatq").set(Val::from(2))?;
+                ctx.call(Function::GetItem, vec![Val::from(5108), Val::from(1)])?;
                 ctx.next()?;
-                ctx.lines_as(
-                    "Morris",
-                    args![
-                        "As a proud member of",
-                        "the Young Detective's Club,",
-                        "did you bring everything",
-                        "you need in order to earn",
-                        "a Renown Detective's Cap?"
-                    ],
-                )?;
-                ctx.next()?;
-                'b10: {
-                    let subject10 = Val::from(runtime::select_values(ctx, &[Val::from("I'm not sure~"), Val::from("Sure!")])?);
-                    let mut matched10 = false;
-                    let no_case10 = !subject10.loosely_equals(&Val::from(1)) && !subject10.loosely_equals(&Val::from(2));
-                    if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                        matched10 = true;
+                'b9: {
+                    let subject9 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Wait, promotion?"), Val::from("Hooray!")],
+                    )?);
+                    let mut matched9 = false;
+                    let no_case9 = !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
+                    if !matched9 && subject9.loosely_equals(&Val::from(1)) {
+                        matched9 = true;
                     }
-                    if matched10 {
+                    if matched9 {
                         ctx.lines_as(
                             "Morris",
                             args![
-                                "What...?! Every good",
-                                "detective must have a",
-                                "photographic memory",
-                                "and be able to recall",
-                                "minute details in order",
-                                "to crack the case."
+                                "Of course, isn't it obvious?",
+                                "As a member, one of your duties",
+                                "will be to sing accolades of this club so that more members",
+                                "will join and earn their own",
+                                "Renown Detective's Caps."
                             ],
                         )?;
-                        ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Morris",
                             args![
-                                "Remember...",
-                                "^0000FF10 Magnifiers^000000,",
-                                "^0000FF1887 Tassels^000000,",
-                                "^0000FF1 Slotted Bucket Hat^000000",
-                                "and ^0000FF1,887 zeny^000000. Okay?"
+                                "Alright, scurry off",
+                                "now and proudly display",
+                                "your new, rakishly stylish",
+                                "Renown Detective's Cap",
+                                "to all of your friends!"
                             ],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                        matched10 = true;
+                    if !matched9 && subject9.loosely_equals(&Val::from(2)) {
+                        matched9 = true;
                     }
-                    if matched10 {
-                        ctx.lines_as(
-                            "Morris",
-                            args!["Great!", "Now let me just", "check to see if you", "brought everything..."],
-                        )?;
-                        ctx.next()?;
-                        ctx.var("@lhzhatfailed").set(Val::from(0))?;
-                        if ctx.call(Function::CountItem, vec![Val::from(611)])?.number()? < 10 {
-                            ctx.lines_as(
-                                "Morris",
-                                args![
-                                    "Hmm, you don't have",
-                                    "enough Magnifiers? But",
-                                    "those are essential tools",
-                                    "for sleuthing. Come now,",
-                                    "hurry back with them!"
-                                ],
-                            )?;
-                            ctx.var("@lhzhatfailed").set(Val::from(1))?;
-                            ctx.next()?;
-                        }
-                        if (ctx.call(Function::CountItem, vec![Val::from(7301)])?.number()? < 1887 && ctx.var("@lhzhatfailed").get()? == 0)
-                        {
-                            ctx.lines_as("Morris", args!["Magnifiers. Check.", "Not enough Tassels? Check."])?;
-                            ctx.var("@lhzhatfailed").set(Val::from(1))?;
-                            ctx.next()?;
-                        }
-                        if (ctx.call(Function::CountItem, vec![Val::from(5120)])?.number()? < 1 && ctx.var("@lhzhatfailed").get()? == 0) {
-                            ctx.lines_as(
-                                "Morris",
-                                args![
-                                    "Magnifiers. Check.",
-                                    "Tassels... Check.",
-                                    "Hm. You're missing",
-                                    "the slotted Bucket Hat.",
-                                    "You were so close..."
-                                ],
-                            )?;
-                            ctx.var("@lhzhatfailed").set(Val::from(1))?;
-                            ctx.next()?;
-                        }
-                        if (ctx.var("Zeny").get()?.number()? < 1887 && ctx.var("@lhzhatfailed").get()? == 0) {
-                            ctx.lines_as(
-                                "Morris",
-                                args![
-                                    "Magnifiers. Check.",
-                                    "Tassels... Check.",
-                                    "Slotted Bucket Hat. Got it.",
-                                    "Hey. Where's the zeny?!",
-                                    "That's the most important,",
-                                    "er, qualification of all!"
-                                ],
-                            )?;
-                            ctx.var("@lhzhatfailed").set(Val::from(1))?;
-                            ctx.next()?;
-                        }
-                        if ctx.var("@lhzhatfailed").get()? == 1 {
-                            ctx.lines_as(
-                                "Morris",
-                                args![
-                                    "Remember...",
-                                    "^0000FF10 Magnifiers^000000,",
-                                    "^0000FF1887 Tassels^000000,",
-                                    "^0000FF1 Slotted Bucket Hat^000000",
-                                    "and ^0000FF1,887 zeny^000000. Okay?"
-                                ],
-                            )?;
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                    if matched9 {
                         ctx.lines_as(
                             "Morris",
                             args![
-                                "Magnifiers. Check.",
-                                "Tassels... Check.",
-                                "Slotted Bucket Hat. Got it.",
-                                "Aaaand zeny. Heh heh. Perfect."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Morris",
-                            args![
-                                "Great! You've just qualified",
-                                "to own yet another Renowned",
-                                "Detective's Cap. Congratulations! Now, let me collect all of these",
-                                "goods and zeny from you..."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7301), Val::from(1887)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(5120), Val::from(1)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(611), Val::from(10)])?;
-                        ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(1887))?))?;
-                        ctx.var("dthatq").set(Val::from(2))?;
-                        ctx.call(Function::GetItem, vec![Val::from(5108), Val::from(1)])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Morris",
-                            args![
-                                "Hahaha! It's what",
-                                "I expect from one of",
-                                "our Junior Gold Members!",
-                                "How does it feel like to be",
-                                "the cream of the cream of",
-                                "the crop? Great, isn't it?"
+                                "Alright, scurry off",
+                                "now and proudly display",
+                                "your new, rakishly stylish",
+                                "Renown Detective's Cap",
+                                "to all of your friends!"
                             ],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
                 }
+            }
+            if !matched8 && subject8.loosely_equals(&Val::from(2)) {
+                matched8 = true;
+            }
+            if matched8 {
+                ctx.lines_as(
+                    "Morris",
+                    args![
+                        "Huh. You just failed",
+                        "the \"Test of Respect.\"",
+                        "You don't deserve the",
+                        "honor of wearing the",
+                        "Renowned Detective's Cap!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("dthatq").get()? == 2 {
+        ctx.lines_as(
+            "Morris",
+            args![
+                "Have you come to me",
+                "in order to obtain another",
+                "Renown Detective's Cap?",
+                "I realize that such a stylish",
+                "headgear is in high demand."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Morris",
+            args![
+                "Remember, make sure",
+                "that you don't bring any",
+                "^FF0000slotted Bucket Hats that",
+                "have been upgraded or have",
+                "cards compounded to them, or",
+                "you'll lose those enhancements^000000."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Morris",
+            args![
+                "As a proud member of",
+                "the Young Detective's Club,",
+                "did you bring everything",
+                "you need in order to earn",
+                "a Renown Detective's Cap?"
+            ],
+        )?;
+        ctx.next()?;
+        'b10: {
+            let subject10 = Val::from(runtime::select_values(ctx, &[Val::from("I'm not sure~"), Val::from("Sure!")])?);
+            let mut matched10 = false;
+            let no_case10 = !subject10.loosely_equals(&Val::from(1)) && !subject10.loosely_equals(&Val::from(2));
+            if !matched10 && subject10.loosely_equals(&Val::from(1)) {
+                matched10 = true;
+            }
+            if matched10 {
+                ctx.lines_as(
+                    "Morris",
+                    args![
+                        "What...?! Every good",
+                        "detective must have a",
+                        "photographic memory",
+                        "and be able to recall",
+                        "minute details in order",
+                        "to crack the case."
+                    ],
+                )?;
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Morris",
+                    args![
+                        "Remember...",
+                        "^0000FF10 Magnifiers^000000,",
+                        "^0000FF1887 Tassels^000000,",
+                        "^0000FF1 Slotted Bucket Hat^000000",
+                        "and ^0000FF1,887 zeny^000000. Okay?"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched10 && subject10.loosely_equals(&Val::from(2)) {
+                matched10 = true;
+            }
+            if matched10 {
+                ctx.lines_as(
+                    "Morris",
+                    args!["Great!", "Now let me just", "check to see if you", "brought everything..."],
+                )?;
+                ctx.next()?;
+                ctx.var("@lhzhatfailed").set(Val::from(0))?;
+                if ctx.call(Function::CountItem, vec![Val::from(611)])?.number()? < 10 {
+                    ctx.lines_as(
+                        "Morris",
+                        args![
+                            "Hmm, you don't have",
+                            "enough Magnifiers? But",
+                            "those are essential tools",
+                            "for sleuthing. Come now,",
+                            "hurry back with them!"
+                        ],
+                    )?;
+                    ctx.var("@lhzhatfailed").set(Val::from(1))?;
+                    ctx.next()?;
+                }
+                if (ctx.call(Function::CountItem, vec![Val::from(7301)])?.number()? < 1887 && ctx.var("@lhzhatfailed").get()? == 0)
+                {
+                    ctx.lines_as("Morris", args!["Magnifiers. Check.", "Not enough Tassels? Check."])?;
+                    ctx.var("@lhzhatfailed").set(Val::from(1))?;
+                    ctx.next()?;
+                }
+                if (ctx.call(Function::CountItem, vec![Val::from(5120)])?.number()? < 1 && ctx.var("@lhzhatfailed").get()? == 0) {
+                    ctx.lines_as(
+                        "Morris",
+                        args![
+                            "Magnifiers. Check.",
+                            "Tassels... Check.",
+                            "Hm. You're missing",
+                            "the slotted Bucket Hat.",
+                            "You were so close..."
+                        ],
+                    )?;
+                    ctx.var("@lhzhatfailed").set(Val::from(1))?;
+                    ctx.next()?;
+                }
+                if (ctx.var("Zeny").get()?.number()? < 1887 && ctx.var("@lhzhatfailed").get()? == 0) {
+                    ctx.lines_as(
+                        "Morris",
+                        args![
+                            "Magnifiers. Check.",
+                            "Tassels... Check.",
+                            "Slotted Bucket Hat. Got it.",
+                            "Hey. Where's the zeny?!",
+                            "That's the most important,",
+                            "er, qualification of all!"
+                        ],
+                    )?;
+                    ctx.var("@lhzhatfailed").set(Val::from(1))?;
+                    ctx.next()?;
+                }
+                if ctx.var("@lhzhatfailed").get()? == 1 {
+                    ctx.lines_as(
+                        "Morris",
+                        args![
+                            "Remember...",
+                            "^0000FF10 Magnifiers^000000,",
+                            "^0000FF1887 Tassels^000000,",
+                            "^0000FF1 Slotted Bucket Hat^000000",
+                            "and ^0000FF1,887 zeny^000000. Okay?"
+                        ],
+                    )?;
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Morris",
+                    args![
+                        "Magnifiers. Check.",
+                        "Tassels... Check.",
+                        "Slotted Bucket Hat. Got it.",
+                        "Aaaand zeny. Heh heh. Perfect."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Morris",
+                    args![
+                        "Great! You've just qualified",
+                        "to own yet another Renowned",
+                        "Detective's Cap. Congratulations! Now, let me collect all of these",
+                        "goods and zeny from you..."
+                    ],
+                )?;
+                ctx.call(Function::DelItem, vec![Val::from(7301), Val::from(1887)])?;
+                ctx.call(Function::DelItem, vec![Val::from(5120), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(611), Val::from(10)])?;
+                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(1887))?))?;
+                ctx.var("dthatq").set(Val::from(2))?;
+                ctx.call(Function::GetItem, vec![Val::from(5108), Val::from(1)])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Morris",
+                    args![
+                        "Hahaha! It's what",
+                        "I expect from one of",
+                        "our Junior Gold Members!",
+                        "How does it feel like to be",
+                        "the cream of the cream of",
+                        "the crop? Great, isn't it?"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -1963,46 +1959,113 @@ fn relaxed_looking_lady_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 }
             }
         }
-    } else {
-        if ctx.var("lhzbtq").get()? == 1 {
-            ctx.lines_as("Achiha", args!["Oh, hello.", "Isn't it such a nice,", "quiet, pleasant day?"])?;
-            ctx.next()?;
-            'b3: {
-                let subject3 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Indeed."), Val::from("Would you please make a hat for me?")],
-                )?);
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
+    } else if ctx.var("lhzbtq").get()? == 1 {
+        ctx.lines_as("Achiha", args!["Oh, hello.", "Isn't it such a nice,", "quiet, pleasant day?"])?;
+        ctx.next()?;
+        'b3: {
+            let subject3 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Indeed."), Val::from("Would you please make a hat for me?")],
+            )?);
+            let mut matched3 = false;
+            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "Yeah. Today would",
+                        "be a nice day for a",
+                        "picnic or a long stroll.",
+                        "But all I want to do is",
+                        "just sit and relax..."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "What are you talking",
+                        "about? Oh, you mean the",
+                        "Red Bonnet? Well, I guess",
+                        "I can make one. But I think",
+                        "I need some materials first."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "^0000FF1 Green Lace^000000,",
+                        "^0000FF1 Silk Ribbon^000000,",
+                        "^0000FF1 Scarlet Dyestuffs^000000,",
+                        "^0000FF1 Sunday Hat^000000 and",
+                        "^0000FF50,000 zeny^000000.",
+                        "That's what I need."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "Oh, but I don't",
+                        "feel like making it",
+                        "right now. I'm soooo",
+                        "tired. Let me just sit,",
+                        "relax, even if it's just",
+                        "a little while longer..."
+                    ],
+                )?;
+                ctx.var("lhzbtq").set(Val::from(2))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("lhzbtq").get()? == 2 {
+        ctx.lines_as(
+            "Achiha",
+            args![
+                "Oh, good, you're here.",
+                "I've been waiting for you.",
+                "Did you bring everything that",
+                "you need to make a ^0000FFRed Bonnet^000000?"
+            ],
+        )?;
+        ctx.next()?;
+        'b4: {
+            let subject4 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Yes."), Val::from("I forgot what I need.")],
+            )?);
+            let mut matched4 = false;
+            let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                matched4 = true;
+            }
+            if matched4 {
+                if ((((ctx.call(Function::CountItem, vec![Val::from(10015)])?.number()? < 1
+                    || ctx.call(Function::CountItem, vec![Val::from(10007)])?.number()? < 1)
+                    || ctx.call(Function::CountItem, vec![Val::from(975)])?.number()? < 1)
+                    || ctx.call(Function::CountItem, vec![Val::from(5032)])?.number()? < 1)
+                    || ctx.var("Zeny").get()?.number()? < 50000)
+                {
                     ctx.lines_as(
                         "Achiha",
                         args![
-                            "Yeah. Today would",
-                            "be a nice day for a",
-                            "picnic or a long stroll.",
-                            "But all I want to do is",
-                            "just sit and relax..."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines_as(
-                        "Achiha",
-                        args![
-                            "What are you talking",
-                            "about? Oh, you mean the",
-                            "Red Bonnet? Well, I guess",
-                            "I can make one. But I think",
-                            "I need some materials first."
+                            "Uh oh.",
+                            "You forgot",
+                            "a couple things.",
+                            "Would you like me",
+                            "to remind you what",
+                            "you need to bring?"
                         ],
                     )?;
                     ctx.next()?;
@@ -2013,264 +2076,191 @@ fn relaxed_looking_lady_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             "^0000FF1 Silk Ribbon^000000,",
                             "^0000FF1 Scarlet Dyestuffs^000000,",
                             "^0000FF1 Sunday Hat^000000 and",
-                            "^0000FF50,000 zeny^000000.",
-                            "That's what I need."
+                            "^0000FF50,000 zeny^000000. Come back",
+                            "when you're ready, okay?"
                         ],
                     )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Achiha",
-                        args![
-                            "Oh, but I don't",
-                            "feel like making it",
-                            "right now. I'm soooo",
-                            "tired. Let me just sit,",
-                            "relax, even if it's just",
-                            "a little while longer..."
-                        ],
-                    )?;
-                    ctx.var("lhzbtq").set(Val::from(2))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-            }
-        } else {
-            if ctx.var("lhzbtq").get()? == 2 {
                 ctx.lines_as(
                     "Achiha",
                     args![
-                        "Oh, good, you're here.",
-                        "I've been waiting for you.",
-                        "Did you bring everything that",
-                        "you need to make a ^0000FFRed Bonnet^000000?"
+                        "Oh, you brought",
+                        "everything. That's",
+                        "good. Okay, just give",
+                        "it to me. Um, let's see."
                     ],
                 )?;
                 ctx.next()?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Yes."), Val::from("I forgot what I need.")],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        if ((((ctx.call(Function::CountItem, vec![Val::from(10015)])?.number()? < 1
-                            || ctx.call(Function::CountItem, vec![Val::from(10007)])?.number()? < 1)
-                            || ctx.call(Function::CountItem, vec![Val::from(975)])?.number()? < 1)
-                            || ctx.call(Function::CountItem, vec![Val::from(5032)])?.number()? < 1)
-                            || ctx.var("Zeny").get()?.number()? < 50000)
-                        {
-                            ctx.lines_as(
-                                "Achiha",
-                                args![
-                                    "Uh oh.",
-                                    "You forgot",
-                                    "a couple things.",
-                                    "Would you like me",
-                                    "to remind you what",
-                                    "you need to bring?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Achiha",
-                                args![
-                                    "^0000FF1 Green Lace^000000,",
-                                    "^0000FF1 Silk Ribbon^000000,",
-                                    "^0000FF1 Scarlet Dyestuffs^000000,",
-                                    "^0000FF1 Sunday Hat^000000 and",
-                                    "^0000FF50,000 zeny^000000. Come back",
-                                    "when you're ready, okay?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as(
-                            "Achiha",
-                            args![
-                                "Oh, you brought",
-                                "everything. That's",
-                                "good. Okay, just give",
-                                "it to me. Um, let's see."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Achiha",
-                            args![
-                                "Well, I'm finished.",
-                                "^333333*Yawn*^000000 And now I'm",
-                                "even more tired. Here,",
-                                "take this Red Bonnet.",
-                                "I hope you like it~",
-                                "I think I'll relax now..."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(10015), Val::from(1)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(10007), Val::from(1)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(975), Val::from(1)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(5032), Val::from(1)])?;
-                        ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(50000))?))?;
-                        ctx.call(Function::GetItem, vec![Val::from(5109), Val::from(1)])?;
-                        ctx.var("lhzbtq").set(Val::from(3))?;
-                        ctx.next()?;
-                        ctx.lines_as("Achiha", args!["I hope you will enjoy the hat~"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.lines_as(
-                            "Achiha",
-                            args![
-                                "Oh, you really",
-                                "forgot? Oh dear,",
-                                "let me try to remember.",
-                                "I didn't forget too, did I?",
-                                "Oh next;, I remember now..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Achiha",
-                            args![
-                                "^0000FF1 Green Lace^000000,",
-                                "^0000FF1 Silk Ribbon^000000,",
-                                "^0000FF1 Scarlet Dyestuffs^000000,",
-                                "^0000FF1 Sunday Hat^000000 and",
-                                "^0000FF50,000 zeny^000000. Come back",
-                                "when you're ready, okay?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-            } else {
-                if ctx.var("lhzbtq").get()? == 3 {
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "Well, I'm finished.",
+                        "^333333*Yawn*^000000 And now I'm",
+                        "even more tired. Here,",
+                        "take this Red Bonnet.",
+                        "I hope you like it~",
+                        "I think I'll relax now..."
+                    ],
+                )?;
+                ctx.call(Function::DelItem, vec![Val::from(10015), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(10007), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(975), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(5032), Val::from(1)])?;
+                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(50000))?))?;
+                ctx.call(Function::GetItem, vec![Val::from(5109), Val::from(1)])?;
+                ctx.var("lhzbtq").set(Val::from(3))?;
+                ctx.next()?;
+                ctx.lines_as("Achiha", args!["I hope you will enjoy the hat~"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                matched4 = true;
+            }
+            if matched4 {
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "Oh, you really",
+                        "forgot? Oh dear,",
+                        "let me try to remember.",
+                        "I didn't forget too, did I?",
+                        "Oh next;, I remember now..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "^0000FF1 Green Lace^000000,",
+                        "^0000FF1 Silk Ribbon^000000,",
+                        "^0000FF1 Scarlet Dyestuffs^000000,",
+                        "^0000FF1 Sunday Hat^000000 and",
+                        "^0000FF50,000 zeny^000000. Come back",
+                        "when you're ready, okay?"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("lhzbtq").get()? == 3 {
+        ctx.lines_as(
+            "Achiha",
+            args![
+                "Oh, I remember you.",
+                "You're the adventurer",
+                "who likes my Red Bonnets",
+                "so much. Did you want me",
+                "to make another one for you?"
+            ],
+        )?;
+        ctx.next()?;
+        'b5: {
+            let subject5 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Yes."), Val::from("I forgot what I need.")],
+            )?);
+            let mut matched5 = false;
+            let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
+            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                matched5 = true;
+            }
+            if matched5 {
+                if ((((ctx.call(Function::CountItem, vec![Val::from(10015)])?.number()? < 1
+                    || ctx.call(Function::CountItem, vec![Val::from(10007)])?.number()? < 1)
+                    || ctx.call(Function::CountItem, vec![Val::from(975)])?.number()? < 1)
+                    || ctx.call(Function::CountItem, vec![Val::from(5032)])?.number()? < 1)
+                    || ctx.var("Zeny").get()?.number()? < 50000)
+                {
                     ctx.lines_as(
                         "Achiha",
                         args![
-                            "Oh, I remember you.",
-                            "You're the adventurer",
-                            "who likes my Red Bonnets",
-                            "so much. Did you want me",
-                            "to make another one for you?"
+                            "Uh oh.",
+                            "You forgot",
+                            "a couple things.",
+                            "Would you like me",
+                            "to remind you what",
+                            "you need to bring?"
                         ],
                     )?;
                     ctx.next()?;
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Yes."), Val::from("I forgot what I need.")],
-                        )?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            if ((((ctx.call(Function::CountItem, vec![Val::from(10015)])?.number()? < 1
-                                || ctx.call(Function::CountItem, vec![Val::from(10007)])?.number()? < 1)
-                                || ctx.call(Function::CountItem, vec![Val::from(975)])?.number()? < 1)
-                                || ctx.call(Function::CountItem, vec![Val::from(5032)])?.number()? < 1)
-                                || ctx.var("Zeny").get()?.number()? < 50000)
-                            {
-                                ctx.lines_as(
-                                    "Achiha",
-                                    args![
-                                        "Uh oh.",
-                                        "You forgot",
-                                        "a couple things.",
-                                        "Would you like me",
-                                        "to remind you what",
-                                        "you need to bring?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Achiha",
-                                    args![
-                                        "^0000FF1 Green Lace^000000,",
-                                        "^0000FF1 Silk Ribbon^000000,",
-                                        "^0000FF1 Scarlet Dyestuffs^000000,",
-                                        "^0000FF1 Sunday Hat^000000 and",
-                                        "^0000FF50,000 zeny^000000. Come back",
-                                        "when you're ready, okay?"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            ctx.lines_as(
-                                "Achiha",
-                                args![
-                                    "Oh, you brought",
-                                    "everything. That's",
-                                    "good. Okay, just give",
-                                    "it to me. Um, let's see."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Achiha",
-                                args![
-                                    "Well, I'm finished.",
-                                    "^333333*Yawn*^000000 And now I'm",
-                                    "even more tired. Here,",
-                                    "take this Red Bonnet.",
-                                    "I hope you like it~",
-                                    "I think I'll relax now..."
-                                ],
-                            )?;
-                            ctx.call(Function::DelItem, vec![Val::from(10015), Val::from(1)])?;
-                            ctx.call(Function::DelItem, vec![Val::from(10007), Val::from(1)])?;
-                            ctx.call(Function::DelItem, vec![Val::from(975), Val::from(1)])?;
-                            ctx.call(Function::DelItem, vec![Val::from(5032), Val::from(1)])?;
-                            ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(50000))?))?;
-                            ctx.call(Function::GetItem, vec![Val::from(5109), Val::from(1)])?;
-                            ctx.next()?;
-                            ctx.lines_as("Achiha", args!["I hope you will enjoy the hat~"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            ctx.lines_as(
-                                "Achiha",
-                                args![
-                                    "Oh, you really",
-                                    "forgot? Oh dear,",
-                                    "let me try to remember.",
-                                    "I didn't forget too, did I?",
-                                    "Oh next;, I remember now..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Achiha",
-                                args![
-                                    "^0000FF1 Green Lace^000000,",
-                                    "^0000FF1 Silk Ribbon^000000,",
-                                    "^0000FF1 Scarlet Dyestuffs^000000,",
-                                    "^0000FF1 Sunday Hat^000000 and",
-                                    "^0000FF50,000 zeny^000000. Come back",
-                                    "when you're ready, okay?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
+                    ctx.lines_as(
+                        "Achiha",
+                        args![
+                            "^0000FF1 Green Lace^000000,",
+                            "^0000FF1 Silk Ribbon^000000,",
+                            "^0000FF1 Scarlet Dyestuffs^000000,",
+                            "^0000FF1 Sunday Hat^000000 and",
+                            "^0000FF50,000 zeny^000000. Come back",
+                            "when you're ready, okay?"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "Oh, you brought",
+                        "everything. That's",
+                        "good. Okay, just give",
+                        "it to me. Um, let's see."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "Well, I'm finished.",
+                        "^333333*Yawn*^000000 And now I'm",
+                        "even more tired. Here,",
+                        "take this Red Bonnet.",
+                        "I hope you like it~",
+                        "I think I'll relax now..."
+                    ],
+                )?;
+                ctx.call(Function::DelItem, vec![Val::from(10015), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(10007), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(975), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(5032), Val::from(1)])?;
+                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(50000))?))?;
+                ctx.call(Function::GetItem, vec![Val::from(5109), Val::from(1)])?;
+                ctx.next()?;
+                ctx.lines_as("Achiha", args!["I hope you will enjoy the hat~"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                matched5 = true;
+            }
+            if matched5 {
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "Oh, you really",
+                        "forgot? Oh dear,",
+                        "let me try to remember.",
+                        "I didn't forget too, did I?",
+                        "Oh next;, I remember now..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Achiha",
+                    args![
+                        "^0000FF1 Green Lace^000000,",
+                        "^0000FF1 Silk Ribbon^000000,",
+                        "^0000FF1 Scarlet Dyestuffs^000000,",
+                        "^0000FF1 Sunday Hat^000000 and",
+                        "^0000FF50,000 zeny^000000. Come back",
+                        "when you're ready, okay?"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -2412,217 +2402,209 @@ fn zealotus_lhzhat_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if (ctx.var("zlmaskq").get()?.number()? > 0 && ctx.var("zlmaskq").get()?.number()? < 6) {
+    } else if (ctx.var("zlmaskq").get()?.number()? > 0 && ctx.var("zlmaskq").get()?.number()? < 6) {
+        ctx.lines_as(
+            "Zealotus",
+            args![
+                "Hm. If my beloved is",
+                "acting stubborn or refuses",
+                "to listen, feel free to take",
+                "drastic measures. Just think",
+                "of what I would do in your",
+                "place. Ohohohohoho~!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("zlmaskq").get()? == 6 {
+        ctx.lines_as(
+            "Zealotus",
+            args![
+                "Ooh, you're back.",
+                "Phendark is certainly",
+                "back to his old self again,",
+                "thanks to your efforts, human.",
+                "Yes, his anger, his courage",
+                "and passion are all restored~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zealotus",
+            args![
+                "As I promised, I shall",
+                "grant you a share of my",
+                "power. However, I will need",
+                "some items to form this minor",
+                "contract between you and me."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zealotus",
+            args![
+                "I will need",
+                "^3131FF1 Cat's Eye^000000,",
+                "^3131FF1 Forbidden Red Candle^000000 and",
+                "^3131FF30 Worn-Out Magic Scrolls^000000.",
+                "Then, I can grant you a measure",
+                "of my power as I've promised."
+            ],
+        )?;
+        ctx.var("zlmaskq").set(Val::from(7))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("zlmaskq").get()? == 7 {
+        if ((ctx.call(Function::CountItem, vec![Val::from(7263)])?.is_true()
+            && ctx.call(Function::CountItem, vec![Val::from(660)])?.is_true())
+            && ctx.call(Function::CountItem, vec![Val::from(7099)])?.number()? > 29)
+        {
             ctx.lines_as(
                 "Zealotus",
                 args![
-                    "Hm. If my beloved is",
-                    "acting stubborn or refuses",
-                    "to listen, feel free to take",
-                    "drastic measures. Just think",
-                    "of what I would do in your",
-                    "place. Ohohohohoho~!"
+                    "I see that you have",
+                    "brought what I need to",
+                    "complete the contract",
+                    "between you and me,",
+                    "human. Let's begin..."
                 ],
             )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("zlmaskq").get()? == 6 {
-                ctx.lines_as(
-                    "Zealotus",
-                    args![
-                        "Ooh, you're back.",
-                        "Phendark is certainly",
-                        "back to his old self again,",
-                        "thanks to your efforts, human.",
-                        "Yes, his anger, his courage",
-                        "and passion are all restored~"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zealotus",
-                    args![
-                        "As I promised, I shall",
-                        "grant you a share of my",
-                        "power. However, I will need",
-                        "some items to form this minor",
-                        "contract between you and me."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zealotus",
-                    args![
-                        "I will need",
-                        "^3131FF1 Cat's Eye^000000,",
-                        "^3131FF1 Forbidden Red Candle^000000 and",
-                        "^3131FF30 Worn-Out Magic Scrolls^000000.",
-                        "Then, I can grant you a measure",
-                        "of my power as I've promised."
-                    ],
-                )?;
-                ctx.var("zlmaskq").set(Val::from(7))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("zlmaskq").get()? == 7 {
-                    if ((ctx.call(Function::CountItem, vec![Val::from(7263)])?.is_true()
-                        && ctx.call(Function::CountItem, vec![Val::from(660)])?.is_true())
-                        && ctx.call(Function::CountItem, vec![Val::from(7099)])?.number()? > 29)
-                    {
-                        ctx.lines_as(
-                            "Zealotus",
-                            args![
-                                "I see that you have",
-                                "brought what I need to",
-                                "complete the contract",
-                                "between you and me,",
-                                "human. Let's begin..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFZealotus takes the red",
-                            "candle you've given her and",
-                            "drips the wax into her open",
-                            "palm. The Cat's Eye begins",
-                            "to glow with an eerie light.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Zealotus",
-                            args![
-                                "Now, place your index",
-                                "finger into my palm so",
-                                "that we may complete the",
-                                "final step of this contract..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Don't complete the contract."), Val::from("Complete the contract.")],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.lines_as(
-                                    "Zealotus",
-                                    args![
-                                        "Hm? What are you",
-                                        "afraid of? This is a",
-                                        "minor contract, so",
-                                        "you are not selling me",
-                                        "your soul, or anything",
-                                        "else for that matter."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.lines_as(
-                                    "Zealotus",
-                                    args![
-                                        "I, Zealotus, as ruler",
-                                        "of this realm, seal this",
-                                        "eternal contract with this",
-                                        "Forbidden Red Candle."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Zealotus",
-                                    args![
-                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(" will")),
-                                        "forever have a share",
-                                        "in my power. Those that",
-                                        "bow to me must also bow",
-                                        ((Val::from("to ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                            + Val::from(". It shall be done."))
-                                    ],
-                                )?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_DEVIL")?])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONHIT")?])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Zealotus",
-                                    args![
-                                        "Human, take this",
-                                        "mask with you as an",
-                                        "everlasting token of our",
-                                        "contract. So long as you",
-                                        "carry this, I will be at your",
-                                        "side. So says Zealotus!"
-                                    ],
-                                )?;
-                                ctx.call(Function::DelItem, vec![Val::from(7263), Val::from(1)])?;
-                                ctx.call(Function::DelItem, vec![Val::from(660), Val::from(1)])?;
-                                ctx.call(Function::DelItem, vec![Val::from(7099), Val::from(30)])?;
-                                ctx.call(
-                                    Function::GetNamedItem,
-                                    vec![Val::from(5121), ctx.call(Function::StrCharInfo, vec![Val::from(0)])?],
-                                )?;
-                                ctx.var("zlmaskq").set(Val::from(8))?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    }
+            ctx.next()?;
+            ctx.lines(args![
+                "^3355FFZealotus takes the red",
+                "candle you've given her and",
+                "drips the wax into her open",
+                "palm. The Cat's Eye begins",
+                "to glow with an eerie light.^000000"
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Zealotus",
+                args![
+                    "Now, place your index",
+                    "finger into my palm so",
+                    "that we may complete the",
+                    "final step of this contract..."
+                ],
+            )?;
+            ctx.next()?;
+            'b3: {
+                let subject3 = Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Don't complete the contract."), Val::from("Complete the contract.")],
+                )?);
+                let mut matched3 = false;
+                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                    matched3 = true;
+                }
+                if matched3 {
                     ctx.lines_as(
                         "Zealotus",
                         args![
-                            "I will need",
-                            "^3131FF1 Cat's Eye^000000,",
-                            "^3131FF1 Forbidden Red Candle^000000 and",
-                            "^3131FF30 Worn-Out Magic Scrolls^000000.",
-                            "Then, I can grant you a measure",
-                            "of my power as I've promised."
+                            "Hm? What are you",
+                            "afraid of? This is a",
+                            "minor contract, so",
+                            "you are not selling me",
+                            "your soul, or anything",
+                            "else for that matter."
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("zlmaskq").get()? == 8 {
-                        ctx.lines_as(
-                            "Zealotus",
-                            args![
-                                "Ah, I greet you in",
-                                "peace, human. Behold,",
-                                "the splendor of our realm!",
-                                "Though, I do not blame you",
-                                "if you have no interest in",
-                                "commanding these Injustices..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Zealotus",
-                            args![
-                                "Thanks to your help,",
-                                "my Phendark has returned",
-                                "to his old, monstrously",
-                                "passionate ways. Now I can",
-                                "show him the stinging love",
-                                "of my whip! Hohohohohoho!"
-                            ],
-                        )?;
-                        ctx.call(Function::Emotion, vec![ctx.constant("ET_CHUP")?])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                }
+                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    ctx.lines_as(
+                        "Zealotus",
+                        args![
+                            "I, Zealotus, as ruler",
+                            "of this realm, seal this",
+                            "eternal contract with this",
+                            "Forbidden Red Candle."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Zealotus",
+                        args![
+                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(" will")),
+                            "forever have a share",
+                            "in my power. Those that",
+                            "bow to me must also bow",
+                            ((Val::from("to ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                + Val::from(". It shall be done."))
+                        ],
+                    )?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_DEVIL")?])?;
+                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONHIT")?])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Zealotus",
+                        args![
+                            "Human, take this",
+                            "mask with you as an",
+                            "everlasting token of our",
+                            "contract. So long as you",
+                            "carry this, I will be at your",
+                            "side. So says Zealotus!"
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7263), Val::from(1)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(660), Val::from(1)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(7099), Val::from(30)])?;
+                    ctx.call(
+                        Function::GetNamedItem,
+                        vec![Val::from(5121), ctx.call(Function::StrCharInfo, vec![Val::from(0)])?],
+                    )?;
+                    ctx.var("zlmaskq").set(Val::from(8))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
+        ctx.lines_as(
+            "Zealotus",
+            args![
+                "I will need",
+                "^3131FF1 Cat's Eye^000000,",
+                "^3131FF1 Forbidden Red Candle^000000 and",
+                "^3131FF30 Worn-Out Magic Scrolls^000000.",
+                "Then, I can grant you a measure",
+                "of my power as I've promised."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("zlmaskq").get()? == 8 {
+        ctx.lines_as(
+            "Zealotus",
+            args![
+                "Ah, I greet you in",
+                "peace, human. Behold,",
+                "the splendor of our realm!",
+                "Though, I do not blame you",
+                "if you have no interest in",
+                "commanding these Injustices..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zealotus",
+            args![
+                "Thanks to your help,",
+                "my Phendark has returned",
+                "to his old, monstrously",
+                "passionate ways. Now I can",
+                "show him the stinging love",
+                "of my whip! Hohohohohoho!"
+            ],
+        )?;
+        ctx.call(Function::Emotion, vec![ctx.constant("ET_CHUP")?])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -2867,359 +2849,349 @@ fn phendark_lhzhat_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("zlmaskq").get()? == 5 {
+                } else if ctx.var("zlmaskq").get()? == 5 {
+                    ctx.lines_as(
+                        "Phendark",
+                        args![
+                            "You again? Oh no,",
+                            "you're not going to hurt",
+                            "me or make me eat those",
+                            "weird crystals again, are you?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        ((Val::from("^3131FF[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]^000000"))
+                    ])?;
+                    'b2: {
+                        let subject2 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Rybio"), Val::from("Injustice"), Val::from("Zealotus")],
+                        )?);
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                            && !subject2.loosely_equals(&Val::from(2))
+                            && !subject2.loosely_equals(&Val::from(3));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("Rybio")?;
+                            break 'b2;
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("Injustice")?;
+                            break 'b2;
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("Zealotus")?;
+                            l_phen_point = (l_phen_point.clone() + Val::from(1));
+                            break 'b2;
+                        }
+                    }
+                    'b3: {
+                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("hates"), Val::from("likes")])?);
+                        let mut matched3 = false;
+                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.mes("hates")?;
+                            l_phen_point = (l_phen_point.clone() + Val::from(2));
+                            break 'b3;
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.mes("likes")?;
+                            l_phen_point = (l_phen_point.clone() + Val::from(1));
+                            break 'b3;
+                        }
+                    }
+                    'b4: {
+                        let subject4 = Val::from(runtime::select_values(
+                            ctx,
+                            &[
+                                Val::from("Rybio."),
+                                Val::from("Injustice."),
+                                Val::from("Phendark."),
+                                Val::from("Zealotus."),
+                            ],
+                        )?);
+                        let mut matched4 = false;
+                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                            && !subject4.loosely_equals(&Val::from(2))
+                            && !subject4.loosely_equals(&Val::from(3))
+                            && !subject4.loosely_equals(&Val::from(4));
+                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.mes("Rybio.")?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.mes("Injustice.")?;
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.mes("Phendark.")?;
+                            l_phen_point = (l_phen_point.clone() + Val::from(1));
+                            break 'b4;
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(4)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.mes("Zealotus.")?;
+                            ctx.next()?;
+                        }
+                    }
+                    if l_phen_point.clone() == 1 {
                         ctx.lines_as(
                             "Phendark",
                             args![
-                                "You again? Oh no,",
-                                "you're not going to hurt",
-                                "me or make me eat those",
-                                "weird crystals again, are you?"
+                                "I don't think",
+                                "congratulations are",
+                                "in order, but I guess",
+                                "that's good news to hear.",
+                                "Still, what a surprise!"
                             ],
                         )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if l_phen_point.clone() == 2 {
+                        ctx.lines_as(
+                            "Phendark",
+                            args!["Hey...!", "I don't know if", "that's something", "I want to hear about!"],
+                        )?;
+                    } else if l_phen_point.clone() == 3 {
+                        ctx.lines_as(
+                            "Phendark",
+                            args![
+                                "I can't believe",
+                                "something like that!",
+                                "Oh, that doesn't matter.",
+                                "Zealotus is too good for me.",
+                                "I'm not even worthy of tasting",
+                                "the sting of her Love Whip."
+                            ],
+                        )?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if l_phen_point.clone() == 4 {
+                        ctx.lines_as(
+                            "Phendark",
+                            args!["...", "......", "Hates me?", "N-no, that can't--", "I didn't, that doesn't--"],
+                        )?;
                         ctx.next()?;
-                        ctx.lines(args![
-                            ((Val::from("^3131FF[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]^000000"))
-                        ])?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Rybio"), Val::from("Injustice"), Val::from("Zealotus")],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("Rybio")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("Injustice")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("Zealotus")?;
-                                l_phen_point = (l_phen_point.clone() + Val::from(1));
-                                break 'b2;
-                            }
+                    } else {
+                        ctx.lines_as("Phendark", args!["Huh...?", "What is that", "supposed to mean?"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    'b5: {
+                        let subject5 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Insult him."), Val::from("Apologize.")],
+                        )?);
+                        let mut matched5 = false;
+                        let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
+                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                            matched5 = true;
                         }
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("hates"), Val::from("likes")])?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes("hates")?;
-                                l_phen_point = (l_phen_point.clone() + Val::from(2));
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes("likes")?;
-                                l_phen_point = (l_phen_point.clone() + Val::from(1));
-                                break 'b3;
-                            }
-                        }
-                        'b4: {
-                            let subject4 = Val::from(runtime::select_values(
-                                ctx,
-                                &[
-                                    Val::from("Rybio."),
-                                    Val::from("Injustice."),
-                                    Val::from("Phendark."),
-                                    Val::from("Zealotus."),
-                                ],
-                            )?);
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                && !subject4.loosely_equals(&Val::from(2))
-                                && !subject4.loosely_equals(&Val::from(3))
-                                && !subject4.loosely_equals(&Val::from(4));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes("Rybio.")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes("Injustice.")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes("Phendark.")?;
-                                l_phen_point = (l_phen_point.clone() + Val::from(1));
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes("Zealotus.")?;
-                                ctx.next()?;
-                            }
-                        }
-                        if l_phen_point.clone() == 1 {
+                        if matched5 {
                             ctx.lines_as(
-                                "Phendark",
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                 args![
-                                    "I don't think",
-                                    "congratulations are",
-                                    "in order, but I guess",
-                                    "that's good news to hear.",
-                                    "Still, what a surprise!"
+                                    "First of all,",
+                                    "what exactly sets",
+                                    "you apart from all the",
+                                    "other eligible monsters",
+                                    "that she can choose from?",
+                                    "Not like you're much better..."
                                 ],
                             )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if l_phen_point.clone() == 2 {
-                                ctx.lines_as(
-                                    "Phendark",
-                                    args!["Hey...!", "I don't know if", "that's something", "I want to hear about!"],
-                                )?;
-                            } else {
-                                if l_phen_point.clone() == 3 {
-                                    ctx.lines_as(
-                                        "Phendark",
-                                        args![
-                                            "I can't believe",
-                                            "something like that!",
-                                            "Oh, that doesn't matter.",
-                                            "Zealotus is too good for me.",
-                                            "I'm not even worthy of tasting",
-                                            "the sting of her Love Whip."
-                                        ],
-                                    )?;
-                                    ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if l_phen_point.clone() == 4 {
-                                        ctx.lines_as(
-                                            "Phendark",
-                                            args!["...", "......", "Hates me?", "N-no, that can't--", "I didn't, that doesn't--"],
-                                        )?;
-                                        ctx.next()?;
-                                    } else {
-                                        ctx.lines_as("Phendark", args!["Huh...?", "What is that", "supposed to mean?"])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
+                            ctx.next()?;
+                            ctx.lines_as("Phendark", args!["...", "......"])?;
+                            ctx.next()?;
+                            'b6: {
+                                let subject6 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("Break his pride."), Val::from("Tell him you were joking.")],
+                                )?);
+                                let mut matched6 = false;
+                                let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
+                                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                                    matched6 = true;
                                 }
-                            }
-                        }
-                        'b5: {
-                            let subject5 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Insult him."), Val::from("Apologize.")],
-                            )?);
-                            let mut matched5 = false;
-                            let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args![
-                                        "First of all,",
-                                        "what exactly sets",
-                                        "you apart from all the",
-                                        "other eligible monsters",
-                                        "that she can choose from?",
-                                        "Not like you're much better..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Phendark", args!["...", "......"])?;
-                                ctx.next()?;
-                                'b6: {
-                                    let subject6 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("Break his pride."), Val::from("Tell him you were joking.")],
-                                    )?);
-                                    let mut matched6 = false;
-                                    let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                        matched6 = true;
-                                    }
-                                    if matched6 {
-                                        ctx.lines(args![
-                                            ((Val::from("^3131FF[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from("]^000000")),
-                                            "I mean, there are guys",
-                                            "like Bloody Murderer out",
-                                            "there who are more evil",
-                                            "than you, and best of all,",
-                                            "not afraid of humans!"
-                                        ])?;
-                                        ctx.next()?;
-                                        'b7: {
-                                            let subject7 = Val::from(runtime::select_values(
-                                                ctx,
-                                                &[Val::from("Go for the low blow."), Val::from("Try to salvage his confidence.")],
-                                            )?);
-                                            let mut matched7 = false;
-                                            let no_case7 =
-                                                !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                                matched7 = true;
-                                            }
-                                            if matched7 {
-                                                ctx.lines_as(
-                                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                    args![
-                                                        "You know, me and Zealotus",
-                                                        "were actually talking about",
-                                                        "you recently. She told me that",
-                                                        "the sight of you makes her",
-                                                        "feel sick! I mean, what kind",
-                                                        "of monster is afraid of humans?"
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                    args![
-                                                        "Now you've reached the",
-                                                        "point where even Injustice",
-                                                        "is manlier than you now,",
-                                                        "if you know what I mean!",
-                                                        "Hahahahahahahahaha!"
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Phendark", args!["...", "......"])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Phendark", args!["...", "......", "........."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Phendark", args!["...", "......", ".........", "............"])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Phendark", args!["GRRRRRR!", "THAT'S ENOUGH!"])?;
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_ANGER")?])?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Phendark",
-                                                    args![
-                                                        "I don't care who the",
-                                                        "hell she is, I'm going",
-                                                        "to see Zealotus and give",
-                                                        "that tramp a piece of my",
-                                                        "mind! Grrrr! She'll be sorry!"
-                                                    ],
-                                                )?;
-                                                ctx.var("zlmaskq").set(Val::from(6))?;
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                                matched7 = true;
-                                            }
-                                            if matched7 {
-                                                ctx.lines(args![
-                                                    ((Val::from("^3131FF[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                        + Val::from("]^000000")),
-                                                    "But know that I think",
-                                                    "about it, maybe you look",
-                                                    "much tougher than that",
-                                                    "Bloody Murderer guy."
-                                                ])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Phendark", args!["*Sniff sniff*", "You really think so?"])?;
-                                                ctx.next()?;
-                                                ctx.lines(args!["...", "......"])?;
-                                                ctx.next()?;
-                                                ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["...Yeeeeeah."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
+                                if matched6 {
+                                    ctx.lines(args![
+                                        ((Val::from("^3131FF[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from("]^000000")),
+                                        "I mean, there are guys",
+                                        "like Bloody Murderer out",
+                                        "there who are more evil",
+                                        "than you, and best of all,",
+                                        "not afraid of humans!"
+                                    ])?;
+                                    ctx.next()?;
+                                    'b7: {
+                                        let subject7 = Val::from(runtime::select_values(
+                                            ctx,
+                                            &[Val::from("Go for the low blow."), Val::from("Try to salvage his confidence.")],
+                                        )?);
+                                        let mut matched7 = false;
+                                        let no_case7 =
+                                            !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
+                                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                                            matched7 = true;
+                                        }
+                                        if matched7 {
+                                            ctx.lines_as(
+                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                args![
+                                                    "You know, me and Zealotus",
+                                                    "were actually talking about",
+                                                    "you recently. She told me that",
+                                                    "the sight of you makes her",
+                                                    "feel sick! I mean, what kind",
+                                                    "of monster is afraid of humans?"
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                args![
+                                                    "Now you've reached the",
+                                                    "point where even Injustice",
+                                                    "is manlier than you now,",
+                                                    "if you know what I mean!",
+                                                    "Hahahahahahahahaha!"
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Phendark", args!["...", "......"])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Phendark", args!["...", "......", "........."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Phendark", args!["...", "......", ".........", "............"])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Phendark", args!["GRRRRRR!", "THAT'S ENOUGH!"])?;
+                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_ANGER")?])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Phendark",
+                                                args![
+                                                    "I don't care who the",
+                                                    "hell she is, I'm going",
+                                                    "to see Zealotus and give",
+                                                    "that tramp a piece of my",
+                                                    "mind! Grrrr! She'll be sorry!"
+                                                ],
+                                            )?;
+                                            ctx.var("zlmaskq").set(Val::from(6))?;
+                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_FRET")?])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                                            matched7 = true;
+                                        }
+                                        if matched7 {
+                                            ctx.lines(args![
+                                                ((Val::from("^3131FF[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                    + Val::from("]^000000")),
+                                                "But know that I think",
+                                                "about it, maybe you look",
+                                                "much tougher than that",
+                                                "Bloody Murderer guy."
+                                            ])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Phendark", args!["*Sniff sniff*", "You really think so?"])?;
+                                            ctx.next()?;
+                                            ctx.lines(args!["...", "......"])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["...Yeeeeeah."])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         }
                                     }
-                                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                        matched6 = true;
-                                    }
-                                    if matched6 {
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args![
-                                                "But now that I think",
-                                                "about it, you actually",
-                                                "are much better than all",
-                                                "those other monsters.",
-                                                "That stuff I said before?",
-                                                "I was just kidding you."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Phendark", args!["^333333*Sniff!*^000000", "You're...", "Not helping!"])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
+                                }
+                                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                                    matched6 = true;
+                                }
+                                if matched6 {
+                                    ctx.lines_as(
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                        args![
+                                            "But now that I think",
+                                            "about it, you actually",
+                                            "are much better than all",
+                                            "those other monsters.",
+                                            "That stuff I said before?",
+                                            "I was just kidding you."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Phendark", args!["^333333*Sniff!*^000000", "You're...", "Not helping!"])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
-                            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["I...", "I was just kidding!", "How could she hate", "somebody like you?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Phendark",
-                                    args![
-                                        "No... No.",
-                                        "You're right.",
-                                        "I don't deserve love.",
-                                        "Not from Zealotus or",
-                                        "from anybody else..."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
                         }
-                    } else {
-                        if ctx.var("zlmaskq").get()?.number()? > 5 {
+                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                            matched5 = true;
+                        }
+                        if matched5 {
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["I...", "I was just kidding!", "How could she hate", "somebody like you?"],
+                            )?;
+                            ctx.next()?;
                             ctx.lines_as(
                                 "Phendark",
                                 args![
-                                    "Zealotus! How dare",
-                                    "she say those things",
-                                    "against me! Less manly",
-                                    "than Injustice?! I'll just",
-                                    "have to prove her wrong!",
-                                    "Out the way, pithy human!"
+                                    "No... No.",
+                                    "You're right.",
+                                    "I don't deserve love.",
+                                    "Not from Zealotus or",
+                                    "from anybody else..."
                                 ],
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
                     }
+                } else if ctx.var("zlmaskq").get()?.number()? > 5 {
+                    ctx.lines_as(
+                        "Phendark",
+                        args![
+                            "Zealotus! How dare",
+                            "she say those things",
+                            "against me! Less manly",
+                            "than Injustice?! I'll just",
+                            "have to prove her wrong!",
+                            "Out the way, pithy human!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -3332,77 +3304,71 @@ fn rybio_lhzhat_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("zlmaskq").get()? == 3 {
-            ctx.lines_as(
-                "Rybio",
-                args![
-                    "I don't get why someone",
-                    "like you, a seemingly heroic",
-                    "adventurer, would want to help",
-                    "out Phendark? Did Zealotus",
-                    "blackmail you or something?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rybio",
-                args![
-                    "Well, you could",
-                    "probably help him",
-                    "by getting him to eat",
-                    "^3131FF369 Dark Crystal Fragments^000000",
-                    "to sort of stir up the demon",
-                    "that sleeping within, you know?"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("zlmaskq").get()? == 4 {
-                ctx.lines_as(
-                    "Rybio",
-                    args![
-                        "Feeding him all of those",
-                        "Dark Crystal Fragments didn't",
-                        "work? But that was supposed",
-                        "to be foolproof! Dayam, what",
-                        "the hell happened to Phendark's",
-                        "inner demon?! Man oh man..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rybio",
-                    args![
-                        "Well, I don't know what",
-                        "else you could try. I mean,",
-                        "maybe you could try motivating",
-                        "him. Reverse psychology?",
-                        "It's weird talking about this",
-                        "with a human. Hahahaha~"
-                    ],
-                )?;
-                ctx.var("zlmaskq").set(Val::from(5))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("zlmaskq").get()? == 5 {
-                    ctx.lines_as(
-                        "Rybio",
-                        args![
-                            "Phendark sure looks",
-                            "tough, but I guess even",
-                            "he isn't totally evil. Yeah.",
-                            "We monsters aren't all",
-                            "bad... Just mostly bad."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
-        }
+    } else if ctx.var("zlmaskq").get()? == 3 {
+        ctx.lines_as(
+            "Rybio",
+            args![
+                "I don't get why someone",
+                "like you, a seemingly heroic",
+                "adventurer, would want to help",
+                "out Phendark? Did Zealotus",
+                "blackmail you or something?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rybio",
+            args![
+                "Well, you could",
+                "probably help him",
+                "by getting him to eat",
+                "^3131FF369 Dark Crystal Fragments^000000",
+                "to sort of stir up the demon",
+                "that sleeping within, you know?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("zlmaskq").get()? == 4 {
+        ctx.lines_as(
+            "Rybio",
+            args![
+                "Feeding him all of those",
+                "Dark Crystal Fragments didn't",
+                "work? But that was supposed",
+                "to be foolproof! Dayam, what",
+                "the hell happened to Phendark's",
+                "inner demon?! Man oh man..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rybio",
+            args![
+                "Well, I don't know what",
+                "else you could try. I mean,",
+                "maybe you could try motivating",
+                "him. Reverse psychology?",
+                "It's weird talking about this",
+                "with a human. Hahahaha~"
+            ],
+        )?;
+        ctx.var("zlmaskq").set(Val::from(5))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("zlmaskq").get()? == 5 {
+        ctx.lines_as(
+            "Rybio",
+            args![
+                "Phendark sure looks",
+                "tough, but I guess even",
+                "he isn't totally evil. Yeah.",
+                "We monsters aren't all",
+                "bad... Just mostly bad."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }

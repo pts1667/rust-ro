@@ -1057,67 +1057,62 @@ fn bishop_w_run(ctx: &Ctx, mut step: BishopWStep, args: Vec<Val>) -> Result<Val,
                                                     args![ctx.call(Function::GetCharacterId, args![3, ctx.var("$@wed_groom$").get()?],)?],
                                                 )?
                                                 .is_true()
+                                                && ctx.call(Function::Marriage, args![ctx.var("$@wed_groom$").get()?])?.is_true()
                                             {
-                                                if ctx.call(Function::Marriage, args![ctx.var("$@wed_groom$").get()?])?.is_true() {
-                                                    ctx.call(Function::Wedding, vec![])?;
-                                                    ctx.call(Function::StartStatus, args![ctx.constant("SC_WEDDING")?, 3600000, 1])?;
-                                                    ctx.items().give(2635, 1)?;
-                                                    ctx.call(
-                                                        Function::AttachRid,
-                                                        args![
-                                                            ctx.call(Function::GetCharacterId, args![3, ctx.var("$@wed_groom$").get()?],)?
-                                                        ],
-                                                    )?;
-                                                    ctx.call(Function::StartStatus, args![ctx.constant("SC_WEDDING")?, 3600000, 1])?;
-                                                    ctx.items().give(2634, 1)?;
-                                                    ctx.call(Function::DetachRid, vec![])?;
-                                                    ctx.call(
-                                                        Function::AttachRid,
-                                                        args![
-                                                            ctx.call(Function::GetCharacterId, args![3, ctx.var("$@wed_bride$").get()?],)?
-                                                        ],
-                                                    )?;
-                                                    ctx.fx().cutin("wedding_bomars02", 2)?;
-                                                    ctx.call(
-                                                        Function::MapAnnounce,
-                                                        args![
-                                                            "prt_church",
-                                                            ((((Val::from("I now pronounce you, ") + ctx.var("$@wed_groom$").get()?)
-                                                                + Val::from(" and "))
-                                                                + ctx.var("$@wed_bride$").get()?)
-                                                                + Val::from(", husband and wife.")),
-                                                            constants::BC_MAP
-                                                        ],
-                                                    )?;
-                                                    ctx.lines_as(
-                                                        "Vomars",
-                                                        args![
-                                                            "By the power invested",
-                                                            "in me as Royal Bishop of",
-                                                            "the Rune-Midgarts Kingdom,",
-                                                            "I now pronounce you husband",
-                                                            "and wife. May your future be",
-                                                            "blessed with many great joys."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Vomars",
-                                                        args![
-                                                            "And lastly...",
-                                                            "Always be happy,",
-                                                            ((Val::from("dear ") + ctx.var("$@wed_bride$").get()?) + Val::from("..."))
-                                                        ],
-                                                    )?;
-                                                    ctx.var("$@wed_groom$").set(Val::from(""))?;
-                                                    ctx.var("$@wed_bride$").set(Val::from(""))?;
-                                                    ctx.var("$@wedding").set(Val::from(0))?;
-                                                    ctx.close_window()?;
-                                                    ctx.call(Function::StopNpcTimer, vec![])?;
-                                                    ctx.fx().cutin("", 255)?;
-                                                    ctx.call(Function::DetachRid, vec![])?;
-                                                    return Err(Stop::End);
-                                                }
+                                                ctx.call(Function::Wedding, vec![])?;
+                                                ctx.call(Function::StartStatus, args![ctx.constant("SC_WEDDING")?, 3600000, 1])?;
+                                                ctx.items().give(2635, 1)?;
+                                                ctx.call(
+                                                    Function::AttachRid,
+                                                    args![ctx.call(Function::GetCharacterId, args![3, ctx.var("$@wed_groom$").get()?],)?],
+                                                )?;
+                                                ctx.call(Function::StartStatus, args![ctx.constant("SC_WEDDING")?, 3600000, 1])?;
+                                                ctx.items().give(2634, 1)?;
+                                                ctx.call(Function::DetachRid, vec![])?;
+                                                ctx.call(
+                                                    Function::AttachRid,
+                                                    args![ctx.call(Function::GetCharacterId, args![3, ctx.var("$@wed_bride$").get()?],)?],
+                                                )?;
+                                                ctx.fx().cutin("wedding_bomars02", 2)?;
+                                                ctx.call(
+                                                    Function::MapAnnounce,
+                                                    args![
+                                                        "prt_church",
+                                                        ((((Val::from("I now pronounce you, ") + ctx.var("$@wed_groom$").get()?)
+                                                            + Val::from(" and "))
+                                                            + ctx.var("$@wed_bride$").get()?)
+                                                            + Val::from(", husband and wife.")),
+                                                        constants::BC_MAP
+                                                    ],
+                                                )?;
+                                                ctx.lines_as(
+                                                    "Vomars",
+                                                    args![
+                                                        "By the power invested",
+                                                        "in me as Royal Bishop of",
+                                                        "the Rune-Midgarts Kingdom,",
+                                                        "I now pronounce you husband",
+                                                        "and wife. May your future be",
+                                                        "blessed with many great joys."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Vomars",
+                                                    args![
+                                                        "And lastly...",
+                                                        "Always be happy,",
+                                                        ((Val::from("dear ") + ctx.var("$@wed_bride$").get()?) + Val::from("..."))
+                                                    ],
+                                                )?;
+                                                ctx.var("$@wed_groom$").set(Val::from(""))?;
+                                                ctx.var("$@wed_bride$").set(Val::from(""))?;
+                                                ctx.var("$@wedding").set(Val::from(0))?;
+                                                ctx.close_window()?;
+                                                ctx.call(Function::StopNpcTimer, vec![])?;
+                                                ctx.fx().cutin("", 255)?;
+                                                ctx.call(Function::DetachRid, vec![])?;
+                                                return Err(Stop::End);
                                             }
                                             ctx.fx().cutin("wedding_bomars03", 2)?;
                                             ctx.lines_as(

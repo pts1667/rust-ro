@@ -178,77 +178,73 @@ fn guide_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if runtime::getd(
-                ctx,
-                &((Val::from("$siz_") + l_sub_s.clone()) + Val::from("_on")),
-                &[
-                    (".@defence", runtime::Local::Scalar(&l_defence)),
-                    (".@economy", runtime::Local::Scalar(&l_economy)),
-                    (".@gid", runtime::Local::Scalar(&l_gid)),
-                    (".@sub$", runtime::Local::Scalar(&l_sub_s)),
-                ],
-            )? == 1
-            {
-                ctx.lines_as("Guide", args!["... OK...", "Good luck."])?;
-                ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Enter now.:No.")])?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        if ctx.call(Function::CountItem, vec![Val::from(7839)])?.number()? > 0 {
-                            ctx.call(
-                                Function::DelItem,
-                                vec![Val::from(7839), ctx.call(Function::CountItem, vec![Val::from(7839)])?],
-                            )?;
-                        }
-                        ctx.lines_as("Guide", args!["Hope you get everything you want..."])?;
-                        ctx.close_window()?;
-                        ctx.call(
-                            Function::Warp,
-                            vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(346), Val::from(32)],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        ctx.lines_as("Guide", args!["Really?", "Sorry to hear that."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+        } else if runtime::getd(
+            ctx,
+            &((Val::from("$siz_") + l_sub_s.clone()) + Val::from("_on")),
+            &[
+                (".@defence", runtime::Local::Scalar(&l_defence)),
+                (".@economy", runtime::Local::Scalar(&l_economy)),
+                (".@gid", runtime::Local::Scalar(&l_gid)),
+                (".@sub$", runtime::Local::Scalar(&l_sub_s)),
+            ],
+        )? == 1
+        {
+            ctx.lines_as("Guide", args!["... OK...", "Good luck."])?;
+            ctx.next()?;
+            'b3: {
+                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Enter now.:No.")])?);
+                let mut matched3 = false;
+                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                    matched3 = true;
                 }
-            } else {
-                if runtime::getd(
-                    ctx,
-                    &((Val::from("$siz_") + l_sub_s.clone()) + Val::from("_on")),
-                    &[
-                        (".@defence", runtime::Local::Scalar(&l_defence)),
-                        (".@economy", runtime::Local::Scalar(&l_economy)),
-                        (".@gid", runtime::Local::Scalar(&l_gid)),
-                        (".@sub$", runtime::Local::Scalar(&l_sub_s)),
-                    ],
-                )? == 2
-                {
-                    ctx.lines_as(
-                        "Guide",
-                        args!["Building Okolnir needs quite a long time.", "....even though it's only virtual..."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Guide", args!["It takes about 12 - 13 hours to create the virtual realm."])?;
+                if matched3 {
+                    if ctx.call(Function::CountItem, vec![Val::from(7839)])?.number()? > 0 {
+                        ctx.call(
+                            Function::DelItem,
+                            vec![Val::from(7839), ctx.call(Function::CountItem, vec![Val::from(7839)])?],
+                        )?;
+                    }
+                    ctx.lines_as("Guide", args!["Hope you get everything you want..."])?;
                     ctx.close_window()?;
+                    ctx.call(
+                        Function::Warp,
+                        vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(346), Val::from(32)],
+                    )?;
                     return Err(Stop::End);
-                } else {
-                    ctx.lines_as("Guide", args!["You'll have to wait."])?;
+                }
+                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    ctx.lines_as("Guide", args!["Really?", "Sorry to hear that."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             }
+        } else if runtime::getd(
+            ctx,
+            &((Val::from("$siz_") + l_sub_s.clone()) + Val::from("_on")),
+            &[
+                (".@defence", runtime::Local::Scalar(&l_defence)),
+                (".@economy", runtime::Local::Scalar(&l_economy)),
+                (".@gid", runtime::Local::Scalar(&l_gid)),
+                (".@sub$", runtime::Local::Scalar(&l_sub_s)),
+            ],
+        )? == 2
+        {
+            ctx.lines_as(
+                "Guide",
+                args!["Building Okolnir needs quite a long time.", "....even though it's only virtual..."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Guide", args!["It takes about 12 - 13 hours to create the virtual realm."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Guide", args!["You'll have to wait."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines_as(
@@ -1285,8 +1281,8 @@ fn gate_manager_main_onmymobdead_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, 
         ctx,
         &((Val::from("$@gqse_") + l_sub_s.clone()) + Val::from("_pcc")),
         &[(".@sub$", runtime::Local::Scalar(&l_sub_s))],
-    )?) {
-        if !(ctx
+    )?)
+        && !(ctx
             .call(
                 Function::MobCount,
                 vec![
@@ -1301,7 +1297,6 @@ fn gate_manager_main_onmymobdead_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, 
                 vec![((Val::from("#gq_miromob2_") + l_sub_s.clone()) + Val::from("::OnEnable"))],
             )?;
         }
-    }
     return Err(Stop::End);
 }
 
@@ -7327,33 +7322,31 @@ fn okolnir_main_time01_ontimer3600000_body(ctx: &Ctx, args: Vec<Val>) -> Result<
             &mut [(".@sub$", runtime::LocalMut::Scalar(&mut l_sub_s))],
         )?;
         ctx.call(Function::InitNpcTimer, vec![])?;
-    } else {
-        if runtime::getd(
+    } else if runtime::getd(
+        ctx,
+        &((Val::from("$gqse_") + l_sub_s.clone()) + Val::from("_time")),
+        &[(".@sub$", runtime::Local::Scalar(&l_sub_s))],
+    )? == 12
+    {
+        runtime::setd(
+            ctx,
+            &((Val::from("$siz_") + l_sub_s.clone()) + Val::from("_on")),
+            Val::from(0),
+            &mut [(".@sub$", runtime::LocalMut::Scalar(&mut l_sub_s))],
+        )?;
+        runtime::setd(
             ctx,
             &((Val::from("$gqse_") + l_sub_s.clone()) + Val::from("_time")),
-            &[(".@sub$", runtime::Local::Scalar(&l_sub_s))],
-        )? == 12
-        {
-            runtime::setd(
-                ctx,
-                &((Val::from("$siz_") + l_sub_s.clone()) + Val::from("_on")),
-                Val::from(0),
-                &mut [(".@sub$", runtime::LocalMut::Scalar(&mut l_sub_s))],
-            )?;
-            runtime::setd(
-                ctx,
-                &((Val::from("$gqse_") + l_sub_s.clone()) + Val::from("_time")),
-                Val::from(0),
-                &mut [(".@sub$", runtime::LocalMut::Scalar(&mut l_sub_s))],
-            )?;
-            ctx.call(Function::EnableNpc, vec![(Val::from("Wish Maiden#gq_") + l_sub_s.clone())])?;
-            ctx.call(Function::EnableNpc, vec![(Val::from("Piamette#") + l_sub_s.clone())])?;
-            ctx.call(
-                Function::EnableNpc,
-                vec![((Val::from("Wish Maiden#") + l_sub_s.clone()) + Val::from("_boss"))],
-            )?;
-            ctx.call(Function::StopNpcTimer, vec![])?;
-        }
+            Val::from(0),
+            &mut [(".@sub$", runtime::LocalMut::Scalar(&mut l_sub_s))],
+        )?;
+        ctx.call(Function::EnableNpc, vec![(Val::from("Wish Maiden#gq_") + l_sub_s.clone())])?;
+        ctx.call(Function::EnableNpc, vec![(Val::from("Piamette#") + l_sub_s.clone())])?;
+        ctx.call(
+            Function::EnableNpc,
+            vec![((Val::from("Wish Maiden#") + l_sub_s.clone()) + Val::from("_boss"))],
+        )?;
+        ctx.call(Function::StopNpcTimer, vec![])?;
     }
     return Err(Stop::End);
 }

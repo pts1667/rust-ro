@@ -141,43 +141,41 @@ fn bullet_dealer_tony_alb_run(ctx: &Ctx, step: BulletDealerTonyAlbStep, args: Ve
                         "if you want to trade your",
                         "items for some bullets."
                     ])?;
-                } else {
-                    if ctx.items().count(1010)? >= amount
-                        && ctx.items().count(1011)? >= amount
-                        && ctx.call(Function::CountItem, args![required_id.clone()])?.number()? >= amount * required_amount.number()?
-                    {
-                        if ctx.call(Function::CheckWeight, args![bullet_id.clone(), amount * 30])? == 0 {
-                            ctx.lines(args![
-                                "Eh? Your Inventory doesn't",
-                                "have enough space for this",
-                                "many bullets. Come back later",
-                                "after you make more space",
-                                "available. Try putting some of",
-                                "your things into Kafra Storage."
-                            ])?;
-                        } else {
-                            ctx.lines(args![
-                                "Great, everything seems",
-                                "to be in order. Let me take",
-                                "these materials, and here are",
-                                "your bullets. It's a pleasure",
-                                "to do business with you~"
-                            ])?;
-                            ctx.call(Function::DelItem, args![1010, amount])?;
-                            ctx.call(Function::DelItem, args![1011, amount])?;
-                            ctx.call(Function::DelItem, args![required_id, amount * required_amount.number()?])?;
-                            ctx.call(Function::GetItem, args![bullet_id, amount * 30])?;
-                        }
+                } else if ctx.items().count(1010)? >= amount
+                    && ctx.items().count(1011)? >= amount
+                    && ctx.call(Function::CountItem, args![required_id.clone()])?.number()? >= amount * required_amount.number()?
+                {
+                    if ctx.call(Function::CheckWeight, args![bullet_id.clone(), amount * 30])? == 0 {
+                        ctx.lines(args![
+                            "Eh? Your Inventory doesn't",
+                            "have enough space for this",
+                            "many bullets. Come back later",
+                            "after you make more space",
+                            "available. Try putting some of",
+                            "your things into Kafra Storage."
+                        ])?;
                     } else {
                         ctx.lines(args![
-                            "Huh. It looks like you",
-                            "don't have enough materials",
-                            "for that many bullets. Well,",
-                            "it's no problem. Just come",
-                            "back after gathering everything",
-                            "that you need, okay?"
+                            "Great, everything seems",
+                            "to be in order. Let me take",
+                            "these materials, and here are",
+                            "your bullets. It's a pleasure",
+                            "to do business with you~"
                         ])?;
+                        ctx.call(Function::DelItem, args![1010, amount])?;
+                        ctx.call(Function::DelItem, args![1011, amount])?;
+                        ctx.call(Function::DelItem, args![required_id, amount * required_amount.number()?])?;
+                        ctx.call(Function::GetItem, args![bullet_id, amount * 30])?;
                     }
+                } else {
+                    ctx.lines(args![
+                        "Huh. It looks like you",
+                        "don't have enough materials",
+                        "for that many bullets. Well,",
+                        "it's no problem. Just come",
+                        "back after gathering everything",
+                        "that you need, okay?"
+                    ])?;
                 }
                 ctx.close_window()?;
                 return Err(Stop::End);

@@ -140,132 +140,130 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.lines_as("Bishop Paul", args!["May God be"])?;
-                if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                    ctx.mes("with you, brother.")?;
-                } else {
-                    ctx.mes("with you, sister.")?;
-                }
-                ctx.next()?;
-                ctx.lines_as("Bishop Paul", args!["You are in", "the Sanctuary.", "What brings you here?"])?;
-                ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("I want to be an Acolyte.:I want to be a Priest.:Nothing, really.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as(
-                            "Bishop Paul",
-                            args!["Oh I see...", "If you wish to become an Acolyte, please visit the other room."],
-                        )?;
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as(
-                            "Bishop Paul",
-                            args![
-                                "Oh I see. However, you must first become an Acolyte before becoming a Priest. Please visit the other room."
-                            ],
-                        )?;
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as(
-                            "Bishop Paul",
-                            args!["Please make yourself at home. On Earth, nowhere is safer than this Sanctuary."],
-                        )?;
-                        break 'b2;
-                    }
-                }
-                ctx.next()?;
-                ctx.lines_as("Bishop Paul", args!["May God bless you."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
+        } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.lines_as("Bishop Paul", args!["May God be"])?;
+            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                ctx.mes("with you, brother.")?;
             } else {
-                ctx.lines_as("Bishop Paul", args!["May God be"])?;
-                if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                    ctx.mes("with you, brother.")?;
-                } else {
-                    ctx.mes("with you, sister.")?;
-                }
-                ctx.next()?;
-                ctx.lines_as("Bishop Paul", args!["What brings you here", "to Prontera Sanctuary?"])?;
-                ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Information about Priests.:Nothing.")],
-                    )?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        ctx.lines_as(
-                            "Bishop Paul",
-                            args!["Priests have the authority to perform and administer religious rites."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Bishop Paul", args!["You must first be thoroughly disciplined as an Acolyte before you can be promoted to the position of Priest."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Bishop Paul",
-                            args!["When you reach Acolyte Job level 40, you will be able to apply for the Priest test."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Bishop Paul", args!["If you pass the test, you will be able to use more powerful skills that will be effective against Demon and Undead creatures..."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Bishop Paul",
-                            args!["With all of your ability, you will play an important role in towns and dungeons."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Bishop Paul",
-                            args!["Our duty and obligation as Priests is to devote ourselves to helping others without expecting reward."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Bishop Paul", args!["As we help others, we must not expect to treat us in a similar fashion. To be a great Priest is your choice and responsibility, not anyone else's."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Bishop Paul", args!["However, those who receive should be polite. You should give an outstanding example, but you should also have your limits as a human."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Bishop Paul", args!["I hope I explained enough of the class. Why don't you go outside and talk to some of the other Priests if you want to learn more about our way of life?"])?;
-                        ctx.next()?;
-                        break 'b3;
-                    }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        ctx.lines_as(
-                            "Bishop Paul",
-                            args!["Please make yourself at home. Nowhere on Earth is safer than the Prontera Sanctuary."],
-                        )?;
-                        ctx.next()?;
-                        break 'b3;
-                    }
-                }
-                ctx.lines_as("Bishop Paul", args!["Well...", "May God", "bless you."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
+                ctx.mes("with you, sister.")?;
             }
+            ctx.next()?;
+            ctx.lines_as("Bishop Paul", args!["You are in", "the Sanctuary.", "What brings you here?"])?;
+            ctx.next()?;
+            'b2: {
+                let subject2 = Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("I want to be an Acolyte.:I want to be a Priest.:Nothing, really.")],
+                )?);
+                let mut matched2 = false;
+                let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                    && !subject2.loosely_equals(&Val::from(2))
+                    && !subject2.loosely_equals(&Val::from(3));
+                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                    matched2 = true;
+                }
+                if matched2 {
+                    ctx.lines_as(
+                        "Bishop Paul",
+                        args!["Oh I see...", "If you wish to become an Acolyte, please visit the other room."],
+                    )?;
+                    break 'b2;
+                }
+                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                    matched2 = true;
+                }
+                if matched2 {
+                    ctx.lines_as(
+                        "Bishop Paul",
+                        args![
+                            "Oh I see. However, you must first become an Acolyte before becoming a Priest. Please visit the other room."
+                        ],
+                    )?;
+                    break 'b2;
+                }
+                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                    matched2 = true;
+                }
+                if matched2 {
+                    ctx.lines_as(
+                        "Bishop Paul",
+                        args!["Please make yourself at home. On Earth, nowhere is safer than this Sanctuary."],
+                    )?;
+                    break 'b2;
+                }
+            }
+            ctx.next()?;
+            ctx.lines_as("Bishop Paul", args!["May God bless you."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as("Bishop Paul", args!["May God be"])?;
+            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                ctx.mes("with you, brother.")?;
+            } else {
+                ctx.mes("with you, sister.")?;
+            }
+            ctx.next()?;
+            ctx.lines_as("Bishop Paul", args!["What brings you here", "to Prontera Sanctuary?"])?;
+            ctx.next()?;
+            'b3: {
+                let subject3 = Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Information about Priests.:Nothing.")],
+                )?);
+                let mut matched3 = false;
+                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    ctx.lines_as(
+                        "Bishop Paul",
+                        args!["Priests have the authority to perform and administer religious rites."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Bishop Paul", args!["You must first be thoroughly disciplined as an Acolyte before you can be promoted to the position of Priest."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Bishop Paul",
+                        args!["When you reach Acolyte Job level 40, you will be able to apply for the Priest test."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Bishop Paul", args!["If you pass the test, you will be able to use more powerful skills that will be effective against Demon and Undead creatures..."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Bishop Paul",
+                        args!["With all of your ability, you will play an important role in towns and dungeons."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Bishop Paul",
+                        args!["Our duty and obligation as Priests is to devote ourselves to helping others without expecting reward."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Bishop Paul", args!["As we help others, we must not expect to treat us in a similar fashion. To be a great Priest is your choice and responsibility, not anyone else's."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Bishop Paul", args!["However, those who receive should be polite. You should give an outstanding example, but you should also have your limits as a human."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Bishop Paul", args!["I hope I explained enough of the class. Why don't you go outside and talk to some of the other Priests if you want to learn more about our way of life?"])?;
+                    ctx.next()?;
+                    break 'b3;
+                }
+                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                    matched3 = true;
+                }
+                if matched3 {
+                    ctx.lines_as(
+                        "Bishop Paul",
+                        args!["Please make yourself at home. Nowhere on Earth is safer than the Prontera Sanctuary."],
+                    )?;
+                    ctx.next()?;
+                    break 'b3;
+                }
+            }
+            ctx.lines_as("Bishop Paul", args!["Well...", "May God", "bless you."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ctx.var("priest_q").get()? == 0 {
@@ -587,106 +585,98 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.var("priest_q").get()? == 6 {
-                                ctx.lines_as("Bishop Paul", args!["You look tired and exhausted. However, you must endure even more suffering once you become a Priest."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Bishop Paul", args!["Please endure these trials for the sake of your dream. Why don't you challenge the spiritual training again?"])?;
-                                ctx.next()?;
-                                if Val::from(runtime::select_values(ctx, &[Val::from("I'll try again.:Give me a minute.")])?) == 1 {
-                                    ctx.lines_as(
-                                        "Bishop Paul",
-                                        args!["Good. I will send you to the training ground. Please ask for help from Brother Peter."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(24), Val::from(180)])?;
-                                    return Err(Stop::End);
-                                }
+                        } else if ctx.var("priest_q").get()? == 6 {
+                            ctx.lines_as("Bishop Paul", args!["You look tired and exhausted. However, you must endure even more suffering once you become a Priest."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bishop Paul", args!["Please endure these trials for the sake of your dream. Why don't you challenge the spiritual training again?"])?;
+                            ctx.next()?;
+                            if Val::from(runtime::select_values(ctx, &[Val::from("I'll try again.:Give me a minute.")])?) == 1 {
                                 ctx.lines_as(
                                     "Bishop Paul",
-                                    args![
-                                        "No problem,",
-                                        "take your time.",
-                                        "May God grant you",
-                                        "the strength to",
-                                        "overcome your fears..."
-                                    ],
+                                    args!["Good. I will send you to the training ground. Please ask for help from Brother Peter."],
                                 )?;
+                                ctx.next()?;
+                                ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(24), Val::from(180)])?;
+                                return Err(Stop::End);
+                            }
+                            ctx.lines_as(
+                                "Bishop Paul",
+                                args![
+                                    "No problem,",
+                                    "take your time.",
+                                    "May God grant you",
+                                    "the strength to",
+                                    "overcome your fears..."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("priest_q").get()? == 7 {
+                            ctx.lines_as("Bishop Paul", args!["I am glad that you've done well with the spiritual training. Congratulations. You are now qualified to be called a Priest."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Bishop Paul",
+                                args!["Now, you must go and swear your devotion to God with Sister Cecilia. Don't be nervous..."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Bishop Paul",
+                                args!["Just answer honestly, and listen to the voice of God that speaks quietly in your heart."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Bishop Paul", args!["Well then...", "I will be here", "waiting for you."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("priest_q").get()? == 8 {
+                            ctx.lines_as("Bishop Paul", args!["Hmm? You haven't made your oath yet...? Without the conviction of an oath to God, you may be tempted by evil at anytime."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Bishop Paul", args!["You should go to sister Cecilia and promise your devotion to God. Return here with honor, and listen to the voice of God that speaks quietly in your heart."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("priest_q").get()? == 9 {
+                            if ctx.var("SkillPoint").get()?.is_true() {
+                                ctx.lines_as("Bishop Paul", args!["You have remaining skills points. Please use these skill points to upgrade your skills, and then return to me."])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if ctx.var("priest_q").get()? == 7 {
-                                    ctx.lines_as("Bishop Paul", args!["I am glad that you've done well with the spiritual training. Congratulations. You are now qualified to be called a Priest."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Bishop Paul",
-                                        args!["Now, you must go and swear your devotion to God with Sister Cecilia. Don't be nervous..."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Bishop Paul",
-                                        args!["Just answer honestly, and listen to the voice of God that speaks quietly in your heart."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Bishop Paul", args!["Well then...", "I will be here", "waiting for you."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("priest_q").get()? == 8 {
-                                        ctx.lines_as("Bishop Paul", args!["Hmm? You haven't made your oath yet...? Without the conviction of an oath to God, you may be tempted by evil at anytime."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Bishop Paul", args!["You should go to sister Cecilia and promise your devotion to God. Return here with honor, and listen to the voice of God that speaks quietly in your heart."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("priest_q").get()? == 9 {
-                                            if ctx.var("SkillPoint").get()?.is_true() {
-                                                ctx.lines_as("Bishop Paul", args!["You have remaining skills points. Please use these skill points to upgrade your skills, and then return to me."])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            ctx.lines_as("Bishop Paul", args!["Congratulations, you have completed the trials required of all Priests. Let me promote you to the position of Priest right away."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Bishop Paul",
-                                                args!["God, grant your power to your servant standing before you."],
-                                            )?;
-                                            ctx.call(Function::ChangeQuest, vec![Val::from(8015), Val::from(8016)])?;
-                                            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                                ctx.mes("Let him send your message throughout the ends of the earth.")?;
-                                            } else {
-                                                ctx.mes("Let her send your message throughout the ends of the earth.")?;
-                                            }
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Bishop Paul",
-                                                args!["Make this servant of yours an instrument of your miraculous works..."],
-                                            )?;
-                                            ctx.next()?;
-                                            l_joblvl = ctx.var("JobLevel").get()?;
-                                            ctx.call(Function::CompleteQuest, vec![Val::from(8016)])?;
-                                            shared::other_global_functions::job_change(ctx, vec![ctx.constant("JOB_PRIEST")?])?;
-                                            shared::other_global_functions::f_clearjobvar(ctx, vec![])?;
-                                            ctx.lines_as("Bishop Paul", args!["Now you are born again as a Priest. I congratulate you, and hope you will greatly help other people for the rest of your life."])?;
-                                            ctx.next()?;
-                                            ctx.mes("[Bishop Paul]")?;
-                                            if l_joblvl.clone().number()? < 50 {
-                                                ctx.call(Function::GetItem, vec![Val::from(1550), Val::from(1)])?;
-                                                ctx.mes(
-                                                    "This book is for you. I hope it will aid you in spreading God's message on earth.",
-                                                )?;
-                                            } else {
-                                                ctx.call(Function::GetItem, vec![Val::from(1551), Val::from(1)])?;
-                                                ctx.mes("In commemoration of your job change, I am giving you a bible. This will lighten your way to the path of righteousness.")?;
-                                            }
-                                            ctx.next()?;
-                                            ctx.lines_as("Bishop Paul", args!["You've shown great effort, and have made admirable progress in your personal quest for holiness. Please lead your life as a sincere Priest..."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
-                                }
                             }
+                            ctx.lines_as("Bishop Paul", args!["Congratulations, you have completed the trials required of all Priests. Let me promote you to the position of Priest right away."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Bishop Paul",
+                                args!["God, grant your power to your servant standing before you."],
+                            )?;
+                            ctx.call(Function::ChangeQuest, vec![Val::from(8015), Val::from(8016)])?;
+                            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                                ctx.mes("Let him send your message throughout the ends of the earth.")?;
+                            } else {
+                                ctx.mes("Let her send your message throughout the ends of the earth.")?;
+                            }
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Bishop Paul",
+                                args!["Make this servant of yours an instrument of your miraculous works..."],
+                            )?;
+                            ctx.next()?;
+                            l_joblvl = ctx.var("JobLevel").get()?;
+                            ctx.call(Function::CompleteQuest, vec![Val::from(8016)])?;
+                            shared::other_global_functions::job_change(ctx, vec![ctx.constant("JOB_PRIEST")?])?;
+                            shared::other_global_functions::f_clearjobvar(ctx, vec![])?;
+                            ctx.lines_as("Bishop Paul", args!["Now you are born again as a Priest. I congratulate you, and hope you will greatly help other people for the rest of your life."])?;
+                            ctx.next()?;
+                            ctx.mes("[Bishop Paul]")?;
+                            if l_joblvl.clone().number()? < 50 {
+                                ctx.call(Function::GetItem, vec![Val::from(1550), Val::from(1)])?;
+                                ctx.mes(
+                                    "This book is for you. I hope it will aid you in spreading God's message on earth.",
+                                )?;
+                            } else {
+                                ctx.call(Function::GetItem, vec![Val::from(1551), Val::from(1)])?;
+                                ctx.mes("In commemoration of your job change, I am giving you a bible. This will lighten your way to the path of righteousness.")?;
+                            }
+                            ctx.next()?;
+                            ctx.lines_as("Bishop Paul", args!["You've shown great effort, and have made admirable progress in your personal quest for holiness. Please lead your life as a sincere Priest..."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -713,65 +703,63 @@ fn sister_cecilia_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     }))
                     + Val::from(". It brings my heart joy to see that you working hard to carry out the will of God."))
             ])?;
+        } else if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.lines(args![
+                ((Val::from("May god bless you, ")
+                    + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                        Val::from("brother")
+                    } else {
+                        Val::from("sister")
+                    }))
+                    + Val::from(".")),
+                "Prontera parish welcomes you."
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sister Cecilia",
+                args!["Oh, you haven't chosen a job yet? Why don't you consider devoting your life to God?"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sister Cecilia",
+                args!["You can lead a fulfilling life as an Acolyte, helping out other people in need."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Sister Cecilia", args!["If you're interested, please ask the Priest in the other room. You won't ever regret the choice to become an Acolyte."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sister Cecilia",
+                args!["When you reach Job level 40 as an Acolyte, you can be promoted to a Priest."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Sister Cecilia",
+                args!["But please...", "Take your time, and decide what job will be the best for you."],
+            )?;
         } else {
-            if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.lines(args![
-                    ((Val::from("May god bless you, ")
-                        + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                            Val::from("brother")
-                        } else {
-                            Val::from("sister")
-                        }))
-                        + Val::from(".")),
-                    "Prontera parish welcomes you."
-                ])?;
+            ctx.lines(args![
+                ((Val::from("May god bless you, ")
+                    + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                        Val::from("brother")
+                    } else {
+                        Val::from("sister")
+                    }))
+                    + Val::from(".")),
+                "Welcome to Prontera parish. How may I help you?"
+            ])?;
+            ctx.next()?;
+            if Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Tell me more about Priests.:Nothing.")],
+            )?) == 1
+            {
+                ctx.lines_as("Sister Cecilia", args!["Messengers of God are usually known as Priests. After becoming an Acolyte, you can train with the goal of becoming a Priest."])?;
                 ctx.next()?;
-                ctx.lines_as(
-                    "Sister Cecilia",
-                    args!["Oh, you haven't chosen a job yet? Why don't you consider devoting your life to God?"],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sister Cecilia",
-                    args!["You can lead a fulfilling life as an Acolyte, helping out other people in need."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Sister Cecilia", args!["If you're interested, please ask the Priest in the other room. You won't ever regret the choice to become an Acolyte."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sister Cecilia",
-                    args!["When you reach Job level 40 as an Acolyte, you can be promoted to a Priest."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Sister Cecilia",
-                    args!["But please...", "Take your time, and decide what job will be the best for you."],
-                )?;
+                ctx.lines_as("Sister Cecilia", args!["Servants of God are prohibited to use weapons based on blades. For us, the meaning of battle with monsters is not in the killing, but in the enlightening of their souls."])?;
             } else {
-                ctx.lines(args![
-                    ((Val::from("May god bless you, ")
-                        + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                            Val::from("brother")
-                        } else {
-                            Val::from("sister")
-                        }))
-                        + Val::from(".")),
-                    "Welcome to Prontera parish. How may I help you?"
-                ])?;
+                ctx.lines_as("Sister Cecilia", args!["I see. Well, feel free to relax and make yourself at home. Nowhere on earth is safer than the Prontera Sanctuary."])?;
                 ctx.next()?;
-                if Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Tell me more about Priests.:Nothing.")],
-                )?) == 1
-                {
-                    ctx.lines_as("Sister Cecilia", args!["Messengers of God are usually known as Priests. After becoming an Acolyte, you can train with the goal of becoming a Priest."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Sister Cecilia", args!["Servants of God are prohibited to use weapons based on blades. For us, the meaning of battle with monsters is not in the killing, but in the enlightening of their souls."])?;
-                } else {
-                    ctx.lines_as("Sister Cecilia", args!["I see. Well, feel free to relax and make yourself at home. Nowhere on earth is safer than the Prontera Sanctuary."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Sister Cecilia", args!["May God bless you..."])?;
-                }
+                ctx.lines_as("Sister Cecilia", args!["May God bless you..."])?;
             }
         }
         ctx.close_window()?;
@@ -897,197 +885,187 @@ fn sister_cecilia_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.lines_as("Sister Cecilia", args!["I hope that you find someone who has already become a Priest to help during the spiritual training. Good luck, and have faith."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("priest_q").get()? == 5 {
-                            ctx.mes("Oh, you haven't finished the spiritual training yet?")?;
+                    } else if ctx.var("priest_q").get()? == 5 {
+                        ctx.mes("Oh, you haven't finished the spiritual training yet?")?;
+                        ctx.next()?;
+                        ctx.lines_as("Sister Cecilia", args!["I cannot let you know the specific details, but as long as you believe in yourself and have faith in all that is good, you will succeed."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Sister Cecilia", args!["Please speak to Father Peter in the test hall for more details. He is a close friend of Bishop Paul and may give you some useful tips for the spiritual training."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("priest_q").get()? == 6 {
+                        ctx.mes("Yes, I understand that you've been through a really difficult situation. However, do not give up and succumb to temptation. You must be able to resist evil to become a Priest.")?;
+                        ctx.next()?;
+                        ctx.lines_as("Sister Cecilia", args!["If you know somebody who has already become a Priest, ask them to help you during your spiritual training."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Sister Cecilia",
+                            args![
+                                "May God give you guidance and protection. When you complete your training, please come back to me."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if (ctx.var("priest_q").get()? == 7 || ctx.var("priest_q").get()? == 8) {
+                        if ctx.var("priest_q").get()? == 7 {
+                            if ctx.call(Function::CheckQuest, vec![Val::from(8014)])? == -1 {
+                                ctx.call(Function::ChangeQuest, vec![Val::from(8013), Val::from(8014)])?;
+                            }
+                            ctx.mes("Welcome! I'm so glad to see you've come back! Now, there is one last trial left for you to complete.")?;
+                        } else if ctx.var("priest_q").get()? == 8 {
+                            ctx.mes("...")?;
                             ctx.next()?;
-                            ctx.lines_as("Sister Cecilia", args!["I cannot let you know the specific details, but as long as you believe in yourself and have faith in all that is good, you will succeed."])?;
+                            ctx.lines_as("Sister Cecilia", args!["Welcome back.", "I hope that you've reflected on what you've said last time, and that you now have the attitude to become a Priest."])?;
+                        }
+                        ctx.next()?;
+                        ctx.mes("[Sister Cecilia]")?;
+                        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                            ctx.lines(args![
+                                ((Val::from("Brother ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("..."))
+                            ])?;
+                        } else {
+                            ctx.lines(args![
+                                ((Val::from("Sister ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("..."))
+                            ])?;
+                        }
+                        ctx.mes("We will now begin your formal oath for the Priesthood. Make yourself comfortable, and just answer with your heart.")?;
+                        ctx.next()?;
+                        ctx.mes("[Sister Cecilia]")?;
+                        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                            ctx.lines(args![
+                                ((Val::from("Brother ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from(","))
+                            ])?;
+                        } else {
+                            ctx.lines(args![
+                                ((Val::from("Sister ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from(","))
+                            ])?;
+                        }
+                        ctx.lines(args!["Are you willing", "to give your life to God?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No!")])?) == 2 {
+                            ctx.lines_as("Sister Cecilia", args!["Aw...? How could you give me that kind of answer? I assume you're not ready to be a Priest yet..."])?;
                             ctx.next()?;
-                            ctx.lines_as("Sister Cecilia", args!["Please speak to Father Peter in the test hall for more details. He is a close friend of Bishop Paul and may give you some useful tips for the spiritual training."])?;
+                            ctx.var("priest_q").set(Val::from(8))?;
+                            ctx.lines_as("Sister Cecilia", args!["You should reflect a little more on the teachings of holiness and come back later. You can't be a Priest if your spirit is weak."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.var("priest_q").get()? == 6 {
-                                ctx.mes("Yes, I understand that you've been through a really difficult situation. However, do not give up and succumb to temptation. You must be able to resist evil to become a Priest.")?;
-                                ctx.next()?;
-                                ctx.lines_as("Sister Cecilia", args!["If you know somebody who has already become a Priest, ask them to help you during your spiritual training."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Sister Cecilia",
-                                    args![
-                                        "May God give you guidance and protection. When you complete your training, please come back to me."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if (ctx.var("priest_q").get()? == 7 || ctx.var("priest_q").get()? == 8) {
-                                    if ctx.var("priest_q").get()? == 7 {
-                                        if ctx.call(Function::CheckQuest, vec![Val::from(8014)])? == -1 {
-                                            ctx.call(Function::ChangeQuest, vec![Val::from(8013), Val::from(8014)])?;
-                                        }
-                                        ctx.mes("Welcome! I'm so glad to see you've come back! Now, there is one last trial left for you to complete.")?;
-                                    } else {
-                                        if ctx.var("priest_q").get()? == 8 {
-                                            ctx.mes("...")?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Sister Cecilia", args!["Welcome back.", "I hope that you've reflected on what you've said last time, and that you now have the attitude to become a Priest."])?;
-                                        }
-                                    }
-                                    ctx.next()?;
-                                    ctx.mes("[Sister Cecilia]")?;
-                                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                        ctx.lines(args![
-                                            ((Val::from("Brother ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from("..."))
-                                        ])?;
-                                    } else {
-                                        ctx.lines(args![
-                                            ((Val::from("Sister ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from("..."))
-                                        ])?;
-                                    }
-                                    ctx.mes("We will now begin your formal oath for the Priesthood. Make yourself comfortable, and just answer with your heart.")?;
-                                    ctx.next()?;
-                                    ctx.mes("[Sister Cecilia]")?;
-                                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                        ctx.lines(args![
-                                            ((Val::from("Brother ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from(","))
-                                        ])?;
-                                    } else {
-                                        ctx.lines(args![
-                                            ((Val::from("Sister ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from(","))
-                                        ])?;
-                                    }
-                                    ctx.lines(args!["Are you willing", "to give your life to God?"])?;
-                                    ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No!")])?) == 2 {
-                                        ctx.lines_as("Sister Cecilia", args!["Aw...? How could you give me that kind of answer? I assume you're not ready to be a Priest yet..."])?;
-                                        ctx.next()?;
-                                        ctx.var("priest_q").set(Val::from(8))?;
-                                        ctx.lines_as("Sister Cecilia", args!["You should reflect a little more on the teachings of holiness and come back later. You can't be a Priest if your spirit is weak."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    ctx.lines_as("Sister Cecilia", args!["Will you take advantage of the holy abilities given by God for selfish, destructive or greedy ends?"])?;
-                                    ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 1 {
-                                        ctx.lines_as("Sister Cecilia", args!["Aw...? God won't grant you the power of holiness if your goals aren't just and pure. Meditate on your motivations for a while, and then come back to me."])?;
-                                        ctx.next()?;
-                                        ctx.var("priest_q").set(Val::from(8))?;
-                                        ctx.lines_as("Sister Cecilia", args!["Think about the qualities that make Priests people of respect. You can't be a Priest if your spirit is not in accordance with God."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    ctx.lines_as(
-                                        "Sister Cecilia",
-                                        args!["Will you help aid others, even complete strangers, in battles by easing their suffering?"],
-                                    )?;
-                                    ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 2 {
-                                        ctx.lines_as("Sister Cecilia", args!["No, no. You've got the wrong idea. God authorizes us to use his power to support his children. You must help people in danger: it is your obligation."])?;
-                                        ctx.next()?;
-                                        ctx.var("priest_q").set(Val::from(8))?;
-                                        ctx.lines_as("Sister Cecilia", args!["Go and observe the adventurers that are fighting for peace in this world. They will teach you what you must do in order to help them."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    ctx.lines_as(
-                                        "Sister Cecilia",
-                                        args!["Are you willing to sacrifice yourself for the sake of others?"],
-                                    )?;
-                                    ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 2 {
-                                        ctx.lines_as("Sister Cecilia", args!["How can you say no...? That's one of the basic principles of Priesthood. You must value the welfare of others over your own safety."])?;
-                                        ctx.next()?;
-                                        ctx.var("priest_q").set(Val::from(8))?;
-                                        ctx.lines_as("Sister Cecilia", args!["Go and think about the value of suffering and the meaning of sacrifice. When you think you understand more about helping those in need, come back to me."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    ctx.lines_as("Sister Cecilia", args!["Will you repeatly say the same phrase in public in order to send God's message to his children?"])?;
-                                    ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 1 {
-                                        ctx.lines_as("Sister Cecilia", args!["No no no... You've got it wrong. Even though your purpose is to spread God's message, no one will eagerly accept what you say when you spam text."])?;
-                                        ctx.next()?;
-                                        ctx.var("priest_q").set(Val::from(8))?;
-                                        ctx.lines_as("Sister Cecilia", args!["Remember...", "You must be a moral person, and display maturity and respect to other players. This kind of attitude applies for all classes,", "I believe."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    ctx.lines_as(
-                                        "Sister Cecilia",
-                                        args!["Will you lure many monsters to help your party members level up?"],
-                                    )?;
-                                    ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 1 {
-                                        ctx.lines_as("Sister Cecilia", args!["No, you won't. Luring many monsters does more harm than good. There is no exception. That behavior is totally unacceptable."])?;
-                                        ctx.next()?;
-                                        ctx.var("priest_q").set(Val::from(8))?;
-                                        ctx.lines_as("Sister Cecilia", args!["Even if it looks like you are aiding your party members, such action results in bad karma. Please reflect on that for a while."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    ctx.lines_as(
-                                        "Sister Cecilia",
-                                        args!["Will you follow God, no matter what it takes, even if he demands you to kill yourself?"],
-                                    )?;
-                                    ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 2 {
-                                        ctx.lines_as("Sister Cecilia", args!["With that spirit, you can't be a Priest. If it is God's will to sacrifice yourself for a good purpose, you must carry out God's will as his servant."])?;
-                                        ctx.next()?;
-                                        ctx.var("priest_q").set(Val::from(8))?;
-                                        ctx.lines_as("Sister Cecilia", args!["Besides, God has also given Priests the resurrection power. Think about the meaning of life and death again, and then come back to me."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    ctx.mes("[Sister Cecilia]")?;
-                                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                        ctx.lines(args![
-                                            ((Val::from("Brother ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from("..."))
-                                        ])?;
-                                    } else {
-                                        ctx.lines(args![
-                                            ((Val::from("Sister ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                + Val::from("..."))
-                                        ])?;
-                                    }
-                                    ctx.mes("You have demonstrated your devotion to God. Will you swear to adhere to his teachings for the rest of your days?")?;
-                                    ctx.next()?;
-                                    if Val::from(runtime::select_values(ctx, &[Val::from("I do.:No.")])?) == 1 {
-                                        ctx.var("priest_q").set(Val::from(9))?;
-                                        ctx.call(Function::ChangeQuest, vec![Val::from(8014), Val::from(8015)])?;
-                                        ctx.lines_as("Sister Cecilia", args!["Now, you have completed your oath of Priesthood and accomplished all three trials required to become a Priest."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Sister Cecilia", args!["Now go to Bishop Paul. And remember, we are all brothers and sisters in the eyes of God. Peace be with you..."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    ctx.lines_as("Sister Cecilia", args!["..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Sister Cecilia", args!["...", "......"])?;
-                                    ctx.next()?;
-                                    ctx.var("priest_q").set(Val::from(8))?;
-                                    ctx.lines_as(
-                                        "Sister Cecilia",
-                                        args!["You've come so far...", "Why would you want", "to throw this all away...?"],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("priest_q").get()? == 9 {
-                                        ctx.lines(args!["Congratulations.", "You've completed all three trials required for the Priesthood. Bishop Paul is now waiting for you."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Sister Cecilia", args!["Peace be with you..."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
                         }
+                        ctx.lines_as("Sister Cecilia", args!["Will you take advantage of the holy abilities given by God for selfish, destructive or greedy ends?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 1 {
+                            ctx.lines_as("Sister Cecilia", args!["Aw...? God won't grant you the power of holiness if your goals aren't just and pure. Meditate on your motivations for a while, and then come back to me."])?;
+                            ctx.next()?;
+                            ctx.var("priest_q").set(Val::from(8))?;
+                            ctx.lines_as("Sister Cecilia", args!["Think about the qualities that make Priests people of respect. You can't be a Priest if your spirit is not in accordance with God."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        ctx.lines_as(
+                            "Sister Cecilia",
+                            args!["Will you help aid others, even complete strangers, in battles by easing their suffering?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 2 {
+                            ctx.lines_as("Sister Cecilia", args!["No, no. You've got the wrong idea. God authorizes us to use his power to support his children. You must help people in danger: it is your obligation."])?;
+                            ctx.next()?;
+                            ctx.var("priest_q").set(Val::from(8))?;
+                            ctx.lines_as("Sister Cecilia", args!["Go and observe the adventurers that are fighting for peace in this world. They will teach you what you must do in order to help them."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        ctx.lines_as(
+                            "Sister Cecilia",
+                            args!["Are you willing to sacrifice yourself for the sake of others?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 2 {
+                            ctx.lines_as("Sister Cecilia", args!["How can you say no...? That's one of the basic principles of Priesthood. You must value the welfare of others over your own safety."])?;
+                            ctx.next()?;
+                            ctx.var("priest_q").set(Val::from(8))?;
+                            ctx.lines_as("Sister Cecilia", args!["Go and think about the value of suffering and the meaning of sacrifice. When you think you understand more about helping those in need, come back to me."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        ctx.lines_as("Sister Cecilia", args!["Will you repeatly say the same phrase in public in order to send God's message to his children?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 1 {
+                            ctx.lines_as("Sister Cecilia", args!["No no no... You've got it wrong. Even though your purpose is to spread God's message, no one will eagerly accept what you say when you spam text."])?;
+                            ctx.next()?;
+                            ctx.var("priest_q").set(Val::from(8))?;
+                            ctx.lines_as("Sister Cecilia", args!["Remember...", "You must be a moral person, and display maturity and respect to other players. This kind of attitude applies for all classes,", "I believe."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        ctx.lines_as(
+                            "Sister Cecilia",
+                            args!["Will you lure many monsters to help your party members level up?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 1 {
+                            ctx.lines_as("Sister Cecilia", args!["No, you won't. Luring many monsters does more harm than good. There is no exception. That behavior is totally unacceptable."])?;
+                            ctx.next()?;
+                            ctx.var("priest_q").set(Val::from(8))?;
+                            ctx.lines_as("Sister Cecilia", args!["Even if it looks like you are aiding your party members, such action results in bad karma. Please reflect on that for a while."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        ctx.lines_as(
+                            "Sister Cecilia",
+                            args!["Will you follow God, no matter what it takes, even if he demands you to kill yourself?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?) == 2 {
+                            ctx.lines_as("Sister Cecilia", args!["With that spirit, you can't be a Priest. If it is God's will to sacrifice yourself for a good purpose, you must carry out God's will as his servant."])?;
+                            ctx.next()?;
+                            ctx.var("priest_q").set(Val::from(8))?;
+                            ctx.lines_as("Sister Cecilia", args!["Besides, God has also given Priests the resurrection power. Think about the meaning of life and death again, and then come back to me."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        ctx.mes("[Sister Cecilia]")?;
+                        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                            ctx.lines(args![
+                                ((Val::from("Brother ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("..."))
+                            ])?;
+                        } else {
+                            ctx.lines(args![
+                                ((Val::from("Sister ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("..."))
+                            ])?;
+                        }
+                        ctx.mes("You have demonstrated your devotion to God. Will you swear to adhere to his teachings for the rest of your days?")?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("I do.:No.")])?) == 1 {
+                            ctx.var("priest_q").set(Val::from(9))?;
+                            ctx.call(Function::ChangeQuest, vec![Val::from(8014), Val::from(8015)])?;
+                            ctx.lines_as("Sister Cecilia", args!["Now, you have completed your oath of Priesthood and accomplished all three trials required to become a Priest."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Sister Cecilia", args!["Now go to Bishop Paul. And remember, we are all brothers and sisters in the eyes of God. Peace be with you..."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        ctx.lines_as("Sister Cecilia", args!["..."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Sister Cecilia", args!["...", "......"])?;
+                        ctx.next()?;
+                        ctx.var("priest_q").set(Val::from(8))?;
+                        ctx.lines_as(
+                            "Sister Cecilia",
+                            args!["You've come so far...", "Why would you want", "to throw this all away...?"],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.var("priest_q").get()? == 9 {
+                        ctx.lines(args!["Congratulations.", "You've completed all three trials required for the Priesthood. Bishop Paul is now waiting for you."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Sister Cecilia", args!["Peace be with you..."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -1303,71 +1281,69 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             return Err(Stop::End);
                         }
                     }
-                } else {
-                    if ctx.var("priest_q").get()? == 6 {
-                        ctx.lines(args![
-                            "Are you ready this time?",
-                            "Complete this trial quickly,",
-                            "and become a Priest!"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as("Father Peter", args!["Are you ready then?"])?;
-                        ctx.next()?;
-                        'b4: {
-                            let subject4 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("I'm ready.:Please hold on.:I want to go back.")],
-                            )?);
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                && !subject4.loosely_equals(&Val::from(2))
-                                && !subject4.loosely_equals(&Val::from(3));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as("Father Peter", args!["Now, let the spiritual training begin. For the glory of God, for peace on earth, and goodwill towards all men..."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Father Peter", args!["Go...", "Kill those", "misbegotten creatures!"])?;
-                                ctx.close_window()?;
-                                if ctx.call(Function::CheckQuest, vec![Val::from(8012)])? == -1 {
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(8011), Val::from(8012)])?;
-                                }
-                                ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(24), Val::from(44)])?;
-                                ctx.call(Function::DoNpcEvent, vec![Val::from("Zombie_Generator#prst::OnEnable")])?;
-                                ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto::OnDisable")])?;
-                                ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto#2::OnEnable")])?;
-                                return Err(Stop::End);
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as(
-                                    "Father Peter",
-                                    args!["Hm? What is it you need?", "Well, no problem. You can", "afford to take your time."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.lines_as("Father Peter", args!["What...?", "You wanna go back??"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Father Peter", args!["I understand. I suppose you have some important reason or business that you must attend to. Come back whenever you can."])?;
-                                ctx.close_window()?;
-                                ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(234), Val::from(318)])?;
-                                return Err(Stop::End);
-                            }
+                } else if ctx.var("priest_q").get()? == 6 {
+                    ctx.lines(args![
+                        "Are you ready this time?",
+                        "Complete this trial quickly,",
+                        "and become a Priest!"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as("Father Peter", args!["Are you ready then?"])?;
+                    ctx.next()?;
+                    'b4: {
+                        let subject4 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("I'm ready.:Please hold on.:I want to go back.")],
+                        )?);
+                        let mut matched4 = false;
+                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                            && !subject4.loosely_equals(&Val::from(2))
+                            && !subject4.loosely_equals(&Val::from(3));
+                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                            matched4 = true;
                         }
-                    } else {
-                        ctx.mes("Go back!")?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(234), Val::from(318)])?;
-                        return Err(Stop::End);
+                        if matched4 {
+                            ctx.lines_as("Father Peter", args!["Now, let the spiritual training begin. For the glory of God, for peace on earth, and goodwill towards all men..."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Father Peter", args!["Go...", "Kill those", "misbegotten creatures!"])?;
+                            ctx.close_window()?;
+                            if ctx.call(Function::CheckQuest, vec![Val::from(8012)])? == -1 {
+                                ctx.call(Function::ChangeQuest, vec![Val::from(8011), Val::from(8012)])?;
+                            }
+                            ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(24), Val::from(44)])?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Zombie_Generator#prst::OnEnable")])?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto::OnDisable")])?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto#2::OnEnable")])?;
+                            return Err(Stop::End);
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as(
+                                "Father Peter",
+                                args!["Hm? What is it you need?", "Well, no problem. You can", "afford to take your time."],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
+                            matched4 = true;
+                        }
+                        if matched4 {
+                            ctx.lines_as("Father Peter", args!["What...?", "You wanna go back??"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Father Peter", args!["I understand. I suppose you have some important reason or business that you must attend to. Come back whenever you can."])?;
+                            ctx.close_window()?;
+                            ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(234), Val::from(318)])?;
+                            return Err(Stop::End);
+                        }
                     }
+                } else {
+                    ctx.mes("Go back!")?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(234), Val::from(318)])?;
+                    return Err(Stop::End);
                 }
                 step = PeterSAlbertoStep::OnEnable;
                 continue 'machine;
@@ -1437,22 +1413,20 @@ fn peter_s_alberto_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("priest_q").get()? == 6 {
+        ctx.mes("Please hold on for a while. Another acolyte is in the training ground right now.")?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Father Peter",
+            args!["If you want to take the test, please wait a while and talk to me again."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("priest_q").get()? == 6 {
-            ctx.mes("Please hold on for a while. Another acolyte is in the training ground right now.")?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Father Peter",
-                args!["If you want to take the test, please wait a while and talk to me again."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines(args!["Peace...", "Be with you."])?;
-            ctx.close_window()?;
-            ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(234), Val::from(318)])?;
-            return Err(Stop::End);
-        }
+        ctx.lines(args!["Peace...", "Be with you."])?;
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(234), Val::from(318)])?;
+        return Err(Stop::End);
     }
 }
 
@@ -1844,20 +1818,18 @@ fn zombie_info_run(ctx: &Ctx, mut step: ZombieInfoStep, args: Vec<Val>) -> Resul
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
-                        ctx.lines_as(
-                            "Father Peter",
-                            args!["I will give you exactly 5 minutes! You must proceed slowly and eliminate the Zombies."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Father Peter",
-                            args!["Slay all the zombies and go through the warp at the end of the hall. Make sure that you kill them all."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
+                    ctx.lines_as(
+                        "Father Peter",
+                        args!["I will give you exactly 5 minutes! You must proceed slowly and eliminate the Zombies."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Father Peter",
+                        args!["Slay all the zombies and go through the warp at the end of the hall. Make sure that you kill them all."],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 return Err(Stop::End);
             }
@@ -2189,14 +2161,12 @@ fn prst1_1_run(ctx: &Ctx, mut step: Prst11Step, args: Vec<Val>) -> Result<Val, S
                 )?;
                 if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_PRIEST")?) {
                     ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(168), Val::from(17)])?;
-                } else {
-                    if (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) && l_mobs.clone().number()? < 1) {
-                        ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(168), Val::from(17)])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Zombie_Generator#prst::OnDisable")])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto#2::OnDisable")])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto::OnEnable")])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Zombie_Generator#prst::OnDisable")])?;
-                    }
+                } else if (ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) && l_mobs.clone().number()? < 1) {
+                    ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(168), Val::from(17)])?;
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("Zombie_Generator#prst::OnDisable")])?;
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto#2::OnDisable")])?;
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto::OnEnable")])?;
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("Zombie_Generator#prst::OnDisable")])?;
                 }
                 return Err(Stop::End);
             }
@@ -2366,76 +2336,74 @@ fn doppelganger_prst_run(ctx: &Ctx, mut step: DoppelgangerPrstStep, args: Vec<Va
                     ctx.lines_as("Doppelganger", args!["Besides, this is none of your business. Whether or not this Acolyte becomes a Priest isn't up to you. Now get out of here, before I get violent."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
+                } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
+                    ctx.lines_as(
+                        "Doppelganger",
+                        args![
+                            "Hold on there, Acolyte.",
+                            "I'm not like Deviruchi,",
+                            "so I won't mince",
+                            "words with you."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Doppelganger", args!["Now, why would you want to become a Priest? It's such a worthless, thankless job. If you want, I'll give you the chance to become a Novice. Then you can become something much better!"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Doppelganger",
+                        args![
+                            "Of course, I'll let you redistribute your stat points by your base level. Now, isn't that a sweet deal...?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Deal, Deal!:No deal... Doppelganger.")],
+                    )?) == 1
+                    {
                         ctx.lines_as(
                             "Doppelganger",
-                            args![
-                                "Hold on there, Acolyte.",
-                                "I'm not like Deviruchi,",
-                                "so I won't mince",
-                                "words with you."
-                            ],
+                            args!["Good choice~", "I shall return your", "job to a Novice", "as you wish."],
                         )?;
                         ctx.next()?;
-                        ctx.lines_as("Doppelganger", args!["Now, why would you want to become a Priest? It's such a worthless, thankless job. If you want, I'll give you the chance to become a Novice. Then you can become something much better!"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Doppelganger",
-                            args![
-                                "Of course, I'll let you redistribute your stat points by your base level. Now, isn't that a sweet deal...?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Deal, Deal!:No deal... Doppelganger.")],
-                        )?) == 1
-                        {
-                            ctx.lines_as(
-                                "Doppelganger",
-                                args!["Good choice~", "I shall return your", "job to a Novice", "as you wish."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Doppelganger", args!["Now go!!", "Never step into", "the light again!"])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("gef_dun02"), Val::from(210), Val::from(177)])?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as("Doppelganger", args!["I don't think you understood what I just offered. Think about it again. I mean, this is your one and only chance to undo your life mistakes. I mean, becoming an Acolyte?"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Doppelganger", args!["Just don't become a Priest. I won't ask you more than once. Then you can choose a better job... perhaps a Swordman like me."])?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("I don't want to be a Priest!:I'll never listen to you!")],
-                        )?) == 1
-                        {
-                            ctx.lines_as(
-                                "Doppelganger",
-                                args!["Excellent choice. Now, never return to this place. I shall return your job to Novice as you wish."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Doppelganger", args!["Now go!!", "Never step into", "the light again!"])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("gef_dun02"), Val::from(210), Val::from(177)])?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as(
-                            "Doppelganger",
-                            args!["Hmpf. I admire", "your determination.", "Okay, you can pass.", "For now."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Doppelganger",
-                            args![
-                                "But if by chance we meet again,",
-                                "I assure you... You won't be happy at all to see me."
-                            ],
-                        )?;
+                        ctx.lines_as("Doppelganger", args!["Now go!!", "Never step into", "the light again!"])?;
                         ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("gef_dun02"), Val::from(210), Val::from(177)])?;
                         return Err(Stop::End);
                     }
+                    ctx.lines_as("Doppelganger", args!["I don't think you understood what I just offered. Think about it again. I mean, this is your one and only chance to undo your life mistakes. I mean, becoming an Acolyte?"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Doppelganger", args!["Just don't become a Priest. I won't ask you more than once. Then you can choose a better job... perhaps a Swordman like me."])?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("I don't want to be a Priest!:I'll never listen to you!")],
+                    )?) == 1
+                    {
+                        ctx.lines_as(
+                            "Doppelganger",
+                            args!["Excellent choice. Now, never return to this place. I shall return your job to Novice as you wish."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Doppelganger", args!["Now go!!", "Never step into", "the light again!"])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("gef_dun02"), Val::from(210), Val::from(177)])?;
+                        return Err(Stop::End);
+                    }
+                    ctx.lines_as(
+                        "Doppelganger",
+                        args!["Hmpf. I admire", "your determination.", "Okay, you can pass.", "For now."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Doppelganger",
+                        args![
+                            "But if by chance we meet again,",
+                            "I assure you... You won't be happy at all to see me."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 return Ok(Val::from(0));
             }
@@ -2477,61 +2445,59 @@ fn dark_lord_prst_run(ctx: &Ctx, mut step: DarkLordPrstStep, args: Vec<Val>) -> 
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
-                        ctx.lines_as(
-                            "Dark Lord",
-                            args!["^330033Halt, human.", "Who has granted", "you passage?^000000"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Dark Lord", args!["^330033You still wish to become a Priest?! Fool! Then, I shall not let you pass. Go back. Otherwise, you will not survive.^000000"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Dark Lord",
-                            args![
-                                "^330033It would be so easy for me to snap your fragile body in twain and grind your bones to dust.",
-                                "Now, go back mortal!^000000"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("I'm so sorry. Spare me!:God will protect me.")],
-                        )?) == 1
-                        {
-                            ctx.lines_as("Dark Lord", args!["^330033Don't ever come back!^000000"])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("gl_church"), Val::from(145), Val::from(170)])?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as("Dark Lord", args!["^330033It is no use to feign strength and courage. You are completely helpless before me. Your skills are laughable, and your weapons are but mere toys compared to my power.^000000"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Dark Lord", args!["^330033With just a wave of my hand, you will cease to exist. And no one will remember you. Tremble before the might of my infinite magic!^000000"])?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("I beg you, don't...!:Begone, vile fiend!")],
-                        )?) == 1
-                        {
-                            ctx.lines_as("Dark Lord", args!["^330033Don't ever come back!^000000"])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("gl_church"), Val::from(145), Val::from(170)])?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as(
-                            "Dark Lord",
-                            args![
-                                "^330033Why...",
-                                "Why don't you fear me?!",
-                                "For a frail mortal, you",
-                                "are quite annoying.^000000"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Dark Lord", args!["^330033When next we meet, I will shall escort you to a realm of suffering where you shall spend years immersed in excruciating pain.", "Mark my words...^000000"])?;
+                } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
+                    ctx.lines_as(
+                        "Dark Lord",
+                        args!["^330033Halt, human.", "Who has granted", "you passage?^000000"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Dark Lord", args!["^330033You still wish to become a Priest?! Fool! Then, I shall not let you pass. Go back. Otherwise, you will not survive.^000000"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Dark Lord",
+                        args![
+                            "^330033It would be so easy for me to snap your fragile body in twain and grind your bones to dust.",
+                            "Now, go back mortal!^000000"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("I'm so sorry. Spare me!:God will protect me.")],
+                    )?) == 1
+                    {
+                        ctx.lines_as("Dark Lord", args!["^330033Don't ever come back!^000000"])?;
                         ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("gl_church"), Val::from(145), Val::from(170)])?;
                         return Err(Stop::End);
                     }
+                    ctx.lines_as("Dark Lord", args!["^330033It is no use to feign strength and courage. You are completely helpless before me. Your skills are laughable, and your weapons are but mere toys compared to my power.^000000"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Dark Lord", args!["^330033With just a wave of my hand, you will cease to exist. And no one will remember you. Tremble before the might of my infinite magic!^000000"])?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("I beg you, don't...!:Begone, vile fiend!")],
+                    )?) == 1
+                    {
+                        ctx.lines_as("Dark Lord", args!["^330033Don't ever come back!^000000"])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("gl_church"), Val::from(145), Val::from(170)])?;
+                        return Err(Stop::End);
+                    }
+                    ctx.lines_as(
+                        "Dark Lord",
+                        args![
+                            "^330033Why...",
+                            "Why don't you fear me?!",
+                            "For a frail mortal, you",
+                            "are quite annoying.^000000"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Dark Lord", args!["^330033When next we meet, I will shall escort you to a realm of suffering where you shall spend years immersed in excruciating pain.", "Mark my words...^000000"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 return Ok(Val::from(0));
             }
@@ -2570,47 +2536,45 @@ fn baphomet_prst_run(ctx: &Ctx, mut step: BaphometPrstStep, args: Vec<Val>) -> R
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
-                        ctx.lines_as("Baphomet", args!["Greetings."])?;
+                } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
+                    ctx.lines_as("Baphomet", args!["Greetings."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Baphomet",
+                        args![((Val::from("...") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Baphomet", args!["Yes, human,", "I know who you are."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Baphomet", args!["I also know that Deviruchi, Doppelganger and the Dark Lord have all failed to convince you to turn away from the Priesthood.", "Now, I stand before", "you to offer a deal."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Baphomet", args!["I can grant you any treasure you desire and infinite power at your fingertips. Powerful weapons that humans have never before seen..."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Baphomet", args!["Mountains of zeny that you cannot possibly hope to spend in a lifetime. Though, who's to say that your lifespan should be limited? Fame, power, immortality: It can all be yours."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Baphomet", args!["I will be yours to summon at anytime. All other humans will dread making you their enemy. You will become the most powerful person in all of history!"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Baphomet", args!["Cease this foolishness of pursuing the Priesthood. Make a contract with me. The entire world is yours for the taking."])?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Deal.:No, Baphomet. You lose.")])?) == 1 {
+                        ctx.lines_as(
+                            "Baphomet",
+                            args!["Then we shall form a contract. You won't ever regret this moment..."],
+                        )?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Baphomet",
-                            args![((Val::from("...") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("."))],
+                            args!["Follow me.", "We will make the", "contract in my", "sanctum of darkness."],
                         )?;
-                        ctx.next()?;
-                        ctx.lines_as("Baphomet", args!["Yes, human,", "I know who you are."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Baphomet", args!["I also know that Deviruchi, Doppelganger and the Dark Lord have all failed to convince you to turn away from the Priesthood.", "Now, I stand before", "you to offer a deal."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Baphomet", args!["I can grant you any treasure you desire and infinite power at your fingertips. Powerful weapons that humans have never before seen..."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Baphomet", args!["Mountains of zeny that you cannot possibly hope to spend in a lifetime. Though, who's to say that your lifespan should be limited? Fame, power, immortality: It can all be yours."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Baphomet", args!["I will be yours to summon at anytime. All other humans will dread making you their enemy. You will become the most powerful person in all of history!"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Baphomet", args!["Cease this foolishness of pursuing the Priesthood. Make a contract with me. The entire world is yours for the taking."])?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Deal.:No, Baphomet. You lose.")])?) == 1 {
-                            ctx.lines_as(
-                                "Baphomet",
-                                args!["Then we shall form a contract. You won't ever regret this moment..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Baphomet",
-                                args!["Follow me.", "We will make the", "contract in my", "sanctum of darkness."],
-                            )?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("glast_01"), Val::from(200), Val::from(203)])?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as("Baphomet", args!["Foolish human...", "You have made your choice. I will leave you alone for now, then. However, your training won't be as easy as you think."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Baphomet", args!["I shall be preparing my troops for you. The day will come when I shall enjoy watching you writhe in agony as my fiends slowly devour you."])?;
                         ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("glast_01"), Val::from(200), Val::from(203)])?;
                         return Err(Stop::End);
                     }
+                    ctx.lines_as("Baphomet", args!["Foolish human...", "You have made your choice. I will leave you alone for now, then. However, your training won't be as easy as you think."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Baphomet", args!["I shall be preparing my troops for you. The day will come when I shall enjoy watching you writhe in agony as my fiends slowly devour you."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 return Ok(Val::from(0));
             }
@@ -2642,11 +2606,9 @@ fn prst2_1_run(ctx: &Ctx, mut step: Prst21Step, args: Vec<Val>) -> Result<Val, S
             Prst21Step::OnTouch => {
                 if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_PRIEST")?) {
                     ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(98), Val::from(40)])?;
-                } else {
-                    if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
-                        ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(98), Val::from(40)])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Mummy_Generator::OnEnable")])?;
-                    }
+                } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
+                    ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(98), Val::from(40)])?;
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("Mummy_Generator::OnEnable")])?;
                 }
                 return Err(Stop::End);
             }
@@ -2996,15 +2958,13 @@ fn prst3_1_run(ctx: &Ctx, mut step: Prst31Step, args: Vec<Val>) -> Result<Val, S
                 if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_PRIEST")?) {
                     ctx.call(Function::Warp, vec![Val::from("prt_church"), Val::from(15), Val::from(36)])?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
-                        ctx.var("priest_q").set(Val::from(7))?;
-                        if ctx.call(Function::CheckQuest, vec![Val::from(8012)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(8012), Val::from(8013)])?;
-                        }
-                        ctx.call(Function::Warp, vec![Val::from("prt_church"), Val::from(16), Val::from(37)])?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("Mummy_Generator::OnDisable")])?;
+                } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?) {
+                    ctx.var("priest_q").set(Val::from(7))?;
+                    if ctx.call(Function::CheckQuest, vec![Val::from(8012)])? != -1 {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(8012), Val::from(8013)])?;
                     }
+                    ctx.call(Function::Warp, vec![Val::from("prt_church"), Val::from(16), Val::from(37)])?;
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("Mummy_Generator::OnDisable")])?;
                 }
                 return Err(Stop::End);
             }

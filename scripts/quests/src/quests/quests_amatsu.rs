@@ -176,105 +176,101 @@ fn publisher_ama_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("event_momo").get()? == 4 {
-            ctx.lines_as(
-                "Publisher",
-                args!["Ah~ What nice weather!", "This is the perfect weather to do some reading."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
+    } else if ctx.var("event_momo").get()? == 4 {
+        ctx.lines_as(
+            "Publisher",
+            args!["Ah~ What nice weather!", "This is the perfect weather to do some reading."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("event_momo").get()?.number()? > 1 {
+        ctx.lines_as(
+            "Publisher",
+            args![
+                "How was it? Did you have fun?",
+                "I hope you had a good time",
+                "during the field trip.",
+                " ",
+                " "
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Publisher",
+            args!["This is your reward for you.", "Please continue to enjoy stories~", " "],
+        )?;
+        l_event_momo = ctx.var("event_momo").get()?;
+        ctx.var("event_momo").set(Val::from(4))?;
+        ctx.call(Function::CompleteQuest, vec![Val::from(8128)])?;
+        ctx.call(Function::CompleteQuest, vec![Val::from(8129)])?;
+        ctx.call(Function::CompleteQuest, vec![Val::from(8130)])?;
+        if l_event_momo.clone() == 3 {
+            l_gift_1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
+            if l_gift_1.clone() == 1 {
+                ctx.call(Function::GetItem, vec![Val::from(659), Val::from(1)])?;
+            }
+            if l_gift_1.clone() == 2 {
+                ctx.call(Function::GetItem, vec![Val::from(633), Val::from(1)])?;
+            }
+            if l_gift_1.clone() == 3 {
+                ctx.call(Function::GetItem, vec![Val::from(634), Val::from(1)])?;
+            }
+            if l_gift_1.clone() == 4 {
+                ctx.call(Function::GetItem, vec![Val::from(639), Val::from(1)])?;
+            }
+            if l_gift_1.clone() == 5 {
+                ctx.call(Function::GetItem, vec![Val::from(636), Val::from(1)])?;
+            }
+            if l_gift_1.clone() == 6 {
+                ctx.call(Function::GetItem, vec![Val::from(628), Val::from(1)])?;
+            }
+            if l_gift_1.clone() == 7 {
+                ctx.call(Function::GetItem, vec![Val::from(637), Val::from(1)])?;
+            }
+            if l_gift_1.clone() == 8 {
+                ctx.call(Function::GetItem, vec![Val::from(635), Val::from(1)])?;
+            }
+            if l_gift_1.clone() == 9 {
+                ctx.call(Function::GetItem, vec![Val::from(626), Val::from(1)])?;
+            }
+            if l_gift_1.clone() == 10 {
+                ctx.call(Function::GetItem, vec![Val::from(641), Val::from(1)])?;
+            }
         } else {
-            if ctx.var("event_momo").get()?.number()? > 1 {
-                ctx.lines_as(
-                    "Publisher",
-                    args![
-                        "How was it? Did you have fun?",
-                        "I hope you had a good time",
-                        "during the field trip.",
-                        " ",
-                        " "
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Publisher",
-                    args!["This is your reward for you.", "Please continue to enjoy stories~", " "],
-                )?;
-                l_event_momo = ctx.var("event_momo").get()?;
-                ctx.var("event_momo").set(Val::from(4))?;
-                ctx.call(Function::CompleteQuest, vec![Val::from(8128)])?;
-                ctx.call(Function::CompleteQuest, vec![Val::from(8129)])?;
-                ctx.call(Function::CompleteQuest, vec![Val::from(8130)])?;
-                if l_event_momo.clone() == 3 {
-                    l_gift_1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
-                    if l_gift_1.clone() == 1 {
-                        ctx.call(Function::GetItem, vec![Val::from(659), Val::from(1)])?;
-                    }
-                    if l_gift_1.clone() == 2 {
-                        ctx.call(Function::GetItem, vec![Val::from(633), Val::from(1)])?;
-                    }
-                    if l_gift_1.clone() == 3 {
-                        ctx.call(Function::GetItem, vec![Val::from(634), Val::from(1)])?;
-                    }
-                    if l_gift_1.clone() == 4 {
-                        ctx.call(Function::GetItem, vec![Val::from(639), Val::from(1)])?;
-                    }
-                    if l_gift_1.clone() == 5 {
-                        ctx.call(Function::GetItem, vec![Val::from(636), Val::from(1)])?;
-                    }
-                    if l_gift_1.clone() == 6 {
-                        ctx.call(Function::GetItem, vec![Val::from(628), Val::from(1)])?;
-                    }
-                    if l_gift_1.clone() == 7 {
-                        ctx.call(Function::GetItem, vec![Val::from(637), Val::from(1)])?;
-                    }
-                    if l_gift_1.clone() == 8 {
-                        ctx.call(Function::GetItem, vec![Val::from(635), Val::from(1)])?;
-                    }
-                    if l_gift_1.clone() == 9 {
-                        ctx.call(Function::GetItem, vec![Val::from(626), Val::from(1)])?;
-                    }
-                    if l_gift_1.clone() == 10 {
-                        ctx.call(Function::GetItem, vec![Val::from(641), Val::from(1)])?;
-                    }
-                } else {
-                    l_gift_2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
-                    if l_gift_2.clone() == 1 {
-                        ctx.call(Function::GetItem, vec![Val::from(622), Val::from(1)])?;
-                    }
-                    if l_gift_2.clone() == 2 {
-                        ctx.call(Function::GetItem, vec![Val::from(627), Val::from(1)])?;
-                    }
-                    if l_gift_2.clone() == 3 {
-                        ctx.call(Function::GetItem, vec![Val::from(629), Val::from(1)])?;
-                    }
-                    if l_gift_2.clone() == 4 {
-                        ctx.call(Function::GetItem, vec![Val::from(632), Val::from(1)])?;
-                    }
-                    if l_gift_2.clone() == 5 {
-                        ctx.call(Function::GetItem, vec![Val::from(623), Val::from(1)])?;
-                    }
-                    if l_gift_2.clone() == 6 {
-                        ctx.call(Function::GetItem, vec![Val::from(619), Val::from(1)])?;
-                    }
-                    if l_gift_2.clone() == 7 {
-                        ctx.call(Function::GetItem, vec![Val::from(621), Val::from(1)])?;
-                    }
-                    if l_gift_2.clone() == 8 {
-                        ctx.call(Function::GetItem, vec![Val::from(620), Val::from(1)])?;
-                    }
-                    if l_gift_2.clone() == 9 {
-                        ctx.call(Function::GetItem, vec![Val::from(625), Val::from(1)])?;
-                    }
-                    if l_gift_2.clone() == 10 {
-                        ctx.call(Function::GetItem, vec![Val::from(624), Val::from(1)])?;
-                    }
-                }
-                ctx.close_window()?;
-                return Err(Stop::End);
+            l_gift_2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
+            if l_gift_2.clone() == 1 {
+                ctx.call(Function::GetItem, vec![Val::from(622), Val::from(1)])?;
+            }
+            if l_gift_2.clone() == 2 {
+                ctx.call(Function::GetItem, vec![Val::from(627), Val::from(1)])?;
+            }
+            if l_gift_2.clone() == 3 {
+                ctx.call(Function::GetItem, vec![Val::from(629), Val::from(1)])?;
+            }
+            if l_gift_2.clone() == 4 {
+                ctx.call(Function::GetItem, vec![Val::from(632), Val::from(1)])?;
+            }
+            if l_gift_2.clone() == 5 {
+                ctx.call(Function::GetItem, vec![Val::from(623), Val::from(1)])?;
+            }
+            if l_gift_2.clone() == 6 {
+                ctx.call(Function::GetItem, vec![Val::from(619), Val::from(1)])?;
+            }
+            if l_gift_2.clone() == 7 {
+                ctx.call(Function::GetItem, vec![Val::from(621), Val::from(1)])?;
+            }
+            if l_gift_2.clone() == 8 {
+                ctx.call(Function::GetItem, vec![Val::from(620), Val::from(1)])?;
+            }
+            if l_gift_2.clone() == 9 {
+                ctx.call(Function::GetItem, vec![Val::from(625), Val::from(1)])?;
+            }
+            if l_gift_2.clone() == 10 {
+                ctx.call(Function::GetItem, vec![Val::from(624), Val::from(1)])?;
             }
         }
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -390,68 +386,64 @@ fn assistant_ama_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         ctx.call(Function::Warp, vec![Val::from("amatsu"), Val::from(223), Val::from(230)])?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("event_momo").get()? == 1 {
+    } else if ctx.var("event_momo").get()? == 1 {
+        ctx.lines_as(
+            "Satoshi",
+            args![
+                "Oh my...Are you alright?",
+                "I thought it was entertaining but maybe it was too hard for you?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Satoshi", args!["Now what are you going to do?", "Do you want to go in again?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Yes:No, I want to go back")])?) == 1 {
             ctx.lines_as(
                 "Satoshi",
                 args![
-                    "Oh my...Are you alright?",
-                    "I thought it was entertaining but maybe it was too hard for you?"
+                    "The more effort you put into this, the sweeter victory will taste.",
+                    "Good luck in fighting!"
                 ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Satoshi", args!["Now what are you going to do?", "Do you want to go in again?"])?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("Yes:No, I want to go back")])?) == 1 {
-                ctx.lines_as(
-                    "Satoshi",
-                    args![
-                        "The more effort you put into this, the sweeter victory will taste.",
-                        "Good luck in fighting!"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Satoshi",
-                args![
-                    "Well, I guess the reality of the situation is that you just can't fulfill the role of Momotaro...",
-                    "Still, don't be depressed."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Satoshi", args!["I think you've gained enough experience from the field trip."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Assistant",
-                args!["If you hear a good story,", "Please, contact our", "publishing company.", "Bye-"],
             )?;
             ctx.close_window()?;
-            ctx.call(Function::PercentHeal, vec![Val::from(100), Val::from(0)])?;
-            ctx.var("event_momo").set(Val::from(0))?;
-            ctx.call(Function::Warp, vec![Val::from("amatsu"), Val::from(223), Val::from(230)])?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("event_momo").get()? == 2 {
-                ctx.lines_as("Satoshi", args!["Woohoo~ Congratulations!!", "You were so great!"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Satoshi",
-                    args![
-                        "It is time to say good bye.",
-                        "If you hear a good story,",
-                        "Please, contact our",
-                        "publishing company.",
-                        "Bye-"
-                    ],
-                )?;
-                ctx.close_window()?;
-                ctx.call(Function::PercentHeal, vec![Val::from(100), Val::from(0)])?;
-                ctx.call(Function::Warp, vec![Val::from("amatsu"), Val::from(223), Val::from(230)])?;
-                return Err(Stop::End);
-            }
         }
+        ctx.lines_as(
+            "Satoshi",
+            args![
+                "Well, I guess the reality of the situation is that you just can't fulfill the role of Momotaro...",
+                "Still, don't be depressed."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Satoshi", args!["I think you've gained enough experience from the field trip."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Assistant",
+            args!["If you hear a good story,", "Please, contact our", "publishing company.", "Bye-"],
+        )?;
+        ctx.close_window()?;
+        ctx.call(Function::PercentHeal, vec![Val::from(100), Val::from(0)])?;
+        ctx.var("event_momo").set(Val::from(0))?;
+        ctx.call(Function::Warp, vec![Val::from("amatsu"), Val::from(223), Val::from(230)])?;
+        return Err(Stop::End);
+    } else if ctx.var("event_momo").get()? == 2 {
+        ctx.lines_as("Satoshi", args!["Woohoo~ Congratulations!!", "You were so great!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Satoshi",
+            args![
+                "It is time to say good bye.",
+                "If you hear a good story,",
+                "Please, contact our",
+                "publishing company.",
+                "Bye-"
+            ],
+        )?;
+        ctx.close_window()?;
+        ctx.call(Function::PercentHeal, vec![Val::from(100), Val::from(0)])?;
+        ctx.call(Function::Warp, vec![Val::from("amatsu"), Val::from(223), Val::from(230)])?;
+        return Err(Stop::End);
     }
     ctx.lines_as(
         "Satoshi",
@@ -823,31 +815,25 @@ fn dokebi_ez_run(ctx: &Ctx, mut step: DokebiEzStep, args: Vec<Val>) -> Result<Va
                             Function::MapAnnounce,
                             vec![Val::from("ama_test"), Val::from("!!IT'S A RAID!!!! RUN!!"), ctx.constant("BC_MAP")?],
                         )?;
-                    } else {
-                        if l_dokebi_tel.clone() == 2 {
-                            ctx.call(
-                                Function::MapAnnounce,
-                                vec![Val::from("ama_test"), Val::from(" Ow, Ouch!!! "), ctx.constant("BC_MAP")?],
-                            )?;
-                        } else {
-                            if l_dokebi_tel.clone() == 3 {
-                                ctx.call(
-                                    Function::MapAnnounce,
-                                    vec![
-                                        Val::from("ama_test"),
-                                        Val::from(" But I didn't even do anything Baaad~!!"),
-                                        ctx.constant("BC_MAP")?,
-                                    ],
-                                )?;
-                            } else {
-                                if l_dokebi_tel.clone() == 4 {
-                                    ctx.call(
-                                        Function::MapAnnounce,
-                                        vec![Val::from("ama_test"), Val::from(" I'm sorry~~ Waaaaah~~ "), ctx.constant("BC_MAP")?],
-                                    )?;
-                                }
-                            }
-                        }
+                    } else if l_dokebi_tel.clone() == 2 {
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![Val::from("ama_test"), Val::from(" Ow, Ouch!!! "), ctx.constant("BC_MAP")?],
+                        )?;
+                    } else if l_dokebi_tel.clone() == 3 {
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("ama_test"),
+                                Val::from(" But I didn't even do anything Baaad~!!"),
+                                ctx.constant("BC_MAP")?,
+                            ],
+                        )?;
+                    } else if l_dokebi_tel.clone() == 4 {
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![Val::from("ama_test"), Val::from(" I'm sorry~~ Waaaaah~~ "), ctx.constant("BC_MAP")?],
+                        )?;
                     }
                 }
                 return Err(Stop::End);
@@ -1748,287 +1734,279 @@ fn sushi_master_ama_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("fish_r").get()? == 3 {
-                        if ctx.call(Function::CountItem, vec![Val::from(961)])?.number()? > 9 {
-                            ctx.lines_as(
-                                "Magumagu",
-                                args!["Oh! I really appreciate it.", "Right on time!", "I was preparing appetizers..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Magumagu",
-                                args!["Thanks. It is nothing but", "I will give you several sets of Sushi in return."],
-                            )?;
-                            ctx.next()?;
-                            ctx.var("fish_r").set(Val::from(0))?;
-                            ctx.call(Function::EraseQuest, vec![Val::from(10038)])?;
-                            ctx.call(Function::DelItem, vec![Val::from(961), Val::from(10)])?;
-                            ctx.call(Function::GetItem, vec![Val::from(551), Val::from(30)])?;
-                            ctx.lines_as(
-                                "Magumagu",
-                                args![
-                                    "These are for three people,",
-                                    "so share them with your friends.",
-                                    "Come back again if you feel like helping out some more."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                } else if ctx.var("fish_r").get()? == 3 {
+                    if ctx.call(Function::CountItem, vec![Val::from(961)])?.number()? > 9 {
                         ctx.lines_as(
                             "Magumagu",
-                            args!["Oh man, you didn't prepare", "what I asked for...", "Do not forget what I asked."],
+                            args!["Oh! I really appreciate it.", "Right on time!", "I was preparing appetizers..."],
                         )?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Magumagu",
+                            args!["Thanks. It is nothing but", "I will give you several sets of Sushi in return."],
+                        )?;
+                        ctx.next()?;
+                        ctx.var("fish_r").set(Val::from(0))?;
+                        ctx.call(Function::EraseQuest, vec![Val::from(10038)])?;
+                        ctx.call(Function::DelItem, vec![Val::from(961), Val::from(10)])?;
+                        ctx.call(Function::GetItem, vec![Val::from(551), Val::from(30)])?;
+                        ctx.lines_as(
+                            "Magumagu",
                             args![
-                                "10 ^0000FFConches^000000",
-                                "You didn't forget it, right?",
-                                "Bring me these supplies, please."
+                                "These are for three people,",
+                                "so share them with your friends.",
+                                "Come back again if you feel like helping out some more."
                             ],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("fish_r").get()? == 4 {
-                            if ctx.call(Function::CountItem, vec![Val::from(1023)])?.number()? > 9 {
-                                ctx.lines_as(
-                                    "Magumagu",
-                                    args!["Oh! I really appreciate it.", "Right on time!", "I was decorating a platter."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Magumagu",
-                                    args!["Thanks. It is nothing but", "I will give you a large amount of food in return."],
-                                )?;
-                                ctx.next()?;
-                                ctx.var("fish_r").set(Val::from(0))?;
-                                ctx.call(Function::EraseQuest, vec![Val::from(10039)])?;
-                                ctx.call(Function::DelItem, vec![Val::from(1023), Val::from(10)])?;
-                                ctx.call(Function::GetItem, vec![Val::from(544), Val::from(20)])?;
-                                ctx.call(Function::GetItem, vec![Val::from(551), Val::from(30)])?;
-                                ctx.lines_as(
-                                    "Magumagu",
-                                    args!["You can feed your guild", "with this food.", "Come back with a friend."],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                    }
+                    ctx.lines_as(
+                        "Magumagu",
+                        args!["Oh man, you didn't prepare", "what I asked for...", "Do not forget what I asked."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Magumagu",
+                        args![
+                            "10 ^0000FFConches^000000",
+                            "You didn't forget it, right?",
+                            "Bring me these supplies, please."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("fish_r").get()? == 4 {
+                    if ctx.call(Function::CountItem, vec![Val::from(1023)])?.number()? > 9 {
+                        ctx.lines_as(
+                            "Magumagu",
+                            args!["Oh! I really appreciate it.", "Right on time!", "I was decorating a platter."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args!["Thanks. It is nothing but", "I will give you a large amount of food in return."],
+                        )?;
+                        ctx.next()?;
+                        ctx.var("fish_r").set(Val::from(0))?;
+                        ctx.call(Function::EraseQuest, vec![Val::from(10039)])?;
+                        ctx.call(Function::DelItem, vec![Val::from(1023), Val::from(10)])?;
+                        ctx.call(Function::GetItem, vec![Val::from(544), Val::from(20)])?;
+                        ctx.call(Function::GetItem, vec![Val::from(551), Val::from(30)])?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args!["You can feed your guild", "with this food.", "Come back with a friend."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    ctx.lines_as(
+                        "Magumagu",
+                        args!["Oh man, you didn't prepare", "what I asked for...", "Do not forget what I asked."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Magumagu",
+                        args![
+                            "10 ^0000FFFish Tails^000000",
+                            "You didn't forget it, right?",
+                            "Bring me these supplies, please."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("fish_r").get()? == 5 {
+                    if ctx.call(Function::CountItem, vec![Val::from(736)])?.number()? > 0 {
+                        ctx.lines_as(
+                            "Magumagu",
+                            args!["Oh! I really appreciate it.", "Right on time!", "I didn't have a white platter."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args!["Thanks. It is nothing but", "I will give you two sets of Sushi in return."],
+                        )?;
+                        ctx.next()?;
+                        ctx.call(Function::DelItem, vec![Val::from(736), Val::from(1)])?;
+                        ctx.var("fish_r").set(Val::from(0))?;
+                        ctx.call(Function::EraseQuest, vec![Val::from(10040)])?;
+                        ctx.call(Function::GetItem, vec![Val::from(551), Val::from(20)])?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args!["Share it with your friends", "and family members.", "Please come again."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    ctx.lines_as(
+                        "Magumagu",
+                        args!["Oh man, you didn't prepare", "what I asked for...", "Do not forget what I asked."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Magumagu",
+                        args![
+                            "I need a white platter:",
+                            "1 ^0000FFChina^000000",
+                            "You didn't forget it, right?",
+                            "Bring it to me, okay?"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("fish_r").get()? == 6 {
+                    if ctx.call(Function::CountItem, vec![Val::from(950)])?.number()? > 99 {
+                        if ctx.var("ama_sushi").get()? == 2 {
+                            ctx.lines_as("Magumagu", args![".............................."])?;
+                            ctx.next()?;
                             ctx.lines_as(
                                 "Magumagu",
-                                args!["Oh man, you didn't prepare", "what I asked for...", "Do not forget what I asked."],
+                                args![
+                                    "You are a really kind person.",
+                                    "You have brought everything",
+                                    "that I've asked you..."
+                                ],
                             )?;
                             ctx.next()?;
                             ctx.lines_as(
                                 "Magumagu",
                                 args![
-                                    "10 ^0000FFFish Tails^000000",
-                                    "You didn't forget it, right?",
-                                    "Bring me these supplies, please."
+                                    "You are not the first foreigner",
+                                    "I have encountered. Amatsu is getting more and more tourists.",
+                                    "I just wanted to test you.",
+                                    " "
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Magumagu",
+                                args![
+                                    "Your job was just errands but",
+                                    "I wanted to know...",
+                                    "how you devote yourself,",
+                                    "how serious you are about completing your job and not giving up."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Magumagu",
+                                args![
+                                    "I was thinking,",
+                                    "'If there is a person like that,",
+                                    "I would give that person everything about cooking that I have mastered"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Magumagu", args!["And.....", "You...", "You are the one."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Magumagu", args!["I'm old now. No one knows how long I can hold this knife. You have been chosen to inherit my culinary art...", " "])?;
+                            ctx.next()?;
+                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(100)])?;
+                            ctx.var("ama_sushi").set(Val::from(4))?;
+                            ctx.call(Function::CompleteQuest, vec![Val::from(10041)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(1144), Val::from(1)])?;
+                            ctx.lines_as(
+                                "Magumagu",
+                                args![
+                                    "Here, take my knife.",
+                                    "From now on, make fine cuisine with that knife.",
+                                    "...Learn how to slice a fish.",
+                                    " ",
+                                    " "
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Magumagu", args!["From now on, I will no longer ask you favors and give you fish slices in return....", "Practice your skill with that knife and teach mainlanders the pleasure of fine cuisine..."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.lines_as(
+                                "Magumagu",
+                                args![
+                                    "Wow...these are real hearts of",
+                                    "mermaid. The legends saying",
+                                    "that these could be found in another continent were true...",
+                                    " "
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Magumagu",
+                                args![
+                                    "Gathering all these must have been hard...Well, then.",
+                                    "Today, I will use all of my",
+                                    "ingredients to make a special cuisine for you!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Magumagu",
+                                args!["Give me a moment...", "I shall show you my ^0000FFtrue culinary skill^000000."],
+                            )?;
+                            ctx.next()?;
+                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(551), Val::from(20)])?;
+                            ctx.lines_as("Magumagu", args!["Try these first.", "Made from the freshest ingredients."])?;
+                            ctx.next()?;
+                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(544), Val::from(20)])?;
+                            ctx.lines_as(
+                                "Magumagu",
+                                args!["Try these too.", "My shop's fish slices are the best of the best!"],
+                            )?;
+                            ctx.next()?;
+                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(551), Val::from(20)])?;
+                            ctx.lines_as(
+                                "Magumagu",
+                                args!["Have some more. Don't say no...!", "Isn't it good? Huh? Isn't it good?"],
+                            )?;
+                            ctx.next()?;
+                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(544), Val::from(20)])?;
+                            ctx.lines_as("Magumagu", args!["Haha~! Not done yet!", "It's okay, have some more!"])?;
+                            ctx.next()?;
+                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(544), Val::from(10)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(551), Val::from(10)])?;
+                            ctx.lines_as(
+                                "Magumagu",
+                                args![
+                                    "Take the leftovers.",
+                                    "You look stuffed...",
+                                    "Share the rest with your friends and family."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.var("ama_sushi").set((ctx.var("ama_sushi").get()? + Val::from(1)))?;
+                            ctx.var("fish_r").set(Val::from(0))?;
+                            ctx.call(Function::EraseQuest, vec![Val::from(10041)])?;
+                            ctx.lines_as(
+                                "Magumagu",
+                                args![
+                                    "Thanks a lot for today! Haha!",
+                                    "Come back again when you feel like helping. Take care...!!!"
                                 ],
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.var("fish_r").get()? == 5 {
-                                if ctx.call(Function::CountItem, vec![Val::from(736)])?.number()? > 0 {
-                                    ctx.lines_as(
-                                        "Magumagu",
-                                        args!["Oh! I really appreciate it.", "Right on time!", "I didn't have a white platter."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Magumagu",
-                                        args!["Thanks. It is nothing but", "I will give you two sets of Sushi in return."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::DelItem, vec![Val::from(736), Val::from(1)])?;
-                                    ctx.var("fish_r").set(Val::from(0))?;
-                                    ctx.call(Function::EraseQuest, vec![Val::from(10040)])?;
-                                    ctx.call(Function::GetItem, vec![Val::from(551), Val::from(20)])?;
-                                    ctx.lines_as(
-                                        "Magumagu",
-                                        args!["Share it with your friends", "and family members.", "Please come again."],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                ctx.lines_as(
-                                    "Magumagu",
-                                    args!["Oh man, you didn't prepare", "what I asked for...", "Do not forget what I asked."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Magumagu",
-                                    args![
-                                        "I need a white platter:",
-                                        "1 ^0000FFChina^000000",
-                                        "You didn't forget it, right?",
-                                        "Bring it to me, okay?"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("fish_r").get()? == 6 {
-                                    if ctx.call(Function::CountItem, vec![Val::from(950)])?.number()? > 99 {
-                                        if ctx.var("ama_sushi").get()? == 2 {
-                                            ctx.lines_as("Magumagu", args![".............................."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args![
-                                                    "You are a really kind person.",
-                                                    "You have brought everything",
-                                                    "that I've asked you..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args![
-                                                    "You are not the first foreigner",
-                                                    "I have encountered. Amatsu is getting more and more tourists.",
-                                                    "I just wanted to test you.",
-                                                    " "
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args![
-                                                    "Your job was just errands but",
-                                                    "I wanted to know...",
-                                                    "how you devote yourself,",
-                                                    "how serious you are about completing your job and not giving up."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args![
-                                                    "I was thinking,",
-                                                    "'If there is a person like that,",
-                                                    "I would give that person everything about cooking that I have mastered"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Magumagu", args!["And.....", "You...", "You are the one."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Magumagu", args!["I'm old now. No one knows how long I can hold this knife. You have been chosen to inherit my culinary art...", " "])?;
-                                            ctx.next()?;
-                                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(100)])?;
-                                            ctx.var("ama_sushi").set(Val::from(4))?;
-                                            ctx.call(Function::CompleteQuest, vec![Val::from(10041)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(1144), Val::from(1)])?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args![
-                                                    "Here, take my knife.",
-                                                    "From now on, make fine cuisine with that knife.",
-                                                    "...Learn how to slice a fish.",
-                                                    " ",
-                                                    " "
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Magumagu", args!["From now on, I will no longer ask you favors and give you fish slices in return....", "Practice your skill with that knife and teach mainlanders the pleasure of fine cuisine..."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args![
-                                                    "Wow...these are real hearts of",
-                                                    "mermaid. The legends saying",
-                                                    "that these could be found in another continent were true...",
-                                                    " "
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args![
-                                                    "Gathering all these must have been hard...Well, then.",
-                                                    "Today, I will use all of my",
-                                                    "ingredients to make a special cuisine for you!"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args!["Give me a moment...", "I shall show you my ^0000FFtrue culinary skill^000000."],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(551), Val::from(20)])?;
-                                            ctx.lines_as("Magumagu", args!["Try these first.", "Made from the freshest ingredients."])?;
-                                            ctx.next()?;
-                                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(544), Val::from(20)])?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args!["Try these too.", "My shop's fish slices are the best of the best!"],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(551), Val::from(20)])?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args!["Have some more. Don't say no...!", "Isn't it good? Huh? Isn't it good?"],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(544), Val::from(20)])?;
-                                            ctx.lines_as("Magumagu", args!["Haha~! Not done yet!", "It's okay, have some more!"])?;
-                                            ctx.next()?;
-                                            ctx.call(Function::DelItem, vec![Val::from(950), Val::from(20)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(544), Val::from(10)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(551), Val::from(10)])?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args![
-                                                    "Take the leftovers.",
-                                                    "You look stuffed...",
-                                                    "Share the rest with your friends and family."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.var("ama_sushi").set((ctx.var("ama_sushi").get()? + Val::from(1)))?;
-                                            ctx.var("fish_r").set(Val::from(0))?;
-                                            ctx.call(Function::EraseQuest, vec![Val::from(10041)])?;
-                                            ctx.lines_as(
-                                                "Magumagu",
-                                                args![
-                                                    "Thanks a lot for today! Haha!",
-                                                    "Come back again when you feel like helping. Take care...!!!"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
-                                    ctx.lines_as(
-                                        "Magumagu",
-                                        args!["Oh man, you didn't prepare", "what I asked for...", "Do not forget what I asked."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Magumagu",
-                                        args![
-                                            "100 ^0000FFHearts of Mermaid^000000, okay?",
-                                            "You didn't forget it, right?",
-                                            "Bring me the supplies, please."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
                         }
                     }
+                    ctx.lines_as(
+                        "Magumagu",
+                        args!["Oh man, you didn't prepare", "what I asked for...", "Do not forget what I asked."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Magumagu",
+                        args![
+                            "100 ^0000FFHearts of Mermaid^000000, okay?",
+                            "You didn't forget it, right?",
+                            "Bring me the supplies, please."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         }
@@ -2309,82 +2287,74 @@ fn sushi_master_ama_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 "Okay?"
                             ],
                         )?;
+                    } else if (l_fish_m1.clone() == 5 || l_fish_m1.clone() == 6) {
+                        ctx.var("fish_r").set(Val::from(3))?;
+                        ctx.call(Function::SetQuest, vec![Val::from(10038)])?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args![
+                                "I have used all of my conches.",
+                                "I need it to make an appetizer...",
+                                "Please bring me ^0000FF10 Conches^000000.",
+                                "It is hard to find conches around here...",
+                                "Please do me this favor."
+                            ],
+                        )?;
+                    } else if (l_fish_m1.clone() == 7 || l_fish_m1.clone() == 8) {
+                        ctx.var("fish_r").set(Val::from(4))?;
+                        ctx.call(Function::SetQuest, vec![Val::from(10039)])?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args![
+                                "Decorative fish tails are out of",
+                                "stock. This is urgent...",
+                                "Please bring me ^0000FF10 fish tails^000000.",
+                                "They are always missing when I need them badly...",
+                                "Please do me this favor."
+                            ],
+                        )?;
+                    } else if l_fish_m1.clone() == 9 {
+                        ctx.var("fish_r").set(Val::from(5))?;
+                        ctx.call(Function::SetQuest, vec![Val::from(10040)])?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args![
+                                "We are missing a platter to serve",
+                                "fish slices to customers.",
+                                "This is horrible...",
+                                "Will you buy me some fine porcelain ^0000FFChina^000000?",
+                                "I can't just put food anywhere..."
+                            ],
+                        )?;
+                    } else if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])? == 1 {
+                        ctx.var("fish_r").set(Val::from(6))?;
+                        ctx.call(Function::SetQuest, vec![Val::from(10041)])?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args![
+                                "Don't ask me why...",
+                                "But, I need something special...",
+                                "^0000FF100 Hearts of Mermaid^000000.....",
+                                "I know that it sounds impossible, but it is really important to me..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args!["Don't ask any questions", "about my request...", "Just keep what I want in mind."],
+                        )?;
                     } else {
-                        if (l_fish_m1.clone() == 5 || l_fish_m1.clone() == 6) {
-                            ctx.var("fish_r").set(Val::from(3))?;
-                            ctx.call(Function::SetQuest, vec![Val::from(10038)])?;
-                            ctx.lines_as(
-                                "Magumagu",
-                                args![
-                                    "I have used all of my conches.",
-                                    "I need it to make an appetizer...",
-                                    "Please bring me ^0000FF10 Conches^000000.",
-                                    "It is hard to find conches around here...",
-                                    "Please do me this favor."
-                                ],
-                            )?;
-                        } else {
-                            if (l_fish_m1.clone() == 7 || l_fish_m1.clone() == 8) {
-                                ctx.var("fish_r").set(Val::from(4))?;
-                                ctx.call(Function::SetQuest, vec![Val::from(10039)])?;
-                                ctx.lines_as(
-                                    "Magumagu",
-                                    args![
-                                        "Decorative fish tails are out of",
-                                        "stock. This is urgent...",
-                                        "Please bring me ^0000FF10 fish tails^000000.",
-                                        "They are always missing when I need them badly...",
-                                        "Please do me this favor."
-                                    ],
-                                )?;
-                            } else {
-                                if l_fish_m1.clone() == 9 {
-                                    ctx.var("fish_r").set(Val::from(5))?;
-                                    ctx.call(Function::SetQuest, vec![Val::from(10040)])?;
-                                    ctx.lines_as(
-                                        "Magumagu",
-                                        args![
-                                            "We are missing a platter to serve",
-                                            "fish slices to customers.",
-                                            "This is horrible...",
-                                            "Will you buy me some fine porcelain ^0000FFChina^000000?",
-                                            "I can't just put food anywhere..."
-                                        ],
-                                    )?;
-                                } else {
-                                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])? == 1 {
-                                        ctx.var("fish_r").set(Val::from(6))?;
-                                        ctx.call(Function::SetQuest, vec![Val::from(10041)])?;
-                                        ctx.lines_as(
-                                            "Magumagu",
-                                            args![
-                                                "Don't ask me why...",
-                                                "But, I need something special...",
-                                                "^0000FF100 Hearts of Mermaid^000000.....",
-                                                "I know that it sounds impossible, but it is really important to me..."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Magumagu",
-                                            args!["Don't ask any questions", "about my request...", "Just keep what I want in mind."],
-                                        )?;
-                                    } else {
-                                        ctx.var("fish_r").set(Val::from(5))?;
-                                        ctx.call(Function::SetQuest, vec![Val::from(10040)])?;
-                                        ctx.lines_as(
-                                            "Magumagu",
-                                            args![
-                                                "We are missing a platter to serve",
-                                                "fish slices to customers.",
-                                                "This is horrible...",
-                                                "Will you buy me some fine porcelain ^0000FFChina^000000? I can't just put food anywhere..."
-                                            ],
-                                        )?;
-                                    }
-                                }
-                            }
-                        }
+                        ctx.var("fish_r").set(Val::from(5))?;
+                        ctx.call(Function::SetQuest, vec![Val::from(10040)])?;
+                        ctx.lines_as(
+                            "Magumagu",
+                            args![
+                                "We are missing a platter to serve",
+                                "fish slices to customers.",
+                                "This is horrible...",
+                                "Will you buy me some fine porcelain ^0000FFChina^000000? I can't just put food anywhere..."
+                            ],
+                        )?;
                     }
                 }
                 ctx.next()?;
@@ -2548,34 +2518,28 @@ fn gate_soldier_ama5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 "It's a pretty fearsome sickness..."
             ],
         )?;
+    } else if ctx.var("event_amatsu").get()? == 1 {
+        ctx.lines(args![
+            "She should regain her health...",
+            "But still, my lord is worrying so much.",
+            " "
+        ])?;
+    } else if ctx.var("event_amatsu").get()? == 5 {
+        ctx.lines(args!["Augh! I was suprised by that loud sound.", "What happened? Huh?", " "])?;
+    } else if ctx.var("event_amatsu").get()? == 6 {
+        ctx.lines(args![
+            "The mother of our lord hasn't",
+            "fully recovered her health.",
+            "Still, she is better than before.",
+            " "
+        ])?;
     } else {
-        if ctx.var("event_amatsu").get()? == 1 {
-            ctx.lines(args![
-                "She should regain her health...",
-                "But still, my lord is worrying so much.",
-                " "
-            ])?;
-        } else {
-            if ctx.var("event_amatsu").get()? == 5 {
-                ctx.lines(args!["Augh! I was suprised by that loud sound.", "What happened? Huh?", " "])?;
-            } else {
-                if ctx.var("event_amatsu").get()? == 6 {
-                    ctx.lines(args![
-                        "The mother of our lord hasn't",
-                        "fully recovered her health.",
-                        "Still, she is better than before.",
-                        " "
-                    ])?;
-                } else {
-                    ctx.lines(args![
-                        "If you are sent by my lord,",
-                        "it is okay to enter...",
-                        "But you wouldn't be able to cure",
-                        "her. Many others tried and failed."
-                    ])?;
-                }
-            }
-        }
+        ctx.lines(args![
+            "If you are sent by my lord,",
+            "it is okay to enter...",
+            "But you wouldn't be able to cure",
+            "her. Many others tried and failed."
+        ])?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -2600,40 +2564,34 @@ fn gate_soldier_ama6_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "Gate Soldier",
             args!["She has been sick for months.", "That is why she is staying in here.", "..."],
         )?;
+    } else if ctx.var("event_amatsu").get()? == 1 {
+        ctx.lines(args![
+            "Please, be quiet.",
+            "The mother of the lord is staying in here. She needs to relax."
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Gate Soldier",
+            args!["Why is this happening", "to my kind lord...", "How can it be? *Sob*..."],
+        )?;
+    } else if ctx.var("event_amatsu").get()? == 5 {
+        ctx.lines(args![
+            "Eh? Something was flying",
+            "in the sky... You didn't see? Ugh.",
+            "That sound suprised me."
+        ])?;
+    } else if ctx.var("event_amatsu").get()? == 6 {
+        ctx.lines(args![
+            "Now our lord is relieved.",
+            "We were so worrying about it so much.",
+            "Now, it is okay... *sob*."
+        ])?;
     } else {
-        if ctx.var("event_amatsu").get()? == 1 {
-            ctx.lines(args![
-                "Please, be quiet.",
-                "The mother of the lord is staying in here. She needs to relax."
-            ])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Gate Soldier",
-                args!["Why is this happening", "to my kind lord...", "How can it be? *Sob*..."],
-            )?;
-        } else {
-            if ctx.var("event_amatsu").get()? == 5 {
-                ctx.lines(args![
-                    "Eh? Something was flying",
-                    "in the sky... You didn't see? Ugh.",
-                    "That sound suprised me."
-                ])?;
-            } else {
-                if ctx.var("event_amatsu").get()? == 6 {
-                    ctx.lines(args![
-                        "Now our lord is relieved.",
-                        "We were so worrying about it so much.",
-                        "Now, it is okay... *sob*."
-                    ])?;
-                } else {
-                    ctx.lines(args![
-                        "Oh...man. People from the other",
-                        "continents are all doctors!",
-                        "How many doctors have come to visit?! I can't even count anymore!"
-                    ])?;
-                }
-            }
-        }
+        ctx.lines(args![
+            "Oh...man. People from the other",
+            "continents are all doctors!",
+            "How many doctors have come to visit?! I can't even count anymore!"
+        ])?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -3158,232 +3116,226 @@ fn lord_of_palace_ama_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("event_amatsu").get()? == 1 {
-            ctx.lines_as(
-                "Ishida Yoshinaga",
-                args![
-                    "What! A foreigner? What brings",
-                    "you here? If it is not urgent,",
-                    "come to me another time...!"
-                ],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("I heard about your mother...:Your last name is nice:Who are you?")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "Oh...So you know about her disease?",
-                            "I've heard that, in foreign lands,",
-                            "the body of medical knowledge can",
-                            "be quite amazing."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "Welcome. As you know, I'm the",
-                            "lord of Toukoujyo,",
-                            "Ishida Yoshinaga. Nice to",
-                            "meet you."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "Let's get to the point.",
-                            "My mother is not doing well recently. I know you are here because of that.",
-                            "Can you cure her disease?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "Until now, many famous doctors",
-                            "have visited her, but they",
-                            "all failed to cure her disease",
-                            "and made it worse...",
-                            "They disappointed me."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "You, who hail from Midgard,",
-                            "may be able to cure my mother's disease. I will reward you well if you succeed..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.var("event_amatsu").set(Val::from(2))?;
-                    if ctx.call(Function::IsBeginQuest, vec![Val::from(8131)])? == 1 {
-                        ctx.call(Function::ChangeQuest, vec![Val::from(8131), Val::from(8132)])?;
-                    } else {
-                        ctx.call(Function::SetQuest, vec![Val::from(8132)])?;
-                    }
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "I beg you...Please.",
-                            "My mother is living in a house outside of the palace.",
-                            "Come to me when you finish your treatment."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args!["Nice!? So What?!", "Read my name until you get", "tired of it! Darn it!"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "Joking, even in this critical situation... *Phew*...",
-                            "Please have a good time in Amatsu.",
-                            "...Whatever!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "...me? Don't you know? Huh?",
-                            "I'm the lord of this palace.",
-                            "If you don't know, talk to",
-                            "the soldiers outside!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("event_amatsu").get()? == 1 {
+        ctx.lines_as(
+            "Ishida Yoshinaga",
+            args![
+                "What! A foreigner? What brings",
+                "you here? If it is not urgent,",
+                "come to me another time...!"
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("I heard about your mother...:Your last name is nice:Who are you?")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if ctx.var("event_amatsu").get()? == 5 {
-                if ctx.call(Function::CountItem, vec![Val::from(1022)])?.number()? > 0 {
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "I've heard the great news!",
-                            "My mother seems to have gotten better. What was her disease?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args!["A fox? Is that so? Oh...", "It wasn't a disease...!!", "Why didn't I notice?!"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "Darn fox. To run away and",
-                            "take revenge on me in such a",
-                            "way...Well, then. There's no chance of revenge now... Hahaha!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Ishida Yoshinaga", args!["Hmm, Mmm. Hmm..."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "Anyway, thank you for helping me.",
-                            "Mother will be okay now...",
-                            "I want to reward you...",
-                            "But what would be nice...?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "Alright, I will give you",
-                            "a Transit Permit.",
-                            "You can go anywhere",
-                            "with this ticket."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.var("event_amatsu").set(Val::from(6))?;
-                    ctx.call(Function::CompleteQuest, vec![Val::from(8135)])?;
-                    ctx.call(Function::DelItem, vec![Val::from(1022), Val::from(1)])?;
-                    ctx.call(Function::GetItem, vec![Val::from(7160), Val::from(1)])?;
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args![
-                            "This isn't a big reward but",
-                            "someday it will be useful for you.",
-                            "Ask my soldier, 'Jyuro' about the details."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+            if matched1 {
                 ctx.lines_as(
                     "Ishida Yoshinaga",
                     args![
-                        "Hmm, I heard that my mother",
-                        "got better...but",
-                        "How can I know if you cured",
-                        "her or not?"
+                        "Oh...So you know about her disease?",
+                        "I've heard that, in foreign lands,",
+                        "the body of medical knowledge can",
+                        "be quite amazing."
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Ishida Yoshinaga",
-                    args!["Is there any evidence to prove", "that you cured her?"],
+                    args![
+                        "Welcome. As you know, I'm the",
+                        "lord of Toukoujyo,",
+                        "Ishida Yoshinaga. Nice to",
+                        "meet you."
+                    ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Ishida Yoshinaga",
                     args![
-                        "Show me the evidence to prove",
-                        "your treatment. I've been",
-                        "meeting so many foreigners.",
-                        "But not all of them are trustworthy.",
-                        "Well... Have a good time."
+                        "Let's get to the point.",
+                        "My mother is not doing well recently. I know you are here because of that.",
+                        "Can you cure her disease?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Ishida Yoshinaga",
+                    args![
+                        "Until now, many famous doctors",
+                        "have visited her, but they",
+                        "all failed to cure her disease",
+                        "and made it worse...",
+                        "They disappointed me."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Ishida Yoshinaga",
+                    args![
+                        "You, who hail from Midgard,",
+                        "may be able to cure my mother's disease. I will reward you well if you succeed..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.var("event_amatsu").set(Val::from(2))?;
+                if ctx.call(Function::IsBeginQuest, vec![Val::from(8131)])? == 1 {
+                    ctx.call(Function::ChangeQuest, vec![Val::from(8131), Val::from(8132)])?;
+                } else {
+                    ctx.call(Function::SetQuest, vec![Val::from(8132)])?;
+                }
+                ctx.lines_as(
+                    "Ishida Yoshinaga",
+                    args![
+                        "I beg you...Please.",
+                        "My mother is living in a house outside of the palace.",
+                        "Come to me when you finish your treatment."
                     ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("event_amatsu").get()? == 6 {
-                    ctx.lines_as(
-                        "Ishida Yoshinaga",
-                        args!["*Chuckle* Have a good time", "in Amatsu.....", "Foreigners are always welcome."],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Ishida Yoshinaga",
+                    args!["Nice!? So What?!", "Read my name until you get", "tired of it! Darn it!"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Ishida Yoshinaga",
+                    args![
+                        "Joking, even in this critical situation... *Phew*...",
+                        "Please have a good time in Amatsu.",
+                        "...Whatever!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Ishida Yoshinaga",
+                    args![
+                        "...me? Don't you know? Huh?",
+                        "I'm the lord of this palace.",
+                        "If you don't know, talk to",
+                        "the soldiers outside!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
+    } else if ctx.var("event_amatsu").get()? == 5 {
+        if ctx.call(Function::CountItem, vec![Val::from(1022)])?.number()? > 0 {
+            ctx.lines_as(
+                "Ishida Yoshinaga",
+                args![
+                    "I've heard the great news!",
+                    "My mother seems to have gotten better. What was her disease?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Ishida Yoshinaga",
+                args!["A fox? Is that so? Oh...", "It wasn't a disease...!!", "Why didn't I notice?!"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Ishida Yoshinaga",
+                args![
+                    "Darn fox. To run away and",
+                    "take revenge on me in such a",
+                    "way...Well, then. There's no chance of revenge now... Hahaha!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Ishida Yoshinaga", args!["Hmm, Mmm. Hmm..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Ishida Yoshinaga",
+                args![
+                    "Anyway, thank you for helping me.",
+                    "Mother will be okay now...",
+                    "I want to reward you...",
+                    "But what would be nice...?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Ishida Yoshinaga",
+                args![
+                    "Alright, I will give you",
+                    "a Transit Permit.",
+                    "You can go anywhere",
+                    "with this ticket."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.var("event_amatsu").set(Val::from(6))?;
+            ctx.call(Function::CompleteQuest, vec![Val::from(8135)])?;
+            ctx.call(Function::DelItem, vec![Val::from(1022), Val::from(1)])?;
+            ctx.call(Function::GetItem, vec![Val::from(7160), Val::from(1)])?;
+            ctx.lines_as(
+                "Ishida Yoshinaga",
+                args![
+                    "This isn't a big reward but",
+                    "someday it will be useful for you.",
+                    "Ask my soldier, 'Jyuro' about the details."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Ishida Yoshinaga",
+            args![
+                "Hmm, I heard that my mother",
+                "got better...but",
+                "How can I know if you cured",
+                "her or not?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Yoshinaga",
+            args!["Is there any evidence to prove", "that you cured her?"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Yoshinaga",
+            args![
+                "Show me the evidence to prove",
+                "your treatment. I've been",
+                "meeting so many foreigners.",
+                "But not all of them are trustworthy.",
+                "Well... Have a good time."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("event_amatsu").get()? == 6 {
+        ctx.lines_as(
+            "Ishida Yoshinaga",
+            args!["*Chuckle* Have a good time", "in Amatsu.....", "Foreigners are always welcome."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.lines_as(
         "Ishida Yoshinaga",
@@ -3517,123 +3469,119 @@ fn grandma_ama2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Warp, vec![Val::from("amatsu"), Val::from(167), Val::from(197)])?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("event_amatsu").get()? == 5 {
-            ctx.lines_as(
-                "Ishida Saoko",
-                args![
-                    "...Huh? Why are you here...?",
-                    "*Urrmmm* My head hurts...",
-                    "But I'm starting to remember everything..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Ishida Saoko",
-                args![
-                    "Thank you, traveler from a far off",
-                    "land. I owe you a great debt... Thank you very much..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Ishida Saoko",
-                args!["I will tell my son that", "you exorcised the fox...", "Thank you..."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Ishida Saoko",
-                args!["I should get some rest.", "My head aches, Young one.....", "Go to my son..."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("event_amatsu").get()? == 6 {
-                ctx.lines_as(
-                    "Ishida Saoko",
-                    args![
-                        "Oh, Are you...? You are the one",
-                        "who exorcised the fox... Welcome.",
-                        "Please, have a seat..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Ishida Saoko",
-                    args![
-                        "When I think over, being possessed",
-                        "by the fox was my fault. I raised",
-                        "my son badly... Oh~",
-                        "He was a good boy when he was",
-                        "young. I wasn't strict to him..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Ishida Saoko",
-                    args![
-                        "Long ago, this town wasn't as big",
-                        "as it is today. There was no big",
-                        "palace like Toukoujyo. Then, one",
-                        "day, my son brought great riches",
-                        "to the village. He never told me what he did to earn that fortune..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Ishida Saoko",
-                    args![
-                        "He built the palace and helped",
-                        "the towners and make the town bigger.",
-                        "He was perfect until...",
-                        "he started doing strange things."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Ishida Saoko",
-                    args![
-                        "Things...which angered God.",
-                        "He learned forbidden magic,",
-                        "performed experiments",
-                        "in the palace, caged monsters,",
-                        "did all sorts of horrible things..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Ishida Saoko",
-                    args![
-                        "That is the reason why there are",
-                        "monsters in Toukoujyo... Finally,",
-                        "God's wrath was unleashed. Even the Priest in the shrine couldn't help..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Ishida Saoko",
-                    args![
-                        "At last, the anger came toward",
-                        "me...It seems God tried to warn my son with the fox.",
-                        "However, my son won't stop."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Ishida Saoko",
-                    args![
-                        "If it is okay, please stop my son.",
-                        "I don't have much time.",
-                        "I don't know what to do...",
-                        "Please save this peaceful village.",
-                        "I beg you please...",
-                        "What is he truly thinking...?"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
+    } else if ctx.var("event_amatsu").get()? == 5 {
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "...Huh? Why are you here...?",
+                "*Urrmmm* My head hurts...",
+                "But I'm starting to remember everything..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "Thank you, traveler from a far off",
+                "land. I owe you a great debt... Thank you very much..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args!["I will tell my son that", "you exorcised the fox...", "Thank you..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args!["I should get some rest.", "My head aches, Young one.....", "Go to my son..."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("event_amatsu").get()? == 6 {
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "Oh, Are you...? You are the one",
+                "who exorcised the fox... Welcome.",
+                "Please, have a seat..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "When I think over, being possessed",
+                "by the fox was my fault. I raised",
+                "my son badly... Oh~",
+                "He was a good boy when he was",
+                "young. I wasn't strict to him..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "Long ago, this town wasn't as big",
+                "as it is today. There was no big",
+                "palace like Toukoujyo. Then, one",
+                "day, my son brought great riches",
+                "to the village. He never told me what he did to earn that fortune..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "He built the palace and helped",
+                "the towners and make the town bigger.",
+                "He was perfect until...",
+                "he started doing strange things."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "Things...which angered God.",
+                "He learned forbidden magic,",
+                "performed experiments",
+                "in the palace, caged monsters,",
+                "did all sorts of horrible things..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "That is the reason why there are",
+                "monsters in Toukoujyo... Finally,",
+                "God's wrath was unleashed. Even the Priest in the shrine couldn't help..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "At last, the anger came toward",
+                "me...It seems God tried to warn my son with the fox.",
+                "However, my son won't stop."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Ishida Saoko",
+            args![
+                "If it is okay, please stop my son.",
+                "I don't have much time.",
+                "I don't know what to do...",
+                "Please save this peaceful village.",
+                "I beg you please...",
+                "What is he truly thinking...?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.lines_as(
         "....",
@@ -3676,58 +3624,50 @@ fn kouji_ama_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "When medicine doesn't help, that's when you'll see~",
             "That Mommy's love is best for me~"
         ])?;
-    } else {
-        if ctx.var("event_amatsu").get()? == 2 {
-            ctx.var("event_amatsu").set(Val::from(3))?;
-            ctx.lines(args![
-                "Priest, Priest~",
-                "A fox is following me!",
-                "It's funny and a little absurd,",
-                "But I'll need noodles with fried bean curd!"
-            ])?;
-        } else {
-            if ctx.var("event_amatsu").get()? == 3 {
-                ctx.lines(args![
-                    "Priest, priest~",
-                    "A fox is following me!",
-                    "If he doesn't leave when I scream and shout!",
-                    "The North Shrine Priest should help me out~"
-                ])?;
-                if ctx.call(Function::IsBeginQuest, vec![Val::from(8132)])? == 1 {
-                    ctx.call(Function::ChangeQuest, vec![Val::from(8132), Val::from(8133)])?;
-                }
-            } else {
-                if ctx.var("event_amatsu").get()? == 4 {
-                    ctx.lines(args![
-                        "Priest, priest~",
-                        "A fox is following me.",
-                        "If shouts alone don't make Fox scared,",
-                        "I might need help from Tiger and Bear~!"
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Kouji",
-                        args!["Anything else I need in this fight???", "Maybe some water from an Acolyte~!"],
-                    )?;
-                } else {
-                    if ctx.var("event_amatsu").get()? == 5 {
-                        ctx.lines(args![
-                            "Scary scary harbor ship~",
-                            "Empty of people, full of treasure~",
-                            "But I don't remember~!",
-                            "the rest of this...song???"
-                        ])?;
-                    } else {
-                        ctx.lines(args![
-                            "Blue roof under the blue sky",
-                            "Blue wall on the blue lake",
-                            "Blue wishes in the blue minds",
-                            "Blue Blue Everything is Blue"
-                        ])?;
-                    }
-                }
-            }
+    } else if ctx.var("event_amatsu").get()? == 2 {
+        ctx.var("event_amatsu").set(Val::from(3))?;
+        ctx.lines(args![
+            "Priest, Priest~",
+            "A fox is following me!",
+            "It's funny and a little absurd,",
+            "But I'll need noodles with fried bean curd!"
+        ])?;
+    } else if ctx.var("event_amatsu").get()? == 3 {
+        ctx.lines(args![
+            "Priest, priest~",
+            "A fox is following me!",
+            "If he doesn't leave when I scream and shout!",
+            "The North Shrine Priest should help me out~"
+        ])?;
+        if ctx.call(Function::IsBeginQuest, vec![Val::from(8132)])? == 1 {
+            ctx.call(Function::ChangeQuest, vec![Val::from(8132), Val::from(8133)])?;
         }
+    } else if ctx.var("event_amatsu").get()? == 4 {
+        ctx.lines(args![
+            "Priest, priest~",
+            "A fox is following me.",
+            "If shouts alone don't make Fox scared,",
+            "I might need help from Tiger and Bear~!"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kouji",
+            args!["Anything else I need in this fight???", "Maybe some water from an Acolyte~!"],
+        )?;
+    } else if ctx.var("event_amatsu").get()? == 5 {
+        ctx.lines(args![
+            "Scary scary harbor ship~",
+            "Empty of people, full of treasure~",
+            "But I don't remember~!",
+            "the rest of this...song???"
+        ])?;
+    } else {
+        ctx.lines(args![
+            "Blue roof under the blue sky",
+            "Blue wall on the blue lake",
+            "Blue wishes in the blue minds",
+            "Blue Blue Everything is Blue"
+        ])?;
     }
     ctx.next()?;
     ctx.lines_as(
@@ -3855,48 +3795,44 @@ fn kitsune_mask_ama_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         if ctx.call(Function::IsBeginQuest, vec![Val::from(8132)])? == 1 {
             ctx.call(Function::ChangeQuest, vec![Val::from(8132), Val::from(8134)])?;
-        } else {
-            if ctx.call(Function::IsBeginQuest, vec![Val::from(8133)])? == 1 {
-                ctx.call(Function::ChangeQuest, vec![Val::from(8133), Val::from(8134)])?;
-            }
+        } else if ctx.call(Function::IsBeginQuest, vec![Val::from(8133)])? == 1 {
+            ctx.call(Function::ChangeQuest, vec![Val::from(8133), Val::from(8134)])?;
         }
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("event_amatsu").get()? == 4 {
+        ctx.lines_as(
+            "Takehue",
+            args![
+                "Don't forget. You also need the",
+                "the embodiment of animals stronger",
+                "than the fox. Without these, your",
+                "concentration will be of no use."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("event_amatsu").get()? == 4 {
-            ctx.lines_as(
-                "Takehue",
-                args![
-                    "Don't forget. You also need the",
-                    "the embodiment of animals stronger",
-                    "than the fox. Without these, your",
-                    "concentration will be of no use."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "Takehue",
-                args![
-                    "Eh? A foreigner. This shrine",
-                    "has been without priests for a",
-                    "long time. My friend, Tokako and I come here to play around."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Takehue",
-                args![
-                    "If you have been chased by",
-                    "monsters, please relax.",
-                    "Monsters cannot come here, so",
-                    "take a rest in here."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as(
+            "Takehue",
+            args![
+                "Eh? A foreigner. This shrine",
+                "has been without priests for a",
+                "long time. My friend, Tokako and I come here to play around."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Takehue",
+            args![
+                "If you have been chased by",
+                "monsters, please relax.",
+                "Monsters cannot come here, so",
+                "take a rest in here."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 

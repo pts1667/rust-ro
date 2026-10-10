@@ -866,22 +866,20 @@ fn lucius_zen5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if l_input.clone() == 0 {
-                    ctx.lines_as(
-                        "Lucius",
-                        args![
-                            "How disappointing,",
-                            "but I'm sure you have",
-                            "your reasons. Well, when",
-                            "you can afford to give to",
-                            "the needy, you're welcome",
-                            "to come back at any time."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+            } else if l_input.clone() == 0 {
+                ctx.lines_as(
+                    "Lucius",
+                    args![
+                        "How disappointing,",
+                        "but I'm sure you have",
+                        "your reasons. Well, when",
+                        "you can afford to give to",
+                        "the needy, you're welcome",
+                        "to come back at any time."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
             ctx.lines_as(
                 "Lucius",
@@ -4851,8 +4849,8 @@ fn mimir_camera_run(ctx: &Ctx, mut step: MimirCameraStep, args: Vec<Val>) -> Res
                 continue 'machine;
             }
             MimirCameraStep::OnTouch => {
-                if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?) {
-                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ASSASSIN")?)
+                    && ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
                         ctx.mes("^3355FF*Click*^000000")?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -4862,7 +4860,6 @@ fn mimir_camera_run(ctx: &Ctx, mut step: MimirCameraStep, args: Vec<Val>) -> Res
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 return Err(Stop::End);
             }
         }

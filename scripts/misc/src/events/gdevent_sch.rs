@@ -100,49 +100,45 @@ fn monster_controler1_sch_run(ctx: &Ctx, mut step: MonsterControler1SchStep, arg
                             Val::from("Monster Controler1#sch::OnMyMobDead"),
                         ],
                     )?;
+                } else if l_callwhere.clone() == 2 {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            Val::from("schg_dun01"),
+                            Val::from(172),
+                            Val::from(122),
+                            Val::from("Kublin"),
+                            Val::from(1980),
+                            Val::from(1),
+                            Val::from("Monster Controler1#sch::OnMyMobDead"),
+                        ],
+                    )?;
+                } else if l_callwhere.clone() == 3 {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            Val::from("schg_dun01"),
+                            Val::from(247),
+                            Val::from(159),
+                            Val::from("Kublin"),
+                            Val::from(1980),
+                            Val::from(1),
+                            Val::from("Monster Controler1#sch::OnMyMobDead"),
+                        ],
+                    )?;
                 } else {
-                    if l_callwhere.clone() == 2 {
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                Val::from("schg_dun01"),
-                                Val::from(172),
-                                Val::from(122),
-                                Val::from("Kublin"),
-                                Val::from(1980),
-                                Val::from(1),
-                                Val::from("Monster Controler1#sch::OnMyMobDead"),
-                            ],
-                        )?;
-                    } else {
-                        if l_callwhere.clone() == 3 {
-                            ctx.call(
-                                Function::Monster,
-                                vec![
-                                    Val::from("schg_dun01"),
-                                    Val::from(247),
-                                    Val::from(159),
-                                    Val::from("Kublin"),
-                                    Val::from(1980),
-                                    Val::from(1),
-                                    Val::from("Monster Controler1#sch::OnMyMobDead"),
-                                ],
-                            )?;
-                        } else {
-                            ctx.call(
-                                Function::Monster,
-                                vec![
-                                    Val::from("schg_dun01"),
-                                    Val::from(250),
-                                    Val::from(224),
-                                    Val::from("Kublin"),
-                                    Val::from(1980),
-                                    Val::from(1),
-                                    Val::from("Monster Controler1#sch::OnMyMobDead"),
-                                ],
-                            )?;
-                        }
-                    }
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            Val::from("schg_dun01"),
+                            Val::from(250),
+                            Val::from(224),
+                            Val::from("Kublin"),
+                            Val::from(1980),
+                            Val::from(1),
+                            Val::from("Monster Controler1#sch::OnMyMobDead"),
+                        ],
+                    )?;
                 }
                 return Err(Stop::End);
             }
@@ -381,213 +377,211 @@ fn dwarf_sch_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if ctx.var("$@gdevents_s$").get()?.loosely_equals(&l_chk_yourgdname_s.clone()) {
-                l_chk_urquest1 = ctx.call(Function::CheckQuest, vec![Val::from(2144)])?;
-                if (l_chk_urquest1.clone() == 0 || l_chk_urquest1.clone() == 1) {
-                    ctx.lines_as(
-                        "Morestone",
-                        args![
-                            ((Val::from("I, Morestone, have made an alliance with the ") + ctx.var("$@gdevents_s$").get()?)
-                                + Val::from(" guild.")),
-                            "Oh, you are a member.",
-                            "Would you like to go to the mysterious area?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Let's go.:No, thanks.")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Morestone", args!["I hope you enjoy yourself, my friend."])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("schg_que01"), Val::from(103), Val::from(133)])?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Morestone", args!["If you need my assistance, just ask.", "Ah! Dont forget, I hate monsters! So I don't want to see them. It will be better if you ask for another favour."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                } else {
-                    ctx.var("$@gdeventv_s1").set(Val::from(1))?;
-                    ctx.var("$@gdevents_s$").set(l_chk_yourgdname_s.clone())?;
-                    ctx.lines_as("Dwarf", args!["Help me!", "Please, help me!"])?;
-                    ctx.next()?;
-                    'b4: {
-                        let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("What happened?:Nevermind.")])?);
-                        let mut matched4 = false;
-                        let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            ctx.lines_as("Dwarf", args!["I am Morestone and I collect rare gems."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Morestone", args!["In my travels, I was told that there were a lot of gems in Valfreyja and Nidhoggur, so I came down here.", "But here, the soil is very hard to dig into. Fortunately, my ^3131FFPickaxe^000000 never lets me down!"])?;
-                            ctx.next()?;
-                            let choice = runtime::select_values(ctx, &[Val::from("Pickaxe!")])?;
-                            ctx.var("@menu").set(choice)?;
-                            ctx.lines_as(
-                                "Morestone",
-                                args!["Yes, my beloved pickaxe!", "I always carry it with me, you know?"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Morestone",
-                                args!["We started working here together.", "After a few days, we finally found something!"],
-                            )?;
-                            ctx.next()?;
-                            let choice = runtime::select_values(ctx, &[Val::from("Something strange??")])?;
-                            ctx.var("@menu").set(choice)?;
-                            ctx.lines_as(
-                                "Morestone",
-                                args![
-                                    "No, but it was worth quite a lot.",
-                                    "But we did not have much time to celebrate. Suddenly, a monster appeared that stole my pickaxe.",
-                                    "His name was^3131FFKublin^000000!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Morestone", args!["He stole my Pickaxe!", "I can't live without it..."])?;
-                            ctx.next()?;
-                            if ctx.call(Function::CountItem, vec![Val::from(6010)])?.number()? > 0 {
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["Is this the pickaxe that you've been looking for?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Morestone", args!["You found my Pickaxe?", "Show me, please!"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Morestone",
-                                    args![
-                                        "Oh, my! You've returned it to me!",
-                                        "My precious pickaxe, I thought I lost you forever."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Morestone",
-                                    args!["You are great! What guild are you from?", "Could it be Gravity or Mercury?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args![((Val::from("I am a member of the ^3131FF") + l_chk_yourgdname_s.clone()) + Val::from("^."))],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Morestone", args!["Oh... That guild will receive my greatest respect."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Morestone",
-                                    args![
-                                        "Oh! My friend, I am very grateful for your help.",
-                                        "As a reward, I will tell you about a mysterious area I have discovered recently."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                let choice = runtime::select_values(ctx, &[Val::from("A mysterious area?")])?;
-                                ctx.var("@menu").set(choice)?;
-                                ctx.lines_as("Morestone", args!["That's right. I found it when I was digging around here.", "It looks like it was made for some special purpose, but since there are no gems around there, I have no interest in it."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Morestone",
-                                    args!["Instead of going there alone, I think it would be more fun to go with your friends..."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Morestone",
-                                    args![
-                                        "If you want, I can take ^3131FFyou and your guild members^000000 to explore that area.",
-                                        "Do you want to go there now?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                'b5: {
-                                    let subject5 =
-                                        Val::from(runtime::select_values(ctx, &[Val::from("Wait! I'm not ready yet.:Let's go!")])?);
-                                    let mut matched5 = false;
-                                    let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                        matched5 = true;
-                                    }
-                                    if matched5 {
-                                        ctx.var("$@gdeventv_s1").set(Val::from(0))?;
-                                        ctx.var("$@gdevents_s$").set(Val::from(""))?;
-                                        ctx.lines_as("Morestone", args!["Take your time, and find a place to gather your friends."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                        matched5 = true;
-                                    }
-                                    if matched5 {
-                                        ctx.lines_as(
-                                            "Morestone",
-                                            args![
-                                                "Alright! Let's go.",
-                                                "If your friends visit me again later, I will guide them to that area again.",
-                                                "Don't forget, dwarves are grateful beings! Hahaha!"
-                                            ],
-                                        )?;
-                                        ctx.call(Function::DelItem, vec![Val::from(6010), Val::from(1)])?;
-                                        ctx.var("$@gdeventv_s1").set(Val::from(1))?;
-                                        ctx.var("$@gdevents_s$").set(l_chk_yourgdname_s.clone())?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::SetQuest, vec![Val::from(2144)])?;
-                                        ctx.call(Function::Warp, vec![Val::from("schg_que01"), Val::from(103), Val::from(133)])?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            } else {
-                                ctx.var("$@gdeventv_s1").set(Val::from(0))?;
-                                ctx.var("$@gdevents_s$").set(Val::from(""))?;
-                                ctx.lines_as(
-                                    "Morestone",
-                                    args![
-                                        "I will tell you how to find him.",
-                                        "Kublin wears a ridiculous golden hat, It should be easy to recognise him by that."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            ctx.var("$@gdeventv_s1").set(Val::from(0))?;
-                            ctx.var("$@gdevents_s$").set(Val::from(""))?;
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
-                            ctx.lines_as("Dwarf", args!["Ah...."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
-            } else {
+        } else if ctx.var("$@gdevents_s$").get()?.loosely_equals(&l_chk_yourgdname_s.clone()) {
+            l_chk_urquest1 = ctx.call(Function::CheckQuest, vec![Val::from(2144)])?;
+            if (l_chk_urquest1.clone() == 0 || l_chk_urquest1.clone() == 1) {
                 ctx.lines_as(
                     "Morestone",
                     args![
                         ((Val::from("I, Morestone, have made an alliance with the ") + ctx.var("$@gdevents_s$").get()?)
                             + Val::from(" guild.")),
-                        "Hm, you're not a member.",
-                        "Could you please give them my greetings?"
+                        "Oh, you are a member.",
+                        "Would you like to go to the mysterious area?"
                     ],
                 )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
+                ctx.next()?;
+                'b3: {
+                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Let's go.:No, thanks.")])?);
+                    let mut matched3 = false;
+                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as("Morestone", args!["I hope you enjoy yourself, my friend."])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::Warp, vec![Val::from("schg_que01"), Val::from(103), Val::from(133)])?;
+                        return Err(Stop::End);
+                    }
+                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as("Morestone", args!["If you need my assistance, just ask.", "Ah! Dont forget, I hate monsters! So I don't want to see them. It will be better if you ask for another favour."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+            } else {
+                ctx.var("$@gdeventv_s1").set(Val::from(1))?;
+                ctx.var("$@gdevents_s$").set(l_chk_yourgdname_s.clone())?;
+                ctx.lines_as("Dwarf", args!["Help me!", "Please, help me!"])?;
+                ctx.next()?;
+                'b4: {
+                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("What happened?:Nevermind.")])?);
+                    let mut matched4 = false;
+                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.lines_as("Dwarf", args!["I am Morestone and I collect rare gems."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Morestone", args!["In my travels, I was told that there were a lot of gems in Valfreyja and Nidhoggur, so I came down here.", "But here, the soil is very hard to dig into. Fortunately, my ^3131FFPickaxe^000000 never lets me down!"])?;
+                        ctx.next()?;
+                        let choice = runtime::select_values(ctx, &[Val::from("Pickaxe!")])?;
+                        ctx.var("@menu").set(choice)?;
+                        ctx.lines_as(
+                            "Morestone",
+                            args!["Yes, my beloved pickaxe!", "I always carry it with me, you know?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Morestone",
+                            args!["We started working here together.", "After a few days, we finally found something!"],
+                        )?;
+                        ctx.next()?;
+                        let choice = runtime::select_values(ctx, &[Val::from("Something strange??")])?;
+                        ctx.var("@menu").set(choice)?;
+                        ctx.lines_as(
+                            "Morestone",
+                            args![
+                                "No, but it was worth quite a lot.",
+                                "But we did not have much time to celebrate. Suddenly, a monster appeared that stole my pickaxe.",
+                                "His name was^3131FFKublin^000000!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Morestone", args!["He stole my Pickaxe!", "I can't live without it..."])?;
+                        ctx.next()?;
+                        if ctx.call(Function::CountItem, vec![Val::from(6010)])?.number()? > 0 {
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["Is this the pickaxe that you've been looking for?"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Morestone", args!["You found my Pickaxe?", "Show me, please!"])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Morestone",
+                                args![
+                                    "Oh, my! You've returned it to me!",
+                                    "My precious pickaxe, I thought I lost you forever."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Morestone",
+                                args!["You are great! What guild are you from?", "Could it be Gravity or Mercury?"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args![((Val::from("I am a member of the ^3131FF") + l_chk_yourgdname_s.clone()) + Val::from("^."))],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Morestone", args!["Oh... That guild will receive my greatest respect."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Morestone",
+                                args![
+                                    "Oh! My friend, I am very grateful for your help.",
+                                    "As a reward, I will tell you about a mysterious area I have discovered recently."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            let choice = runtime::select_values(ctx, &[Val::from("A mysterious area?")])?;
+                            ctx.var("@menu").set(choice)?;
+                            ctx.lines_as("Morestone", args!["That's right. I found it when I was digging around here.", "It looks like it was made for some special purpose, but since there are no gems around there, I have no interest in it."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Morestone",
+                                args!["Instead of going there alone, I think it would be more fun to go with your friends..."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Morestone",
+                                args![
+                                    "If you want, I can take ^3131FFyou and your guild members^000000 to explore that area.",
+                                    "Do you want to go there now?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            'b5: {
+                                let subject5 =
+                                    Val::from(runtime::select_values(ctx, &[Val::from("Wait! I'm not ready yet.:Let's go!")])?);
+                                let mut matched5 = false;
+                                let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
+                                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                                    matched5 = true;
+                                }
+                                if matched5 {
+                                    ctx.var("$@gdeventv_s1").set(Val::from(0))?;
+                                    ctx.var("$@gdevents_s$").set(Val::from(""))?;
+                                    ctx.lines_as("Morestone", args!["Take your time, and find a place to gather your friends."])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                                    matched5 = true;
+                                }
+                                if matched5 {
+                                    ctx.lines_as(
+                                        "Morestone",
+                                        args![
+                                            "Alright! Let's go.",
+                                            "If your friends visit me again later, I will guide them to that area again.",
+                                            "Don't forget, dwarves are grateful beings! Hahaha!"
+                                        ],
+                                    )?;
+                                    ctx.call(Function::DelItem, vec![Val::from(6010), Val::from(1)])?;
+                                    ctx.var("$@gdeventv_s1").set(Val::from(1))?;
+                                    ctx.var("$@gdevents_s$").set(l_chk_yourgdname_s.clone())?;
+                                    ctx.close_window()?;
+                                    ctx.call(Function::SetQuest, vec![Val::from(2144)])?;
+                                    ctx.call(Function::Warp, vec![Val::from("schg_que01"), Val::from(103), Val::from(133)])?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                        } else {
+                            ctx.var("$@gdeventv_s1").set(Val::from(0))?;
+                            ctx.var("$@gdevents_s$").set(Val::from(""))?;
+                            ctx.lines_as(
+                                "Morestone",
+                                args![
+                                    "I will tell you how to find him.",
+                                    "Kublin wears a ridiculous golden hat, It should be easy to recognise him by that."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    }
+                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                        matched4 = true;
+                    }
+                    if matched4 {
+                        ctx.var("$@gdeventv_s1").set(Val::from(0))?;
+                        ctx.var("$@gdevents_s$").set(Val::from(""))?;
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
+                        ctx.lines_as("Dwarf", args!["Ah...."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
             }
+        } else {
+            ctx.lines_as(
+                "Morestone",
+                args![
+                    ((Val::from("I, Morestone, have made an alliance with the ") + ctx.var("$@gdevents_s$").get()?)
+                        + Val::from(" guild.")),
+                    "Hm, you're not a member.",
+                    "Could you please give them my greetings?"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         if ctx.var("$@gdevents_s$").get()?.loosely_equals(&l_chk_yourgdname_s.clone()) {
@@ -835,20 +829,14 @@ fn pierrot_pier_sch_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     l_sprchg_gd = ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])?;
     if l_sprchg_gd.clone() == 1 {
         ctx.call(Function::SetNpcDisplay, vec![Val::from("Pierrot Pier#sch_gd"), Val::from(950)])?;
+    } else if l_sprchg_gd.clone() == 2 {
+        ctx.call(Function::SetNpcDisplay, vec![Val::from("Pierrot Pier#sch_gd"), Val::from(715)])?;
+    } else if l_sprchg_gd.clone() == 3 {
+        ctx.call(Function::SetNpcDisplay, vec![Val::from("Pierrot Pier#sch_gd"), Val::from(714)])?;
+    } else if l_sprchg_gd.clone() == 4 {
+        ctx.call(Function::SetNpcDisplay, vec![Val::from("Pierrot Pier#sch_gd"), Val::from(785)])?;
     } else {
-        if l_sprchg_gd.clone() == 2 {
-            ctx.call(Function::SetNpcDisplay, vec![Val::from("Pierrot Pier#sch_gd"), Val::from(715)])?;
-        } else {
-            if l_sprchg_gd.clone() == 3 {
-                ctx.call(Function::SetNpcDisplay, vec![Val::from("Pierrot Pier#sch_gd"), Val::from(714)])?;
-            } else {
-                if l_sprchg_gd.clone() == 4 {
-                    ctx.call(Function::SetNpcDisplay, vec![Val::from("Pierrot Pier#sch_gd"), Val::from(785)])?;
-                } else {
-                    ctx.call(Function::SetNpcDisplay, vec![Val::from("Pierrot Pier#sch_gd"), Val::from(876)])?;
-                }
-            }
-        }
+        ctx.call(Function::SetNpcDisplay, vec![Val::from("Pierrot Pier#sch_gd"), Val::from(876)])?;
     }
     if ctx.call(Function::CheckWeight, vec![Val::from(1201), Val::from(1)])? == 0 {
         ctx.lines(args![
@@ -1065,180 +1053,178 @@ fn pierrot_pier_sch_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::DoNpcEvent, vec![Val::from("Gergath#sch_gd::OnEnable")])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if (l_que_2143.clone() == 0 || l_que_2143.clone() == 1) {
+                ctx.lines_as(
+                    "Pierrot Pier",
+                    args!["Let's talk after I finished reading my master's message. Beep beep."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if (l_que_2143.clone() == 0 || l_que_2143.clone() == 1) {
-                    ctx.lines_as(
-                        "Pierrot Pier",
-                        args!["Let's talk after I finished reading my master's message. Beep beep."],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as(
-                        "Pierrot Pier",
-                        args!["My master Gergath sincerely wishes you joy for you and your family everyday."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Pierrot Pier",
-                        args!["Alright, would you like to play the game Gergath has prepared for you?"],
-                    )?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Game instructions.:Skip instructions.:Refuse game.")],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Pierrot Pier",
-                                args!["The game prepared by my master is very unique, yet simple and fun!"],
-                            )?;
-                            ctx.call(
-                                Function::MapAnnounce,
-                                vec![
-                                    Val::from("schg_que01"),
-                                    Val::from("Pierrot Pier: The game prepared by my lord is very unique, yet simple and fun!"),
-                                    ctx.constant("BC_MAP")?,
-                                    Val::from("0x99CC00"),
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Pierrot Pier", args!["It's called \"Find the Treasure Map\"!!"])?;
-                            ctx.call(
-                                Function::MapAnnounce,
-                                vec![
-                                    Val::from("schg_que01"),
-                                    Val::from("Pierrot Pier: It's called \"Find the Treasure Map\"!!"),
-                                    ctx.constant("BC_MAP")?,
-                                    Val::from("0x99CC00"),
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Pierrot Pier",
-                                args![
-                                    "Do you see this large and green field? Beep, beep?",
-                                    "I will show you the most incredible magic here.",
-                                    "I will turn this place very white. Veeery white!"
-                                ],
-                            )?;
-                            ctx.call(
-                                Function::MapAnnounce,
-                                vec![
-                                    Val::from("schg_que01"),
-                                    Val::from("Pierrot Pier: I will turn this place very white. Veeery white!"),
-                                    ctx.constant("BC_MAP")?,
-                                    Val::from("0x99CC00"),
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Pierrot Pier",
-                                args![
-                                    "The game instruction is just to find the treasure map within the time limit.",
-                                    "Sounds easy, right?"
-                                ],
-                            )?;
-                            ctx.call(Function::MapAnnounce, vec![Val::from("schg_que01"), Val::from("Pierrot Pier: The game instruction is just to find the treasure map within the time limit. ounds easy, right?"), ctx.constant("BC_MAP")?, Val::from("0x99CC00")])?;
-                            ctx.next()?;
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
-                            ctx.lines_as("Pierrot Pier", args!["Oh, you don't want to play?"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                ctx.lines_as(
+                    "Pierrot Pier",
+                    args!["My master Gergath sincerely wishes you joy for you and your family everyday."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Pierrot Pier",
+                    args!["Alright, would you like to play the game Gergath has prepared for you?"],
+                )?;
+                ctx.next()?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Game instructions.:Skip instructions.:Refuse game.")],
+                    )?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                        && !subject2.loosely_equals(&Val::from(2))
+                        && !subject2.loosely_equals(&Val::from(3));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
                     }
-                    ctx.lines_as(
-                        "Pierrot Pier",
-                        args!["Okay, I'm ready to begin.", "Shall we start? Beep, beep?"],
-                    )?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Start.")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Pierrot Pier", args!["Let me know when you are ready."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Pierrot Pier", args!["Alright! Let us begin!"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Pierrot Pier", args!["Ladies, and gentlemen."])?;
-                            ctx.call(
-                                Function::MapAnnounce,
-                                vec![
-                                    Val::from("schg_que01"),
-                                    Val::from("Pierrot Pier: Ladies, and gentlemen."),
-                                    ctx.constant("BC_MAP")?,
-                                    Val::from("0x99CC00"),
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Pierrot Pier", args!["Who will find the treasure map in this white world?"])?;
-                            ctx.call(
-                                Function::MapAnnounce,
-                                vec![
-                                    Val::from("schg_que01"),
-                                    Val::from("Pierrot Pier: Who will find the treasure map in this white world?"),
-                                    ctx.constant("BC_MAP")?,
-                                    Val::from("0x99CC00"),
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Pierrot Pier", args!["Amongst all of you, who shall be the lucky one?"])?;
-                            ctx.call(
-                                Function::MapAnnounce,
-                                vec![
-                                    Val::from("schg_que01"),
-                                    Val::from("Pierrot Pier: Amongst all of you, who shall be the lucky one?"),
-                                    ctx.constant("BC_MAP")?,
-                                    Val::from("0x99CC00"),
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Pierrot Pier", args!["Let the game.. Begin!"])?;
-                            ctx.call(
-                                Function::MapAnnounce,
-                                vec![
-                                    Val::from("schg_que01"),
-                                    Val::from("Pierrot Pier: Let the game.. Begin!"),
-                                    ctx.constant("BC_MAP")?,
-                                    Val::from("0x99CC00"),
-                                ],
-                            )?;
-                            ctx.var("$@gdeventv_s2").set(Val::from(1))?;
-                            ctx.call(Function::DoNpcEvent, vec![Val::from("Controller#gdevent_s::Ongame_start")])?;
-                            ctx.call(Function::EraseQuest, vec![Val::from(2143)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                    if matched2 {
+                        ctx.lines_as(
+                            "Pierrot Pier",
+                            args!["The game prepared by my master is very unique, yet simple and fun!"],
+                        )?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("schg_que01"),
+                                Val::from("Pierrot Pier: The game prepared by my lord is very unique, yet simple and fun!"),
+                                ctx.constant("BC_MAP")?,
+                                Val::from("0x99CC00"),
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Pierrot Pier", args!["It's called \"Find the Treasure Map\"!!"])?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("schg_que01"),
+                                Val::from("Pierrot Pier: It's called \"Find the Treasure Map\"!!"),
+                                ctx.constant("BC_MAP")?,
+                                Val::from("0x99CC00"),
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Pierrot Pier",
+                            args![
+                                "Do you see this large and green field? Beep, beep?",
+                                "I will show you the most incredible magic here.",
+                                "I will turn this place very white. Veeery white!"
+                            ],
+                        )?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("schg_que01"),
+                                Val::from("Pierrot Pier: I will turn this place very white. Veeery white!"),
+                                ctx.constant("BC_MAP")?,
+                                Val::from("0x99CC00"),
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Pierrot Pier",
+                            args![
+                                "The game instruction is just to find the treasure map within the time limit.",
+                                "Sounds easy, right?"
+                            ],
+                        )?;
+                        ctx.call(Function::MapAnnounce, vec![Val::from("schg_que01"), Val::from("Pierrot Pier: The game instruction is just to find the treasure map within the time limit. ounds easy, right?"), ctx.constant("BC_MAP")?, Val::from("0x99CC00")])?;
+                        ctx.next()?;
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
+                        ctx.lines_as("Pierrot Pier", args!["Oh, you don't want to play?"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+                ctx.lines_as(
+                    "Pierrot Pier",
+                    args!["Okay, I'm ready to begin.", "Shall we start? Beep, beep?"],
+                )?;
+                ctx.next()?;
+                'b3: {
+                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Start.")])?);
+                    let mut matched3 = false;
+                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as("Pierrot Pier", args!["Let me know when you are ready."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                        matched3 = true;
+                    }
+                    if matched3 {
+                        ctx.lines_as("Pierrot Pier", args!["Alright! Let us begin!"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Pierrot Pier", args!["Ladies, and gentlemen."])?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("schg_que01"),
+                                Val::from("Pierrot Pier: Ladies, and gentlemen."),
+                                ctx.constant("BC_MAP")?,
+                                Val::from("0x99CC00"),
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Pierrot Pier", args!["Who will find the treasure map in this white world?"])?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("schg_que01"),
+                                Val::from("Pierrot Pier: Who will find the treasure map in this white world?"),
+                                ctx.constant("BC_MAP")?,
+                                Val::from("0x99CC00"),
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Pierrot Pier", args!["Amongst all of you, who shall be the lucky one?"])?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("schg_que01"),
+                                Val::from("Pierrot Pier: Amongst all of you, who shall be the lucky one?"),
+                                ctx.constant("BC_MAP")?,
+                                Val::from("0x99CC00"),
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Pierrot Pier", args!["Let the game.. Begin!"])?;
+                        ctx.call(
+                            Function::MapAnnounce,
+                            vec![
+                                Val::from("schg_que01"),
+                                Val::from("Pierrot Pier: Let the game.. Begin!"),
+                                ctx.constant("BC_MAP")?,
+                                Val::from("0x99CC00"),
+                            ],
+                        )?;
+                        ctx.var("$@gdeventv_s2").set(Val::from(1))?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Controller#gdevent_s::Ongame_start")])?;
+                        ctx.call(Function::EraseQuest, vec![Val::from(2143)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -1268,28 +1254,26 @@ fn pierrot_pier_sch_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.call(Function::DelItem, vec![Val::from(6031), Val::from(1)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
+                } else if ctx.call(Function::CountItem, vec![Val::from(6030)])?.number()? > 0 {
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args![
+                            "Ahh, what a shame, it seems like you haven't found the treasure map yet.",
+                            "Quickly! Your time is running out! Hurry up!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if ctx.call(Function::CountItem, vec![Val::from(6030)])?.number()? > 0 {
-                        ctx.lines_as(
-                            "Pierrot Pier",
-                            args![
-                                "Ahh, what a shame, it seems like you haven't found the treasure map yet.",
-                                "Quickly! Your time is running out! Hurry up!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Pierrot Pier",
-                            args![
-                                "I don't see anything. Have you even started yet? Beep?",
-                                "Hehe, while you're talking to me, the time is slowly ticking away~"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args![
+                            "I don't see anything. Have you even started yet? Beep?",
+                            "Hehe, while you're talking to me, the time is slowly ticking away~"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             } else {
                 if ctx.var("$@gdeventv_s2").get()? == 2 {
@@ -1439,124 +1423,116 @@ fn pierrot_pier_sch_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             return Err(Stop::End);
                         }
                     }
+                } else if ctx.var("$@gdeventv_s2").get()? == 3 {
+                    l_que_2143 = ctx.call(Function::CheckQuest, vec![Val::from(2143)])?;
+                    if l_que_2143.clone() == 3 {
+                        ctx.call(Function::EraseQuest, vec![Val::from(2143)])?;
+                    }
+                    ctx.lines_as("Pierrot Pier", args!["How did you do it?"])?;
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("schg_que01"),
+                            Val::from("Pierrot Pier: How did you do it?"),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0x99CC00"),
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Pierrot Pier", args!["You managed to find a needle in a haystack!", "Amazing!"])?;
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("schg_que01"),
+                            Val::from("Pierrot Pier: You managed to find a needle in a haystack! Amazing!!"),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0x99CC00"),
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args!["You've completeled an unbelievable task, I will give you the wonderful gift master has prepared!! Ha!"],
+                    )?;
+                    ctx.call(Function::MapAnnounce, vec![Val::from("schg_que01"), Val::from("Pierrot Pier: You've completeled an unbelievable task, I will give you the wonderful gift my master has prepared!! Ha!"), ctx.constant("BC_MAP")?, Val::from("0x99CC00")])?;
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("schg_que01"),
+                            Val::from("Pierrot Pier: Here, take Pierre's Treasure Boxes."),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0x99CC00"),
+                        ],
+                    )?;
+                    ctx.call(Function::DoNpcEvent, vec![Val::from("eff_mvp#sch_gd::Onmvp")])?;
+                    ctx.var("$@gdeventv_s2").set(Val::from(5))?;
+                    ctx.call(Function::GetItem, vec![Val::from(14596), Val::from(10)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("$@gdeventv_s2").get()? == 4 {
+                    ctx.lines_as("Pierrot Pier", args!["Incredible! Unbelievable! Beep beep!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("$@gdeventv_s2").get()? == 5 {
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            Val::from("schg_que01"),
+                            Val::from("Pierrot Pier: Seeing your smiles, makes Pierrot feel very happy~ See you next time!"),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0x99CC00"),
+                        ],
+                    )?;
+                    ctx.lines_as("Pierrot Pier", args!["Did you have fun?"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Pierrot Pier", args!["Seeing your smiles, makes Pierrot feel very happy~"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args![
+                            "I hope to see you again very soon, I must go back to being a doll now.",
+                            "See you next time!"
+                        ],
+                    )?;
+                    ctx.call(Function::EraseQuest, vec![Val::from(2144)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if ctx.var("$@gdeventv_s2").get()? == 3 {
-                        l_que_2143 = ctx.call(Function::CheckQuest, vec![Val::from(2143)])?;
-                        if l_que_2143.clone() == 3 {
-                            ctx.call(Function::EraseQuest, vec![Val::from(2143)])?;
-                        }
-                        ctx.lines_as("Pierrot Pier", args!["How did you do it?"])?;
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                Val::from("schg_que01"),
-                                Val::from("Pierrot Pier: How did you do it?"),
-                                ctx.constant("BC_MAP")?,
-                                Val::from("0x99CC00"),
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Pierrot Pier", args!["You managed to find a needle in a haystack!", "Amazing!"])?;
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                Val::from("schg_que01"),
-                                Val::from("Pierrot Pier: You managed to find a needle in a haystack! Amazing!!"),
-                                ctx.constant("BC_MAP")?,
-                                Val::from("0x99CC00"),
-                            ],
-                        )?;
-                        ctx.next()?;
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args!["Did you find the treasure map?", "Show me what you have in your hands! Beep, beep!"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Pierrot Pier", args!["Let me see."])?;
+                    ctx.next()?;
+                    if ctx.call(Function::CountItem, vec![Val::from(6031)])?.number()? > 0 {
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Controller#gdevent_s::OnStop")])?;
+                        ctx.var("$@gdeventv_s2").set(Val::from(3))?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("eff_mvp#sch_gd::Onmvp")])?;
+                        ctx.lines_as("Pierrot Pier", args!["Wow~~!!", "Success~!!", "What a success~!!"])?;
+                        ctx.call(Function::DelItem, vec![Val::from(6031), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.call(Function::CountItem, vec![Val::from(6030)])?.number()? > 0 {
                         ctx.lines_as(
                             "Pierrot Pier",
-                            args!["You've completeled an unbelievable task, I will give you the wonderful gift master has prepared!! Ha!"],
-                        )?;
-                        ctx.call(Function::MapAnnounce, vec![Val::from("schg_que01"), Val::from("Pierrot Pier: You've completeled an unbelievable task, I will give you the wonderful gift my master has prepared!! Ha!"), ctx.constant("BC_MAP")?, Val::from("0x99CC00")])?;
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                Val::from("schg_que01"),
-                                Val::from("Pierrot Pier: Here, take Pierre's Treasure Boxes."),
-                                ctx.constant("BC_MAP")?,
-                                Val::from("0x99CC00"),
+                            args![
+                                "Ahh, what a shame, it seems like you haven't found the treasure map yet.",
+                                "Quickly! Your time is running out! Hurry up!"
                             ],
                         )?;
-                        ctx.call(Function::DoNpcEvent, vec![Val::from("eff_mvp#sch_gd::Onmvp")])?;
-                        ctx.var("$@gdeventv_s2").set(Val::from(5))?;
-                        ctx.call(Function::GetItem, vec![Val::from(14596), Val::from(10)])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     } else {
-                        if ctx.var("$@gdeventv_s2").get()? == 4 {
-                            ctx.lines_as("Pierrot Pier", args!["Incredible! Unbelievable! Beep beep!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("$@gdeventv_s2").get()? == 5 {
-                                ctx.call(
-                                    Function::MapAnnounce,
-                                    vec![
-                                        Val::from("schg_que01"),
-                                        Val::from("Pierrot Pier: Seeing your smiles, makes Pierrot feel very happy~ See you next time!"),
-                                        ctx.constant("BC_MAP")?,
-                                        Val::from("0x99CC00"),
-                                    ],
-                                )?;
-                                ctx.lines_as("Pierrot Pier", args!["Did you have fun?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Pierrot Pier", args!["Seeing your smiles, makes Pierrot feel very happy~"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Pierrot Pier",
-                                    args![
-                                        "I hope to see you again very soon, I must go back to being a doll now.",
-                                        "See you next time!"
-                                    ],
-                                )?;
-                                ctx.call(Function::EraseQuest, vec![Val::from(2144)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    "Pierrot Pier",
-                                    args!["Did you find the treasure map?", "Show me what you have in your hands! Beep, beep!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Pierrot Pier", args!["Let me see."])?;
-                                ctx.next()?;
-                                if ctx.call(Function::CountItem, vec![Val::from(6031)])?.number()? > 0 {
-                                    ctx.call(Function::DoNpcEvent, vec![Val::from("Controller#gdevent_s::OnStop")])?;
-                                    ctx.var("$@gdeventv_s2").set(Val::from(3))?;
-                                    ctx.call(Function::DoNpcEvent, vec![Val::from("eff_mvp#sch_gd::Onmvp")])?;
-                                    ctx.lines_as("Pierrot Pier", args!["Wow~~!!", "Success~!!", "What a success~!!"])?;
-                                    ctx.call(Function::DelItem, vec![Val::from(6031), Val::from(1)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.call(Function::CountItem, vec![Val::from(6030)])?.number()? > 0 {
-                                        ctx.lines_as(
-                                            "Pierrot Pier",
-                                            args![
-                                                "Ahh, what a shame, it seems like you haven't found the treasure map yet.",
-                                                "Quickly! Your time is running out! Hurry up!"
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as(
-                                            "Pierrot Pier",
-                                            args![
-                                                "I don't see anything. Have you even started yet? Beep?",
-                                                "Hehe, while you're talking to me, the time is slowly ticking away~"
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                        }
+                        ctx.lines_as(
+                            "Pierrot Pier",
+                            args![
+                                "I don't see anything. Have you even started yet? Beep?",
+                                "Hehe, while you're talking to me, the time is slowly ticking away~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -1746,8 +1722,83 @@ fn pierrot_pier_sch_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.call(Function::DelItem, vec![Val::from(6031), Val::from(1)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
+                } else if ctx.call(Function::CountItem, vec![Val::from(6030)])?.number()? > 0 {
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args![
+                            "Ahh, what a shame, it seems like you haven't found the treasure map yet.",
+                            "Quickly! Your time is running out! Hurry up!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if ctx.call(Function::CountItem, vec![Val::from(6030)])?.number()? > 0 {
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args![
+                            "I don't see anything. Have you even started yet? Beep?",
+                            "Hehe, while you're talking to me, the time is slowly ticking away~"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            } else {
+                if ctx.var("$@gdeventv_s2").get()? == 2 {
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args![
+                            "Wah, why is it like this~!!",
+                            "Not enough? But this makes the game fun, no? Hahaha!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("$@gdeventv_s2").get()? == 3 {
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args![
+                            "Congratulations, you have succeeded!",
+                            "I will talk to your leader about other details."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("$@gdeventv_s2").get()? == 4 {
+                    ctx.lines_as("Pierrot Pier", args!["Incredible! Unbelievable! Beep beep!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("$@gdeventv_s2").get()? == 5 {
+                    ctx.lines_as("Pierrot Pier", args!["Did you have fun?"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Pierrot Pier", args!["Seeing your smiles, makes Pierrot feel very happy~"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args![
+                            "I hope to see you again very soon, I must go back to being a doll now.",
+                            "See you next time!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as(
+                        "Pierrot Pier",
+                        args!["Did you find the treasure?", "Show me that thing you are holding, now!"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Pierrot Pier", args!["Let me see..."])?;
+                    ctx.next()?;
+                    if ctx.call(Function::CountItem, vec![Val::from(6031)])?.number()? > 0 {
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Controller#gdevent_s::OnStop")])?;
+                        ctx.var("$@gdeventv_s2").set(Val::from(3))?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("eff_mvp#sch_gd::Onmvp")])?;
+                        ctx.lines_as("Pierrot Pier", args!["Wow~~!!", "Success~!!", "What a success~!!"])?;
+                        ctx.call(Function::DelItem, vec![Val::from(6031), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.call(Function::CountItem, vec![Val::from(6030)])?.number()? > 0 {
                         ctx.lines_as(
                             "Pierrot Pier",
                             args![
@@ -1767,91 +1818,6 @@ fn pierrot_pier_sch_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    }
-                }
-            } else {
-                if ctx.var("$@gdeventv_s2").get()? == 2 {
-                    ctx.lines_as(
-                        "Pierrot Pier",
-                        args![
-                            "Wah, why is it like this~!!",
-                            "Not enough? But this makes the game fun, no? Hahaha!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("$@gdeventv_s2").get()? == 3 {
-                        ctx.lines_as(
-                            "Pierrot Pier",
-                            args![
-                                "Congratulations, you have succeeded!",
-                                "I will talk to your leader about other details."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("$@gdeventv_s2").get()? == 4 {
-                            ctx.lines_as("Pierrot Pier", args!["Incredible! Unbelievable! Beep beep!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("$@gdeventv_s2").get()? == 5 {
-                                ctx.lines_as("Pierrot Pier", args!["Did you have fun?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Pierrot Pier", args!["Seeing your smiles, makes Pierrot feel very happy~"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Pierrot Pier",
-                                    args![
-                                        "I hope to see you again very soon, I must go back to being a doll now.",
-                                        "See you next time!"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    "Pierrot Pier",
-                                    args!["Did you find the treasure?", "Show me that thing you are holding, now!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Pierrot Pier", args!["Let me see..."])?;
-                                ctx.next()?;
-                                if ctx.call(Function::CountItem, vec![Val::from(6031)])?.number()? > 0 {
-                                    ctx.call(Function::DoNpcEvent, vec![Val::from("Controller#gdevent_s::OnStop")])?;
-                                    ctx.var("$@gdeventv_s2").set(Val::from(3))?;
-                                    ctx.call(Function::DoNpcEvent, vec![Val::from("eff_mvp#sch_gd::Onmvp")])?;
-                                    ctx.lines_as("Pierrot Pier", args!["Wow~~!!", "Success~!!", "What a success~!!"])?;
-                                    ctx.call(Function::DelItem, vec![Val::from(6031), Val::from(1)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.call(Function::CountItem, vec![Val::from(6030)])?.number()? > 0 {
-                                        ctx.lines_as(
-                                            "Pierrot Pier",
-                                            args![
-                                                "Ahh, what a shame, it seems like you haven't found the treasure map yet.",
-                                                "Quickly! Your time is running out! Hurry up!"
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as(
-                                            "Pierrot Pier",
-                                            args![
-                                                "I don't see anything. Have you even started yet? Beep?",
-                                                "Hehe, while you're talking to me, the time is slowly ticking away~"
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -1915,24 +1881,16 @@ fn controller_gdevent_s_run(ctx: &Ctx, mut step: ControllerGdeventSStep, args: V
                         } else {
                             if l_roulette_where.clone() == 4 {
                                 ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_4_s::OnBingo")])?;
+                            } else if l_roulette_where.clone() == 5 {
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_5_s::OnBingo")])?;
+                            } else if l_roulette_where.clone() == 6 {
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_6_s::OnBingo")])?;
+                            } else if l_roulette_where.clone() == 7 {
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_7_s::OnBingo")])?;
+                            } else if l_roulette_where.clone() == 8 {
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_8_s::OnBingo")])?;
                             } else {
-                                if l_roulette_where.clone() == 5 {
-                                    ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_5_s::OnBingo")])?;
-                                } else {
-                                    if l_roulette_where.clone() == 6 {
-                                        ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_6_s::OnBingo")])?;
-                                    } else {
-                                        if l_roulette_where.clone() == 7 {
-                                            ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_7_s::OnBingo")])?;
-                                        } else {
-                                            if l_roulette_where.clone() == 8 {
-                                                ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_8_s::OnBingo")])?;
-                                            } else {
-                                                ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_9_s::OnBingo")])?;
-                                            }
-                                        }
-                                    }
-                                }
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("paper_sp_9_s::OnBingo")])?;
                             }
                         }
                     }

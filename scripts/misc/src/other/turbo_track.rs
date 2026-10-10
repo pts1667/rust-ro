@@ -1539,45 +1539,39 @@ fn trap_tt_main_run(ctx: &Ctx, mut step: TrapTtMainStep, args: Vec<Val>) -> Resu
                             "[Chief Mahnsoo]",
                             "I looove you Kafra!^000000"
                         ])?;
+                    } else if (l_w_s.clone() == "e8" || l_w_s.clone() == "n8") {
+                        ctx.lines(args![
+                            "^4d4dff[Errende]",
+                            "Kafra Ladies? Exquisite! Oh, and their service is good too~!^000000",
+                            " ",
+                            "[Tristram III]",
+                            "By my crown! Such low prices!"
+                        ])?;
+                    } else if (l_w_s.clone() == "e16" || l_w_s.clone() == "n16") {
+                        ctx.lines(args![
+                            "^4d4dff[Union Staff Kay]",
+                            "Of course I love 'em, especially their Pushcart Service~",
+                            " ",
+                            "[Santa Claus]",
+                            "Ho ho ho!",
+                            "Such Merry Prices!"
+                        ])?;
+                    } else if l_w_s.clone() == "n4" {
+                        ctx.lines(args![
+                            "^4d4dff[Xenophon Zolotas]",
+                            "I wouldn't be able to do business without the Kafra Services. Thank you, Kafra!",
+                            " ",
+                            "[Chief Mahnsoo]",
+                            "I looove you Kafra!^000000"
+                        ])?;
                     } else {
-                        if (l_w_s.clone() == "e8" || l_w_s.clone() == "n8") {
-                            ctx.lines(args![
-                                "^4d4dff[Errende]",
-                                "Kafra Ladies? Exquisite! Oh, and their service is good too~!^000000",
-                                " ",
-                                "[Tristram III]",
-                                "By my crown! Such low prices!"
-                            ])?;
-                        } else {
-                            if (l_w_s.clone() == "e16" || l_w_s.clone() == "n16") {
-                                ctx.lines(args![
-                                    "^4d4dff[Union Staff Kay]",
-                                    "Of course I love 'em, especially their Pushcart Service~",
-                                    " ",
-                                    "[Santa Claus]",
-                                    "Ho ho ho!",
-                                    "Such Merry Prices!"
-                                ])?;
-                            } else {
-                                if l_w_s.clone() == "n4" {
-                                    ctx.lines(args![
-                                        "^4d4dff[Xenophon Zolotas]",
-                                        "I wouldn't be able to do business without the Kafra Services. Thank you, Kafra!",
-                                        " ",
-                                        "[Chief Mahnsoo]",
-                                        "I looove you Kafra!^000000"
-                                    ])?;
-                                } else {
-                                    ctx.lines(args![
-                                        "^4d4dff[Karkatan]",
-                                        "My land suffered from poor customer service...until Kafra came along!",
-                                        " ",
-                                        "[Curator Guiss]",
-                                        "Oh, Kafra is simply the best!^000000"
-                                    ])?;
-                                }
-                            }
-                        }
+                        ctx.lines(args![
+                            "^4d4dff[Karkatan]",
+                            "My land suffered from poor customer service...until Kafra came along!",
+                            " ",
+                            "[Curator Guiss]",
+                            "Oh, Kafra is simply the best!^000000"
+                        ])?;
                     }
                     ctx.next()?;
                     ctx.lines(args![
@@ -3132,24 +3126,22 @@ fn whelper_tt_main_run(ctx: &Ctx, mut step: WhelperTtMainStep, args: Vec<Val>) -
                                         Val::from("FF0000"),
                                     ],
                                 )?;
-                            } else {
-                                if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
-                                    ctx.var("$ttnames$").set_at(
-                                        runtime::index(&Val::from(8))?,
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            } else if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
+                                ctx.var("$ttnames$").set_at(
+                                    runtime::index(&Val::from(8))?,
+                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                )?;
+                                ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
+                                if runtime::compare(&l_w_s.clone(), &Val::from("4")).is_true() {
+                                    ctx.call(
+                                        Function::Announce,
+                                        vec![
+                                            (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
+                                                + Val::from(" has joined the Turbo Track Hall of Honor!")),
+                                            ctx.constant("BC_ALL")?,
+                                            Val::from("FF0000"),
+                                        ],
                                     )?;
-                                    ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
-                                    if runtime::compare(&l_w_s.clone(), &Val::from("4")).is_true() {
-                                        ctx.call(
-                                            Function::Announce,
-                                            vec![
-                                                (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
-                                                    + Val::from(" has joined the Turbo Track Hall of Honor!")),
-                                                ctx.constant("BC_ALL")?,
-                                                Val::from("FF0000"),
-                                            ],
-                                        )?;
-                                    }
                                 }
                             }
                         }
@@ -3215,292 +3207,278 @@ fn whelper_tt_main_run(ctx: &Ctx, mut step: WhelperTtMainStep, args: Vec<Val>) -
                                             Val::from("FF0000"),
                                         ],
                                     )?;
-                                } else {
-                                    if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
-                                        ctx.var("$ttnames$").set_at(
-                                            runtime::index(&Val::from(8))?,
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        )?;
-                                        ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
-                                        ctx.call(
-                                            Function::Announce,
-                                            vec![
-                                                (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
-                                                    + Val::from(" has joined the Turbo Track Hall of Honor!")),
-                                                ctx.constant("BC_ALL")?,
-                                                Val::from("FF0000"),
-                                            ],
-                                        )?;
-                                    }
+                                } else if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
+                                    ctx.var("$ttnames$").set_at(
+                                        runtime::index(&Val::from(8))?,
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    )?;
+                                    ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
+                                    ctx.call(
+                                        Function::Announce,
+                                        vec![
+                                            (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
+                                                + Val::from(" has joined the Turbo Track Hall of Honor!")),
+                                            ctx.constant("BC_ALL")?,
+                                            Val::from("FF0000"),
+                                        ],
+                                    )?;
+                                }
+                            }
+                        } else if runtime::op(
+                            &ctx.var("tt_rank").get()?,
+                            ">",
+                            &ctx.var("$ttranks").get_at(runtime::index(&Val::from(3))?)?,
+                        )?
+                        .is_true()
+                        {
+                            let base = Val::from(0).number()?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 0))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(0))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 1))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(1))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 2))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(2))?)?,
+                            )?;
+                            ctx.var("$ttranks")
+                                .set_at(runtime::index(&Val::from(base + 3))?, ctx.var("tt_rank").get()?)?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 4))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(4))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 5))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(5))?)?,
+                            )?;
+                            let base = Val::from(11).number()?;
+                            ctx.var("$ttnames$").set_at(
+                                runtime::index(&Val::from(base + 0))?,
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            )?;
+                            ctx.lines_as(
+                                "Guide",
+                                args![
+                                    "Congratulations!",
+                                    "You've ranked Third",
+                                    "among the Top Five Players",
+                                    "who've won the most games!"
+                                ],
+                            )?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Turbo Track Guide::OnNew_Top3")])?;
+                            if ctx.var("tt_rank").get()? == 29999 {
+                                if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(7))?)? == "Breezy Havana" {
+                                    ctx.var("$ttnames$").set_at(
+                                        runtime::index(&Val::from(7))?,
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    )?;
+                                    ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
+                                    ctx.call(
+                                        Function::Announce,
+                                        vec![
+                                            (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
+                                                + Val::from(" has joined the Turbo Track Hall of Honor!")),
+                                            ctx.constant("BC_ALL")?,
+                                            Val::from("FF0000"),
+                                        ],
+                                    )?;
+                                } else if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
+                                    ctx.var("$ttnames$").set_at(
+                                        runtime::index(&Val::from(8))?,
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    )?;
+                                    ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
+                                    ctx.call(
+                                        Function::Announce,
+                                        vec![
+                                            (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
+                                                + Val::from(" has joined the Turbo Track Hall of Honor!")),
+                                            ctx.constant("BC_ALL")?,
+                                            Val::from("FF0000"),
+                                        ],
+                                    )?;
+                                }
+                            }
+                        } else if runtime::op(
+                            &ctx.var("tt_rank").get()?,
+                            ">",
+                            &ctx.var("$ttranks").get_at(runtime::index(&Val::from(4))?)?,
+                        )?
+                        .is_true()
+                        {
+                            let base = Val::from(0).number()?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 0))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(0))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 1))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(1))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 2))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(2))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 3))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(3))?)?,
+                            )?;
+                            ctx.var("$ttranks")
+                                .set_at(runtime::index(&Val::from(base + 4))?, ctx.var("tt_rank").get()?)?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 5))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(5))?)?,
+                            )?;
+                            let base = Val::from(12).number()?;
+                            ctx.var("$ttnames$").set_at(
+                                runtime::index(&Val::from(base + 0))?,
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            )?;
+                            ctx.lines_as(
+                                "Guide",
+                                args![
+                                    "Congratulations!",
+                                    "You've ranked Fourth",
+                                    "among the Top Five Players",
+                                    "who've won the most games!"
+                                ],
+                            )?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Turbo Track Guide::OnNew_Top4")])?;
+                            if ctx.var("tt_rank").get()? == 29999 {
+                                if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(7))?)? == "Breezy Havana" {
+                                    ctx.var("$ttnames$").set_at(
+                                        runtime::index(&Val::from(7))?,
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    )?;
+                                    ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
+                                    ctx.call(
+                                        Function::Announce,
+                                        vec![
+                                            (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
+                                                + Val::from(" has joined the Turbo Track Hall of Honor!")),
+                                            ctx.constant("BC_ALL")?,
+                                            Val::from("FF0000"),
+                                        ],
+                                    )?;
+                                } else if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
+                                    ctx.var("$ttnames$").set_at(
+                                        runtime::index(&Val::from(8))?,
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    )?;
+                                    ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
+                                    ctx.call(
+                                        Function::Announce,
+                                        vec![
+                                            (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
+                                                + Val::from(" has joined the Turbo Track Hall of Honor!")),
+                                            ctx.constant("BC_ALL")?,
+                                            Val::from("FF0000"),
+                                        ],
+                                    )?;
+                                }
+                            }
+                        } else if runtime::op(
+                            &ctx.var("tt_rank").get()?,
+                            ">",
+                            &ctx.var("$ttranks").get_at(runtime::index(&Val::from(5))?)?,
+                        )?
+                        .is_true()
+                        {
+                            let base = Val::from(0).number()?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 0))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(0))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 1))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(1))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 2))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(2))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 3))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(3))?)?,
+                            )?;
+                            ctx.var("$ttranks").set_at(
+                                runtime::index(&Val::from(base + 4))?,
+                                ctx.var("$ttranks").get_at(runtime::index(&Val::from(4))?)?,
+                            )?;
+                            ctx.var("$ttranks")
+                                .set_at(runtime::index(&Val::from(base + 5))?, ctx.var("tt_rank").get()?)?;
+                            let base = Val::from(13).number()?;
+                            ctx.var("$ttnames$").set_at(
+                                runtime::index(&Val::from(base + 0))?,
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            )?;
+                            ctx.lines_as(
+                                "Guide",
+                                args![
+                                    "Congratulations!",
+                                    "You've ranked Fifth",
+                                    "among the Top Five Players",
+                                    "who've won the most games!"
+                                ],
+                            )?;
+                            ctx.call(Function::DoNpcEvent, vec![Val::from("Turbo Track Guide::OnNew_Top5")])?;
+                            if ctx.var("tt_rank").get()? == 29999 {
+                                if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(7))?)? == "Breezy Havana" {
+                                    ctx.var("$ttnames$").set_at(
+                                        runtime::index(&Val::from(7))?,
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    )?;
+                                    ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
+                                    ctx.call(
+                                        Function::Announce,
+                                        vec![
+                                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                + Val::from(" has joined the Turbo Track Hall of Honor!")),
+                                            ctx.constant("BC_ALL")?,
+                                            Val::from("FF0000"),
+                                        ],
+                                    )?;
+                                } else if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
+                                    ctx.var("$ttnames$").set_at(
+                                        runtime::index(&Val::from(8))?,
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    )?;
+                                    ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
+                                    ctx.call(
+                                        Function::Announce,
+                                        vec![
+                                            (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
+                                                + Val::from(" has joined the Turbo Track Hall of Honor!")),
+                                            ctx.constant("BC_ALL")?,
+                                            Val::from("FF0000"),
+                                        ],
+                                    )?;
                                 }
                             }
                         } else {
-                            if runtime::op(
-                                &ctx.var("tt_rank").get()?,
-                                ">",
-                                &ctx.var("$ttranks").get_at(runtime::index(&Val::from(3))?)?,
-                            )?
-                            .is_true()
-                            {
-                                let base = Val::from(0).number()?;
-                                ctx.var("$ttranks").set_at(
-                                    runtime::index(&Val::from(base + 0))?,
-                                    ctx.var("$ttranks").get_at(runtime::index(&Val::from(0))?)?,
-                                )?;
-                                ctx.var("$ttranks").set_at(
-                                    runtime::index(&Val::from(base + 1))?,
-                                    ctx.var("$ttranks").get_at(runtime::index(&Val::from(1))?)?,
-                                )?;
-                                ctx.var("$ttranks").set_at(
-                                    runtime::index(&Val::from(base + 2))?,
-                                    ctx.var("$ttranks").get_at(runtime::index(&Val::from(2))?)?,
-                                )?;
-                                ctx.var("$ttranks")
-                                    .set_at(runtime::index(&Val::from(base + 3))?, ctx.var("tt_rank").get()?)?;
-                                ctx.var("$ttranks").set_at(
-                                    runtime::index(&Val::from(base + 4))?,
-                                    ctx.var("$ttranks").get_at(runtime::index(&Val::from(4))?)?,
-                                )?;
-                                ctx.var("$ttranks").set_at(
-                                    runtime::index(&Val::from(base + 5))?,
-                                    ctx.var("$ttranks").get_at(runtime::index(&Val::from(5))?)?,
-                                )?;
-                                let base = Val::from(11).number()?;
-                                ctx.var("$ttnames$").set_at(
-                                    runtime::index(&Val::from(base + 0))?,
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                )?;
-                                ctx.lines_as(
-                                    "Guide",
-                                    args![
-                                        "Congratulations!",
-                                        "You've ranked Third",
-                                        "among the Top Five Players",
-                                        "who've won the most games!"
-                                    ],
-                                )?;
-                                ctx.call(Function::DoNpcEvent, vec![Val::from("Turbo Track Guide::OnNew_Top3")])?;
-                                if ctx.var("tt_rank").get()? == 29999 {
-                                    if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(7))?)? == "Breezy Havana" {
-                                        ctx.var("$ttnames$").set_at(
-                                            runtime::index(&Val::from(7))?,
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        )?;
-                                        ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
-                                        ctx.call(
-                                            Function::Announce,
-                                            vec![
-                                                (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
-                                                    + Val::from(" has joined the Turbo Track Hall of Honor!")),
-                                                ctx.constant("BC_ALL")?,
-                                                Val::from("FF0000"),
-                                            ],
-                                        )?;
-                                    } else {
-                                        if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
-                                            ctx.var("$ttnames$").set_at(
-                                                runtime::index(&Val::from(8))?,
-                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            )?;
-                                            ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
-                                            ctx.call(
-                                                Function::Announce,
-                                                vec![
-                                                    (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
-                                                        + Val::from(" has joined the Turbo Track Hall of Honor!")),
-                                                    ctx.constant("BC_ALL")?,
-                                                    Val::from("FF0000"),
-                                                ],
-                                            )?;
-                                        }
-                                    }
-                                }
-                            } else {
-                                if runtime::op(
-                                    &ctx.var("tt_rank").get()?,
-                                    ">",
-                                    &ctx.var("$ttranks").get_at(runtime::index(&Val::from(4))?)?,
-                                )?
-                                .is_true()
-                                {
-                                    let base = Val::from(0).number()?;
-                                    ctx.var("$ttranks").set_at(
-                                        runtime::index(&Val::from(base + 0))?,
-                                        ctx.var("$ttranks").get_at(runtime::index(&Val::from(0))?)?,
-                                    )?;
-                                    ctx.var("$ttranks").set_at(
-                                        runtime::index(&Val::from(base + 1))?,
-                                        ctx.var("$ttranks").get_at(runtime::index(&Val::from(1))?)?,
-                                    )?;
-                                    ctx.var("$ttranks").set_at(
-                                        runtime::index(&Val::from(base + 2))?,
-                                        ctx.var("$ttranks").get_at(runtime::index(&Val::from(2))?)?,
-                                    )?;
-                                    ctx.var("$ttranks").set_at(
-                                        runtime::index(&Val::from(base + 3))?,
-                                        ctx.var("$ttranks").get_at(runtime::index(&Val::from(3))?)?,
-                                    )?;
-                                    ctx.var("$ttranks")
-                                        .set_at(runtime::index(&Val::from(base + 4))?, ctx.var("tt_rank").get()?)?;
-                                    ctx.var("$ttranks").set_at(
-                                        runtime::index(&Val::from(base + 5))?,
-                                        ctx.var("$ttranks").get_at(runtime::index(&Val::from(5))?)?,
-                                    )?;
-                                    let base = Val::from(12).number()?;
-                                    ctx.var("$ttnames$").set_at(
-                                        runtime::index(&Val::from(base + 0))?,
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    )?;
-                                    ctx.lines_as(
-                                        "Guide",
-                                        args![
-                                            "Congratulations!",
-                                            "You've ranked Fourth",
-                                            "among the Top Five Players",
-                                            "who've won the most games!"
-                                        ],
-                                    )?;
-                                    ctx.call(Function::DoNpcEvent, vec![Val::from("Turbo Track Guide::OnNew_Top4")])?;
-                                    if ctx.var("tt_rank").get()? == 29999 {
-                                        if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(7))?)? == "Breezy Havana" {
-                                            ctx.var("$ttnames$").set_at(
-                                                runtime::index(&Val::from(7))?,
-                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            )?;
-                                            ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
-                                            ctx.call(
-                                                Function::Announce,
-                                                vec![
-                                                    (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
-                                                        + Val::from(" has joined the Turbo Track Hall of Honor!")),
-                                                    ctx.constant("BC_ALL")?,
-                                                    Val::from("FF0000"),
-                                                ],
-                                            )?;
-                                        } else {
-                                            if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
-                                                ctx.var("$ttnames$").set_at(
-                                                    runtime::index(&Val::from(8))?,
-                                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                )?;
-                                                ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
-                                                ctx.call(
-                                                    Function::Announce,
-                                                    vec![
-                                                        (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
-                                                            + Val::from(" has joined the Turbo Track Hall of Honor!")),
-                                                        ctx.constant("BC_ALL")?,
-                                                        Val::from("FF0000"),
-                                                    ],
-                                                )?;
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    if runtime::op(
-                                        &ctx.var("tt_rank").get()?,
-                                        ">",
-                                        &ctx.var("$ttranks").get_at(runtime::index(&Val::from(5))?)?,
-                                    )?
-                                    .is_true()
-                                    {
-                                        let base = Val::from(0).number()?;
-                                        ctx.var("$ttranks").set_at(
-                                            runtime::index(&Val::from(base + 0))?,
-                                            ctx.var("$ttranks").get_at(runtime::index(&Val::from(0))?)?,
-                                        )?;
-                                        ctx.var("$ttranks").set_at(
-                                            runtime::index(&Val::from(base + 1))?,
-                                            ctx.var("$ttranks").get_at(runtime::index(&Val::from(1))?)?,
-                                        )?;
-                                        ctx.var("$ttranks").set_at(
-                                            runtime::index(&Val::from(base + 2))?,
-                                            ctx.var("$ttranks").get_at(runtime::index(&Val::from(2))?)?,
-                                        )?;
-                                        ctx.var("$ttranks").set_at(
-                                            runtime::index(&Val::from(base + 3))?,
-                                            ctx.var("$ttranks").get_at(runtime::index(&Val::from(3))?)?,
-                                        )?;
-                                        ctx.var("$ttranks").set_at(
-                                            runtime::index(&Val::from(base + 4))?,
-                                            ctx.var("$ttranks").get_at(runtime::index(&Val::from(4))?)?,
-                                        )?;
-                                        ctx.var("$ttranks")
-                                            .set_at(runtime::index(&Val::from(base + 5))?, ctx.var("tt_rank").get()?)?;
-                                        let base = Val::from(13).number()?;
-                                        ctx.var("$ttnames$").set_at(
-                                            runtime::index(&Val::from(base + 0))?,
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        )?;
-                                        ctx.lines_as(
-                                            "Guide",
-                                            args![
-                                                "Congratulations!",
-                                                "You've ranked Fifth",
-                                                "among the Top Five Players",
-                                                "who've won the most games!"
-                                            ],
-                                        )?;
-                                        ctx.call(Function::DoNpcEvent, vec![Val::from("Turbo Track Guide::OnNew_Top5")])?;
-                                        if ctx.var("tt_rank").get()? == 29999 {
-                                            if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(7))?)? == "Breezy Havana" {
-                                                ctx.var("$ttnames$").set_at(
-                                                    runtime::index(&Val::from(7))?,
-                                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                )?;
-                                                ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
-                                                ctx.call(
-                                                    Function::Announce,
-                                                    vec![
-                                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                            + Val::from(" has joined the Turbo Track Hall of Honor!")),
-                                                        ctx.constant("BC_ALL")?,
-                                                        Val::from("FF0000"),
-                                                    ],
-                                                )?;
-                                            } else {
-                                                if ctx.var("$ttnames$").get_at(runtime::index(&Val::from(8))?)? == "RS125" {
-                                                    ctx.var("$ttnames$").set_at(
-                                                        runtime::index(&Val::from(8))?,
-                                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                    )?;
-                                                    ctx.lines(args!["You've secured your place in", "the Turbo Track Hall of Honor!"])?;
-                                                    ctx.call(
-                                                        Function::Announce,
-                                                        vec![
-                                                            (ctx.call(Function::StrCharInfo, vec![Val::from(0)])?
-                                                                + Val::from(" has joined the Turbo Track Hall of Honor!")),
-                                                            ctx.constant("BC_ALL")?,
-                                                            Val::from("FF0000"),
-                                                        ],
-                                                    )?;
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        ctx.lines_as(
-                                            "Guide",
-                                            args![
-                                                "If you can win more games",
-                                                "than everybody else, your",
-                                                "name will be registered in",
-                                                "our Top Five Player Ranking."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Guide",
-                                            args![
-                                                "What do you",
-                                                ((Val::from("think, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                    + Val::from("?")),
-                                                "Glory can be yours if",
-                                                "you can achieve victory!"
-                                            ],
-                                        )?;
-                                    }
-                                }
-                            }
+                            ctx.lines_as(
+                                "Guide",
+                                args![
+                                    "If you can win more games",
+                                    "than everybody else, your",
+                                    "name will be registered in",
+                                    "our Top Five Player Ranking."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Guide",
+                                args![
+                                    "What do you",
+                                    ((Val::from("think, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from("?")),
+                                    "Glory can be yours if",
+                                    "you can achieve victory!"
+                                ],
+                            )?;
                         }
                     }
                     ctx.next()?;
@@ -3517,180 +3495,176 @@ fn whelper_tt_main_run(ctx: &Ctx, mut step: WhelperTtMainStep, args: Vec<Val>) -
                     ctx.close_window()?;
                     ctx.call(Function::Warp, vec![Val::from("turbo_room"), Val::from(72), Val::from(89)])?;
                     return Err(Stop::End);
-                } else {
-                    if ctx
-                        .var("$ttnames$")
-                        .get_at(runtime::index(&Val::from(7))?)?
-                        .loosely_equals(&ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                    {
-                        if runtime::compare(&l_w_s.clone(), &Val::from("4")).is_true() {
-                            ctx.lines_as(
-                                "Guide",
-                                args![
-                                    "Oh wow!",
-                                    "You're a member",
-                                    "in our Hall of Honor,",
-                                    "aren't you? This is great!",
-                                    "I'm talking to a living legend!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Guide", args!["Right, your reward..."])?;
-                            if ctx.var("tt_point").get()?.number()? < 28961 {
-                                ctx.mes("40 Turbo Track Points!")?;
-                                ctx.var("tt_point").set((ctx.var("tt_point").get()? + Val::from(40)))?;
-                                ctx.lines(args![
-                                    "You now have a total of",
-                                    (ctx.var("tt_point").get()? + Val::from(" Turbo Track Points."))
-                                ])?;
-                            } else {
-                                ctx.lines(args![
-                                    "Unfortunately, I can't give",
-                                    "you any Turbo Track Points",
-                                    "since you would exceed the",
-                                    "maximum limit. Sorry,",
-                                    (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from("..."))
-                                ])?;
-                            }
-                        } else {
-                            ctx.lines(args![
-                                "Oh, I'm sorry! You're",
-                                "here so that I can tell you",
-                                "how many Turbo Track Points"
-                            ])?;
-                            ctx.var("my_point").set(ctx.var("tt_point").get()?)?;
-                            ctx.lines(args![
-                                ((((Val::from("you have, right? You've got a total of ") + ctx.var("my_point").get()?)
-                                    + Val::from(" Turbo Track Points, "))
-                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                    + Val::from("."))
-                            ])?;
-                        }
-                        ctx.next()?;
+                } else if ctx
+                    .var("$ttnames$")
+                    .get_at(runtime::index(&Val::from(7))?)?
+                    .loosely_equals(&ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                {
+                    if runtime::compare(&l_w_s.clone(), &Val::from("4")).is_true() {
                         ctx.lines_as(
                             "Guide",
                             args![
-                                "Oh, and thanks for",
-                                "participating in the",
-                                "Turbo Track! You'll be sent",
-                                "to the Waiting Room soon~"
+                                "Oh wow!",
+                                "You're a member",
+                                "in our Hall of Honor,",
+                                "aren't you? This is great!",
+                                "I'm talking to a living legend!"
                             ],
                         )?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("turbo_room"), Val::from(72), Val::from(89)])?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx
-                            .var("$ttnames$")
-                            .get_at(runtime::index(&Val::from(8))?)?
-                            .loosely_equals(&ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                        {
-                            ctx.lines_as(
-                                "Guide",
-                                args![
-                                    "Hey, aren't you",
-                                    "in our Hall of Honor?",
-                                    "I've been watching your",
-                                    "races... You're pretty quick",
-                                    "on your feet, hotshot~"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.mes("[Guide]")?;
-                            if runtime::compare(&l_w_s.clone(), &Val::from("4")).is_true() {
-                                ctx.mes("Right, your reward...")?;
-                                if ctx.var("tt_point").get()?.number()? < 28961 {
-                                    ctx.mes("40 Turbo Track Points!")?;
-                                    ctx.var("tt_point").set((ctx.var("tt_point").get()? + Val::from(40)))?;
-                                    ctx.lines(args![
-                                        "You now have a total of",
-                                        (ctx.var("tt_point").get()? + Val::from(" Turbo Track Points."))
-                                    ])?;
-                                } else {
-                                    ctx.lines(args![
-                                        "Unfortunately, I can't give",
-                                        "you any Turbo Track Points",
-                                        "since you would exceed the",
-                                        "maximum limit. Sorry..."
-                                    ])?;
-                                }
-                            } else {
-                                ctx.mes("Oh right, your current")?;
-                                ctx.var("my_point").set(ctx.var("tt_point").get()?)?;
-                                ctx.lines(args![
-                                    "Turbo Track Point total!",
-                                    "You've got a total of",
-                                    (ctx.var("my_point").get()? + Val::from(" Turbo Track points,")),
-                                    (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from("."))
-                                ])?;
-                            }
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Guide",
-                                args![
-                                    "Oh, and thanks for",
-                                    "participating in the",
-                                    "Turbo Track! You'll be sent",
-                                    "to the Waiting Room soon~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("turbo_room"), Val::from(72), Val::from(89)])?;
-                            return Err(Stop::End);
+                        ctx.next()?;
+                        ctx.lines_as("Guide", args!["Right, your reward..."])?;
+                        if ctx.var("tt_point").get()?.number()? < 28961 {
+                            ctx.mes("40 Turbo Track Points!")?;
+                            ctx.var("tt_point").set((ctx.var("tt_point").get()? + Val::from(40)))?;
+                            ctx.lines(args![
+                                "You now have a total of",
+                                (ctx.var("tt_point").get()? + Val::from(" Turbo Track Points."))
+                            ])?;
                         } else {
-                            ctx.lines_as(
-                                "Guide",
-                                args![
-                                    "Awwww~",
-                                    "You were almost able",
-                                    "to join our Hall of Honor...!",
-                                    "But don't let that get you",
-                                    "down. Maybe next time!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.mes("[Guide]")?;
-                            if runtime::compare(&l_w_s.clone(), &Val::from("4")).is_true() {
-                                ctx.lines(args!["Right, your reward...", "40 Turbo Track Points!"])?;
-                                if ctx.var("tt_point").get()?.number()? < 28961 {
-                                    ctx.var("tt_point").set((ctx.var("tt_point").get()? + Val::from(40)))?;
-                                    ctx.var("my_point").set(ctx.var("tt_point").get()?)?;
-                                    ctx.lines(args![
-                                        "You now have a total of",
-                                        (ctx.var("tt_point").get()? + Val::from(" Turbo Track Points."))
-                                    ])?;
-                                } else {
-                                    ctx.lines(args![
-                                        "Unfortunately, I can't give",
-                                        "you any Turbo Track Points",
-                                        "since you would exceed the",
-                                        "maximum limit. Sorry..."
-                                    ])?;
-                                }
-                            } else {
-                                ctx.lines(args![
-                                    "Oh, right.",
-                                    "Currently, you",
-                                    "have a total of",
-                                    (ctx.var("tt_point").get()? + Val::from(" Turbo Track points."))
-                                ])?;
-                            }
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Guide",
-                                args![
-                                    "Thank you for",
-                                    "participating in",
-                                    "the Turbo Track.",
-                                    "You will be transported",
-                                    "to a Waiting Room shortly."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("turbo_room"), Val::from(72), Val::from(89)])?;
-                            return Err(Stop::End);
+                            ctx.lines(args![
+                                "Unfortunately, I can't give",
+                                "you any Turbo Track Points",
+                                "since you would exceed the",
+                                "maximum limit. Sorry,",
+                                (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from("..."))
+                            ])?;
                         }
+                    } else {
+                        ctx.lines(args![
+                            "Oh, I'm sorry! You're",
+                            "here so that I can tell you",
+                            "how many Turbo Track Points"
+                        ])?;
+                        ctx.var("my_point").set(ctx.var("tt_point").get()?)?;
+                        ctx.lines(args![
+                            ((((Val::from("you have, right? You've got a total of ") + ctx.var("my_point").get()?)
+                                + Val::from(" Turbo Track Points, "))
+                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                + Val::from("."))
+                        ])?;
                     }
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Guide",
+                        args![
+                            "Oh, and thanks for",
+                            "participating in the",
+                            "Turbo Track! You'll be sent",
+                            "to the Waiting Room soon~"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("turbo_room"), Val::from(72), Val::from(89)])?;
+                    return Err(Stop::End);
+                } else if ctx
+                    .var("$ttnames$")
+                    .get_at(runtime::index(&Val::from(8))?)?
+                    .loosely_equals(&ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                {
+                    ctx.lines_as(
+                        "Guide",
+                        args![
+                            "Hey, aren't you",
+                            "in our Hall of Honor?",
+                            "I've been watching your",
+                            "races... You're pretty quick",
+                            "on your feet, hotshot~"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.mes("[Guide]")?;
+                    if runtime::compare(&l_w_s.clone(), &Val::from("4")).is_true() {
+                        ctx.mes("Right, your reward...")?;
+                        if ctx.var("tt_point").get()?.number()? < 28961 {
+                            ctx.mes("40 Turbo Track Points!")?;
+                            ctx.var("tt_point").set((ctx.var("tt_point").get()? + Val::from(40)))?;
+                            ctx.lines(args![
+                                "You now have a total of",
+                                (ctx.var("tt_point").get()? + Val::from(" Turbo Track Points."))
+                            ])?;
+                        } else {
+                            ctx.lines(args![
+                                "Unfortunately, I can't give",
+                                "you any Turbo Track Points",
+                                "since you would exceed the",
+                                "maximum limit. Sorry..."
+                            ])?;
+                        }
+                    } else {
+                        ctx.mes("Oh right, your current")?;
+                        ctx.var("my_point").set(ctx.var("tt_point").get()?)?;
+                        ctx.lines(args![
+                            "Turbo Track Point total!",
+                            "You've got a total of",
+                            (ctx.var("my_point").get()? + Val::from(" Turbo Track points,")),
+                            (ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from("."))
+                        ])?;
+                    }
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Guide",
+                        args![
+                            "Oh, and thanks for",
+                            "participating in the",
+                            "Turbo Track! You'll be sent",
+                            "to the Waiting Room soon~"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("turbo_room"), Val::from(72), Val::from(89)])?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as(
+                        "Guide",
+                        args![
+                            "Awwww~",
+                            "You were almost able",
+                            "to join our Hall of Honor...!",
+                            "But don't let that get you",
+                            "down. Maybe next time!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.mes("[Guide]")?;
+                    if runtime::compare(&l_w_s.clone(), &Val::from("4")).is_true() {
+                        ctx.lines(args!["Right, your reward...", "40 Turbo Track Points!"])?;
+                        if ctx.var("tt_point").get()?.number()? < 28961 {
+                            ctx.var("tt_point").set((ctx.var("tt_point").get()? + Val::from(40)))?;
+                            ctx.var("my_point").set(ctx.var("tt_point").get()?)?;
+                            ctx.lines(args![
+                                "You now have a total of",
+                                (ctx.var("tt_point").get()? + Val::from(" Turbo Track Points."))
+                            ])?;
+                        } else {
+                            ctx.lines(args![
+                                "Unfortunately, I can't give",
+                                "you any Turbo Track Points",
+                                "since you would exceed the",
+                                "maximum limit. Sorry..."
+                            ])?;
+                        }
+                    } else {
+                        ctx.lines(args![
+                            "Oh, right.",
+                            "Currently, you",
+                            "have a total of",
+                            (ctx.var("tt_point").get()? + Val::from(" Turbo Track points."))
+                        ])?;
+                    }
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Guide",
+                        args![
+                            "Thank you for",
+                            "participating in",
+                            "the Turbo Track.",
+                            "You will be transported",
+                            "to a Waiting Room shortly."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("turbo_room"), Val::from(72), Val::from(89)])?;
+                    return Err(Stop::End);
                 }
             }
             WhelperTtMainStep::OnEnable => {
@@ -5055,12 +5029,10 @@ fn turbotrap_tt_main_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop
     l_hittrap = Val::from(10);
     if (l_hittrap.clone().number()? > 0 && l_hittrap.clone().number()? < 4) {
         ctx.call(Function::PercentHeal, vec![Val::from(-1), Val::from(0)])?;
+    } else if (l_hittrap.clone().number()? > 4 && l_hittrap.clone().number()? < 8) {
+        ctx.call(Function::PercentHeal, vec![Val::from(-5), Val::from(0)])?;
     } else {
-        if (l_hittrap.clone().number()? > 4 && l_hittrap.clone().number()? < 8) {
-            ctx.call(Function::PercentHeal, vec![Val::from(-5), Val::from(0)])?;
-        } else {
-            ctx.call(Function::PercentHeal, vec![Val::from(-2), Val::from(0)])?;
-        }
+        ctx.call(Function::PercentHeal, vec![Val::from(-2), Val::from(0)])?;
     }
     return Err(Stop::End);
 }
@@ -5083,20 +5055,18 @@ fn turbotrap_2_tt_main_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, St
     l_hittrap = Val::from(10);
     if (l_hittrap.clone().number()? > 0 && l_hittrap.clone().number()? < 4) {
         ctx.call(Function::PercentHeal, vec![Val::from(-1), Val::from(0)])?;
+    } else if (l_hittrap.clone().number()? > 4 && l_hittrap.clone().number()? < 8) {
+        ctx.call(Function::PercentHeal, vec![Val::from(-5), Val::from(0)])?;
+        ctx.call(
+            Function::StartStatus,
+            vec![ctx.constant("SC_FREEZE")?, Val::from(3000), Val::from(0)],
+        )?;
     } else {
-        if (l_hittrap.clone().number()? > 4 && l_hittrap.clone().number()? < 8) {
-            ctx.call(Function::PercentHeal, vec![Val::from(-5), Val::from(0)])?;
-            ctx.call(
-                Function::StartStatus,
-                vec![ctx.constant("SC_FREEZE")?, Val::from(3000), Val::from(0)],
-            )?;
-        } else {
-            ctx.call(
-                Function::StartStatus,
-                vec![ctx.constant("SC_FREEZE")?, Val::from(4000), Val::from(0)],
-            )?;
-            ctx.call(Function::PercentHeal, vec![Val::from(-2), Val::from(0)])?;
-        }
+        ctx.call(
+            Function::StartStatus,
+            vec![ctx.constant("SC_FREEZE")?, Val::from(4000), Val::from(0)],
+        )?;
+        ctx.call(Function::PercentHeal, vec![Val::from(-2), Val::from(0)])?;
     }
     Ok(Val::from(0))
 }
@@ -5123,34 +5093,26 @@ fn bing_1_tt_main_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             Function::Warp,
             vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(217), Val::from(232)],
         )?;
-    } else {
-        if l_bing1.clone() == 6 {
-            ctx.call(
-                Function::Warp,
-                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(233), Val::from(207)],
-            )?;
-        } else {
-            if l_bing1.clone() == 7 {
-                ctx.call(
-                    Function::Warp,
-                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(208), Val::from(219)],
-                )?;
-            } else {
-                if l_bing1.clone() == 8 {
-                    ctx.call(
-                        Function::Warp,
-                        vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(219), Val::from(202)],
-                    )?;
-                } else {
-                    if l_bing1.clone() == 9 {
-                        ctx.call(
-                            Function::Warp,
-                            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(218), Val::from(228)],
-                        )?;
-                    }
-                }
-            }
-        }
+    } else if l_bing1.clone() == 6 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(233), Val::from(207)],
+        )?;
+    } else if l_bing1.clone() == 7 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(208), Val::from(219)],
+        )?;
+    } else if l_bing1.clone() == 8 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(219), Val::from(202)],
+        )?;
+    } else if l_bing1.clone() == 9 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(218), Val::from(228)],
+        )?;
     }
     ctx.call(Function::DisableNpc, vec![(Val::from("bing#") + l_w_s.clone())])?;
     ctx.call(Function::EnableNpc, vec![(Val::from("bing2#") + l_w_s.clone())])?;
@@ -6290,52 +6252,50 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.lines_as("Item Exchange Helper", args!["You have", "canceled", "your request."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
+                        } else if (l_input.clone().number()? < 0 || l_input.clone().number()? > 50) {
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "Your request exceeds",
+                                    "the maximum limit. You",
+                                    "can only receive a maximum",
+                                    "of 50 tickets at once."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if (l_input.clone().number()? < 0 || l_input.clone().number()? > 50) {
+                            l_total_point = (Val::from(10).try_mul(l_input.clone())?);
+                            if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
                                 ctx.lines_as(
                                     "Item Exchange Helper",
                                     args![
-                                        "Your request exceeds",
-                                        "the maximum limit. You",
-                                        "can only receive a maximum",
-                                        "of 50 tickets at once."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                l_total_point = (Val::from(10).try_mul(l_input.clone())?);
-                                if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
-                                    ctx.lines_as(
-                                        "Item Exchange Helper",
-                                        args![
-                                            "I'm sorry, but you do",
-                                            "not have enough Turbo",
-                                            "Track Points. Please check",
-                                            "the amount of Turbo Track",
-                                            "Points you have earned before",
-                                            "redeeming your points again."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                ctx.var("tt_point")
-                                    .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
-                                ctx.call(Function::GetItem, vec![Val::from(7060), l_input.clone()])?;
-                                ctx.lines_as(
-                                    "Item Exchange Helper",
-                                    args![
-                                        "Thank you for",
-                                        "your patronage.",
-                                        "We hope you enjoy",
-                                        "your time here in",
-                                        "the Turbo Track~"
+                                        "I'm sorry, but you do",
+                                        "not have enough Turbo",
+                                        "Track Points. Please check",
+                                        "the amount of Turbo Track",
+                                        "Points you have earned before",
+                                        "redeeming your points again."
                                     ],
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            ctx.var("tt_point")
+                                .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
+                            ctx.call(Function::GetItem, vec![Val::from(7060), l_input.clone()])?;
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "Thank you for",
+                                    "your patronage.",
+                                    "We hope you enjoy",
+                                    "your time here in",
+                                    "the Turbo Track~"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                     if !matched2 && subject2.loosely_equals(&Val::from(2)) {
@@ -6450,52 +6410,50 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.lines_as("Item Exchange Helper", args!["You have", "canceled", "your request."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
+                        } else if (l_input.clone().number()? < 0 || l_input.clone().number()? > 50) {
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "I'm sorry, but your",
+                                    "request has exceeded the",
+                                    "maximum limit. You can only",
+                                    "request up to 50 scrolls at once."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if (l_input.clone().number()? < 0 || l_input.clone().number()? > 50) {
+                            l_total_point = (Val::from(12).try_mul(l_input.clone())?);
+                            if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
                                 ctx.lines_as(
                                     "Item Exchange Helper",
                                     args![
-                                        "I'm sorry, but your",
-                                        "request has exceeded the",
-                                        "maximum limit. You can only",
-                                        "request up to 50 scrolls at once."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                l_total_point = (Val::from(12).try_mul(l_input.clone())?);
-                                if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
-                                    ctx.lines_as(
-                                        "Item Exchange Helper",
-                                        args![
-                                            "I'm sorry, but you do",
-                                            "not have enough Turbo",
-                                            "Track Points. Please check",
-                                            "the amount of Turbo Track",
-                                            "Points you have earned before",
-                                            "redeeming your points again."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                ctx.var("tt_point")
-                                    .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
-                                ctx.call(Function::GetItem, vec![l_scroll.clone(), l_input.clone()])?;
-                                ctx.lines_as(
-                                    "Item Exchange Helper",
-                                    args![
-                                        "Thank you for",
-                                        "your patronage.",
-                                        "We hope you enjoy",
-                                        "your time here in",
-                                        "the Turbo Track~"
+                                        "I'm sorry, but you do",
+                                        "not have enough Turbo",
+                                        "Track Points. Please check",
+                                        "the amount of Turbo Track",
+                                        "Points you have earned before",
+                                        "redeeming your points again."
                                     ],
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            ctx.var("tt_point")
+                                .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
+                            ctx.call(Function::GetItem, vec![l_scroll.clone(), l_input.clone()])?;
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "Thank you for",
+                                    "your patronage.",
+                                    "We hope you enjoy",
+                                    "your time here in",
+                                    "the Turbo Track~"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                     if !matched2 && subject2.loosely_equals(&Val::from(3)) {
@@ -6533,18 +6491,12 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.var("tt_point").set((ctx.var("tt_point").get()?.try_sub(Val::from(40))?))?;
                             if ctx.var("BaseLevel").get()?.number()? < 70 {
                                 ctx.call(Function::GetExperience, vec![Val::from(3000), Val::from(0)])?;
-                            } else {
-                                if ctx.var("BaseLevel").get()?.number()? < 80 {
-                                    ctx.call(Function::GetExperience, vec![Val::from(9000), Val::from(0)])?;
-                                } else {
-                                    if ctx.var("BaseLevel").get()?.number()? < 90 {
-                                        ctx.call(Function::GetExperience, vec![Val::from(10000), Val::from(0)])?;
-                                    } else {
-                                        if runtime::op(&ctx.var("BaseLevel").get()?, "<", &ctx.constant("MAX_LEVEL")?)?.is_true() {
-                                            ctx.call(Function::GetExperience, vec![Val::from(30000), Val::from(0)])?;
-                                        }
-                                    }
-                                }
+                            } else if ctx.var("BaseLevel").get()?.number()? < 80 {
+                                ctx.call(Function::GetExperience, vec![Val::from(9000), Val::from(0)])?;
+                            } else if ctx.var("BaseLevel").get()?.number()? < 90 {
+                                ctx.call(Function::GetExperience, vec![Val::from(10000), Val::from(0)])?;
+                            } else if runtime::op(&ctx.var("BaseLevel").get()?, "<", &ctx.constant("MAX_LEVEL")?)?.is_true() {
+                                ctx.call(Function::GetExperience, vec![Val::from(30000), Val::from(0)])?;
                             }
                             ctx.lines_as(
                                 "Item Exchange Helper",
@@ -6584,52 +6536,50 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.lines_as("Item Exchange Helper", args!["You have", "canceled", "your request."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
+                        } else if (l_input.clone().number()? < 0 || l_input.clone().number()? > 10) {
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "Your request exceeds",
+                                    "the maximum limit. You",
+                                    "can only receive a maximum",
+                                    "of 10 diamonds at once."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if (l_input.clone().number()? < 0 || l_input.clone().number()? > 10) {
+                            l_total_point = (Val::from(150).try_mul(l_input.clone())?);
+                            if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
                                 ctx.lines_as(
                                     "Item Exchange Helper",
                                     args![
-                                        "Your request exceeds",
-                                        "the maximum limit. You",
-                                        "can only receive a maximum",
-                                        "of 10 diamonds at once."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                l_total_point = (Val::from(150).try_mul(l_input.clone())?);
-                                if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
-                                    ctx.lines_as(
-                                        "Item Exchange Helper",
-                                        args![
-                                            "I'm sorry, but you do",
-                                            "not have enough Turbo",
-                                            "Track Points. Please check",
-                                            "the amount of Turbo Track",
-                                            "Points you have earned before",
-                                            "redeeming your points again."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                ctx.var("tt_point")
-                                    .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
-                                ctx.call(Function::GetItem, vec![Val::from(732), l_input.clone()])?;
-                                ctx.lines_as(
-                                    "Item Exchange Helper",
-                                    args![
-                                        "Thank you for",
-                                        "your patronage.",
-                                        "We hope you enjoy",
-                                        "your time here in",
-                                        "the Turbo Track~"
+                                        "I'm sorry, but you do",
+                                        "not have enough Turbo",
+                                        "Track Points. Please check",
+                                        "the amount of Turbo Track",
+                                        "Points you have earned before",
+                                        "redeeming your points again."
                                     ],
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            ctx.var("tt_point")
+                                .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
+                            ctx.call(Function::GetItem, vec![Val::from(732), l_input.clone()])?;
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "Thank you for",
+                                    "your patronage.",
+                                    "We hope you enjoy",
+                                    "your time here in",
+                                    "the Turbo Track~"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                     if !matched2 && subject2.loosely_equals(&Val::from(5)) {
@@ -6654,52 +6604,50 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.lines_as("Item Exchange Helper", args!["You have", "canceled", "your request."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
+                        } else if (l_input.clone().number()? < 0 || l_input.clone().number()? > 10) {
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "Your request exceeds",
+                                    "the maximum limit. You",
+                                    "can only receive a maximum",
+                                    "of 10 Gift Boxes at once."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if (l_input.clone().number()? < 0 || l_input.clone().number()? > 10) {
+                            l_total_point = (Val::from(300).try_mul(l_input.clone())?);
+                            if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
                                 ctx.lines_as(
                                     "Item Exchange Helper",
                                     args![
-                                        "Your request exceeds",
-                                        "the maximum limit. You",
-                                        "can only receive a maximum",
-                                        "of 10 Gift Boxes at once."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                l_total_point = (Val::from(300).try_mul(l_input.clone())?);
-                                if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
-                                    ctx.lines_as(
-                                        "Item Exchange Helper",
-                                        args![
-                                            "I'm sorry, but you do",
-                                            "not have enough Turbo",
-                                            "Track Points. Please check",
-                                            "the amount of Turbo Track",
-                                            "Points you have earned before",
-                                            "redeeming your points again."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                ctx.var("tt_point")
-                                    .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
-                                ctx.call(Function::GetItem, vec![Val::from(644), l_input.clone()])?;
-                                ctx.lines_as(
-                                    "Item Exchange Helper",
-                                    args![
-                                        "Thank you for",
-                                        "your patronage.",
-                                        "We hope you enjoy",
-                                        "your time here in",
-                                        "the Turbo Track~"
+                                        "I'm sorry, but you do",
+                                        "not have enough Turbo",
+                                        "Track Points. Please check",
+                                        "the amount of Turbo Track",
+                                        "Points you have earned before",
+                                        "redeeming your points again."
                                     ],
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            ctx.var("tt_point")
+                                .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
+                            ctx.call(Function::GetItem, vec![Val::from(644), l_input.clone()])?;
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "Thank you for",
+                                    "your patronage.",
+                                    "We hope you enjoy",
+                                    "your time here in",
+                                    "the Turbo Track~"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                     if !matched2 && subject2.loosely_equals(&Val::from(6)) {
@@ -6724,52 +6672,50 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.lines_as("Item Exchange Helper", args!["You have", "canceled", "your request."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
+                        } else if (l_input.clone().number()? < 0 || l_input.clone().number()? > 10) {
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "Your request exceeds",
+                                    "the maximum limit. You",
+                                    "can only receive a maximum",
+                                    "of 10 potions at once."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         } else {
-                            if (l_input.clone().number()? < 0 || l_input.clone().number()? > 10) {
+                            l_total_point = (Val::from(400).try_mul(l_input.clone())?);
+                            if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
                                 ctx.lines_as(
                                     "Item Exchange Helper",
                                     args![
-                                        "Your request exceeds",
-                                        "the maximum limit. You",
-                                        "can only receive a maximum",
-                                        "of 10 potions at once."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                l_total_point = (Val::from(400).try_mul(l_input.clone())?);
-                                if runtime::op(&l_total_point.clone(), ">", &ctx.var("tt_point").get()?)?.is_true() {
-                                    ctx.lines_as(
-                                        "Item Exchange Helper",
-                                        args![
-                                            "I'm sorry, but you do",
-                                            "not have enough Turbo",
-                                            "Track Points. Please check",
-                                            "the amount of Turbo Track",
-                                            "Points you have earned before",
-                                            "redeeming your points again."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                ctx.var("tt_point")
-                                    .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
-                                ctx.call(Function::GetItem, vec![Val::from(12016), l_input.clone()])?;
-                                ctx.lines_as(
-                                    "Item Exchange Helper",
-                                    args![
-                                        "Thank you for",
-                                        "your patronage.",
-                                        "We hope you enjoy",
-                                        "your time here in",
-                                        "the Turbo Track~"
+                                        "I'm sorry, but you do",
+                                        "not have enough Turbo",
+                                        "Track Points. Please check",
+                                        "the amount of Turbo Track",
+                                        "Points you have earned before",
+                                        "redeeming your points again."
                                     ],
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            ctx.var("tt_point")
+                                .set((ctx.var("tt_point").get()?.try_sub(l_total_point.clone())?))?;
+                            ctx.call(Function::GetItem, vec![Val::from(12016), l_input.clone()])?;
+                            ctx.lines_as(
+                                "Item Exchange Helper",
+                                args![
+                                    "Thank you for",
+                                    "your patronage.",
+                                    "We hope you enjoy",
+                                    "your time here in",
+                                    "the Turbo Track~"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                     if !matched2 && subject2.loosely_equals(&Val::from(7)) {
@@ -6974,71 +6920,69 @@ fn point_manager_tt_run(ctx: &Ctx, mut step: PointManagerTtStep, args: Vec<Val>)
                                     ctx.lines_as("Turbo Track Point Manager", args!["You have", "canceled", "your request."])?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
+                                } else if l_input.clone().number()? > 20 {
+                                    ctx.lines_as(
+                                        "Turbo Track Point Manager",
+                                        args![
+                                            "Your request exceeds",
+                                            "the maximum limit. Please",
+                                            "enter a value no greater than 20."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 } else {
-                                    if l_input.clone().number()? > 20 {
+                                    l_want_point1 = (Val::from(10).try_mul(l_input.clone())?);
+                                    l_want_point = (Val::from(5).try_mul(l_input.clone())?);
+                                    l_my_turbo_all = (ctx.var("tt_point").get()? + l_want_point.clone());
+                                    l_my_arena_all = (ctx.var("arena_point").get()?.try_sub(l_want_point1.clone())?);
+                                    if l_my_turbo_all.clone().number()? > 28999 {
+                                        ctx.lines_as("Turbo Track Point Manager", args!["Unfortunately, your Turbo Track Points will exceed the maximum limit if we proceed with point conversion. Please spend more", "of your Turbo Track Points before using this service. Thank you."])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    if l_my_arena_all.clone().number()? < 0 {
                                         ctx.lines_as(
                                             "Turbo Track Point Manager",
                                             args![
-                                                "Your request exceeds",
-                                                "the maximum limit. Please",
-                                                "enter a value no greater than 20."
+                                                "I am sorry, but you do",
+                                                "not have enough Arena Points",
+                                                "to perform this Turbo Track",
+                                                "Point conversion."
                                             ],
                                         )?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     } else {
-                                        l_want_point1 = (Val::from(10).try_mul(l_input.clone())?);
-                                        l_want_point = (Val::from(5).try_mul(l_input.clone())?);
-                                        l_my_turbo_all = (ctx.var("tt_point").get()? + l_want_point.clone());
-                                        l_my_arena_all = (ctx.var("arena_point").get()?.try_sub(l_want_point1.clone())?);
-                                        if l_my_turbo_all.clone().number()? > 28999 {
-                                            ctx.lines_as("Turbo Track Point Manager", args!["Unfortunately, your Turbo Track Points will exceed the maximum limit if we proceed with point conversion. Please spend more", "of your Turbo Track Points before using this service. Thank you."])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if l_my_arena_all.clone().number()? < 0 {
-                                            ctx.lines_as(
-                                                "Turbo Track Point Manager",
-                                                args![
-                                                    "I am sorry, but you do",
-                                                    "not have enough Arena Points",
-                                                    "to perform this Turbo Track",
-                                                    "Point conversion."
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            ctx.lines_as(
-                                                "Turbo Track Point Manager",
-                                                args![
-                                                    "You have converted",
-                                                    "10 Arena Points into",
-                                                    ((Val::from("Turbo Track Points ") + l_input.clone()) + Val::from(" times.")),
-                                                    ((Val::from("A total of ") + l_want_point1.clone()) + Val::from(" Arena Points")),
-                                                    "has been converted into",
-                                                    ((Val::from("") + l_want_point.clone()) + Val::from(" Turbo Track Points."))
-                                                ],
-                                            )?;
-                                            ctx.var("arena_point").set(l_my_arena_all.clone())?;
-                                            ctx.var("tt_point").set(l_my_turbo_all.clone())?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Turbo Track Point Manager",
-                                                args![
-                                                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                        + Val::from(",")),
-                                                    "you now have",
-                                                    ((Val::from("^00688B") + ctx.var("tt_point").get()?)
-                                                        + Val::from("^000000 Turbo Track Points")),
-                                                    ((Val::from("and ^4682B4") + ctx.var("arena_point").get()?)
-                                                        + Val::from("^000000 Arena Points.")),
-                                                    "Thank you for your patronage."
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
+                                        ctx.lines_as(
+                                            "Turbo Track Point Manager",
+                                            args![
+                                                "You have converted",
+                                                "10 Arena Points into",
+                                                ((Val::from("Turbo Track Points ") + l_input.clone()) + Val::from(" times.")),
+                                                ((Val::from("A total of ") + l_want_point1.clone()) + Val::from(" Arena Points")),
+                                                "has been converted into",
+                                                ((Val::from("") + l_want_point.clone()) + Val::from(" Turbo Track Points."))
+                                            ],
+                                        )?;
+                                        ctx.var("arena_point").set(l_my_arena_all.clone())?;
+                                        ctx.var("tt_point").set(l_my_turbo_all.clone())?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Turbo Track Point Manager",
+                                            args![
+                                                ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                    + Val::from(",")),
+                                                "you now have",
+                                                ((Val::from("^00688B") + ctx.var("tt_point").get()?)
+                                                    + Val::from("^000000 Turbo Track Points")),
+                                                ((Val::from("and ^4682B4") + ctx.var("arena_point").get()?)
+                                                    + Val::from("^000000 Arena Points.")),
+                                                "Thank you for your patronage."
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
                                 }
                             }
@@ -7190,11 +7134,9 @@ fn en_turbo_run(ctx: &Ctx, mut step: EnTurboStep, args: Vec<Val>) -> Result<Val,
                         if !(runtime::op(&ctx.call(Function::EaClass, vec![])?, "&", &ctx.constant("EAJL_THIRD")?)?.is_true()) {
                             ctx.call(Function::SetRiding, vec![Val::from(0)])?;
                             ctx.call(Function::GetItem, vec![Val::from(7310), Val::from(1)])?;
+                        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?) {
                         } else {
-                            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?) {
-                            } else {
-                                ctx.call(Function::SetRiding, vec![Val::from(0)])?;
-                            }
+                            ctx.call(Function::SetRiding, vec![Val::from(0)])?;
                         }
                         ctx.call(Function::Warp, vec![Val::from("turbo_room"), Val::from(100), Val::from(65)])?;
                     }
@@ -7313,20 +7255,18 @@ fn mountmanager_turbo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             l_skill_s = Val::from("Peco Peco Ride");
             l_riding = ctx.call(Function::CheckRiding, vec![])?;
             l_i = Val::from(1);
+        } else if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?) {
+            l_mount_s = Val::from("Dragon");
+            l_skill = Val::from(63);
+            l_skill_s = Val::from("Dragon Training");
+            l_riding = Val::from(0);
+            l_i = Val::from(2);
         } else {
-            if ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_KNIGHT")?) {
-                l_mount_s = Val::from("Dragon");
-                l_skill = Val::from(63);
-                l_skill_s = Val::from("Dragon Training");
-                l_riding = Val::from(0);
-                l_i = Val::from(2);
-            } else {
-                l_mount_s = Val::from("Gryphon");
-                l_skill = Val::from(63);
-                l_skill_s = Val::from("Peco Peco Ride");
-                l_riding = ctx.call(Function::CheckRiding, vec![])?;
-                l_i = Val::from(1);
-            }
+            l_mount_s = Val::from("Gryphon");
+            l_skill = Val::from(63);
+            l_skill_s = Val::from("Peco Peco Ride");
+            l_riding = ctx.call(Function::CheckRiding, vec![])?;
+            l_i = Val::from(1);
         }
     } else {
         if ((ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_MECHANIC")?)
@@ -7375,69 +7315,65 @@ fn mountmanager_turbo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
+            } else if l_riding.clone().is_true() {
+                ctx.lines(args![
+                    l_n_s.clone(),
+                    "You're already",
+                    "mounted on a",
+                    (l_mount_s.clone() + Val::from(".")),
+                    "Thank you~"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if l_riding.clone().is_true() {
-                    ctx.lines(args![
-                        l_n_s.clone(),
-                        "You're already",
-                        "mounted on a",
-                        (l_mount_s.clone() + Val::from(".")),
-                        "Thank you~"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if l_zeny.clone().is_true() {
-                        if (ctx.call(Function::CountItem, vec![Val::from(7310)])?.number()? < 1
-                            && runtime::op(&ctx.var("Zeny").get()?, "<", &l_zeny.clone())?.is_true())
-                        {
-                            ctx.lines(args![
-                                l_n_s.clone(),
-                                "I'm sorry, but you",
-                                "don't have a Free Ticket",
-                                ((Val::from("for Peco Ride or ") + l_zeny_s.clone()) + Val::from(" zeny.")),
-                                "to use the Peco rental service."
-                            ])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.call(Function::CountItem, vec![Val::from(7310)])?.number()? > 0 {
-                                ctx.call(Function::DelItem, vec![Val::from(7310), Val::from(1)])?;
-                            } else {
-                                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(l_zeny.clone())?))?;
-                            }
-                        }
+                if l_zeny.clone().is_true() {
+                    if (ctx.call(Function::CountItem, vec![Val::from(7310)])?.number()? < 1
+                        && runtime::op(&ctx.var("Zeny").get()?, "<", &l_zeny.clone())?.is_true())
+                    {
+                        ctx.lines(args![
+                            l_n_s.clone(),
+                            "I'm sorry, but you",
+                            "don't have a Free Ticket",
+                            ((Val::from("for Peco Ride or ") + l_zeny_s.clone()) + Val::from(" zeny.")),
+                            "to use the Peco rental service."
+                        ])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx.call(Function::CountItem, vec![Val::from(7310)])?.number()? > 0 {
+                        ctx.call(Function::DelItem, vec![Val::from(7310), Val::from(1)])?;
+                    } else {
+                        ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(l_zeny.clone())?))?;
                     }
-                    'b2: {
-                        let subject2 = l_i.clone();
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.call(Function::SetRiding, vec![])?;
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            break 'b2;
-                        }
-                    }
-                    ctx.lines(args![l_n_s.clone(), "Thank you for", "your patronage~"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
                 }
+                'b2: {
+                    let subject2 = l_i.clone();
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                        && !subject2.loosely_equals(&Val::from(2))
+                        && !subject2.loosely_equals(&Val::from(3));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.call(Function::SetRiding, vec![])?;
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        break 'b2;
+                    }
+                }
+                ctx.lines(args![l_n_s.clone(), "Thank you for", "your patronage~"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(2)) {

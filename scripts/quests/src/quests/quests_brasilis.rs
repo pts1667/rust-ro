@@ -116,8 +116,8 @@ pub fn angelo_br_ongo(ctx: &Ctx) -> Script {
 fn puppy_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     let mut l_i: Vec<Val> = Vec::new();
     ctx.lines_as("Puppy", args!["bow! wow wow!"])?;
-    if ctx.call(Function::CheckQuest, vec![Val::from(9030)])? == 1 {
-        if ctx.var("brazil_kid").get()?.number()? < 3 {
+    if ctx.call(Function::CheckQuest, vec![Val::from(9030)])? == 1
+        && ctx.var("brazil_kid").get()?.number()? < 3 {
             ctx.next()?;
             ctx.var("brazil_kid").set((ctx.var("brazil_kid").get()? + Val::from(1)))?;
             ctx.lines(args![
@@ -135,16 +135,14 @@ fn puppy_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 let base = Val::from(0).number()?;
                 runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(2), false);
                 runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(3), false);
+            } else if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?, &Val::from("2")).is_true() {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(1), false);
+                runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(3), false);
             } else {
-                if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?, &Val::from("2")).is_true() {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(1), false);
-                    runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(3), false);
-                } else {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(1), false);
-                    runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(2), false);
-                }
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_i, &Val::from(base + 0), Val::from(1), false);
+                runtime::local_set(&mut l_i, &Val::from(base + 1), Val::from(2), false);
             }
             ctx.call(
                 Function::DoNpcEvent,
@@ -156,7 +154,6 @@ fn puppy_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.call(Function::DisableNpc, vec![ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?])?;
         }
-    }
     ctx.close_window()?;
     return Err(Stop::End);
 }
@@ -280,137 +277,135 @@ fn lucia_brasilis_run(ctx: &Ctx, mut step: LuciaBrasilisStep, args: Vec<Val>) ->
                     continue 'machine;
                     step = LuciaBrasilisStep::LWhatHappen;
                     continue 'machine;
-                } else {
-                    if (l_nqstate1.clone() == 0 || l_nqstate1.clone() == 1) {
-                        if ctx.call(Function::CountItem, vec![Val::from(6221)])?.number()? > 0 {
-                            ctx.lines_as("Lucia", args!["Hello, you really did it!"])?;
-                            if ctx.call(Function::CheckWeight, vec![Val::from(11502), Val::from(3)])?.is_true() {
-                                ctx.lines(args!["I hope you will come", "again to help me.", "Have a nice day~!"])?;
-                                ctx.call(Function::DelItem, vec![Val::from(6221), Val::from(1)])?;
-                                ctx.call(Function::CompleteQuest, vec![Val::from(9028)])?;
-                                if l_nqstate2.clone().number()? > -1 {
-                                    ctx.call(Function::EraseQuest, vec![Val::from(9029)])?;
-                                }
-                                ctx.call(Function::SetQuest, vec![Val::from(9029)])?;
-                                ctx.call(Function::ConsumeItem, vec![Val::from(12070)])?;
-                                ctx.call(Function::ConsumeItem, vec![Val::from(12055)])?;
-                                ctx.call(Function::ConsumeItem, vec![Val::from(12065)])?;
-                                ctx.call(Function::GetItem, vec![Val::from(505), Val::from(5)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines(args![
-                                    " ",
-                                    "I'd like to reward you,",
-                                    "however your bags are full.",
-                                    "Please make room and come back!"
-                                ])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
+                } else if (l_nqstate1.clone() == 0 || l_nqstate1.clone() == 1) {
+                    if ctx.call(Function::CountItem, vec![Val::from(6221)])?.number()? > 0 {
+                        ctx.lines_as("Lucia", args!["Hello, you really did it!"])?;
+                        if ctx.call(Function::CheckWeight, vec![Val::from(11502), Val::from(3)])?.is_true() {
+                            ctx.lines(args!["I hope you will come", "again to help me.", "Have a nice day~!"])?;
+                            ctx.call(Function::DelItem, vec![Val::from(6221), Val::from(1)])?;
+                            ctx.call(Function::CompleteQuest, vec![Val::from(9028)])?;
+                            if l_nqstate2.clone().number()? > -1 {
+                                ctx.call(Function::EraseQuest, vec![Val::from(9029)])?;
                             }
-                        } else {
-                            ctx.mes("[Lucia]")?;
-                            if ctx.call(Function::CountItem, vec![Val::from(12408)])?.number()? < 1 {
-                                ctx.lines(args![
-                                    "Did you need another ^006400Hydra Ball^000000?",
-                                    "I will give you one more."
-                                ])?;
-                                ctx.call(Function::GetItem, vec![Val::from(12408), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.mes("Any problems?")?;
-                                ctx.next()?;
-                                'b2: {
-                                    let subject2 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("No.:^006400Tell me again what happened^000000")],
-                                    )?);
-                                    let mut matched2 = false;
-                                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
-                                        ctx.lines_as("Lucia", args!["Ok, please do me a favor."])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
-                                        step = LuciaBrasilisStep::LWhatHappen;
-                                        continue 'machine;
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        ctx.lines_as(
-                            "Lucia",
-                            args![
-                                ((Val::from("Oh, ^0000FF") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                    + Val::from("^000000 you're back."))
-                            ],
-                        )?;
-                        l_nchecktime = ctx.call(Function::CheckQuest, vec![Val::from(9029), ctx.constant("PLAYTIME")?])?;
-                        if (l_nchecktime.clone() == 0 || l_nchecktime.clone() == 1) {
-                            ctx.lines(args![
-                                "I'm so grateful for your help.",
-                                "Each ^006400Hydra Ball^000000 is provided ^006400every 24 hours^000000",
-                                "Please come at the appropriate time."
-                            ])?;
+                            ctx.call(Function::SetQuest, vec![Val::from(9029)])?;
+                            ctx.call(Function::ConsumeItem, vec![Val::from(12070)])?;
+                            ctx.call(Function::ConsumeItem, vec![Val::from(12055)])?;
+                            ctx.call(Function::ConsumeItem, vec![Val::from(12065)])?;
+                            ctx.call(Function::GetItem, vec![Val::from(505), Val::from(5)])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
                         } else {
-                            if l_nqstate1.clone().number()? > -1 {
-                                ctx.call(Function::EraseQuest, vec![Val::from(9028)])?;
-                            }
-                            ctx.call(Function::CompleteQuest, vec![Val::from(9029)])?;
-                            ctx.mes("Did you come here to hunt ^FF0000Strange Hydra^000000s?")?;
+                            ctx.lines(args![
+                                " ",
+                                "I'd like to reward you,",
+                                "however your bags are full.",
+                                "Please make room and come back!"
+                            ])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                    } else {
+                        ctx.mes("[Lucia]")?;
+                        if ctx.call(Function::CountItem, vec![Val::from(12408)])?.number()? < 1 {
+                            ctx.lines(args![
+                                "Did you need another ^006400Hydra Ball^000000?",
+                                "I will give you one more."
+                            ])?;
+                            ctx.call(Function::GetItem, vec![Val::from(12408), Val::from(1)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else {
+                            ctx.mes("Any problems?")?;
                             ctx.next()?;
-                            'b3: {
-                                let subject3 = Val::from(runtime::select_values(
+                            'b2: {
+                                let subject2 = Val::from(runtime::select_values(
                                     ctx,
-                                    &[Val::from("Yes.:No.:^006400What is happening here?^000000")],
+                                    &[Val::from("No.:^006400Tell me again what happened^000000")],
                                 )?);
-                                let mut matched3 = false;
-                                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                    && !subject3.loosely_equals(&Val::from(2))
-                                    && !subject3.loosely_equals(&Val::from(3));
-                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                    matched3 = true;
+                                let mut matched2 = false;
+                                let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                                    matched2 = true;
                                 }
-                                if matched3 {
-                                    ctx.call(Function::SetQuest, vec![Val::from(9028)])?;
-                                    ctx.call(Function::GetItem, vec![Val::from(12408), Val::from(1)])?;
-                                    ctx.lines_as(
-                                        "Lucia",
-                                        args![
-                                            "Here, take this ^006400Hydra Ball^000000.",
-                                            "Use it to capture a ^FF0000Strange Hydra^8B4513.^000000",
-                                            "I hope you can do it~!"
-                                        ],
-                                    )?;
+                                if matched2 {
+                                    ctx.lines_as("Lucia", args!["Ok, please do me a favor."])?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                    matched3 = true;
+                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                                    matched2 = true;
                                 }
-                                if matched3 {
-                                    ctx.lines_as("Lucia", args!["Ah, I misunderstood.", "See you then."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
+                                if matched2 {
                                     step = LuciaBrasilisStep::LWhatHappen;
                                     continue 'machine;
                                 }
+                            }
+                        }
+                    }
+                } else {
+                    ctx.lines_as(
+                        "Lucia",
+                        args![
+                            ((Val::from("Oh, ^0000FF") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                + Val::from("^000000 you're back."))
+                        ],
+                    )?;
+                    l_nchecktime = ctx.call(Function::CheckQuest, vec![Val::from(9029), ctx.constant("PLAYTIME")?])?;
+                    if (l_nchecktime.clone() == 0 || l_nchecktime.clone() == 1) {
+                        ctx.lines(args![
+                            "I'm so grateful for your help.",
+                            "Each ^006400Hydra Ball^000000 is provided ^006400every 24 hours^000000",
+                            "Please come at the appropriate time."
+                        ])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        if l_nqstate1.clone().number()? > -1 {
+                            ctx.call(Function::EraseQuest, vec![Val::from(9028)])?;
+                        }
+                        ctx.call(Function::CompleteQuest, vec![Val::from(9029)])?;
+                        ctx.mes("Did you come here to hunt ^FF0000Strange Hydra^000000s?")?;
+                        ctx.next()?;
+                        'b3: {
+                            let subject3 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Yes.:No.:^006400What is happening here?^000000")],
+                            )?);
+                            let mut matched3 = false;
+                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                && !subject3.loosely_equals(&Val::from(2))
+                                && !subject3.loosely_equals(&Val::from(3));
+                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.call(Function::SetQuest, vec![Val::from(9028)])?;
+                                ctx.call(Function::GetItem, vec![Val::from(12408), Val::from(1)])?;
+                                ctx.lines_as(
+                                    "Lucia",
+                                    args![
+                                        "Here, take this ^006400Hydra Ball^000000.",
+                                        "Use it to capture a ^FF0000Strange Hydra^8B4513.^000000",
+                                        "I hope you can do it~!"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as("Lucia", args!["Ah, I misunderstood.", "See you then."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                step = LuciaBrasilisStep::LWhatHappen;
+                                continue 'machine;
                             }
                         }
                     }
@@ -586,120 +581,114 @@ fn candy_maker_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if ctx.var("brazil_gua").get()? == 1 {
-            ctx.lines_as(
-                "Candy Maker",
-                args!["If you want to get the guarana, find Cherto.", "Maybe he will be in the museum."],
-            )?;
+    } else if ctx.var("brazil_gua").get()? == 1 {
+        ctx.lines_as(
+            "Candy Maker",
+            args!["If you want to get the guarana, find Cherto.", "Maybe he will be in the museum."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("brazil_gua").get()? == 10 {
+        if !(ctx.call(Function::CountItem, vec![Val::from(6237)])?.is_true()) {
+            ctx.mes("- The guarana that I had has disappeared. -")?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("brazil_gua").get()? == 10 {
-                if !(ctx.call(Function::CountItem, vec![Val::from(6237)])?.is_true()) {
-                    ctx.mes("- The guarana that I had has disappeared. -")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                ctx.call(Function::DelItem, vec![Val::from(6237), Val::from(1)])?;
-                ctx.lines_as("Candy Maker", args!["Did you get the guarana?"])?;
-                ctx.next()?;
-                ctx.mes("- You give the guarana to him. -")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Candy Maker",
-                    args![
-                        "Wow! You have special talent.",
-                        "It's the best thing I have ever seen so far. Cool~!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Candy Maker",
-                    args!["Good, let's make the candy~!", "Long time no see my wonderful guarana candy..."],
-                )?;
-                ctx.next()?;
-                ctx.lines(args!["- hash hash hash hash hash hash -", "- hash hash hash hash hash hash -"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Candy Maker",
-                    args![
-                        "Look! It's the popular guarana candy.",
-                        "Try to savor its amazing taste hey~ take it easy. hahaha!!"
-                    ],
-                )?;
-                ctx.var("brazil_gua").set(Val::from(11))?;
-                ctx.call(Function::CompleteQuest, vec![Val::from(2200)])?;
-                ctx.call(Function::GetItem, vec![Val::from(12414), Val::from(1)])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("brazil_gua").get()? == 11 {
-                    ctx.lines_as(
-                        "Candy Maker",
-                        args!["Guarana candy. That was the most unique masterpiece in my life for sure!"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Candy Maker",
-                        args![
-                            "Since you helped me, guarana supply has been steadily rising.",
-                            "So, naturally I'm back to making guarana candy."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Candy Maker", args!["What about it? Wanna buy some?", "It's 4000 zeny each."])?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Buy a Guarana Candy.:Cancel.")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            if ctx.var("Zeny").get()?.number()? > 3999 {
-                                ctx.lines_as("Candy Maker", args!["Here is a delicious guarana candy."])?;
-                                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(4000))?))?;
-                                ctx.call(Function::GetItem, vec![Val::from(12414), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    "Candy Maker",
-                                    args![
-                                        "What? You should say before if you don't have money!",
-                                        "Even if you are poor, I can't give this away for free."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Candy Maker",
-                                args!["Sometimes some people don't like it due to it's arousal effect."],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
+        }
+        ctx.call(Function::DelItem, vec![Val::from(6237), Val::from(1)])?;
+        ctx.lines_as("Candy Maker", args!["Did you get the guarana?"])?;
+        ctx.next()?;
+        ctx.mes("- You give the guarana to him. -")?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Candy Maker",
+            args![
+                "Wow! You have special talent.",
+                "It's the best thing I have ever seen so far. Cool~!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Candy Maker",
+            args!["Good, let's make the candy~!", "Long time no see my wonderful guarana candy..."],
+        )?;
+        ctx.next()?;
+        ctx.lines(args!["- hash hash hash hash hash hash -", "- hash hash hash hash hash hash -"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Candy Maker",
+            args![
+                "Look! It's the popular guarana candy.",
+                "Try to savor its amazing taste hey~ take it easy. hahaha!!"
+            ],
+        )?;
+        ctx.var("brazil_gua").set(Val::from(11))?;
+        ctx.call(Function::CompleteQuest, vec![Val::from(2200)])?;
+        ctx.call(Function::GetItem, vec![Val::from(12414), Val::from(1)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("brazil_gua").get()? == 11 {
+        ctx.lines_as(
+            "Candy Maker",
+            args!["Guarana candy. That was the most unique masterpiece in my life for sure!"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Candy Maker",
+            args![
+                "Since you helped me, guarana supply has been steadily rising.",
+                "So, naturally I'm back to making guarana candy."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Candy Maker", args!["What about it? Wanna buy some?", "It's 4000 zeny each."])?;
+        ctx.next()?;
+        'b3: {
+            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Buy a Guarana Candy.:Cancel.")])?);
+            let mut matched3 = false;
+            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                matched3 = true;
+            }
+            if matched3 {
+                if ctx.var("Zeny").get()?.number()? > 3999 {
+                    ctx.lines_as("Candy Maker", args!["Here is a delicious guarana candy."])?;
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(4000))?))?;
+                    ctx.call(Function::GetItem, vec![Val::from(12414), Val::from(1)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 } else {
                     ctx.lines_as(
                         "Candy Maker",
-                        args!["Guarana candy. That was the most unique masterpiece in my life for sure!"],
+                        args![
+                            "What? You should say before if you don't have money!",
+                            "Even if you are poor, I can't give this away for free."
+                        ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             }
+            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    "Candy Maker",
+                    args!["Sometimes some people don't like it due to it's arousal effect."],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Candy Maker",
+            args!["Guarana candy. That was the most unique masterpiece in my life for sure!"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -800,109 +789,103 @@ fn cherto_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+    } else if ctx.var("brazil_gua").get()? == 2 {
+        ctx.lines_as("Cherto", args!["A Guarana boy was born."])?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("Guarana kid?")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as(
+            "Cherto",
+            args![
+                "There was woman who was an expert botanist.",
+                "The woman was really popular to all living creatures."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Cherto", args!["At around the time her baby was born, she started a guarana farm. For some reason, her brothers were jealous so they destroyed the farm and disappeared.", "That kind of story..."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Cherto",
+            args!["We can't be sure that baby was born in the world but since that time, all guarana in Brasilis disappeared."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Cherto",
+            args![
+                "Who is the guarana kid?",
+                "Pedro who is famous as a greedy man?",
+                "Meto who can't endure about all the fruits?",
+                "Hovenue who is gloomy?",
+                "They might know~!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Cherto",
+            args!["What about you?", "Who is the guarana kid?", "Will you figure out it? hohohhhhh~"],
+        )?;
+        ctx.var("brazil_gua").set(Val::from(3))?;
+        ctx.call(Function::ChangeQuest, vec![Val::from(2192), Val::from(2193)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("brazil_gua").get()? == 3 {
+        ctx.lines_as("Cherto", args!["Can you find the guarana kid?", "Maybe yes? Maybe no?"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("brazil_gua").get()? == 4 {
+        ctx.lines_as("Cherto", args!["Did you find guarana kid?"])?;
+        ctx.next()?;
+        ctx.mes("- I tell Cherto about the kid making animal-like sounds. -")?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Cherto",
+            args![
+                "Hoooh. That's unbelievable.",
+                "That kid might be a guarana kid. Sure...",
+                "According to the story the kid can have conversations with animals."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Cherto",
+            args!["If he can make crying sounds of animals, they might be able to converse!"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Now, what can I do?",
+                "If he is the kid from the legend, is there any way to raise the guarana again?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Cherto",
+            args![
+                "Haha!! What'd Cherto say?",
+                "Cherto knows all~!!",
+                "Cherto's already thought",
+                "of the next step."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Cherto",
+            args![
+                "In Brasilis there is an expert Mage.",
+                "His name is Paje.",
+                "Take this note over to him.",
+                "He will show the solution for you and the kid."
+            ],
+        )?;
+        ctx.var("brazil_gua").set(Val::from(5))?;
+        ctx.call(Function::ChangeQuest, vec![Val::from(2194), Val::from(2195)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("brazil_gua").get()? == 2 {
-            ctx.lines_as("Cherto", args!["A Guarana boy was born."])?;
-            ctx.next()?;
-            let choice = runtime::select_values(ctx, &[Val::from("Guarana kid?")])?;
-            ctx.var("@menu").set(choice)?;
-            ctx.lines_as(
-                "Cherto",
-                args![
-                    "There was woman who was an expert botanist.",
-                    "The woman was really popular to all living creatures."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Cherto", args!["At around the time her baby was born, she started a guarana farm. For some reason, her brothers were jealous so they destroyed the farm and disappeared.", "That kind of story..."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Cherto",
-                args!["We can't be sure that baby was born in the world but since that time, all guarana in Brasilis disappeared."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Cherto",
-                args![
-                    "Who is the guarana kid?",
-                    "Pedro who is famous as a greedy man?",
-                    "Meto who can't endure about all the fruits?",
-                    "Hovenue who is gloomy?",
-                    "They might know~!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Cherto",
-                args!["What about you?", "Who is the guarana kid?", "Will you figure out it? hohohhhhh~"],
-            )?;
-            ctx.var("brazil_gua").set(Val::from(3))?;
-            ctx.call(Function::ChangeQuest, vec![Val::from(2192), Val::from(2193)])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("brazil_gua").get()? == 3 {
-                ctx.lines_as("Cherto", args!["Can you find the guarana kid?", "Maybe yes? Maybe no?"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("brazil_gua").get()? == 4 {
-                    ctx.lines_as("Cherto", args!["Did you find guarana kid?"])?;
-                    ctx.next()?;
-                    ctx.mes("- I tell Cherto about the kid making animal-like sounds. -")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Cherto",
-                        args![
-                            "Hoooh. That's unbelievable.",
-                            "That kid might be a guarana kid. Sure...",
-                            "According to the story the kid can have conversations with animals."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Cherto",
-                        args!["If he can make crying sounds of animals, they might be able to converse!"],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            "Now, what can I do?",
-                            "If he is the kid from the legend, is there any way to raise the guarana again?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Cherto",
-                        args![
-                            "Haha!! What'd Cherto say?",
-                            "Cherto knows all~!!",
-                            "Cherto's already thought",
-                            "of the next step."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Cherto",
-                        args![
-                            "In Brasilis there is an expert Mage.",
-                            "His name is Paje.",
-                            "Take this note over to him.",
-                            "He will show the solution for you and the kid."
-                        ],
-                    )?;
-                    ctx.var("brazil_gua").set(Val::from(5))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(2194), Val::from(2195)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as("Cherto", args!["hoho tickle~tickle~~~~!!!"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
-        }
+        ctx.lines_as("Cherto", args!["hoho tickle~tickle~~~~!!!"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -988,122 +971,114 @@ fn strange_kid_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     }
                 }
             }
-        } else {
-            if ctx.var("brazil_gua").get()? == 4 {
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["He makes strange sounds like an animal.", "Should I ask advice from Cherto?"],
-                )?;
+        } else if ctx.var("brazil_gua").get()? == 4 {
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["He makes strange sounds like an animal.", "Should I ask advice from Cherto?"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if (ctx.var("brazil_gua").get()?.number()? > 4 && ctx.var("brazil_gua").get()?.number()? < 9) {
+            ctx.lines_as("Strange Kid", args!["Ah...? ah.....?"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("brazil_gua").get()? == 9 {
+            ctx.lines_as("Strange Kid", args!["ah... ahah....."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["I don't have a story but there are lots of friends waiting outside."],
+            )?;
+            ctx.next()?;
+            ctx.mes("- You give the feather, fresh meat and branch of grapes to the kid -")?;
+            ctx.next()?;
+            ctx.lines_as("Strange Kid", args!["Ah............."])?;
+            ctx.next()?;
+            ctx.lines_as("Strange Kid", args!["Un, uhh....", "mooo... mommy....."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Strange Kid",
+                args!["Ah..........", "bird....", "mon, mon, mon...key......", "boo, booow..........."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args![
+                    "Dog?!",
+                    "kkk yes. Lots of friends want to meet you.",
+                    "Don't be lonely anymore and be happy with your friends."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Strange Kid", args!["ah....he...hehe...."])?;
+            ctx.next()?;
+            ctx.mes("- He starts to smile lightly and laughs. -")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Strange Kid",
+                args!["Ye......yes.......", "tha... than......thank......yo.........you."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["Alright such a cute smile!", "Be a happy kid as always."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Strange Kid", args!["Uh......"])?;
+            ctx.next()?;
+            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["what?"])?;
+            ctx.next()?;
+            ctx.lines_as("Strange Kid", args!["hey.........."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["Do you want to say anything?"],
+            )?;
+            ctx.next()?;
+            ctx.mes("- You get closer and pretend to take caution. -")?;
+            ctx.next()?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_CHUP")?])?;
+            ctx.mes("(kiss~)")?;
+            ctx.next()?;
+            ctx.mes("- The kid laughs again lightly then puts something in your hand. -")?;
+            ctx.next()?;
+            ctx.mes("- It's a fresh berry that's colored red and hard. -")?;
+            ctx.next()?;
+            ctx.lines_as("Strange Kid", args!["ga...ra..........na..."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["Oops, guarana berry?", "Ah! Thank you very much!"],
+            )?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_CHUPCHUP")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["If I have this, I can make a guarana candy.", "I better find that Candy Maker!"],
+            )?;
+            ctx.var("brazil_gua").set(Val::from(10))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(2199), Val::from(2200)])?;
+            ctx.call(Function::GetItem, vec![Val::from(6237), Val::from(1)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("brazil_gua").get()? == 10 {
+            if !(ctx.call(Function::CountItem, vec![Val::from(6237)])?.is_true()) {
+                ctx.lines_as("Strange Kid", args!["He........."])?;
+                ctx.call(Function::GetItem, vec![Val::from(6237), Val::from(1)])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if (ctx.var("brazil_gua").get()?.number()? > 4 && ctx.var("brazil_gua").get()?.number()? < 9) {
-                    ctx.lines_as("Strange Kid", args!["Ah...? ah.....?"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("brazil_gua").get()? == 9 {
-                        ctx.lines_as("Strange Kid", args!["ah... ahah....."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["I don't have a story but there are lots of friends waiting outside."],
-                        )?;
-                        ctx.next()?;
-                        ctx.mes("- You give the feather, fresh meat and branch of grapes to the kid -")?;
-                        ctx.next()?;
-                        ctx.lines_as("Strange Kid", args!["Ah............."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Strange Kid", args!["Un, uhh....", "mooo... mommy....."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Strange Kid",
-                            args!["Ah..........", "bird....", "mon, mon, mon...key......", "boo, booow..........."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args![
-                                "Dog?!",
-                                "kkk yes. Lots of friends want to meet you.",
-                                "Don't be lonely anymore and be happy with your friends."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Strange Kid", args!["ah....he...hehe...."])?;
-                        ctx.next()?;
-                        ctx.mes("- He starts to smile lightly and laughs. -")?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Strange Kid",
-                            args!["Ye......yes.......", "tha... than......thank......yo.........you."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["Alright such a cute smile!", "Be a happy kid as always."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Strange Kid", args!["Uh......"])?;
-                        ctx.next()?;
-                        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["what?"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Strange Kid", args!["hey.........."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["Do you want to say anything?"],
-                        )?;
-                        ctx.next()?;
-                        ctx.mes("- You get closer and pretend to take caution. -")?;
-                        ctx.next()?;
-                        ctx.call(Function::Emotion, vec![ctx.constant("ET_CHUP")?])?;
-                        ctx.mes("(kiss~)")?;
-                        ctx.next()?;
-                        ctx.mes("- The kid laughs again lightly then puts something in your hand. -")?;
-                        ctx.next()?;
-                        ctx.mes("- It's a fresh berry that's colored red and hard. -")?;
-                        ctx.next()?;
-                        ctx.lines_as("Strange Kid", args!["ga...ra..........na..."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["Oops, guarana berry?", "Ah! Thank you very much!"],
-                        )?;
-                        ctx.call(
-                            Function::Emotion,
-                            vec![
-                                ctx.constant("ET_CHUPCHUP")?,
-                                Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                            ],
-                        )?;
-                        ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["If I have this, I can make a guarana candy.", "I better find that Candy Maker!"],
-                        )?;
-                        ctx.var("brazil_gua").set(Val::from(10))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(2199), Val::from(2200)])?;
-                        ctx.call(Function::GetItem, vec![Val::from(6237), Val::from(1)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("brazil_gua").get()? == 10 {
-                            if !(ctx.call(Function::CountItem, vec![Val::from(6237)])?.is_true()) {
-                                ctx.lines_as("Strange Kid", args!["He........."])?;
-                                ctx.call(Function::GetItem, vec![Val::from(6237), Val::from(1)])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        } else {
-                            ctx.mes("- The kid is smiling. -")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
             }
+        } else {
+            ctx.mes("- The kid is smiling. -")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     Ok(Val::from(0))
@@ -1534,67 +1509,63 @@ fn botanist_karmen_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::SetQuest, vec![Val::from(2201)])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("brazil_regia").get()? == 1 {
-            ctx.lines_as(
-                "Karmen",
-                args![
-                    "Ah, if you are interested more in the Water Lily story, find someone named Marta.",
-                    "She is wise and knows lots of stories here in Brasilis."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
+    } else if ctx.var("brazil_regia").get()? == 1 {
+        ctx.lines_as(
+            "Karmen",
+            args![
+                "Ah, if you are interested more in the Water Lily story, find someone named Marta.",
+                "She is wise and knows lots of stories here in Brasilis."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("brazil_regia").get()? == 9 {
+        ctx.mes("- You show a lotus flower to Karmen and talk about the story so far. -")?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Karmen",
+            args![
+                "Wow!! You had a really good experience.",
+                "So~~~ the water lily lives in the depths of brasilis, right?",
+                "I wil try to find it again by myself, I won't give up!!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Karmen",
+            args![
+                "I am so grateful that I met you.",
+                "The water lily must truly be a lucky flower. hahaha"
+            ],
+        )?;
+        ctx.var("brazil_regia").set(Val::from(10))?;
+        ctx.call(Function::CompleteQuest, vec![Val::from(2207)])?;
+        if (ctx.constant("VIP_SCRIPT")?.is_true()
+            && ctx.call(Function::VipStatus, vec![ctx.constant("VIP_STATUS_ACTIVE")?])?.is_true())
+        {
+            ctx.call(Function::GetExperience, vec![Val::from(75000), Val::from(0)])?;
         } else {
-            if ctx.var("brazil_regia").get()? == 9 {
-                ctx.mes("- You show a lotus flower to Karmen and talk about the story so far. -")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Karmen",
-                    args![
-                        "Wow!! You had a really good experience.",
-                        "So~~~ the water lily lives in the depths of brasilis, right?",
-                        "I wil try to find it again by myself, I won't give up!!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Karmen",
-                    args![
-                        "I am so grateful that I met you.",
-                        "The water lily must truly be a lucky flower. hahaha"
-                    ],
-                )?;
-                ctx.var("brazil_regia").set(Val::from(10))?;
-                ctx.call(Function::CompleteQuest, vec![Val::from(2207)])?;
-                if (ctx.constant("VIP_SCRIPT")?.is_true()
-                    && ctx.call(Function::VipStatus, vec![ctx.constant("VIP_STATUS_ACTIVE")?])?.is_true())
-                {
-                    ctx.call(Function::GetExperience, vec![Val::from(75000), Val::from(0)])?;
-                } else {
-                    ctx.call(Function::GetExperience, vec![Val::from(50000), Val::from(0)])?;
-                }
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Karmen",
-                    args!["This climate offers special cases in botany classes different from any other regions of the world."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Karmen",
-                    args![
-                        "The plants here have robust frames and are clear and colorful.",
-                        "Here the plants are really huge and we can feel their presence."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Karmen", args!["It's a botanist's dream."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.call(Function::GetExperience, vec![Val::from(50000), Val::from(0)])?;
         }
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Karmen",
+            args!["This climate offers special cases in botany classes different from any other regions of the world."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Karmen",
+            args![
+                "The plants here have robust frames and are clear and colorful.",
+                "Here the plants are really huge and we can feel their presence."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Karmen", args!["It's a botanist's dream."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -1764,35 +1735,33 @@ fn marta_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("brazil_regia").set(Val::from(2))?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("brazil_regia").get()?.number()? > 1 {
+        ctx.lines_as(
+            "Kaka",
+            args![
+                "My grandma is really a bit tired doing some tribe stuff!",
+                "Could you come another day?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("brazil_regia").get()?.number()? > 1 {
-            ctx.lines_as(
-                "Kaka",
-                args![
-                    "My grandma is really a bit tired doing some tribe stuff!",
-                    "Could you come another day?"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "Marta",
-                args!["You are not from around here.", "I can sense a strange earth smell."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Marta",
-                args![
-                    "But your eyes shine with strength.",
-                    "Indeed you are spreading out spirit and will from your whole body."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Marta", args!["If you work at it you will be a great person someday."])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as(
+            "Marta",
+            args!["You are not from around here.", "I can sense a strange earth smell."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Marta",
+            args![
+                "But your eyes shine with strength.",
+                "Indeed you are spreading out spirit and will from your whole body."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Marta", args!["If you work at it you will be a great person someday."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2044,138 +2013,130 @@ fn brasilis_girl_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if ctx.var("brazil_regia").get()? == 5 {
+            ctx.lines_as(
+                "Jasira",
+                args!["Did you meet Jasi?", "Did you talk about me?", "You didn't? Uh? Stupid! Gosh~!"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["Hey girl~ you've got a short temper.", "I did see him and I talked about you!"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Jasira", args!["Did you?", "What did he say?", "Does he remember me?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args![
+                    "That you have a really good heart~",
+                    "I told him that you will try to meet him when your condition gets better."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jasira",
+                args!["Yeahhhhh!!", "Thank you! You are more reliable than I thought you would be."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args![
+                    "Anyway, I'm looking for a fruit that's brown and has a hard shell.",
+                    "It has juice inside and can be used as a cup to drink out of."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jasira",
+                args!["Duh! You mean a coconut right?!", "They're everywhere here in Brasilis."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Thanks Jasira!"])?;
+            ctx.var("brazil_regia").set(Val::from(6))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(2204), Val::from(2205)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if (ctx.var("brazil_regia").get()? == 6 || ctx.var("brazil_regia").get()? == 7) {
+            ctx.lines_as(
+                "Jasira",
+                args![
+                    "I should take care of my strength by myself!",
+                    "I can't just lie in my bed forever. Don't you agree?"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("brazil_regia").get()? == 8 {
+            ctx.lines_as("Jasira", args!["Uh? Why have you come back?"])?;
+            ctx.next()?;
+            ctx.mes("- You tell her what Jasi told you to tell her -")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jasira",
+                args!["Oh... really?", "Did he say that?", "Gosh! Gosh!!!", "Kkkkkaaaaa - !!"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["Thanks to you, I was able to get a flower.", "Thanks a lot!!"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Jasira", args!["Wooow. It's so beautiful."])?;
+            ctx.next()?;
+            ctx.lines_as("Jasira", args!["Ah... can I see it for a second?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jasira",
+                args![
+                    "Surprise~!!",
+                    "I've been working on this hat while you were gone and now it's complete with the water lily flower!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Jasira", args!["I know, I know! I'm the best..."])?;
+            ctx.call(Function::DelItem, vec![Val::from(7553), Val::from(1)])?;
+            ctx.var("brazil_regia").set(Val::from(9))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(2206), Val::from(2207)])?;
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_card, &Val::from(base + 0), Val::from(4195), false);
+            runtime::local_set(&mut l_card, &Val::from(base + 1), Val::from(4177), false);
+            runtime::local_set(&mut l_card, &Val::from(base + 2), Val::from(4188), false);
+            ctx.call(
+                Function::GetItem2,
+                vec![
+                    Val::from(5302),
+                    Val::from(1),
+                    Val::from(1),
+                    Val::from(0),
+                    Val::from(0),
+                    runtime::local_get(&l_card, &ctx.call(Function::Rand, vec![Val::from(3)])?, false),
+                    Val::from(0),
+                    Val::from(0),
+                    Val::from(0),
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("brazil_regia").get()?.number()? > 8 {
+            ctx.lines_as(
+                "Jasira",
+                args![
+                    "I just need to get a little bit stronger!",
+                    "I can't just lie in bed forever. My Jasi is waiting for me~"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("brazil_regia").get()? == 5 {
-                ctx.lines_as(
-                    "Jasira",
-                    args!["Did you meet Jasi?", "Did you talk about me?", "You didn't? Uh? Stupid! Gosh~!"],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args!["Hey girl~ you've got a short temper.", "I did see him and I talked about you!"],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Jasira", args!["Did you?", "What did he say?", "Does he remember me?"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "That you have a really good heart~",
-                        "I told him that you will try to meet him when your condition gets better."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Jasira",
-                    args!["Yeahhhhh!!", "Thank you! You are more reliable than I thought you would be."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "Anyway, I'm looking for a fruit that's brown and has a hard shell.",
-                        "It has juice inside and can be used as a cup to drink out of."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Jasira",
-                    args!["Duh! You mean a coconut right?!", "They're everywhere here in Brasilis."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Thanks Jasira!"])?;
-                ctx.var("brazil_regia").set(Val::from(6))?;
-                ctx.call(Function::ChangeQuest, vec![Val::from(2204), Val::from(2205)])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if (ctx.var("brazil_regia").get()? == 6 || ctx.var("brazil_regia").get()? == 7) {
-                    ctx.lines_as(
-                        "Jasira",
-                        args![
-                            "I should take care of my strength by myself!",
-                            "I can't just lie in my bed forever. Don't you agree?"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("brazil_regia").get()? == 8 {
-                        ctx.lines_as("Jasira", args!["Uh? Why have you come back?"])?;
-                        ctx.next()?;
-                        ctx.mes("- You tell her what Jasi told you to tell her -")?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jasira",
-                            args!["Oh... really?", "Did he say that?", "Gosh! Gosh!!!", "Kkkkkaaaaa - !!"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["Thanks to you, I was able to get a flower.", "Thanks a lot!!"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Jasira", args!["Wooow. It's so beautiful."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Jasira", args!["Ah... can I see it for a second?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jasira",
-                            args![
-                                "Surprise~!!",
-                                "I've been working on this hat while you were gone and now it's complete with the water lily flower!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Jasira", args!["I know, I know! I'm the best..."])?;
-                        ctx.call(Function::DelItem, vec![Val::from(7553), Val::from(1)])?;
-                        ctx.var("brazil_regia").set(Val::from(9))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(2206), Val::from(2207)])?;
-                        let base = Val::from(0).number()?;
-                        runtime::local_set(&mut l_card, &Val::from(base + 0), Val::from(4195), false);
-                        runtime::local_set(&mut l_card, &Val::from(base + 1), Val::from(4177), false);
-                        runtime::local_set(&mut l_card, &Val::from(base + 2), Val::from(4188), false);
-                        ctx.call(
-                            Function::GetItem2,
-                            vec![
-                                Val::from(5302),
-                                Val::from(1),
-                                Val::from(1),
-                                Val::from(0),
-                                Val::from(0),
-                                runtime::local_get(&l_card, &ctx.call(Function::Rand, vec![Val::from(3)])?, false),
-                                Val::from(0),
-                                Val::from(0),
-                                Val::from(0),
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("brazil_regia").get()?.number()? > 8 {
-                            ctx.lines_as(
-                                "Jasira",
-                                args![
-                                    "I just need to get a little bit stronger!",
-                                    "I can't just lie in bed forever. My Jasi is waiting for me~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "Distant Sound",
-                                args!["Jasira!!!", "Where are you going again?!!", "Come back~, please!!"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Brasilis Girl", args!["Please mom~!", "Please let me go!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
-            }
+            ctx.lines_as(
+                "Distant Sound",
+                args!["Jasira!!!", "Where are you going again?!!", "Come back~, please!!"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Brasilis Girl", args!["Please mom~!", "Please let me go!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     return Err(Stop::End);
@@ -2283,71 +2244,65 @@ fn recluse_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::ChangeQuest, vec![Val::from(2202), Val::from(2203)])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("brazil_regia").get()? == 4 {
-            ctx.lines_as("Jasi", args!["Did you enjoy the water lily?"])?;
+    } else if ctx.var("brazil_regia").get()? == 4 {
+        ctx.lines_as("Jasi", args!["Did you enjoy the water lily?"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("brazil_regia").get()? == 5 {
+        ctx.lines_as("Jasi", args!["I forgot what the name of that fruit was..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("brazil_regia").get()? == 6 {
+        if ctx.call(Function::CountItem, vec![Val::from(11515)])?.number()? < 5 {
+            ctx.lines_as("Jasi", args!["I forgot what the name of that fruit was..."])?;
             ctx.close_window()?;
             return Err(Stop::End);
         } else {
-            if ctx.var("brazil_regia").get()? == 5 {
-                ctx.lines_as("Jasi", args!["I forgot what the name of that fruit was..."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("brazil_regia").get()? == 6 {
-                    if ctx.call(Function::CountItem, vec![Val::from(11515)])?.number()? < 5 {
-                        ctx.lines_as("Jasi", args!["I forgot what the name of that fruit was..."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as("Jasi", args!["Did you find the fruit?", "Oh right this is....?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["It's called a 'coconut'."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jasi",
-                            args![
-                                "Ahah! COCONUT!!",
-                                "Now I remember thank you very much. I can't remember the last time I had this fruit."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jasi",
-                            args!["I guess I should keep my promise.", "You can take one Water lily."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jasi",
-                            args![
-                                "I hope the Brasilis water lily will understand me.",
-                                "You better grab the flower while you have a chance~"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jasi",
-                            args![
-                                "Oh, can you tell that girl Jasira something for me?",
-                                "Tell her that I am not the moon from the story, but I want to become the moon to shine only for her."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(11515), Val::from(5)])?;
-                        ctx.var("brazil_regia").set(Val::from(7))?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(2205), Val::from(2206)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                } else {
-                    ctx.lines_as("Jasi", args!["The flowers blooming from the Water lily today is wonderful."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
+            ctx.lines_as("Jasi", args!["Did you find the fruit?", "Oh right this is....?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args!["It's called a 'coconut'."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jasi",
+                args![
+                    "Ahah! COCONUT!!",
+                    "Now I remember thank you very much. I can't remember the last time I had this fruit."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jasi",
+                args!["I guess I should keep my promise.", "You can take one Water lily."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jasi",
+                args![
+                    "I hope the Brasilis water lily will understand me.",
+                    "You better grab the flower while you have a chance~"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Jasi",
+                args![
+                    "Oh, can you tell that girl Jasira something for me?",
+                    "Tell her that I am not the moon from the story, but I want to become the moon to shine only for her."
+                ],
+            )?;
+            ctx.call(Function::DelItem, vec![Val::from(11515), Val::from(5)])?;
+            ctx.var("brazil_regia").set(Val::from(7))?;
+            ctx.call(Function::ChangeQuest, vec![Val::from(2205), Val::from(2206)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+    } else {
+        ctx.lines_as("Jasi", args!["The flowers blooming from the Water lily today is wonderful."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -2477,36 +2432,32 @@ fn water_lily_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("brazil_regia").get()? == 5 {
-            ctx.lines_as(
-                "Jasi",
-                args!["It was my favorite when I was young but I don't remember what it was called."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Jasi", args!["It's brown and has a hard shell around it. It has juice inside and you can use it as a cup when you're done eating the fruit.", "Do you know what it is?"])?;
+    } else if ctx.var("brazil_regia").get()? == 5 {
+        ctx.lines_as(
+            "Jasi",
+            args!["It was my favorite when I was young but I don't remember what it was called."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Jasi", args!["It's brown and has a hard shell around it. It has juice inside and you can use it as a cup when you're done eating the fruit.", "Do you know what it is?"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("brazil_regia").get()? == 7 {
+        if !(ctx.call(Function::CheckWeight, vec![Val::from(1201), Val::from(1)])?.is_true()) {
+            ctx.lines(args![
+                "- wait a second!! -",
+                "- you have too many items -",
+                "- so you can't get any more items. -",
+                "- make your body lighter -",
+                "- then try again. -"
+            ])?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("brazil_regia").get()? == 7 {
-                if !(ctx.call(Function::CheckWeight, vec![Val::from(1201), Val::from(1)])?.is_true()) {
-                    ctx.lines(args![
-                        "- wait a second!! -",
-                        "- you have too many items -",
-                        "- so you can't get any more items. -",
-                        "- make your body lighter -",
-                        "- then try again. -"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                ctx.mes("- You take a beautiful water lily carefully in your hands. -")?;
-                ctx.var("brazil_regia").set(Val::from(8))?;
-                ctx.call(Function::GetItem, vec![Val::from(7553), Val::from(1)])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
         }
+        ctx.mes("- You take a beautiful water lily carefully in your hands. -")?;
+        ctx.var("brazil_regia").set(Val::from(8))?;
+        ctx.call(Function::GetItem, vec![Val::from(7553), Val::from(1)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -2529,31 +2480,29 @@ fn pedro_bra_run(ctx: &Ctx, mut step: PedroBraStep, args: Vec<Val>) -> Result<Va
                 if ctx.var("brazil_ghost").get()? == 0 {
                     step = PedroBraStep::OnTalk;
                     continue 'machine;
+                } else if ctx.var("brazil_ghost").get()? == 1 {
+                    ctx.lines_as("Pedro", args!["Do you wanna hear the magic words again?"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Pedro",
+                        args![
+                            "'^3131FFMother the door won't open!^000000'",
+                            "'^FF0000Turn the key as many times as there are colors in the rainbow.^000000'",
+                            "'^3131FFMother the water is flooding!^000000'",
+                            "'^FF0000If the moon disappears 3 times, don't worry.^000000'",
+                            "'^3131FFMother the drought has started!^000000'",
+                            "'^FF0000Don't worry, the waterfall will help it.^000000'",
+                            "'^3131FFMother where are my friends?^000000'",
+                            "'^FF0000Your 7 friends are sleeping. now it's time to wake them.^000000'",
+                            "'^3131FFWhere are you mom?^000000'"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    if ctx.var("brazil_ghost").get()? == 1 {
-                        ctx.lines_as("Pedro", args!["Do you wanna hear the magic words again?"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Pedro",
-                            args![
-                                "'^3131FFMother the door won't open!^000000'",
-                                "'^FF0000Turn the key as many times as there are colors in the rainbow.^000000'",
-                                "'^3131FFMother the water is flooding!^000000'",
-                                "'^FF0000If the moon disappears 3 times, don't worry.^000000'",
-                                "'^3131FFMother the drought has started!^000000'",
-                                "'^FF0000Don't worry, the waterfall will help it.^000000'",
-                                "'^3131FFMother where are my friends?^000000'",
-                                "'^FF0000Your 7 friends are sleeping. now it's time to wake them.^000000'",
-                                "'^3131FFWhere are you mom?^000000'"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as("Pedro", args!["I wonder what I need to do to have a statue made of me?"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.lines_as("Pedro", args!["I wonder what I need to do to have a statue made of me?"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 step = PedroBraStep::HoistEnd1;
                 continue 'machine;
@@ -2791,22 +2740,20 @@ fn mariana_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.var("brazil_ghost").get()? == 0 {
         ctx.call(Function::DoEvent, vec![Val::from("Pedro#bra::OnTalk")])?;
         return Err(Stop::End);
+    } else if ctx.var("brazil_ghost").get()? == 1 {
+        ctx.lines_as(
+            "Mariana",
+            args![
+                "Can you guys stop talking about the ghosts?",
+                "I've already got goosebumps all over."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("brazil_ghost").get()? == 1 {
-            ctx.lines_as(
-                "Mariana",
-                args![
-                    "Can you guys stop talking about the ghosts?",
-                    "I've already got goosebumps all over."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as("Mariana", args!["Why do Fabio and Daniel always bother us?"])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as("Mariana", args!["Why do Fabio and Daniel always bother us?"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2818,18 +2765,16 @@ fn fabio_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.var("brazil_ghost").get()? == 0 {
         ctx.call(Function::DoEvent, vec![Val::from("Pedro#bra::OnTalk")])?;
         return Err(Stop::End);
+    } else if ctx.var("brazil_ghost").get()? == 1 {
+        ctx.lines_as("Fabio", args!["You still wasting your time with that ghost story?"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("brazil_ghost").get()? == 1 {
-            ctx.lines_as("Fabio", args!["You still wasting your time with that ghost story?"])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as("Fabio", args!["Mariana, wanna see something cool?"])?;
-            ctx.next()?;
-            ctx.lines_as("Mariana", args!["kkkkkkkaaaaaacck!! Bugs!! Get 'em away!"])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as("Fabio", args!["Mariana, wanna see something cool?"])?;
+        ctx.next()?;
+        ctx.lines_as("Mariana", args!["kkkkkkkaaaaaacck!! Bugs!! Get 'em away!"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2841,16 +2786,14 @@ fn daniel_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.var("brazil_ghost").get()? == 0 {
         ctx.call(Function::DoEvent, vec![Val::from("Pedro#bra::OnTalk")])?;
         return Err(Stop::End);
+    } else if ctx.var("brazil_ghost").get()? == 1 {
+        ctx.lines_as("Daniel", args!["Nyah nyah nyah~"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("brazil_ghost").get()? == 1 {
-            ctx.lines_as("Daniel", args!["Nyah nyah nyah~"])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as("Daniel", args!["Keke Here~ I found more bugs~"])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as("Daniel", args!["Keke Here~ I found more bugs~"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -2886,103 +2829,101 @@ fn door_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.mes("Seems like you said something wrong.")?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("brazil_ghost").get()? == 2 {
-                        ctx.lines_as(
-                            "Sobbing Voice",
-                            args!["'^FF0000Turn the key as many times as there are colors in the rainbow.^000000'"],
-                        )?;
-                        ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Open the door:Knock on the door.:Turn the key.:Take the key out.")],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3))
-                                && !subject2.loosely_equals(&Val::from(4));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.lines(args!["The door is locked.", "So nothing happens."])?;
+                } else if ctx.var("brazil_ghost").get()? == 2 {
+                    ctx.lines_as(
+                        "Sobbing Voice",
+                        args!["'^FF0000Turn the key as many times as there are colors in the rainbow.^000000'"],
+                    )?;
+                    ctx.next()?;
+                    'b2: {
+                        let subject2 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Open the door:Knock on the door.:Turn the key.:Take the key out.")],
+                        )?);
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                            && !subject2.loosely_equals(&Val::from(2))
+                            && !subject2.loosely_equals(&Val::from(3))
+                            && !subject2.loosely_equals(&Val::from(4));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.lines(args!["The door is locked.", "So nothing happens."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("How many times should I try to knock?")?;
+                            let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
+                            l_input = input;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                ((Val::from("You knocked on the door ") + l_input.clone()) + Val::from(" times."))
+                            ])?;
+                            ctx.next()?;
+                            ctx.mes("But, nothing happens.")?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("How many times should I turn the key?")?;
+                            let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
+                            l_input = input;
+                            ctx.next()?;
+                            if l_input.clone() == 7 {
+                                ctx.mes("You turn the key 7 times.")?;
+                                ctx.next()?;
+                                ctx.lines(args!["Click! Click! Click!", "Click! Click! Click!", "Click...!"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Distant Sound",
+                                    args!["^FF0000kkkkhee- hihihihi!!!^000000", "You hear water flushing."],
+                                )?;
+                                ctx.next()?;
+                                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+                                ctx.mes("Faint laughing can be heard off in the direction of the toilet.")?;
+                                ctx.var("brazil_ghost").set(Val::from(3))?;
+                                ctx.call(Function::ChangeQuest, vec![Val::from(2208), Val::from(60351)])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("How many times should I try to knock?")?;
-                                let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
-                                l_input = input;
-                                ctx.next()?;
+                            } else {
                                 ctx.lines(args![
-                                    ((Val::from("You knocked on the door ") + l_input.clone()) + Val::from(" times."))
+                                    ((Val::from("You turned over the key ") + l_input.clone()) + Val::from(" times."))
                                 ])?;
                                 ctx.next()?;
-                                ctx.mes("But, nothing happens.")?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("How many times should I turn the key?")?;
-                                let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
-                                l_input = input;
-                                ctx.next()?;
-                                if l_input.clone() == 7 {
-                                    ctx.mes("You turn the key 7 times.")?;
-                                    ctx.next()?;
-                                    ctx.lines(args!["Click! Click! Click!", "Click! Click! Click!", "Click...!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Distant Sound",
-                                        args!["^FF0000kkkkhee- hihihihi!!!^000000", "You hear water flushing."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-                                    ctx.mes("Faint laughing can be heard off in the direction of the toilet.")?;
-                                    ctx.var("brazil_ghost").set(Val::from(3))?;
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(2208), Val::from(60351)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines(args![
-                                        ((Val::from("You turned over the key ") + l_input.clone()) + Val::from(" times."))
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.mes("But nothing doesn't happened.")?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("How many times should I insert the key into the door?")?;
-                                let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
-                                l_input = input;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    ((Val::from("You inserted the key ") + l_input.clone()) + Val::from(" times."))
-                                ])?;
-                                ctx.next()?;
-                                ctx.mes("But nothing happened.")?;
+                                ctx.mes("But nothing doesn't happened.")?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
                         }
-                    } else {
-                        ctx.mes("Mother the door won't open!")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
+                        if !matched2 && subject2.loosely_equals(&Val::from(4)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("How many times should I insert the key into the door?")?;
+                            let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
+                            l_input = input;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                ((Val::from("You inserted the key ") + l_input.clone()) + Val::from(" times."))
+                            ])?;
+                            ctx.next()?;
+                            ctx.mes("But nothing happened.")?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
                     }
+                } else {
+                    ctx.mes("Mother the door won't open!")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -3059,68 +3000,66 @@ fn toilet_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.mes("Seems like you said something wrong.")?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("brazil_ghost").get()? == 3 {
-                        ctx.lines_as(
-                            "Sobbing Voice",
-                            args!["^FF0000If the moon disappears 3 times... don't worry.....^000000"],
-                        )?;
-                        ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Flush the toilet.:Close the lid.")])?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes("How many times should I flush?")?;
-                                let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
-                                l_input = input;
+                } else if ctx.var("brazil_ghost").get()? == 3 {
+                    ctx.lines_as(
+                        "Sobbing Voice",
+                        args!["^FF0000If the moon disappears 3 times... don't worry.....^000000"],
+                    )?;
+                    ctx.next()?;
+                    'b3: {
+                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Flush the toilet.:Close the lid.")])?);
+                        let mut matched3 = false;
+                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.mes("How many times should I flush?")?;
+                            let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
+                            l_input = input;
+                            ctx.next()?;
+                            if l_input.clone() == 3 {
+                                ctx.mes("You flush the toilet 3 times.")?;
                                 ctx.next()?;
-                                if l_input.clone() == 3 {
-                                    ctx.mes("You flush the toilet 3 times.")?;
-                                    ctx.next()?;
-                                    ctx.lines(args!["qwaaaaaaaaa!", "kwaaaaaaaaaa!", "kwaaaaaaaaaaaaaaaaaaa!"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Distant Sound",
-                                        args![
-                                            "^FF0000kkkkhee- hihihihi!!!^000000",
-                                            "Suddenly the sink sounds like water is flowing freely from it."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-                                    ctx.mes("Faint laughing can be heard off in the direction of the faucet.")?;
-                                    ctx.var("brazil_ghost").set(Val::from(4))?;
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(60351), Val::from(60352)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines(args![
-                                        ((Val::from("You flush the toilet ") + l_input.clone()) + Val::from(" times."))
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.mes("But nothing happens.")?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.lines(args!["You close the lid of the toilet.", "Nothing seems to be happening."])?;
+                                ctx.lines(args!["qwaaaaaaaaa!", "kwaaaaaaaaaa!", "kwaaaaaaaaaaaaaaaaaaa!"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Distant Sound",
+                                    args![
+                                        "^FF0000kkkkhee- hihihihi!!!^000000",
+                                        "Suddenly the sink sounds like water is flowing freely from it."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+                                ctx.mes("Faint laughing can be heard off in the direction of the faucet.")?;
+                                ctx.var("brazil_ghost").set(Val::from(4))?;
+                                ctx.call(Function::ChangeQuest, vec![Val::from(60351), Val::from(60352)])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
+                                ctx.lines(args![
+                                    ((Val::from("You flush the toilet ") + l_input.clone()) + Val::from(" times."))
+                                ])?;
+                                ctx.next()?;
+                                ctx.mes("But nothing happens.")?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
                         }
-                    } else {
-                        ctx.mes("Nothing happens.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
+                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.lines(args!["You close the lid of the toilet.", "Nothing seems to be happening."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
                     }
+                } else {
+                    ctx.mes("Nothing happens.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if !matched2 && subject2.loosely_equals(&Val::from(2)) {
@@ -3172,76 +3111,74 @@ fn faucet_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.mes("Seems like you said something wrong.")?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("brazil_ghost").get()? == 4 {
-                        ctx.lines_as(
-                            "Sobbing Voice",
-                            args!["^FF0000Don't worry... the waterfall will help it....^000000"],
-                        )?;
-                        ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Tap on the faucet.:Turn on the water.")],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("How many times will you tap the faucet?")?;
-                                let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
-                                l_input = input;
+                } else if ctx.var("brazil_ghost").get()? == 4 {
+                    ctx.lines_as(
+                        "Sobbing Voice",
+                        args!["^FF0000Don't worry... the waterfall will help it....^000000"],
+                    )?;
+                    ctx.next()?;
+                    'b2: {
+                        let subject2 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Tap on the faucet.:Turn on the water.")],
+                        )?);
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("How many times will you tap the faucet?")?;
+                            let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
+                            l_input = input;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                ((Val::from("You tap the faucet ") + l_input.clone()) + Val::from(" times."))
+                            ])?;
+                            ctx.next()?;
+                            ctx.mes("But nothing happens.")?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("How many times should I turn the water on?")?;
+                            let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
+                            l_input = input;
+                            ctx.next()?;
+                            if l_input.clone() == 1 {
+                                ctx.mes("You turn the faucet on once.")?;
                                 ctx.next()?;
+                                ctx.mes("swwwaaaaaaa-")?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Distant Sound",
+                                    args!["^FF0000kkkkhee- hihihihi!!!^000000", "You see the carpet move."],
+                                )?;
+                                ctx.next()?;
+                                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+                                ctx.mes("Faint laughing can be heard off in the direction of the carpet.")?;
+                                ctx.var("brazil_ghost").set(Val::from(5))?;
+                                ctx.call(Function::ChangeQuest, vec![Val::from(60352), Val::from(60353)])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
                                 ctx.lines(args![
-                                    ((Val::from("You tap the faucet ") + l_input.clone()) + Val::from(" times."))
+                                    ((Val::from("You turn the faucet on ") + l_input.clone()) + Val::from(" times."))
                                 ])?;
                                 ctx.next()?;
                                 ctx.mes("But nothing happens.")?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("How many times should I turn the water on?")?;
-                                let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
-                                l_input = input;
-                                ctx.next()?;
-                                if l_input.clone() == 1 {
-                                    ctx.mes("You turn the faucet on once.")?;
-                                    ctx.next()?;
-                                    ctx.mes("swwwaaaaaaa-")?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Distant Sound",
-                                        args!["^FF0000kkkkhee- hihihihi!!!^000000", "You see the carpet move."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-                                    ctx.mes("Faint laughing can be heard off in the direction of the carpet.")?;
-                                    ctx.var("brazil_ghost").set(Val::from(5))?;
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(60352), Val::from(60353)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines(args![
-                                        ((Val::from("You turn the faucet on ") + l_input.clone()) + Val::from(" times."))
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.mes("But nothing happens.")?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
                         }
-                    } else {
-                        ctx.mes("Nothing happens.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
                     }
+                } else {
+                    ctx.mes("Nothing happens.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -3293,91 +3230,89 @@ fn carpet_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.mes("Seems like you said something wrong.")?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("brazil_ghost").get()? == 5 {
-                        ctx.lines_as(
-                            "Sobbing Voice",
-                            args!["^FF0000your 7 friends....are...sleeping... now it...'s time ....to wake them........^000000"],
-                        )?;
-                        ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Jump on the carpet.:Lie on the carpet.:Shake the carpet.")],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("How many times should I jump?")?;
-                                let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
-                                l_input = input;
+                } else if ctx.var("brazil_ghost").get()? == 5 {
+                    ctx.lines_as(
+                        "Sobbing Voice",
+                        args!["^FF0000your 7 friends....are...sleeping... now it...'s time ....to wake them........^000000"],
+                    )?;
+                    ctx.next()?;
+                    'b2: {
+                        let subject2 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Jump on the carpet.:Lie on the carpet.:Shake the carpet.")],
+                        )?);
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                            && !subject2.loosely_equals(&Val::from(2))
+                            && !subject2.loosely_equals(&Val::from(3));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("How many times should I jump?")?;
+                            let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
+                            l_input = input;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                ((Val::from("You jump on the carpet ") + l_input.clone()) + Val::from(" times."))
+                            ])?;
+                            ctx.next()?;
+                            ctx.mes("But nothing happens.")?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("How many times should I lie on the carpet?")?;
+                            let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
+                            l_input = input;
+                            ctx.next()?;
+                            ctx.lines(args![
+                                ((Val::from("You lie on the carpet ") + l_input.clone()) + Val::from(" times."))
+                            ])?;
+                            ctx.next()?;
+                            ctx.mes("But nothing happens.")?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("How many times should I shake the carpet?")?;
+                            let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
+                            l_input = input;
+                            ctx.next()?;
+                            if l_input.clone() == 7 {
+                                ctx.mes("You shake the carpet 7 times.")?;
                                 ctx.next()?;
+                                ctx.mes("- fly~ fly~ fly~ fly~ fly~ fly~ fly~ -")?;
+                                ctx.next()?;
+                                ctx.lines_as("Distant Sound", args!["^FF0000kkkkhee- hihihihi!!!^000000"])?;
+                                ctx.next()?;
+                                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+                                ctx.mes("Faint laughing can be heard off in the direction of the mirror.")?;
+                                ctx.var("brazil_ghost").set(Val::from(6))?;
+                                ctx.call(Function::ChangeQuest, vec![Val::from(60353), Val::from(60354)])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else {
                                 ctx.lines(args![
-                                    ((Val::from("You jump on the carpet ") + l_input.clone()) + Val::from(" times."))
+                                    ((Val::from("You shake the carpet ") + l_input.clone()) + Val::from(" times."))
                                 ])?;
                                 ctx.next()?;
                                 ctx.mes("But nothing happens.")?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("How many times should I lie on the carpet?")?;
-                                let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
-                                l_input = input;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    ((Val::from("You lie on the carpet ") + l_input.clone()) + Val::from(" times."))
-                                ])?;
-                                ctx.next()?;
-                                ctx.mes("But nothing happens.")?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("How many times should I shake the carpet?")?;
-                                let (input, status) = runtime::input_number(ctx, Some(0), Some(999))?;
-                                l_input = input;
-                                ctx.next()?;
-                                if l_input.clone() == 7 {
-                                    ctx.mes("You shake the carpet 7 times.")?;
-                                    ctx.next()?;
-                                    ctx.mes("- fly~ fly~ fly~ fly~ fly~ fly~ fly~ -")?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Distant Sound", args!["^FF0000kkkkhee- hihihihi!!!^000000"])?;
-                                    ctx.next()?;
-                                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-                                    ctx.mes("Faint laughing can be heard off in the direction of the mirror.")?;
-                                    ctx.var("brazil_ghost").set(Val::from(6))?;
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(60353), Val::from(60354)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines(args![
-                                        ((Val::from("You shake the carpet ") + l_input.clone()) + Val::from(" times."))
-                                    ])?;
-                                    ctx.next()?;
-                                    ctx.mes("But nothing happens.")?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
                             }
                         }
-                    } else {
-                        ctx.mes("Nothing happens.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
                     }
+                } else {
+                    ctx.mes("Nothing happens.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -3430,131 +3365,129 @@ fn mirror_bra_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.mes("Seems like you said something wrong.")?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("brazil_ghost").get()? == 6 {
-                        ctx.lines_as("Distant Sound", args!["^FF0000kihe! hit! hit! hit! hit!^000000"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Distant Sound",
-                            args!["^FF0000kihe! hit! hit! hit! hit!^000000", "^FF0000kihe! hit! hit! hit! hit!^000000"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Distant Sound", args!["Behind you..."])?;
-                        ctx.call(Function::EnableNpc, vec![Val::from("Ghost#bra")])?;
-                        ctx.next()?;
-                        ctx.call(
-                            Function::Emotion,
-                            vec![
-                                ctx.constant("ET_HUK")?,
-                                Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                            ],
-                        )?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["The stories about the ghost are true~!"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Ghost", args!["^FF0000my baby....^000000"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Ghost",
-                            args!["^FF0000I can't see.... my eye....^000000", "^FF0000What's going on....?^000000"],
-                        )?;
-                        ctx.next()?;
-                        ctx.mes("- You take a deep breath and then look at the Ghost and notice it has an eye patch -")?;
-                        ctx.next()?;
-                        ctx.lines_as("Ghost", args!["^FF0000My eyes are so tight... can you take this off?^000000"])?;
-                        ctx.next()?;
-                        ctx.mes("You step carefully towards the ghost.")?;
-                        ctx.next()?;
-                        ctx.mes("His face was covered with dust making strange contortions with it's face.")?;
-                        ctx.next()?;
-                        ctx.lines_as("Ghost", args!["^FF0000Come on help mom.....^000000"])?;
-                        ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Take the eye bandage off.:Run away~.")],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                'l3: loop {
-                                    if !(true) {
+                } else if ctx.var("brazil_ghost").get()? == 6 {
+                    ctx.lines_as("Distant Sound", args!["^FF0000kihe! hit! hit! hit! hit!^000000"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Distant Sound",
+                        args!["^FF0000kihe! hit! hit! hit! hit!^000000", "^FF0000kihe! hit! hit! hit! hit!^000000"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Distant Sound", args!["Behind you..."])?;
+                    ctx.call(Function::EnableNpc, vec![Val::from("Ghost#bra")])?;
+                    ctx.next()?;
+                    ctx.call(
+                        Function::Emotion,
+                        vec![
+                            ctx.constant("ET_HUK")?,
+                            Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                        ],
+                    )?;
+                    ctx.lines_as(
+                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                        args!["The stories about the ghost are true~!"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Ghost", args!["^FF0000my baby....^000000"])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Ghost",
+                        args!["^FF0000I can't see.... my eye....^000000", "^FF0000What's going on....?^000000"],
+                    )?;
+                    ctx.next()?;
+                    ctx.mes("- You take a deep breath and then look at the Ghost and notice it has an eye patch -")?;
+                    ctx.next()?;
+                    ctx.lines_as("Ghost", args!["^FF0000My eyes are so tight... can you take this off?^000000"])?;
+                    ctx.next()?;
+                    ctx.mes("You step carefully towards the ghost.")?;
+                    ctx.next()?;
+                    ctx.mes("His face was covered with dust making strange contortions with it's face.")?;
+                    ctx.next()?;
+                    ctx.lines_as("Ghost", args!["^FF0000Come on help mom.....^000000"])?;
+                    ctx.next()?;
+                    'b2: {
+                        let subject2 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Take the eye bandage off.:Run away~.")],
+                        )?);
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            'l3: loop {
+                                if !(true) {
+                                    break 'l3;
+                                }
+                                'b3: {
+                                    l_cpudice = ctx.call(Function::Rand, vec![Val::from(1), Val::from(6)])?;
+                                    l_pcdice = ctx.call(Function::Rand, vec![Val::from(1), Val::from(6)])?;
+                                    if !l_cpudice.clone().loosely_equals(&l_pcdice.clone()) {
+                                        ctx.call(
+                                            Function::Emotion,
+                                            vec![
+                                                (ctx.constant("ET_OTL")? + l_cpudice.clone()),
+                                                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Ghost#bra")])?,
+                                            ],
+                                        )?;
+                                        ctx.call(
+                                            Function::Emotion,
+                                            vec![
+                                                (ctx.constant("ET_OTL")? + l_pcdice.clone()),
+                                                Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                            ],
+                                        )?;
                                         break 'l3;
                                     }
-                                    'b3: {
-                                        l_cpudice = ctx.call(Function::Rand, vec![Val::from(1), Val::from(6)])?;
-                                        l_pcdice = ctx.call(Function::Rand, vec![Val::from(1), Val::from(6)])?;
-                                        if !l_cpudice.clone().loosely_equals(&l_pcdice.clone()) {
-                                            ctx.call(
-                                                Function::Emotion,
-                                                vec![
-                                                    (ctx.constant("ET_OTL")? + l_cpudice.clone()),
-                                                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Ghost#bra")])?,
-                                                ],
-                                            )?;
-                                            ctx.call(
-                                                Function::Emotion,
-                                                vec![
-                                                    (ctx.constant("ET_OTL")? + l_pcdice.clone()),
-                                                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                                ],
-                                            )?;
-                                            break 'l3;
-                                        }
-                                    }
-                                }
-                                if runtime::op(&l_cpudice.clone(), ">", &l_pcdice.clone())?.is_true() {
-                                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_DEVIL")?])?;
-                                    ctx.lines_as("Ghost", args!["^FF0000Go away!^000000"])?;
-                                    ctx.var("brazil_ghost").set(Val::from(1))?;
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(60354), Val::from(2208)])?;
-                                    ctx.call(Function::PercentHeal, vec![Val::from(-50), Val::from(-50)])?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::DisableNpc, vec![Val::from("Ghost#bra")])?;
-                                    ctx.call(Function::Warp, vec![Val::from("bra_in01"), Val::from(12), Val::from(183)])?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.call(
-                                        Function::Emotion,
-                                        vec![
-                                            ctx.constant("ET_STARE")?,
-                                            Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                        ],
-                                    )?;
-                                    ctx.lines_as("Ghost", args!["^FF0000Ahh!^000000", "The Ghost disappeared into the toilet."])?;
-                                    ctx.var("brazil_ghost").set(Val::from(7))?;
-                                    ctx.call(Function::ChangeQuest, vec![Val::from(60354), Val::from(60355)])?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::DisableNpc, vec![Val::from("Ghost#bra")])?;
-                                    ctx.call(Function::Warp, vec![Val::from("bra_in01"), Val::from(206), Val::from(100)])?;
-                                    return Err(Stop::End);
                                 }
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("You run away from the ghost.")?;
-                                ctx.close_window()?;
+                            if runtime::op(&l_cpudice.clone(), ">", &l_pcdice.clone())?.is_true() {
+                                ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_DEVIL")?])?;
+                                ctx.lines_as("Ghost", args!["^FF0000Go away!^000000"])?;
                                 ctx.var("brazil_ghost").set(Val::from(1))?;
                                 ctx.call(Function::ChangeQuest, vec![Val::from(60354), Val::from(2208)])?;
-                                ctx.call(Function::Warp, vec![Val::from("bra_in01"), Val::from(12), Val::from(183)])?;
+                                ctx.call(Function::PercentHeal, vec![Val::from(-50), Val::from(-50)])?;
+                                ctx.close_window()?;
                                 ctx.call(Function::DisableNpc, vec![Val::from("Ghost#bra")])?;
+                                ctx.call(Function::Warp, vec![Val::from("bra_in01"), Val::from(12), Val::from(183)])?;
+                                return Err(Stop::End);
+                            } else {
+                                ctx.call(
+                                    Function::Emotion,
+                                    vec![
+                                        ctx.constant("ET_STARE")?,
+                                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                    ],
+                                )?;
+                                ctx.lines_as("Ghost", args!["^FF0000Ahh!^000000", "The Ghost disappeared into the toilet."])?;
+                                ctx.var("brazil_ghost").set(Val::from(7))?;
+                                ctx.call(Function::ChangeQuest, vec![Val::from(60354), Val::from(60355)])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::DisableNpc, vec![Val::from("Ghost#bra")])?;
+                                ctx.call(Function::Warp, vec![Val::from("bra_in01"), Val::from(206), Val::from(100)])?;
                                 return Err(Stop::End);
                             }
                         }
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.mes("Nothing happens.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("You run away from the ghost.")?;
+                            ctx.close_window()?;
+                            ctx.var("brazil_ghost").set(Val::from(1))?;
+                            ctx.call(Function::ChangeQuest, vec![Val::from(60354), Val::from(2208)])?;
+                            ctx.call(Function::Warp, vec![Val::from("bra_in01"), Val::from(12), Val::from(183)])?;
+                            ctx.call(Function::DisableNpc, vec![Val::from("Ghost#bra")])?;
+                            return Err(Stop::End);
+                        }
                     }
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.mes("Nothing happens.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(2)) {

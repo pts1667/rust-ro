@@ -573,416 +573,406 @@ fn old_scholar_tyus_hellion_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                         )?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("hellionq").get()? == 66 {
-                                            if (((ctx.call(Function::CountItem, vec![Val::from(7333)])?.number()? > 0
-                                                && ctx.call(Function::CountItem, vec![Val::from(7334)])?.number()? > 0)
-                                                && ctx.call(Function::CountItem, vec![Val::from(7335)])?.number()? > 0)
-                                                && ctx.call(Function::CountItem, vec![Val::from(7336)])?.number()? > 0)
-                                            {
-                                                ctx.lines_as(
-                                                    "Sir Chilias'Tyus",
-                                                    args![
-                                                        "You have all four",
-                                                        "pieces of the tablet?",
-                                                        "That's great news! Ah,",
-                                                        "and the gem is embedded",
-                                                        "in each of the tablet pieces.",
-                                                        "We're so close to finishing!"
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Sir Chilias'Tyus",
-                                                    args![
-                                                        "Ah, would you go back",
-                                                        "to Welshyun? I know it's",
-                                                        "a hassle, but he is probably",
-                                                        "the only one who can combine",
-                                                        "the tablet pieces into the its",
-                                                        "complete form. Thank you..."
-                                                    ],
-                                                )?;
-                                                ctx.var("hellionq").set(Val::from(67))?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
+                                    } else if ctx.var("hellionq").get()? == 66 {
+                                        if (((ctx.call(Function::CountItem, vec![Val::from(7333)])?.number()? > 0
+                                            && ctx.call(Function::CountItem, vec![Val::from(7334)])?.number()? > 0)
+                                            && ctx.call(Function::CountItem, vec![Val::from(7335)])?.number()? > 0)
+                                            && ctx.call(Function::CountItem, vec![Val::from(7336)])?.number()? > 0)
+                                        {
                                             ctx.lines_as(
                                                 "Sir Chilias'Tyus",
                                                 args![
-                                                    "Where are the tablet pieces?",
-                                                    "Have you hoarded them away",
-                                                    "to steal the Hellion's gem",
-                                                    "for yourself?! I must smite",
-                                                    "you now before you are",
-                                                    "consumed by its darkness!"
+                                                    "You have all four",
+                                                    "pieces of the tablet?",
+                                                    "That's great news! Ah,",
+                                                    "and the gem is embedded",
+                                                    "in each of the tablet pieces.",
+                                                    "We're so close to finishing!"
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Ah, would you go back",
+                                                    "to Welshyun? I know it's",
+                                                    "a hassle, but he is probably",
+                                                    "the only one who can combine",
+                                                    "the tablet pieces into the its",
+                                                    "complete form. Thank you..."
+                                                ],
+                                            )?;
+                                            ctx.var("hellionq").set(Val::from(67))?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                        ctx.lines_as(
+                                            "Sir Chilias'Tyus",
+                                            args![
+                                                "Where are the tablet pieces?",
+                                                "Have you hoarded them away",
+                                                "to steal the Hellion's gem",
+                                                "for yourself?! I must smite",
+                                                "you now before you are",
+                                                "consumed by its darkness!"
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
+                                        return Err(Stop::End);
+                                    } else if ctx.var("hellionq").get()? == 67 {
+                                        ctx.lines_as(
+                                            "Sir Chilias'Tyus",
+                                            args![
+                                                "Ah, would you go back",
+                                                "to Welshyun? I know it's",
+                                                "a hassle, but he is probably",
+                                                "the only one who can combine",
+                                                "the tablet pieces into the its",
+                                                "complete form. Thank you..."
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    } else if ctx.var("hellionq").get()? == 68 {
+                                        if (ctx.call(Function::CountItem, vec![Val::from(7332)])?.number()? > 0
+                                            && ctx.call(Function::CountItem, vec![Val::from(7337)])?.number()? > 0)
+                                        {
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "At long last. We have",
+                                                    "everything. The Tablet",
+                                                    "and the Hellion's gem.",
+                                                    "Now I can finally use",
+                                                    "this bracelet to seal",
+                                                    "its power forever..."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "But your eyes...",
+                                                    "They seem so tired",
+                                                    "and I can sense some",
+                                                    "sort of pain from them.",
+                                                    "Did something happen?"
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                args![
+                                                    "I learned the secret of",
+                                                    "the Hellion's gem. It...",
+                                                    "It turns people into",
+                                                    "Hellion Revenants.",
+                                                    "It's what happened",
+                                                    "to your grandfather..."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Sir Chilias'Tyus", args!["What...", "What did you just say?"])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                args![
+                                                    "The tablet had a map that",
+                                                    "let me to the chamber where",
+                                                    "your grandfather locked himself",
+                                                    "up before he completed turned",
+                                                    "into the Hellion Revenant.",
+                                                    "It was horrible..."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                args![
+                                                    "At the entrance, he",
+                                                    "left a message that said",
+                                                    "that he wanted to be killed.",
+                                                    "So that he could finally join",
+                                                    "his friends instead of living",
+                                                    "as a monster. So I... So I..."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "It's okay. I know you",
+                                                    "did the right thing. It's",
+                                                    "what my grandfather",
+                                                    "would have wanted most.",
+                                                    "Thank you for finally freeing",
+                                                    "his soul and giving him peace."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                args![
+                                                    "Here, I think you",
+                                                    "should have this Eye",
+                                                    "of Hellion, in case you",
+                                                    "wanted a memento of",
+                                                    "your dear grandfather."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "I'd appreciate that.",
+                                                    "Grandfather's eye...",
+                                                    "It's full of the painful",
+                                                    "experiences of the people",
+                                                    "who were turned into Hellion",
+                                                    "Revenants against their will."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "But... Now is not the",
+                                                    "time for sentiment. For",
+                                                    "the sake of my grandfather,",
+                                                    "I must seal the power of",
+                                                    "the Hellion's gem now!"
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Darkness that writhes,",
+                                                    "souls lost in the inferno,",
+                                                    "I offer you comfort, I offer",
+                                                    "you peace. To the despairing",
+                                                    "ones, to the shameless ones,",
+                                                    "I give guidance to heaven..."
+                                                ],
+                                            )?;
+                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL")?])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Instead of sadness,",
+                                                    "let there be joy. Instead",
+                                                    "of anger, let there be",
+                                                    "love. Souls that are",
+                                                    "lost will now find",
+                                                    "their way..."
+                                                ],
+                                            )?;
+                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL6")?])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args!["Light and hope...", "Heaven and earth...", "Cast away the darkness."],
+                                            )?;
+                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SANCTUARY")?])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "I did it.",
+                                                    "After all these",
+                                                    "long years, I finally did",
+                                                    "it. Thanks to your help."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Please take this",
+                                                    "Nile Rose, which will",
+                                                    "keep the power of the gem",
+                                                    "in check. I trust that you will",
+                                                    "keep its secret and protect it",
+                                                    "from those motivated by greed."
+                                                ],
+                                            )?;
+                                            ctx.call(Function::DelItem, vec![Val::from(7332), Val::from(1)])?;
+                                            ctx.call(
+                                                Function::DelItem,
+                                                vec![Val::from(7337), ctx.call(Function::CountItem, vec![Val::from(7337)])?],
+                                            )?;
+                                            ctx.var("hellionq").set(Val::from(69))?;
+                                            ctx.call(Function::GetItem, vec![Val::from(2658), Val::from(1)])?;
+                                            ctx.call(Function::GetItem, vec![Val::from(603), Val::from(1)])?;
+                                            ctx.call(Function::GetExperience, vec![Val::from(1200000), Val::from(0)])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Thank you, kind",
+                                                    "adventurer, for bringing",
+                                                    "peace to my grandfather's",
+                                                    "soul and for working to",
+                                                    "protect peace in our world.",
+                                                    "You are the truest of heroes."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines(args![
+                                                "^3355FFYou have received the",
+                                                "Nile Rose in which the",
+                                                "Hellion's gem is sealed.",
+                                                "The Eye of the Hellion has",
+                                                "granted you some experience",
+                                                "through its strange powers.^000000"
+                                            ])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        } else if ctx.call(Function::CountItem, vec![Val::from(7332)])?.number()? > 0 {
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "At long last. We have",
+                                                    "everything. The Tablet",
+                                                    "and the Hellion's gem.",
+                                                    "Now I can finally use",
+                                                    "this bracelet to seal",
+                                                    "its power forever..."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Darkness that writhes,",
+                                                    "souls lost in the inferno,",
+                                                    "I offer you comfort, I offer",
+                                                    "you peace. To the despairing",
+                                                    "ones, to the shameless ones,",
+                                                    "I give guidance to heaven..."
+                                                ],
+                                            )?;
+                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL")?])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Instead of sadness,",
+                                                    "let there be joy. Instead",
+                                                    "of anger, let there be",
+                                                    "love. Souls that are",
+                                                    "lost will now find",
+                                                    "their way..."
+                                                ],
+                                            )?;
+                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL6")?])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Light and hope...",
+                                                    "Heaven and earth...",
+                                                    "Cast away the darkness."
+                                                ],
+                                            )?;
+                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SANCTUARY")?])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "I did it.",
+                                                    "After all these",
+                                                    "long years, I finally did",
+                                                    "it. Thanks to your help."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Please take this",
+                                                    "Nile Rose, which will",
+                                                    "keep the power of the gem",
+                                                    "in check. I trust that you will",
+                                                    "keep its secret and protect it",
+                                                    "from those motivated by greed."
+                                                ],
+                                            )?;
+                                            ctx.call(Function::DelItem, vec![Val::from(7332), Val::from(1)])?;
+                                            ctx.var("hellionq").set(Val::from(70))?;
+                                            ctx.call(Function::GetItem, vec![Val::from(2658), Val::from(1)])?;
+                                            ctx.call(Function::GetExperience, vec![Val::from(1000000), Val::from(0)])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Thank you, kind",
+                                                    "adventurer, for bringing",
+                                                    "peace to my grandfather's",
+                                                    "soul and for working to",
+                                                    "protect peace in our world.",
+                                                    "You are the truest of heroes."
                                                 ],
                                             )?;
                                             ctx.close_window()?;
-                                            ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
                                             return Err(Stop::End);
-                                        } else {
-                                            if ctx.var("hellionq").get()? == 67 {
-                                                ctx.lines_as(
-                                                    "Sir Chilias'Tyus",
-                                                    args![
-                                                        "Ah, would you go back",
-                                                        "to Welshyun? I know it's",
-                                                        "a hassle, but he is probably",
-                                                        "the only one who can combine",
-                                                        "the tablet pieces into the its",
-                                                        "complete form. Thank you..."
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                if ctx.var("hellionq").get()? == 68 {
-                                                    if (ctx.call(Function::CountItem, vec![Val::from(7332)])?.number()? > 0
-                                                        && ctx.call(Function::CountItem, vec![Val::from(7337)])?.number()? > 0)
-                                                    {
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "At long last. We have",
-                                                                "everything. The Tablet",
-                                                                "and the Hellion's gem.",
-                                                                "Now I can finally use",
-                                                                "this bracelet to seal",
-                                                                "its power forever..."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "But your eyes...",
-                                                                "They seem so tired",
-                                                                "and I can sense some",
-                                                                "sort of pain from them.",
-                                                                "Did something happen?"
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                            args![
-                                                                "I learned the secret of",
-                                                                "the Hellion's gem. It...",
-                                                                "It turns people into",
-                                                                "Hellion Revenants.",
-                                                                "It's what happened",
-                                                                "to your grandfather..."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Sir Chilias'Tyus", args!["What...", "What did you just say?"])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                            args![
-                                                                "The tablet had a map that",
-                                                                "let me to the chamber where",
-                                                                "your grandfather locked himself",
-                                                                "up before he completed turned",
-                                                                "into the Hellion Revenant.",
-                                                                "It was horrible..."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                            args![
-                                                                "At the entrance, he",
-                                                                "left a message that said",
-                                                                "that he wanted to be killed.",
-                                                                "So that he could finally join",
-                                                                "his friends instead of living",
-                                                                "as a monster. So I... So I..."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "It's okay. I know you",
-                                                                "did the right thing. It's",
-                                                                "what my grandfather",
-                                                                "would have wanted most.",
-                                                                "Thank you for finally freeing",
-                                                                "his soul and giving him peace."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                            args![
-                                                                "Here, I think you",
-                                                                "should have this Eye",
-                                                                "of Hellion, in case you",
-                                                                "wanted a memento of",
-                                                                "your dear grandfather."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "I'd appreciate that.",
-                                                                "Grandfather's eye...",
-                                                                "It's full of the painful",
-                                                                "experiences of the people",
-                                                                "who were turned into Hellion",
-                                                                "Revenants against their will."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "But... Now is not the",
-                                                                "time for sentiment. For",
-                                                                "the sake of my grandfather,",
-                                                                "I must seal the power of",
-                                                                "the Hellion's gem now!"
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "Darkness that writhes,",
-                                                                "souls lost in the inferno,",
-                                                                "I offer you comfort, I offer",
-                                                                "you peace. To the despairing",
-                                                                "ones, to the shameless ones,",
-                                                                "I give guidance to heaven..."
-                                                            ],
-                                                        )?;
-                                                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL")?])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "Instead of sadness,",
-                                                                "let there be joy. Instead",
-                                                                "of anger, let there be",
-                                                                "love. Souls that are",
-                                                                "lost will now find",
-                                                                "their way..."
-                                                            ],
-                                                        )?;
-                                                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL6")?])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args!["Light and hope...", "Heaven and earth...", "Cast away the darkness."],
-                                                        )?;
-                                                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SANCTUARY")?])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "I did it.",
-                                                                "After all these",
-                                                                "long years, I finally did",
-                                                                "it. Thanks to your help."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "Please take this",
-                                                                "Nile Rose, which will",
-                                                                "keep the power of the gem",
-                                                                "in check. I trust that you will",
-                                                                "keep its secret and protect it",
-                                                                "from those motivated by greed."
-                                                            ],
-                                                        )?;
-                                                        ctx.call(Function::DelItem, vec![Val::from(7332), Val::from(1)])?;
-                                                        ctx.call(
-                                                            Function::DelItem,
-                                                            vec![Val::from(7337), ctx.call(Function::CountItem, vec![Val::from(7337)])?],
-                                                        )?;
-                                                        ctx.var("hellionq").set(Val::from(69))?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(2658), Val::from(1)])?;
-                                                        ctx.call(Function::GetItem, vec![Val::from(603), Val::from(1)])?;
-                                                        ctx.call(Function::GetExperience, vec![Val::from(1200000), Val::from(0)])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "Thank you, kind",
-                                                                "adventurer, for bringing",
-                                                                "peace to my grandfather's",
-                                                                "soul and for working to",
-                                                                "protect peace in our world.",
-                                                                "You are the truest of heroes."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines(args![
-                                                            "^3355FFYou have received the",
-                                                            "Nile Rose in which the",
-                                                            "Hellion's gem is sealed.",
-                                                            "The Eye of the Hellion has",
-                                                            "granted you some experience",
-                                                            "through its strange powers.^000000"
-                                                        ])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    } else {
-                                                        if ctx.call(Function::CountItem, vec![Val::from(7332)])?.number()? > 0 {
-                                                            ctx.lines_as(
-                                                                "Sir Chilias'Tyus",
-                                                                args![
-                                                                    "At long last. We have",
-                                                                    "everything. The Tablet",
-                                                                    "and the Hellion's gem.",
-                                                                    "Now I can finally use",
-                                                                    "this bracelet to seal",
-                                                                    "its power forever..."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Sir Chilias'Tyus",
-                                                                args![
-                                                                    "Darkness that writhes,",
-                                                                    "souls lost in the inferno,",
-                                                                    "I offer you comfort, I offer",
-                                                                    "you peace. To the despairing",
-                                                                    "ones, to the shameless ones,",
-                                                                    "I give guidance to heaven..."
-                                                                ],
-                                                            )?;
-                                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL")?])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Sir Chilias'Tyus",
-                                                                args![
-                                                                    "Instead of sadness,",
-                                                                    "let there be joy. Instead",
-                                                                    "of anger, let there be",
-                                                                    "love. Souls that are",
-                                                                    "lost will now find",
-                                                                    "their way..."
-                                                                ],
-                                                            )?;
-                                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL6")?])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Sir Chilias'Tyus",
-                                                                args![
-                                                                    "Light and hope...",
-                                                                    "Heaven and earth...",
-                                                                    "Cast away the darkness."
-                                                                ],
-                                                            )?;
-                                                            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SANCTUARY")?])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Sir Chilias'Tyus",
-                                                                args![
-                                                                    "I did it.",
-                                                                    "After all these",
-                                                                    "long years, I finally did",
-                                                                    "it. Thanks to your help."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Sir Chilias'Tyus",
-                                                                args![
-                                                                    "Please take this",
-                                                                    "Nile Rose, which will",
-                                                                    "keep the power of the gem",
-                                                                    "in check. I trust that you will",
-                                                                    "keep its secret and protect it",
-                                                                    "from those motivated by greed."
-                                                                ],
-                                                            )?;
-                                                            ctx.call(Function::DelItem, vec![Val::from(7332), Val::from(1)])?;
-                                                            ctx.var("hellionq").set(Val::from(70))?;
-                                                            ctx.call(Function::GetItem, vec![Val::from(2658), Val::from(1)])?;
-                                                            ctx.call(Function::GetExperience, vec![Val::from(1000000), Val::from(0)])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Sir Chilias'Tyus",
-                                                                args![
-                                                                    "Thank you, kind",
-                                                                    "adventurer, for bringing",
-                                                                    "peace to my grandfather's",
-                                                                    "soul and for working to",
-                                                                    "protect peace in our world.",
-                                                                    "You are the truest of heroes."
-                                                                ],
-                                                            )?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                    ctx.lines_as(
-                                                        "Sir Chilias'Tyus",
-                                                        args![
-                                                            "Where is the complete",
-                                                            "tablet? We need that in",
-                                                            "order to extract the Hellion's",
-                                                            "gem in order to seal its power!"
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    if (ctx.var("hellionq").get()?.number()? > 68
-                                                        && ctx.var("hellionq").get()?.number()? < 71)
-                                                    {
-                                                        if ctx.call(Function::CountItem, vec![Val::from(7337)])?.number()? > 0 {
-                                                            ctx.lines_as(
-                                                                "Sir Chilias'Tyus",
-                                                                args![
-                                                                    "Long time no see. So, are you doing well to keep the promise with me?",
-                                                                    "Please handle it with care",
-                                                                    "to prevent the evil power within from being released."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Sir Chilias'Tyus",
-                                                                args![
-                                                                    "You still have the Hellion's Eye.",
-                                                                    "I can see the pain in your eyes.",
-                                                                    "Let me lighten your burden. It will be better this way."
-                                                                ],
-                                                            )?;
-                                                            ctx.call(
-                                                                Function::DelItem,
-                                                                vec![
-                                                                    Val::from(7337),
-                                                                    ctx.call(Function::CountItem, vec![Val::from(7337)])?,
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Sir Chilias'Tyus", args!["May God bless you."])?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        ctx.lines_as(
-                                                            "Sir Chilias'Tyus",
-                                                            args![
-                                                                "Long time no see. So, are you doing well to keep the promise with me?",
-                                                                "Please handle it with care",
-                                                                "to prevent the evil power within from being released."
-                                                            ],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                }
-                                            }
                                         }
+                                        ctx.lines_as(
+                                            "Sir Chilias'Tyus",
+                                            args![
+                                                "Where is the complete",
+                                                "tablet? We need that in",
+                                                "order to extract the Hellion's",
+                                                "gem in order to seal its power!"
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    } else if (ctx.var("hellionq").get()?.number()? > 68
+                                        && ctx.var("hellionq").get()?.number()? < 71)
+                                    {
+                                        if ctx.call(Function::CountItem, vec![Val::from(7337)])?.number()? > 0 {
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "Long time no see. So, are you doing well to keep the promise with me?",
+                                                    "Please handle it with care",
+                                                    "to prevent the evil power within from being released."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Sir Chilias'Tyus",
+                                                args![
+                                                    "You still have the Hellion's Eye.",
+                                                    "I can see the pain in your eyes.",
+                                                    "Let me lighten your burden. It will be better this way."
+                                                ],
+                                            )?;
+                                            ctx.call(
+                                                Function::DelItem,
+                                                vec![
+                                                    Val::from(7337),
+                                                    ctx.call(Function::CountItem, vec![Val::from(7337)])?,
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Sir Chilias'Tyus", args!["May God bless you."])?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
+                                        }
+                                        ctx.lines_as(
+                                            "Sir Chilias'Tyus",
+                                            args![
+                                                "Long time no see. So, are you doing well to keep the promise with me?",
+                                                "Please handle it with care",
+                                                "to prevent the evil power within from being released."
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
                                 }
                             }
@@ -1409,169 +1399,161 @@ fn clanux_heffron_hellion_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.call(Function::GetItem, vec![Val::from(7093), Val::from(1)])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if ctx.var("hellionq").get()? == 43 {
+                            } else if ctx.var("hellionq").get()? == 43 {
+                                ctx.lines_as(
+                                    "Clanux Heffron",
+                                    args![
+                                        "Hey, hurry up and check",
+                                        "the Tool Shop and figure",
+                                        "out the meaning of that",
+                                        "password! Maybe that weird",
+                                        "machine there is a part of",
+                                        "this whole puzzle? Nah..."
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("hellionq").get()? == 44 {
+                                ctx.lines_as(
+                                    "Clanux Heffron",
+                                    args!["Hey...", "Didja find anything", "new in the Tool Shop?"],
+                                )?;
+                                ctx.next()?;
+                                if Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("Pretend that nothing happened.:Share what you learned.")],
+                                )?) == 1
+                                {
+                                    ctx.lines_as(
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                        args![
+                                            "Nope...",
+                                            "I couldn't find any",
+                                            "new leads. I guess",
+                                            "I have no choice but to",
+                                            "go back to Chilias'Tyus,",
+                                            "unless you know anything..."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
                                     ctx.lines_as(
                                         "Clanux Heffron",
-                                        args![
-                                            "Hey, hurry up and check",
-                                            "the Tool Shop and figure",
-                                            "out the meaning of that",
-                                            "password! Maybe that weird",
-                                            "machine there is a part of",
-                                            "this whole puzzle? Nah..."
-                                        ],
+                                        args!["Bah!", "Freakin' useless!", "What kind of assistant", "are you anyway, huh?"],
                                     )?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
-                                } else {
-                                    if ctx.var("hellionq").get()? == 44 {
-                                        ctx.lines_as(
-                                            "Clanux Heffron",
-                                            args!["Hey...", "Didja find anything", "new in the Tool Shop?"],
-                                        )?;
-                                        ctx.next()?;
-                                        if Val::from(runtime::select_values(
-                                            ctx,
-                                            &[Val::from("Pretend that nothing happened.:Share what you learned.")],
-                                        )?) == 1
-                                        {
-                                            ctx.lines_as(
-                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                args![
-                                                    "Nope...",
-                                                    "I couldn't find any",
-                                                    "new leads. I guess",
-                                                    "I have no choice but to",
-                                                    "go back to Chilias'Tyus,",
-                                                    "unless you know anything..."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Clanux Heffron",
-                                                args!["Bah!", "Freakin' useless!", "What kind of assistant", "are you anyway, huh?"],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args![
-                                                "Well, I put that cogwheel",
-                                                "into that weird machine in",
-                                                "the Tool Shop and some kind",
-                                                "of number pad came out. Then...",
-                                                "Uh, I couldn't figure out what",
-                                                "the password was. I'm stuck!"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Clanux Heffron",
-                                            args![
-                                                "Oh yeah? Hah! Well, now",
-                                                "that the easy part is done, I'll just figure out that secret",
-                                                "password myself! Hahaha! That Hellion's gem is as good as mine!"
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("hellionq").get()? == 45 {
-                                            ctx.lines_as(
-                                                "Clanux Heffron",
-                                                args![
-                                                    "Hey, so you have",
-                                                    "anything new to report?",
-                                                    "Oh, and did you learn",
-                                                    "anything from that weird",
-                                                    "machine in the Tool Shop?"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            if Val::from(runtime::select_values(
-                                                ctx,
-                                                &[Val::from("Tell him just a little bit.:Don't tell him.")],
-                                            )?) == 1
-                                            {
-                                                ctx.lines_as(
-                                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                    args![
-                                                        "Well, I put that cogwheel",
-                                                        "into that weird machine in",
-                                                        "the Tool Shop and some kind",
-                                                        "of number pad came out. Then..."
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                    args![
-                                                        "^333333(Wait, I can't trust this",
-                                                        "guy!)^000000 I put in every single",
-                                                        "password that I could think",
-                                                        "of, but nothing happened!",
-                                                        "I think I'm stuck..."
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Clanux Heffron",
-                                                    args![
-                                                        "Oh yeah? Hah! Well, now",
-                                                        "that the easy part is done, I'll just figure out that secret",
-                                                        "password myself! Hahaha! That Hellion's gem is as good as mine!"
-                                                    ],
-                                                )?;
-                                                ctx.var("hellionq").set(Val::from(46))?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            ctx.lines_as(
-                                                "Clanux Heffron",
-                                                args![
-                                                    "Huh. You should be able",
-                                                    "to get some number pad to",
-                                                    "come out from that machine.",
-                                                    "Yeah, I was able to get that",
-                                                    "far, but I haven't been able",
-                                                    "to figure out the password..."
-                                                ],
-                                            )?;
-                                            ctx.var("hellionq").set(Val::from(46))?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if (ctx.var("hellionq").get()?.number()? > 45 && ctx.var("hellionq").get()?.number()? < 71) {
-                                                ctx.lines_as(
-                                                    "Clanux Heffron",
-                                                    args![
-                                                        "Oh hey, it's you.",
-                                                        "Listen I got this number",
-                                                        "pad to pop out of that old",
-                                                        "machine in the Tool Shop,",
-                                                        "I still don't know what the",
-                                                        "password for it might be."
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Clanux Heffron",
-                                                    args![
-                                                        "If I couldn't figure",
-                                                        "it out, and I understand",
-                                                        "if you couldn't figure this",
-                                                        "out, then this puzzle must",
-                                                        "be freakin' impossible!"
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
-                                    }
                                 }
+                                ctx.lines_as(
+                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    args![
+                                        "Well, I put that cogwheel",
+                                        "into that weird machine in",
+                                        "the Tool Shop and some kind",
+                                        "of number pad came out. Then...",
+                                        "Uh, I couldn't figure out what",
+                                        "the password was. I'm stuck!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Clanux Heffron",
+                                    args![
+                                        "Oh yeah? Hah! Well, now",
+                                        "that the easy part is done, I'll just figure out that secret",
+                                        "password myself! Hahaha! That Hellion's gem is as good as mine!"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ctx.var("hellionq").get()? == 45 {
+                                ctx.lines_as(
+                                    "Clanux Heffron",
+                                    args![
+                                        "Hey, so you have",
+                                        "anything new to report?",
+                                        "Oh, and did you learn",
+                                        "anything from that weird",
+                                        "machine in the Tool Shop?"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                if Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("Tell him just a little bit.:Don't tell him.")],
+                                )?) == 1
+                                {
+                                    ctx.lines_as(
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                        args![
+                                            "Well, I put that cogwheel",
+                                            "into that weird machine in",
+                                            "the Tool Shop and some kind",
+                                            "of number pad came out. Then..."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                        args![
+                                            "^333333(Wait, I can't trust this",
+                                            "guy!)^000000 I put in every single",
+                                            "password that I could think",
+                                            "of, but nothing happened!",
+                                            "I think I'm stuck..."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Clanux Heffron",
+                                        args![
+                                            "Oh yeah? Hah! Well, now",
+                                            "that the easy part is done, I'll just figure out that secret",
+                                            "password myself! Hahaha! That Hellion's gem is as good as mine!"
+                                        ],
+                                    )?;
+                                    ctx.var("hellionq").set(Val::from(46))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                ctx.lines_as(
+                                    "Clanux Heffron",
+                                    args![
+                                        "Huh. You should be able",
+                                        "to get some number pad to",
+                                        "come out from that machine.",
+                                        "Yeah, I was able to get that",
+                                        "far, but I haven't been able",
+                                        "to figure out the password..."
+                                    ],
+                                )?;
+                                ctx.var("hellionq").set(Val::from(46))?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if (ctx.var("hellionq").get()?.number()? > 45 && ctx.var("hellionq").get()?.number()? < 71) {
+                                ctx.lines_as(
+                                    "Clanux Heffron",
+                                    args![
+                                        "Oh hey, it's you.",
+                                        "Listen I got this number",
+                                        "pad to pop out of that old",
+                                        "machine in the Tool Shop,",
+                                        "I still don't know what the",
+                                        "password for it might be."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Clanux Heffron",
+                                    args![
+                                        "If I couldn't figure",
+                                        "it out, and I understand",
+                                        "if you couldn't figure this",
+                                        "out, then this puzzle must",
+                                        "be freakin' impossible!"
+                                    ],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         }
                     }
@@ -1747,10 +1729,8 @@ fn prt_key_1_1_run(ctx: &Ctx, mut step: PrtKey11Step, args: Vec<Val>) -> Result<
                         )?;
                         if ctx.var("hellionq").get()? == 40 {
                             ctx.var("hellionq").set(Val::from(42))?;
-                        } else {
-                            if ctx.var("hellionq").get()? == 41 {
-                                ctx.var("hellionq").set(Val::from(43))?;
-                            }
+                        } else if ctx.var("hellionq").get()? == 41 {
+                            ctx.var("hellionq").set(Val::from(43))?;
                         }
                         ctx.next()?;
                         ctx.lines_as(
@@ -1898,60 +1878,58 @@ fn unknown_machine_prt_key_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("hellionq").get()? == 44 {
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args!["Okay, let me see", "if I can enter the", "right number this time..."],
-            )?;
+    } else if ctx.var("hellionq").get()? == 44 {
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Okay, let me see", "if I can enter the", "right number this time..."],
+        )?;
+        ctx.next()?;
+        let (input, status) = runtime::input_text(ctx, None, None)?;
+        l_input_s = input;
+        if l_input_s.clone() == "3847147298" {
+            ctx.lines(args![
+                "^3355FFThe machine responds to",
+                "the password with a pleasant",
+                "chime, confirming that you've",
+                "input the correct numbers.",
+                "The keypad slides open to",
+                "reveal a piece of a tablet.^000000"
+            ])?;
             ctx.next()?;
-            let (input, status) = runtime::input_text(ctx, None, None)?;
-            l_input_s = input;
-            if l_input_s.clone() == "3847147298" {
-                ctx.lines(args![
-                    "^3355FFThe machine responds to",
-                    "the password with a pleasant",
-                    "chime, confirming that you've",
-                    "input the correct numbers.",
-                    "The keypad slides open to",
-                    "reveal a piece of a tablet.^000000"
-                ])?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^3355FFThe message engraved on",
-                    "this tablet reads: ''This is for",
-                    "Christopher, my dear friend",
-                    "who I met in Prontera. To the",
-                    "one who finds this, please seek",
-                    "out the next piece of this tablet",
-                    "in the city of thickest forest.''^000000"
-                ])?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^3355FFThe message is signed",
-                    "by someone named Tyus.",
-                    "It would be best to bring",
-                    "this back to Sir Chilia'Tyus",
-                    "and confirm that this was",
-                    "made by his grandfather...^000000"
-                ])?;
-                ctx.var("hellionq").set(Val::from(45))?;
-                ctx.call(Function::GetItem, vec![Val::from(7333), Val::from(1)])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    "The machine responds to",
-                    "the password with an abrupt,",
-                    "screeching beep and the entire",
-                    "machine shuts down. You'll have to try entering the password again."
-                ],
-            )?;
+            ctx.lines(args![
+                "^3355FFThe message engraved on",
+                "this tablet reads: ''This is for",
+                "Christopher, my dear friend",
+                "who I met in Prontera. To the",
+                "one who finds this, please seek",
+                "out the next piece of this tablet",
+                "in the city of thickest forest.''^000000"
+            ])?;
+            ctx.next()?;
+            ctx.lines(args![
+                "^3355FFThe message is signed",
+                "by someone named Tyus.",
+                "It would be best to bring",
+                "this back to Sir Chilia'Tyus",
+                "and confirm that this was",
+                "made by his grandfather...^000000"
+            ])?;
+            ctx.var("hellionq").set(Val::from(45))?;
+            ctx.call(Function::GetItem, vec![Val::from(7333), Val::from(1)])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "The machine responds to",
+                "the password with an abrupt,",
+                "screeching beep and the entire",
+                "machine shuts down. You'll have to try entering the password again."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.lines(args![
         "^3355FFIt's some sort of",
@@ -2368,107 +2346,99 @@ fn grout_he_tuccok_hellion_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                     )?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
+                                } else if ctx.var("hellionq").get()? == 55 {
+                                    ctx.lines_as(
+                                        "Grout'he",
+                                        args![
+                                            "Oh, so all of those",
+                                            "items came in handy?",
+                                            "I don't believe it! So",
+                                            "this puzzle actually",
+                                            "makes sense?! So",
+                                            "what'd the slab say?"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Grout'he",
+                                        args![
+                                            "''Compassionate one?''",
+                                            "Oh hey, there's a giant",
+                                            "stone statue over in the",
+                                            "Archer Village that fits",
+                                            "that description perfectly!",
+                                            "You should check it out."
+                                        ],
+                                    )?;
+                                    ctx.var("hellionq").set(Val::from(56))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if ctx.var("hellionq").get()? == 56 {
+                                    ctx.lines_as(
+                                        "Grout'he",
+                                        args![
+                                            "Hey, you really ought",
+                                            "to check out the huge",
+                                            "stone statue over in the",
+                                            "Archer Village. Now that",
+                                            "I think about it, it's the",
+                                            "perfect hiding place!"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if ctx.var("hellionq").get()? == 57 {
+                                    ctx.lines_as(
+                                        "Grout'he",
+                                        args![
+                                            "Hey, this is great!",
+                                            "You actually found the",
+                                            "next piece of the tablet!",
+                                            "You better take this back",
+                                            "to Chilias'Tyus right now~"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Grout'he",
+                                        args![
+                                            "Oh. And um, thanks",
+                                            "for being willing to pay",
+                                            "me in cash for all those",
+                                            "little bitty clues. I won't",
+                                            "forget your help, pal~"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if (ctx.var("hellionq").get()?.number()? > 57 && ctx.var("hellionq").get()?.number()? < 71)
+                                {
+                                    ctx.lines_as(
+                                        "Grout'he",
+                                        args![
+                                            "Hey, be careful if",
+                                            "you manage to find that",
+                                            "Hellion's gem. I dunno if",
+                                            "it's true, but maybe old",
+                                            "Tyus was right. Maybe it",
+                                            "does hold a wicked power..."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 } else {
-                                    if ctx.var("hellionq").get()? == 55 {
-                                        ctx.lines_as(
-                                            "Grout'he",
-                                            args![
-                                                "Oh, so all of those",
-                                                "items came in handy?",
-                                                "I don't believe it! So",
-                                                "this puzzle actually",
-                                                "makes sense?! So",
-                                                "what'd the slab say?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Grout'he",
-                                            args![
-                                                "''Compassionate one?''",
-                                                "Oh hey, there's a giant",
-                                                "stone statue over in the",
-                                                "Archer Village that fits",
-                                                "that description perfectly!",
-                                                "You should check it out."
-                                            ],
-                                        )?;
-                                        ctx.var("hellionq").set(Val::from(56))?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("hellionq").get()? == 56 {
-                                            ctx.lines_as(
-                                                "Grout'he",
-                                                args![
-                                                    "Hey, you really ought",
-                                                    "to check out the huge",
-                                                    "stone statue over in the",
-                                                    "Archer Village. Now that",
-                                                    "I think about it, it's the",
-                                                    "perfect hiding place!"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if ctx.var("hellionq").get()? == 57 {
-                                                ctx.lines_as(
-                                                    "Grout'he",
-                                                    args![
-                                                        "Hey, this is great!",
-                                                        "You actually found the",
-                                                        "next piece of the tablet!",
-                                                        "You better take this back",
-                                                        "to Chilias'Tyus right now~"
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Grout'he",
-                                                    args![
-                                                        "Oh. And um, thanks",
-                                                        "for being willing to pay",
-                                                        "me in cash for all those",
-                                                        "little bitty clues. I won't",
-                                                        "forget your help, pal~"
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                if (ctx.var("hellionq").get()?.number()? > 57 && ctx.var("hellionq").get()?.number()? < 71)
-                                                {
-                                                    ctx.lines_as(
-                                                        "Grout'he",
-                                                        args![
-                                                            "Hey, be careful if",
-                                                            "you manage to find that",
-                                                            "Hellion's gem. I dunno if",
-                                                            "it's true, but maybe old",
-                                                            "Tyus was right. Maybe it",
-                                                            "does hold a wicked power..."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    ctx.lines_as(
-                                                        "Grout'he",
-                                                        args![
-                                                            "Life sure is a lot",
-                                                            "less tense without",
-                                                            "having debt to worry",
-                                                            "about. I could get",
-                                                            "real used to this..."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                    }
+                                    ctx.lines_as(
+                                        "Grout'he",
+                                        args![
+                                            "Life sure is a lot",
+                                            "less tense without",
+                                            "having debt to worry",
+                                            "about. I could get",
+                                            "real used to this..."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                         }
@@ -2769,39 +2739,35 @@ fn wooden_floor_paypuzz5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("hellionq").get()? == 54 {
-            ctx.lines_as(
-                "Stone Engraving",
-                args![
-                    "^4D4DFF''This has been entrusted to",
-                    "the care of the compassionate",
-                    "one so that my friends may",
-                    "find peace. To he who finds",
-                    "this, remember that avarice",
-                    "knows no bounds. --Tyus.''^000000"
-                ],
-            )?;
-            ctx.var("hellionq").set(Val::from(55))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("hellionq").get()?.number()? > 54 {
-                ctx.lines_as(
-                    "Stone Engraving",
-                    args![
-                        "^4D4DFF''This has been entrusted to",
-                        "the care of the compassionate",
-                        "one so that my friends may",
-                        "find peace. To he who finds",
-                        "this, remember that avarice",
-                        "knows no bounds. --Tyus.''^000000"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
+    } else if ctx.var("hellionq").get()? == 54 {
+        ctx.lines_as(
+            "Stone Engraving",
+            args![
+                "^4D4DFF''This has been entrusted to",
+                "the care of the compassionate",
+                "one so that my friends may",
+                "find peace. To he who finds",
+                "this, remember that avarice",
+                "knows no bounds. --Tyus.''^000000"
+            ],
+        )?;
+        ctx.var("hellionq").set(Val::from(55))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("hellionq").get()?.number()? > 54 {
+        ctx.lines_as(
+            "Stone Engraving",
+            args![
+                "^4D4DFF''This has been entrusted to",
+                "the care of the compassionate",
+                "one so that my friends may",
+                "find peace. To he who finds",
+                "this, remember that avarice",
+                "knows no bounds. --Tyus.''^000000"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -3262,71 +3228,56 @@ fn sage_welshyun_hellion_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     )?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
-                                } else {
-                                    if ctx.var("hellionq").get()? == 65 {
-                                        if ctx.call(Function::CountItem, vec![Val::from(717)])?.number()? > 0 {
+                                } else if ctx.var("hellionq").get()? == 65 {
+                                    if ctx.call(Function::CountItem, vec![Val::from(717)])?.number()? > 0 {
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "Thank you. You've",
+                                                "brought the book to Enoz",
+                                                "and delivered a Gemstone",
+                                                "to me as I've asked. Now,",
+                                                "there is one final test..."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "Answer this question.",
+                                                "Where is the abode of the",
+                                                "departed souls with a shining",
+                                                "silver roof that is mentioned",
+                                                "in the third part of the ballad",
+                                                "of Grimnir? Well, adventurer?"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        let (input, status) = runtime::input_text(ctx, None, None)?;
+                                        l_input_s = input;
+                                        if l_input_s.clone() == "Valaskjalf" {
                                             ctx.lines_as(
                                                 "Welshyun",
                                                 args![
-                                                    "Thank you. You've",
-                                                    "brought the book to Enoz",
-                                                    "and delivered a Gemstone",
-                                                    "to me as I've asked. Now,",
-                                                    "there is one final test..."
+                                                    "Ah, well met, well met.",
+                                                    "You are as well learned as",
+                                                    "you are brave. As promised,",
+                                                    "you may have this piece of",
+                                                    "the tablet, which I've already found. The clues were too simple..."
                                                 ],
                                             )?;
+                                            ctx.call(Function::DelItem, vec![Val::from(717), Val::from(1)])?;
+                                            ctx.var("hellionq").set(Val::from(66))?;
+                                            ctx.call(Function::GetItem, vec![Val::from(7336), Val::from(1)])?;
                                             ctx.next()?;
                                             ctx.lines_as(
                                                 "Welshyun",
                                                 args![
-                                                    "Answer this question.",
-                                                    "Where is the abode of the",
-                                                    "departed souls with a shining",
-                                                    "silver roof that is mentioned",
-                                                    "in the third part of the ballad",
-                                                    "of Grimnir? Well, adventurer?"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            let (input, status) = runtime::input_text(ctx, None, None)?;
-                                            l_input_s = input;
-                                            if l_input_s.clone() == "Valaskjalf" {
-                                                ctx.lines_as(
-                                                    "Welshyun",
-                                                    args![
-                                                        "Ah, well met, well met.",
-                                                        "You are as well learned as",
-                                                        "you are brave. As promised,",
-                                                        "you may have this piece of",
-                                                        "the tablet, which I've already found. The clues were too simple..."
-                                                    ],
-                                                )?;
-                                                ctx.call(Function::DelItem, vec![Val::from(717), Val::from(1)])?;
-                                                ctx.var("hellionq").set(Val::from(66))?;
-                                                ctx.call(Function::GetItem, vec![Val::from(7336), Val::from(1)])?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Welshyun",
-                                                    args![
-                                                        "Please send my regards",
-                                                        "to my dear friend, Chilias,",
-                                                        "who has dedicated his life",
-                                                        "to sealing the evil within",
-                                                        "the Hellion's gem."
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            ctx.lines_as(
-                                                "Welshyun",
-                                                args![
-                                                    "Bwahahaah! Only",
-                                                    "a superior mind could",
-                                                    "know the answer to such",
-                                                    "a question! Go forth and",
-                                                    "learn the answer, else",
-                                                    "I cannot help you, adventurer~"
+                                                    "Please send my regards",
+                                                    "to my dear friend, Chilias,",
+                                                    "who has dedicated his life",
+                                                    "to sealing the evil within",
+                                                    "the Hellion's gem."
                                                 ],
                                             )?;
                                             ctx.close_window()?;
@@ -3335,202 +3286,209 @@ fn sage_welshyun_hellion_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.lines_as(
                                             "Welshyun",
                                             args![
-                                                "Ah, I've heard that",
-                                                "Enoz received the Master",
-                                                "Science Reference Book",
-                                                "from you. But did you remember",
-                                                "to bring me a Blue Gemstone?"
+                                                "Bwahahaah! Only",
+                                                "a superior mind could",
+                                                "know the answer to such",
+                                                "a question! Go forth and",
+                                                "learn the answer, else",
+                                                "I cannot help you, adventurer~"
                                             ],
                                         )?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("hellionq").get()? == 66 {
+                                    }
+                                    ctx.lines_as(
+                                        "Welshyun",
+                                        args![
+                                            "Ah, I've heard that",
+                                            "Enoz received the Master",
+                                            "Science Reference Book",
+                                            "from you. But did you remember",
+                                            "to bring me a Blue Gemstone?"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if ctx.var("hellionq").get()? == 66 {
+                                    ctx.lines_as(
+                                        "Welshyun",
+                                        args![
+                                            "Hm. You should visit",
+                                            "Chilias and determine",
+                                            "your next course of action,",
+                                            "now that you have all four",
+                                            "of the pieces of the tablet."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if ctx.var("hellionq").get()? == 67 {
+                                    if (((ctx.call(Function::CountItem, vec![Val::from(7333)])?.number()? > 0
+                                        && ctx.call(Function::CountItem, vec![Val::from(7334)])?.number()? > 0)
+                                        && ctx.call(Function::CountItem, vec![Val::from(7335)])?.number()? > 0)
+                                        && ctx.call(Function::CountItem, vec![Val::from(7336)])?.number()? > 0)
+                                    {
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "Hm? Did you need",
+                                                "me to combine all four",
+                                                "pieces of the tablet and",
+                                                "make it whole again? Oh.",
+                                                "All this time I thought you",
+                                                "knew how to do it. Alright."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "As a matter of fact,",
+                                                "I was planning on using",
+                                                "the Blue Gemstone you gave",
+                                                "me to do this. But since you",
+                                                "never really asked... In any",
+                                                "case, let me concentrate."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "Shadows remembered by time.",
+                                                "Help me retrieve the forgotten",
+                                                "stories that have been scattered in the wind. Right here. Right now."
+                                            ],
+                                        )?;
+                                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL2")?])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Welshyun", args!["...", "Okay...", "That was tough."])?;
+                                        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SPELLBREAKER")?])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "That was tough",
+                                                "complete tablet.",
+                                                "Please bring this",
+                                                "safely back to Chilias."
+                                            ],
+                                        )?;
+                                        ctx.call(Function::DelItem, vec![Val::from(7333), Val::from(1)])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(7334), Val::from(1)])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(7335), Val::from(1)])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(7336), Val::from(1)])?;
+                                        ctx.var("hellionq").set(Val::from(68))?;
+                                        ctx.call(Function::GetItem, vec![Val::from(7332), Val::from(1)])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "Wait, take a look!",
+                                                "There's a map on the back",
+                                                "of the tablet. Although the gem",
+                                                "is already embedded within the",
+                                                "tablet, who knows where this map may lead? Perhaps Hellion Revenant?"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "I don't know if Chilias",
+                                                "told you, but the name of",
+                                                "the monster that guards and",
+                                                "follows this gem is Hellion",
+                                                "Revenant. But why mark its",
+                                                "location on this tablet?"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "Well, it will be dangerous, but",
+                                                "I'm sure that you're strong enough to confront this monster. I believe",
+                                                "it was the wish of this tablet's creator for someone to defeat",
+                                                "the Hellion Revenant..."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        if Val::from(runtime::select_values(
+                                            ctx,
+                                            &[Val::from("Alright, I'll do it!:I better get this tablet to Chilias...")],
+                                        )?) == 1
+                                        {
                                             ctx.lines_as(
                                                 "Welshyun",
                                                 args![
-                                                    "Hm. You should visit",
-                                                    "Chilias and determine",
-                                                    "your next course of action,",
-                                                    "now that you have all four",
-                                                    "of the pieces of the tablet."
+                                                    "Well, I'm almost certain",
+                                                    "this map will lead you to",
+                                                    "Hellion Revenant. Let me",
+                                                    "warp you to the location",
+                                                    "marked on the tablet's map..."
                                                 ],
                                             )?;
                                             ctx.close_window()?;
+                                            ctx.call(
+                                                Function::Warp,
+                                                vec![Val::from("gef_fild09"), Val::from(368), Val::from(88)],
+                                            )?;
                                             return Err(Stop::End);
-                                        } else {
-                                            if ctx.var("hellionq").get()? == 67 {
-                                                if (((ctx.call(Function::CountItem, vec![Val::from(7333)])?.number()? > 0
-                                                    && ctx.call(Function::CountItem, vec![Val::from(7334)])?.number()? > 0)
-                                                    && ctx.call(Function::CountItem, vec![Val::from(7335)])?.number()? > 0)
-                                                    && ctx.call(Function::CountItem, vec![Val::from(7336)])?.number()? > 0)
-                                                {
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "Hm? Did you need",
-                                                            "me to combine all four",
-                                                            "pieces of the tablet and",
-                                                            "make it whole again? Oh.",
-                                                            "All this time I thought you",
-                                                            "knew how to do it. Alright."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "As a matter of fact,",
-                                                            "I was planning on using",
-                                                            "the Blue Gemstone you gave",
-                                                            "me to do this. But since you",
-                                                            "never really asked... In any",
-                                                            "case, let me concentrate."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "Shadows remembered by time.",
-                                                            "Help me retrieve the forgotten",
-                                                            "stories that have been scattered in the wind. Right here. Right now."
-                                                        ],
-                                                    )?;
-                                                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL2")?])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Welshyun", args!["...", "Okay...", "That was tough."])?;
-                                                    ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_SPELLBREAKER")?])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "That was tough",
-                                                            "complete tablet.",
-                                                            "Please bring this",
-                                                            "safely back to Chilias."
-                                                        ],
-                                                    )?;
-                                                    ctx.call(Function::DelItem, vec![Val::from(7333), Val::from(1)])?;
-                                                    ctx.call(Function::DelItem, vec![Val::from(7334), Val::from(1)])?;
-                                                    ctx.call(Function::DelItem, vec![Val::from(7335), Val::from(1)])?;
-                                                    ctx.call(Function::DelItem, vec![Val::from(7336), Val::from(1)])?;
-                                                    ctx.var("hellionq").set(Val::from(68))?;
-                                                    ctx.call(Function::GetItem, vec![Val::from(7332), Val::from(1)])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "Wait, take a look!",
-                                                            "There's a map on the back",
-                                                            "of the tablet. Although the gem",
-                                                            "is already embedded within the",
-                                                            "tablet, who knows where this map may lead? Perhaps Hellion Revenant?"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "I don't know if Chilias",
-                                                            "told you, but the name of",
-                                                            "the monster that guards and",
-                                                            "follows this gem is Hellion",
-                                                            "Revenant. But why mark its",
-                                                            "location on this tablet?"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "Well, it will be dangerous, but",
-                                                            "I'm sure that you're strong enough to confront this monster. I believe",
-                                                            "it was the wish of this tablet's creator for someone to defeat",
-                                                            "the Hellion Revenant..."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    if Val::from(runtime::select_values(
-                                                        ctx,
-                                                        &[Val::from("Alright, I'll do it!:I better get this tablet to Chilias...")],
-                                                    )?) == 1
-                                                    {
-                                                        ctx.lines_as(
-                                                            "Welshyun",
-                                                            args![
-                                                                "Well, I'm almost certain",
-                                                                "this map will lead you to",
-                                                                "Hellion Revenant. Let me",
-                                                                "warp you to the location",
-                                                                "marked on the tablet's map..."
-                                                            ],
-                                                        )?;
-                                                        ctx.close_window()?;
-                                                        ctx.call(
-                                                            Function::Warp,
-                                                            vec![Val::from("gef_fild09"), Val::from(368), Val::from(88)],
-                                                        )?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "Yes, that's true.",
-                                                            "Chilias has been waiting",
-                                                            "his whole life to seal this",
-                                                            "gem. Plus, who knows what",
-                                                            "may happen while it is in",
-                                                            "your possession?"
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                ctx.lines_as(
-                                                    "Welshyun",
-                                                    args![
-                                                        "So, were you able",
-                                                        "to deliver the tablet",
-                                                        "and the Hellion's gem to",
-                                                        "Chilias safely? I hope so..."
-                                                    ],
-                                                )?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            } else {
-                                                if (ctx.var("hellionq").get()?.number()? > 67 && ctx.var("hellionq").get()?.number()? < 71)
-                                                {
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "So, were you able",
-                                                            "to deliver the tablet",
-                                                            "and the Hellion's gem to",
-                                                            "Chilias safely? Ah, and",
-                                                            "how has my friend been?"
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                } else {
-                                                    ctx.lines_as(
-                                                        "Welshyun",
-                                                        args![
-                                                            "Heh heh~",
-                                                            "Enoz must be",
-                                                            "panicking right",
-                                                            "about now. Oh,",
-                                                            "students are always",
-                                                            "good for a laugh..."
-                                                        ],
-                                                    )?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
                                         }
+                                        ctx.lines_as(
+                                            "Welshyun",
+                                            args![
+                                                "Yes, that's true.",
+                                                "Chilias has been waiting",
+                                                "his whole life to seal this",
+                                                "gem. Plus, who knows what",
+                                                "may happen while it is in",
+                                                "your possession?"
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
+                                    ctx.lines_as(
+                                        "Welshyun",
+                                        args![
+                                            "So, were you able",
+                                            "to deliver the tablet",
+                                            "and the Hellion's gem to",
+                                            "Chilias safely? I hope so..."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if (ctx.var("hellionq").get()?.number()? > 67 && ctx.var("hellionq").get()?.number()? < 71)
+                                {
+                                    ctx.lines_as(
+                                        "Welshyun",
+                                        args![
+                                            "So, were you able",
+                                            "to deliver the tablet",
+                                            "and the Hellion's gem to",
+                                            "Chilias safely? Ah, and",
+                                            "how has my friend been?"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else {
+                                    ctx.lines_as(
+                                        "Welshyun",
+                                        args![
+                                            "Heh heh~",
+                                            "Enoz must be",
+                                            "panicking right",
+                                            "about now. Oh,",
+                                            "students are always",
+                                            "good for a laugh..."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                         }
@@ -3649,83 +3607,79 @@ fn enoz_hellion_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("hellionq").get()? == 63 {
-            ctx.lines_as(
-                "Enoz",
-                args![
-                    "My mentor Welshyun's",
-                    "been playing jokes again,",
-                    "so you better go talk to him.",
-                    "Damn. Where is that Master",
-                    "Science Reference Book?"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("hellionq").get()? == 64 {
-                ctx.lines_as(
-                    "Enoz",
-                    args![
-                        "Oh hey, I remember you~",
-                        "So did my mentor send you",
-                        "to me again for some reason?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^3355FFYou cautiously hand Enoz the",
-                    "Master Science Reference Book.^000000"
-                ])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Enoz",
-                    args![
-                        "Yes! Oh yes!",
-                        "This is the book",
-                        "I lost three days",
-                        "ago! Thanks so much!",
-                        "Now I can finally finish",
-                        "this research project that--"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Enoz",
-                    args![
-                        "Wait, the page I really",
-                        "need is missing! And there's",
-                        "some sort of note... Umm...",
-                        "^333333''Enoz, I think this page",
-                        "is worth at least one Apple",
-                        "Juice. Right? --Welshyun.''^000000"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Enoz",
-                    args![
-                        "NOooOOoOo!",
-                        "Not agaaaaain!",
-                        "Why is he always",
-                        "playing these pranks?!",
-                        "Apple Juice! I need",
-                        "some Apple Juice!"
-                    ],
-                )?;
-                ctx.var("hellionq").set(Val::from(65))?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^3355FFIt looks like it's time",
-                    "to get 1 Blue Gemstone,",
-                    "and then bring it back",
-                    "to Welshyun the Sage.^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
+    } else if ctx.var("hellionq").get()? == 63 {
+        ctx.lines_as(
+            "Enoz",
+            args![
+                "My mentor Welshyun's",
+                "been playing jokes again,",
+                "so you better go talk to him.",
+                "Damn. Where is that Master",
+                "Science Reference Book?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("hellionq").get()? == 64 {
+        ctx.lines_as(
+            "Enoz",
+            args![
+                "Oh hey, I remember you~",
+                "So did my mentor send you",
+                "to me again for some reason?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou cautiously hand Enoz the",
+            "Master Science Reference Book.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Enoz",
+            args![
+                "Yes! Oh yes!",
+                "This is the book",
+                "I lost three days",
+                "ago! Thanks so much!",
+                "Now I can finally finish",
+                "this research project that--"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Enoz",
+            args![
+                "Wait, the page I really",
+                "need is missing! And there's",
+                "some sort of note... Umm...",
+                "^333333''Enoz, I think this page",
+                "is worth at least one Apple",
+                "Juice. Right? --Welshyun.''^000000"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Enoz",
+            args![
+                "NOooOOoOo!",
+                "Not agaaaaain!",
+                "Why is he always",
+                "playing these pranks?!",
+                "Apple Juice! I need",
+                "some Apple Juice!"
+            ],
+        )?;
+        ctx.var("hellionq").set(Val::from(65))?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFIt looks like it's time",
+            "to get 1 Blue Gemstone,",
+            "and then bring it back",
+            "to Welshyun the Sage.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.lines_as(
         "Enoz",

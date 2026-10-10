@@ -44,474 +44,470 @@ fn powerful_looking_woman_run(ctx: &Ctx, mut step: PowerfulLookingWomanStep, arg
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if (ctx.var("thai_find").get()?.number()? > 2 && ctx.var("thai_find").get()?.number()? < 14) {
+                } else if (ctx.var("thai_find").get()?.number()? > 2 && ctx.var("thai_find").get()?.number()? < 14) {
+                    ctx.lines_as(
+                        "Shuda",
+                        args![
+                            "^666666*Sigh...*^000000",
+                            "You haven't",
+                            "found Annon yet?",
+                            "I see. Oh well, it's alright.",
+                            "Time isn't an issue for us."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Shuda", args!["And by 'us,' I mean '^660000you^000000.' I don't care about your plans or whatever else you may have scheduled, because you're going to make", "time for me! Oho ho ho ho ho!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("thai_find").get()? == 2 {
+                    if ctx.call(Function::CountItem, vec![Val::from(7288)])?.is_true() {
                         ctx.lines_as(
                             "Shuda",
                             args![
-                                "^666666*Sigh...*^000000",
-                                "You haven't",
-                                "found Annon yet?",
-                                "I see. Oh well, it's alright.",
-                                "Time isn't an issue for us."
+                                "Ah... Is it...?!!",
+                                "Yes, that's it!",
+                                "My engagement ring that was",
+                                "thrown into the water by that stupid Annon!"
                             ],
                         )?;
                         ctx.next()?;
-                        ctx.lines_as("Shuda", args!["And by 'us,' I mean '^660000you^000000.' I don't care about your plans or whatever else you may have scheduled, because you're going to make", "time for me! Oho ho ho ho ho!"])?;
+                        ctx.lines_as("Shuda", args!["Thank you so much! In your honor, our first seven kids will be named after you! Oho ho ho ho ho ho ho~"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Shuda",
+                            args![
+                                "Now...",
+                                "All I gotta do",
+                                "is find Annon.",
+                                "Where the hell",
+                                "did that moron go?!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Shuda",
+                            args![
+                                "^666666*Ahem*^000000",
+                                "I-I didn't mean",
+                                "to scare him, all I wanted was",
+                                "my engagement ring back."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Shuda",
+                            args![
+                                "^666666*Sigh*^000000",
+                                "I guess the days",
+                                "of being a happy bride",
+                                "are still far away from me..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args!["^3355FFShuda gazes directly", "at you with a puppy eyed look.^000000"])?;
+                        ctx.next()?;
+                        'b1: {
+                            let subject1 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("D-Don't look at me that way!:Alright, alright.")],
+                            )?);
+                            let mut matched1 = false;
+                            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines_as("Shuda", args!["Oh come on, you know everything that happened, and I know you're gonna continue adventuring", "around this area."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Shuda", args!["I was just asking you to find Annon while you do that. Now, isn't that such a small favor? Thank you for doing this for me~"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Shuda", args!["In the meantime, I'll think of how I'm gonna pay back Annon for leaving me in misery! So hurry and find Annon! Hoo ho ho ho ho!"])?;
+                                ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
+                                ctx.next()?;
+                                ctx.call(
+                                    Function::Emotion,
+                                    vec![
+                                        ctx.constant("ET_THINK")?,
+                                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                    ],
+                                )?;
+                                ctx.lines_as(
+                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    args!["(She's so scary!", "Making me do stuff", "for her again...)"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                    args!["(Why am I always", "doing things for other", "people anyway?!)"],
+                                )?;
+                                break 'b1;
+                            }
+                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines_as("Shuda", args!["Yes, I knew I could count on you! So find Annon! It's my destiny to make him ^660000mine^000000. Hoo ho ho ho ho!"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Shuda", args!["I haven't seen him around the village for a while. And I don't think he jumped into the water to find my ring, since he's too sissy for that. He probably doesn't have the guts to see me without it."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Shuda", args!["Will you please tell Annon that", "I got my ring back so he can come back to me now? I hope you'll remember that for me, adventurer."])?;
+                                break 'b1;
+                            }
+                        }
+                        ctx.call(Function::DelItem, vec![Val::from(7288), Val::from(1)])?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(12030), Val::from(12031)])?;
+                        ctx.var("thai_find").set(Val::from(3))?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     } else {
-                        if ctx.var("thai_find").get()? == 2 {
-                            if ctx.call(Function::CountItem, vec![Val::from(7288)])?.is_true() {
-                                ctx.lines_as(
-                                    "Shuda",
-                                    args![
-                                        "Ah... Is it...?!!",
-                                        "Yes, that's it!",
-                                        "My engagement ring that was",
-                                        "thrown into the water by that stupid Annon!"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Shuda", args!["Thank you so much! In your honor, our first seven kids will be named after you! Oho ho ho ho ho ho ho~"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Shuda",
-                                    args![
-                                        "Now...",
-                                        "All I gotta do",
-                                        "is find Annon.",
-                                        "Where the hell",
-                                        "did that moron go?!"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Shuda",
-                                    args![
-                                        "^666666*Ahem*^000000",
-                                        "I-I didn't mean",
-                                        "to scare him, all I wanted was",
-                                        "my engagement ring back."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Shuda",
-                                    args![
-                                        "^666666*Sigh*^000000",
-                                        "I guess the days",
-                                        "of being a happy bride",
-                                        "are still far away from me..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines(args!["^3355FFShuda gazes directly", "at you with a puppy eyed look.^000000"])?;
-                                ctx.next()?;
-                                'b1: {
-                                    let subject1 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("D-Don't look at me that way!:Alright, alright.")],
-                                    )?);
-                                    let mut matched1 = false;
-                                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                        matched1 = true;
-                                    }
-                                    if matched1 {
-                                        ctx.lines_as("Shuda", args!["Oh come on, you know everything that happened, and I know you're gonna continue adventuring", "around this area."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Shuda", args!["I was just asking you to find Annon while you do that. Now, isn't that such a small favor? Thank you for doing this for me~"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Shuda", args!["In the meantime, I'll think of how I'm gonna pay back Annon for leaving me in misery! So hurry and find Annon! Hoo ho ho ho ho!"])?;
-                                        ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
-                                        ctx.next()?;
-                                        ctx.call(
-                                            Function::Emotion,
-                                            vec![
-                                                ctx.constant("ET_THINK")?,
-                                                Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                            ],
-                                        )?;
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args!["(She's so scary!", "Making me do stuff", "for her again...)"],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args!["(Why am I always", "doing things for other", "people anyway?!)"],
-                                        )?;
-                                        break 'b1;
-                                    }
-                                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                        matched1 = true;
-                                    }
-                                    if matched1 {
-                                        ctx.lines_as("Shuda", args!["Yes, I knew I could count on you! So find Annon! It's my destiny to make him ^660000mine^000000. Hoo ho ho ho ho!"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Shuda", args!["I haven't seen him around the village for a while. And I don't think he jumped into the water to find my ring, since he's too sissy for that. He probably doesn't have the guts to see me without it."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Shuda", args!["Will you please tell Annon that", "I got my ring back so he can come back to me now? I hope you'll remember that for me, adventurer."])?;
-                                        break 'b1;
-                                    }
+                        ctx.lines_as("Shuda", args!["Huh...?", "Did you find my ring?", "Show me, show it to me!"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Shuda",
+                            args!["What the...", "You got nothing!", "Don't lie to me,", "bring me my ring!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Shuda",
+                            args![
+                                "Hurry up and find",
+                                "my ring. I'll be waiting",
+                                "here for the good news.",
+                                "Oho ho ho ho ho~!"
+                            ],
+                        )?;
+                        if ctx.call(Function::CheckQuest, vec![Val::from(12029)])? == -1 {
+                            ctx.call(Function::SetQuest, vec![Val::from(12029)])?;
+                        }
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                } else {
+                    if ctx.var("thai_find").get()? == 1 {
+                        ctx.lines_as(
+                            "Shuda",
+                            args!["I feel a little bad asking you this, especially since you're", "an outsider."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Shuda", args!["But that ring is really important to me. If you could find it for me, I'd be the happiest woman in the whole world."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Shuda",
+                            args![
+                                "So please, I beg you.",
+                                "Please bring my ring back to me.",
+                                "I want to live with Annon as a happy couple forever. Can't you understand that?!"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as("Powerful-Looking Woman", args!["Umm...?", "Ah, you must be one of the tourists. I'd guide you around and listen to your stories about the outside world, but..."])?;
+                        ctx.next()?;
+                        if ctx.call(Function::Rand, vec![Val::from(0), Val::from(1)])?.is_true() {
+                            ctx.lines_as(
+                                "Powerful-Looking Woman",
+                                args!["I'm reeeally", "busy right now.", "So very busy."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Powerful-Looking Woman", args!["Huh...?", "You don't think I look busy just because I'm standing on one spot and not moving at all?! Oh. My. God. You're so rude!"])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Powerful-Looking Woman",
+                                args![
+                                    "Now, I've got to find my",
+                                    "engagement ring. If only",
+                                    "my fiancee hadn't",
+                                    "thrown it..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            'b2: {
+                                let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("What...?:Lies~!")])?);
+                                let mut matched2 = false;
+                                let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                                    matched2 = true;
                                 }
-                                ctx.call(Function::DelItem, vec![Val::from(7288), Val::from(1)])?;
-                                ctx.call(Function::ChangeQuest, vec![Val::from(12030), Val::from(12031)])?;
-                                ctx.var("thai_find").set(Val::from(3))?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as("Shuda", args!["Huh...?", "Did you find my ring?", "Show me, show it to me!"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Shuda",
-                                    args!["What the...", "You got nothing!", "Don't lie to me,", "bring me my ring!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Shuda",
-                                    args![
-                                        "Hurry up and find",
-                                        "my ring. I'll be waiting",
-                                        "here for the good news.",
-                                        "Oho ho ho ho ho~!"
-                                    ],
-                                )?;
-                                if ctx.call(Function::CheckQuest, vec![Val::from(12029)])? == -1 {
-                                    ctx.call(Function::SetQuest, vec![Val::from(12029)])?;
-                                }
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        } else {
-                            if ctx.var("thai_find").get()? == 1 {
-                                ctx.lines_as(
-                                    "Shuda",
-                                    args!["I feel a little bad asking you this, especially since you're", "an outsider."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Shuda", args!["But that ring is really important to me. If you could find it for me, I'd be the happiest woman in the whole world."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Shuda",
-                                    args![
-                                        "So please, I beg you.",
-                                        "Please bring my ring back to me.",
-                                        "I want to live with Annon as a happy couple forever. Can't you understand that?!"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as("Powerful-Looking Woman", args!["Umm...?", "Ah, you must be one of the tourists. I'd guide you around and listen to your stories about the outside world, but..."])?;
-                                ctx.next()?;
-                                if ctx.call(Function::Rand, vec![Val::from(0), Val::from(1)])?.is_true() {
+                                if matched2 {
                                     ctx.lines_as(
                                         "Powerful-Looking Woman",
-                                        args!["I'm reeeally", "busy right now.", "So very busy."],
+                                        args![
+                                            "What 'what?'",
+                                            "You still think I'm",
+                                            "standing around for my",
+                                            "own amusement or something?!"
+                                        ],
                                     )?;
                                     ctx.next()?;
-                                    ctx.lines_as("Powerful-Looking Woman", args!["Huh...?", "You don't think I look busy just because I'm standing on one spot and not moving at all?! Oh. My. God. You're so rude!"])?;
+                                    ctx.call(
+                                        Function::Emotion,
+                                        vec![
+                                            ctx.constant("ET_KIK")?,
+                                            Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                        ],
+                                    )?;
+                                    ctx.lines_as(
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                        args!["No no no no...", "I meant, I can't", "believe that you're", "engaged to someone!"],
+                                    )?;
                                     ctx.next()?;
                                     ctx.lines_as(
                                         "Powerful-Looking Woman",
                                         args![
-                                            "Now, I've got to find my",
-                                            "engagement ring. If only",
-                                            "my fiancee hadn't",
-                                            "thrown it..."
+                                            "Wwwwaaaaaahhhhh!",
+                                            "Wh-who are you to say",
+                                            "something so rude to such a nice lady like myself. Go away, I don't wanna talk to you!"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                                    matched2 = true;
+                                }
+                                if matched2 {
+                                    ctx.lines_as(
+                                        "Powerful-Looking Woman",
+                                        args![
+                                            "What lies?",
+                                            "I'm not gonna put up with crap",
+                                            "if you're gonna say something like 'I can't believe you're engaged to someone!'"
                                         ],
                                     )?;
                                     ctx.next()?;
-                                    'b2: {
-                                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("What...?:Lies~!")])?);
-                                        let mut matched2 = false;
-                                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                            matched2 = true;
+                                    ctx.lines_as(
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                        args![
+                                            "Whoa whoa whoa~",
+                                            "Calm down, lady.",
+                                            "Hear me out first.",
+                                            "What I'm wondering is..."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Powerful-Looking Woman", args!["I know, I know.", "You're wondering why I'm", "standing near the water, right? Well, it's because my ring was thrown there and I've gotta", "get it back."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Powerful-Looking Woman", args!["What am I doing, talking to a tourist like this? ^666666*Sigh...*^000000 Well, you learned what you wanted to know. I hope you're satisfied now."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Powerful-Looking Woman", args!["..."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Powerful-Looking Woman", args!["...", "......"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Powerful-Looking Woman", args!["...", "......", "........Hey."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Powerful-Looking Woman",
+                                        args!["Why are you staring at me?", "Don't you have anything to do?"],
+                                    )?;
+                                    ctx.next()?;
+                                    'b3: {
+                                        let subject3 = Val::from(runtime::select_values(
+                                            ctx,
+                                            &[Val::from("No.:No~ and you are an interesting girl.")],
+                                        )?);
+                                        let mut matched3 = false;
+                                        let no_case3 =
+                                            !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                            matched3 = true;
                                         }
-                                        if matched2 {
+                                        if matched3 {
                                             ctx.lines_as(
                                                 "Powerful-Looking Woman",
+                                                args!["I see. Hmmm...", "You're kind of my type."],
+                                            )?;
+                                            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                                                ctx.lines(args![
+                                                    "No no, that doesn't mean I'm interested in you. Plus I'm",
+                                                    "already engaged."
+                                                ])?;
+                                            } else {
+                                                ctx.mes("Before you think of anything weird, I meant that I think you and me are a lot alike.")?;
+                                            }
+                                            ctx.next()?;
+                                            ctx.lines_as("Powerful-Looking Woman", args!["Let me introduce myself.", "My name is Shuda, I've lived in Ayothaya all my life. Since you don't have anything to do, I have", "a favor to ask of you."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Shuda", args!["My fiance Annon is always interested in things other than me. I don't understand why, and I don't think I deserve to be ignored!"])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Shuda",
                                                 args![
-                                                    "What 'what?'",
-                                                    "You still think I'm",
-                                                    "standing around for my",
-                                                    "own amusement or something?!"
+                                                    "^666666*Sigh...*^000000",
+                                                    "Anyways, we're engaged",
+                                                    "and we got rings for each other..."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Shuda", args!["I thought being engaged would improve our relationship. But he just took my ring and threw it into the water."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Shuda",
+                                                args![
+                                                    "I got upset and yelled at him to get my ring back for me, and then",
+                                                    "I never saw him after that.",
+                                                    "So what I want to ask is..."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                args!["You want me", "to find your", "ring, don't you?"],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Shuda",
+                                                args!["Ah...", "So you know", "what I want.", "That makes it", "much simpler."],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Shuda",
+                                                args![
+                                                    "And once I retrieve",
+                                                    "the ring, I'll make",
+                                                    "him treat me to a much",
+                                                    "deserved vacation in Jawaii..."
+                                                ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Shuda",
+                                                args![
+                                                    "...Where I will",
+                                                    "^660000enslave^000000 him.",
+                                                    "^666666*Grinds teeth*^000000"
                                                 ],
                                             )?;
                                             ctx.next()?;
                                             ctx.call(
                                                 Function::Emotion,
                                                 vec![
-                                                    ctx.constant("ET_KIK")?,
+                                                    ctx.constant("ET_SURPRISE")?,
                                                     Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
                                                 ],
                                             )?;
                                             ctx.lines_as(
                                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                args!["No no no no...", "I meant, I can't", "believe that you're", "engaged to someone!"],
+                                                args!["(...H-Horrifying!)"],
                                             )?;
                                             ctx.next()?;
-                                            ctx.lines_as(
-                                                "Powerful-Looking Woman",
-                                                args![
-                                                    "Wwwwaaaaaahhhhh!",
-                                                    "Wh-who are you to say",
-                                                    "something so rude to such a nice lady like myself. Go away, I don't wanna talk to you!"
-                                                ],
-                                            )?;
+                                            ctx.lines_as("Shuda", args!["So anyway, I want you to go out and find my engagement ring. Since the water is calm and still around here, the ring is probably still under the water, and hasn't been swept away yet."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Shuda", args!["And so, that is my quest for you. It should keep you entertained for a while. So get into the water, and I'll supervise from here.", "Oho ho ho ho ho!"])?;
+                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
+                                            ctx.var("thai_find").set(Val::from(1))?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                            matched2 = true;
+                                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                            matched3 = true;
                                         }
-                                        if matched2 {
+                                        if matched3 {
                                             ctx.lines_as(
                                                 "Powerful-Looking Woman",
                                                 args![
-                                                    "What lies?",
-                                                    "I'm not gonna put up with crap",
-                                                    "if you're gonna say something like 'I can't believe you're engaged to someone!'"
+                                                    "^666666*Sigh...*^000000",
+                                                    "Are you gonna just stare and",
+                                                    "not help at all? I thought the word adventurer was synonymous",
+                                                    "with 'hero,' not 'lazy.'"
                                                 ],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Powerful-Looking Woman", args!["Oh I see...", "Don't help strangers, do you?", "Well, my name is Shuda, a beautiful damsel waiting for her engagement ring to rise up from the water."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Powerful-Looking Woman",
+                                                args!["There...!", "We're not", "strangers anymore!", "Oho ho ho ho ho!"],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Shuda", args!["Don't you pity me, and my tragic situation? If someone were to help this precious maiden find her ring, she'd be the happiest bride in the whole world."])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                "Shuda",
+                                                args!["And her savior", "would be known as", "the hero of Ayothaya."],
                                             )?;
                                             ctx.next()?;
                                             ctx.lines_as(
                                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                args![" ...Say what?!"],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Shuda", args!["Basically, you're gonna find my engagement ring, and I'll be the happiest bride in the whole world and I'll live happily ever after. What's so hard to understand", "about that?"])?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Shuda", args!["Sure, Annon, he's my fiancee, is spineless and disappears whenever", "I say something a little too harsh. What a little girl! Can't he see I'm trying to make him a better man?!"])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                args!["He ran away", "from you, didn't he?"],
+                                            )?;
+                                            ctx.next()?;
+                                            ctx.lines_as("Shuda", args!["Eh...?", "What was that?"])?;
+                                            ctx.next()?;
+                                            ctx.lines_as(
+                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                                 args![
-                                                    "Whoa whoa whoa~",
-                                                    "Calm down, lady.",
-                                                    "Hear me out first.",
-                                                    "What I'm wondering is..."
+                                                    "^666666*Ahem*^000000",
+                                                    "You're way",
+                                                    "too good for him.",
+                                                    "(I'd have run away myself!)"
                                                 ],
                                             )?;
                                             ctx.next()?;
-                                            ctx.lines_as("Powerful-Looking Woman", args!["I know, I know.", "You're wondering why I'm", "standing near the water, right? Well, it's because my ring was thrown there and I've gotta", "get it back."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Powerful-Looking Woman", args!["What am I doing, talking to a tourist like this? ^666666*Sigh...*^000000 Well, you learned what you wanted to know. I hope you're satisfied now."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Powerful-Looking Woman", args!["..."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Powerful-Looking Woman", args!["...", "......"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Powerful-Looking Woman", args!["...", "......", "........Hey."])?;
+                                            ctx.lines_as("Shuda", args!["Yes, yes, I know.", "But what's important", "is that once I get my ring back, Annon will be permanently mine. Till ^660000death do we part^000000."])?;
                                             ctx.next()?;
                                             ctx.lines_as(
-                                                "Powerful-Looking Woman",
-                                                args!["Why are you staring at me?", "Don't you have anything to do?"],
+                                                "Shuda",
+                                                args![
+                                                    "So, are you",
+                                                    "gonna help me or what?!",
+                                                    "If you do, me and Annon are gonna name our first seven children after you."
+                                                ],
                                             )?;
                                             ctx.next()?;
-                                            'b3: {
-                                                let subject3 = Val::from(runtime::select_values(
-                                                    ctx,
-                                                    &[Val::from("No.:No~ and you are an interesting girl.")],
-                                                )?);
-                                                let mut matched3 = false;
-                                                let no_case3 =
-                                                    !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                                    matched3 = true;
-                                                }
-                                                if matched3 {
-                                                    ctx.lines_as(
-                                                        "Powerful-Looking Woman",
-                                                        args!["I see. Hmmm...", "You're kind of my type."],
-                                                    )?;
-                                                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                                                        ctx.lines(args![
-                                                            "No no, that doesn't mean I'm interested in you. Plus I'm",
-                                                            "already engaged."
-                                                        ])?;
-                                                    } else {
-                                                        ctx.mes("Before you think of anything weird, I meant that I think you and me are a lot alike.")?;
-                                                    }
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Powerful-Looking Woman", args!["Let me introduce myself.", "My name is Shuda, I've lived in Ayothaya all my life. Since you don't have anything to do, I have", "a favor to ask of you."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["My fiance Annon is always interested in things other than me. I don't understand why, and I don't think I deserve to be ignored!"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Shuda",
-                                                        args![
-                                                            "^666666*Sigh...*^000000",
-                                                            "Anyways, we're engaged",
-                                                            "and we got rings for each other..."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["I thought being engaged would improve our relationship. But he just took my ring and threw it into the water."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Shuda",
-                                                        args![
-                                                            "I got upset and yelled at him to get my ring back for me, and then",
-                                                            "I never saw him after that.",
-                                                            "So what I want to ask is..."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                        args!["You want me", "to find your", "ring, don't you?"],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Shuda",
-                                                        args!["Ah...", "So you know", "what I want.", "That makes it", "much simpler."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Shuda",
-                                                        args![
-                                                            "And once I retrieve",
-                                                            "the ring, I'll make",
-                                                            "him treat me to a much",
-                                                            "deserved vacation in Jawaii..."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Shuda",
-                                                        args![
-                                                            "...Where I will",
-                                                            "^660000enslave^000000 him.",
-                                                            "^666666*Grinds teeth*^000000"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(
-                                                        Function::Emotion,
-                                                        vec![
-                                                            ctx.constant("ET_SURPRISE")?,
-                                                            Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                                        ],
-                                                    )?;
-                                                    ctx.lines_as(
-                                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                        args!["(...H-Horrifying!)"],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["So anyway, I want you to go out and find my engagement ring. Since the water is calm and still around here, the ring is probably still under the water, and hasn't been swept away yet."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["And so, that is my quest for you. It should keep you entertained for a while. So get into the water, and I'll supervise from here.", "Oho ho ho ho ho!"])?;
-                                                    ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
-                                                    ctx.var("thai_find").set(Val::from(1))?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                                    matched3 = true;
-                                                }
-                                                if matched3 {
-                                                    ctx.lines_as(
-                                                        "Powerful-Looking Woman",
-                                                        args![
-                                                            "^666666*Sigh...*^000000",
-                                                            "Are you gonna just stare and",
-                                                            "not help at all? I thought the word adventurer was synonymous",
-                                                            "with 'hero,' not 'lazy.'"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Powerful-Looking Woman", args!["Oh I see...", "Don't help strangers, do you?", "Well, my name is Shuda, a beautiful damsel waiting for her engagement ring to rise up from the water."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Powerful-Looking Woman",
-                                                        args!["There...!", "We're not", "strangers anymore!", "Oho ho ho ho ho!"],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["Don't you pity me, and my tragic situation? If someone were to help this precious maiden find her ring, she'd be the happiest bride in the whole world."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Shuda",
-                                                        args!["And her savior", "would be known as", "the hero of Ayothaya."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                        args![" ...Say what?!"],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["Basically, you're gonna find my engagement ring, and I'll be the happiest bride in the whole world and I'll live happily ever after. What's so hard to understand", "about that?"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["Sure, Annon, he's my fiancee, is spineless and disappears whenever", "I say something a little too harsh. What a little girl! Can't he see I'm trying to make him a better man?!"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                        args!["He ran away", "from you, didn't he?"],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["Eh...?", "What was that?"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                        args![
-                                                            "^666666*Ahem*^000000",
-                                                            "You're way",
-                                                            "too good for him.",
-                                                            "(I'd have run away myself!)"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["Yes, yes, I know.", "But what's important", "is that once I get my ring back, Annon will be permanently mine. Till ^660000death do we part^000000."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Shuda",
-                                                        args![
-                                                            "So, are you",
-                                                            "gonna help me or what?!",
-                                                            "If you do, me and Annon are gonna name our first seven children after you."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Shuda", args!["So go and look under the water! There's no water current, so I'm sure it's still there! What are you waiting for, it's should be an easy swim for you! Oho ho ho ho ho!"])?;
-                                                    if ctx.call(Function::CheckQuest, vec![Val::from(12029)])? == -1 {
-                                                        ctx.call(Function::SetQuest, vec![Val::from(12029)])?;
-                                                    }
-                                                    ctx.var("thai_find").set(Val::from(1))?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
+                                            ctx.lines_as("Shuda", args!["So go and look under the water! There's no water current, so I'm sure it's still there! What are you waiting for, it's should be an easy swim for you! Oho ho ho ho ho!"])?;
+                                            if ctx.call(Function::CheckQuest, vec![Val::from(12029)])? == -1 {
+                                                ctx.call(Function::SetQuest, vec![Val::from(12029)])?;
                                             }
-                                            break 'b2;
+                                            ctx.var("thai_find").set(Val::from(1))?;
+                                            ctx.close_window()?;
+                                            return Err(Stop::End);
                                         }
                                     }
-                                } else {
-                                    ctx.lines_as(
-                                        "Powerful-Looking Woman",
-                                        args![
-                                            "^666666*Sigh...*^000000",
-                                            "Why isn't it coming up from the water? Maybe if I stirred around with a wooden stick...?"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Powerful-Looking Woman",
-                                        args![
-                                            "...?!",
-                                            "What are you",
-                                            "looking at?!",
-                                            "I'm busy, so if you",
-                                            "want something",
-                                            "I can't help you!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Powerful-Looking Woman",
-                                        args![
-                                            "^666666Stupid tourists, running",
-                                            "around all over Ayothaya,",
-                                            "pestering and bothering",
-                                            "beautiful girls like me...^000000"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
+                                    break 'b2;
                                 }
                             }
+                        } else {
+                            ctx.lines_as(
+                                "Powerful-Looking Woman",
+                                args![
+                                    "^666666*Sigh...*^000000",
+                                    "Why isn't it coming up from the water? Maybe if I stirred around with a wooden stick...?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Powerful-Looking Woman",
+                                args![
+                                    "...?!",
+                                    "What are you",
+                                    "looking at?!",
+                                    "I'm busy, so if you",
+                                    "want something",
+                                    "I can't help you!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Powerful-Looking Woman",
+                                args![
+                                    "^666666Stupid tourists, running",
+                                    "around all over Ayothaya,",
+                                    "pestering and bothering",
+                                    "beautiful girls like me...^000000"
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -718,16 +714,14 @@ fn annonblood_run(ctx: &Ctx, mut step: AnnonbloodStep, args: Vec<Val>) -> Result
                                 }
                             }
                         }
+                    } else if ctx.var("thai_find").get()? == 14 {
+                        ctx.mes("^3355FFYou find that the burrow is empty. It seems Annon has found a new hiding place.^000000")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     } else {
-                        if ctx.var("thai_find").get()? == 14 {
-                            ctx.mes("^3355FFYou find that the burrow is empty. It seems Annon has found a new hiding place.^000000")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.mes("^3355FFYou find a pile of dead bushes under a large tree. The area around the bushes seems awfully dusty.^000000")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                        ctx.mes("^3355FFYou find a pile of dead bushes under a large tree. The area around the bushes seems awfully dusty.^000000")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                     step = AnnonbloodStep::OnTouch;
                     continue 'machine;
@@ -736,8 +730,8 @@ fn annonblood_run(ctx: &Ctx, mut step: AnnonbloodStep, args: Vec<Val>) -> Result
                 continue 'machine;
             }
             AnnonbloodStep::OnTouch => {
-                if ctx.var("thai_find").get()? == 12 {
-                    if !(ctx.call(Function::Rand, vec![Val::from(0), Val::from(2)])?.is_true()) {
+                if ctx.var("thai_find").get()? == 12
+                    && !(ctx.call(Function::Rand, vec![Val::from(0), Val::from(2)])?.is_true()) {
                         ctx.call(
                             Function::Emotion,
                             vec![
@@ -766,7 +760,6 @@ fn annonblood_run(ctx: &Ctx, mut step: AnnonbloodStep, args: Vec<Val>) -> Result
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 step = AnnonbloodStep::HoistEnd1;
                 continue 'machine;
             }
@@ -1007,38 +1000,30 @@ fn haggard_man_run(ctx: &Ctx, mut step: HaggardManStep, args: Vec<Val>) -> Resul
                                                     && ctx.var("BaseLevel").get()?.number()? < 71)
                                                 {
                                                     ctx.call(Function::GetExperience, vec![Val::from(27411), Val::from(0)])?;
+                                                } else if (ctx.var("BaseLevel").get()?.number()? > 70
+                                                    && ctx.var("BaseLevel").get()?.number()? < 76)
+                                                {
+                                                    ctx.call(Function::GetExperience, vec![Val::from(70757), Val::from(0)])?;
+                                                } else if (ctx.var("BaseLevel").get()?.number()? > 75
+                                                    && ctx.var("BaseLevel").get()?.number()? < 81)
+                                                {
+                                                    ctx.call(Function::GetExperience, vec![Val::from(130246), Val::from(0)])?;
+                                                } else if (ctx.var("BaseLevel").get()?.number()? > 80
+                                                    && ctx.var("BaseLevel").get()?.number()? < 86)
+                                                {
+                                                    ctx.call(Function::GetExperience, vec![Val::from(150340), Val::from(0)])?;
+                                                } else if (ctx.var("BaseLevel").get()?.number()? > 85
+                                                    && ctx.var("BaseLevel").get()?.number()? < 91)
+                                                {
+                                                    ctx.call(
+                                                        Function::GetExperience,
+                                                        vec![Val::from(182052), Val::from(0)],
+                                                    )?;
                                                 } else {
-                                                    if (ctx.var("BaseLevel").get()?.number()? > 70
-                                                        && ctx.var("BaseLevel").get()?.number()? < 76)
-                                                    {
-                                                        ctx.call(Function::GetExperience, vec![Val::from(70757), Val::from(0)])?;
-                                                    } else {
-                                                        if (ctx.var("BaseLevel").get()?.number()? > 75
-                                                            && ctx.var("BaseLevel").get()?.number()? < 81)
-                                                        {
-                                                            ctx.call(Function::GetExperience, vec![Val::from(130246), Val::from(0)])?;
-                                                        } else {
-                                                            if (ctx.var("BaseLevel").get()?.number()? > 80
-                                                                && ctx.var("BaseLevel").get()?.number()? < 86)
-                                                            {
-                                                                ctx.call(Function::GetExperience, vec![Val::from(150340), Val::from(0)])?;
-                                                            } else {
-                                                                if (ctx.var("BaseLevel").get()?.number()? > 85
-                                                                    && ctx.var("BaseLevel").get()?.number()? < 91)
-                                                                {
-                                                                    ctx.call(
-                                                                        Function::GetExperience,
-                                                                        vec![Val::from(182052), Val::from(0)],
-                                                                    )?;
-                                                                } else {
-                                                                    ctx.call(
-                                                                        Function::GetExperience,
-                                                                        vec![Val::from(406786), Val::from(0)],
-                                                                    )?;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
+                                                    ctx.call(
+                                                        Function::GetExperience,
+                                                        vec![Val::from(406786), Val::from(0)],
+                                                    )?;
                                                 }
                                             }
                                         }
@@ -1260,42 +1245,34 @@ fn fisherman_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 ctx.call(Function::GetItem, vec![Val::from(503), Val::from(1)])?;
                                 return Err(Stop::End);
-                            } else {
-                                if (l_randfish.clone().number()? > 69 && l_randfish.clone().number()? < 80) {
-                                    ctx.lines(args!["^3355FFThere's nothing inside...", "But now you can eat Sushi!^000000"])?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::GetItem, vec![Val::from(551), Val::from(1)])?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (l_randfish.clone().number()? > 79 && l_randfish.clone().number()? < 90) {
-                                        ctx.lines(args!["^3355FFYou find", "a Flower Ring", "inside the Phen.^000000"])?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::GetItem, vec![Val::from(2612), Val::from(1)])?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if l_randfish.clone() == 90 {
-                                            ctx.lines(args!["^3355FFYou find", "a Diamond Ring", "inside the Phen.^000000"])?;
-                                            ctx.close_window()?;
-                                            ctx.call(Function::GetItem, vec![Val::from(2613), Val::from(1)])?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if (l_randfish.clone().number()? > 90 && l_randfish.clone().number()? < 101) {
-                                                ctx.lines(args![
-                                                    "^3355FFYou find a ring",
-                                                    "with a name engraved",
-                                                    "inside the band.^000000"
-                                                ])?;
-                                                ctx.next()?;
-                                                ctx.lines(args!["^3355FFYou take the", "engagement ring.^000000"])?;
-                                                ctx.close_window()?;
-                                                ctx.var("thai_find").set(Val::from(2))?;
-                                                ctx.call(Function::ChangeQuest, vec![Val::from(12029), Val::from(12030)])?;
-                                                ctx.call(Function::GetItem, vec![Val::from(7288), Val::from(1)])?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
-                                    }
-                                }
+                            } else if (l_randfish.clone().number()? > 69 && l_randfish.clone().number()? < 80) {
+                                ctx.lines(args!["^3355FFThere's nothing inside...", "But now you can eat Sushi!^000000"])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::GetItem, vec![Val::from(551), Val::from(1)])?;
+                                return Err(Stop::End);
+                            } else if (l_randfish.clone().number()? > 79 && l_randfish.clone().number()? < 90) {
+                                ctx.lines(args!["^3355FFYou find", "a Flower Ring", "inside the Phen.^000000"])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::GetItem, vec![Val::from(2612), Val::from(1)])?;
+                                return Err(Stop::End);
+                            } else if l_randfish.clone() == 90 {
+                                ctx.lines(args!["^3355FFYou find", "a Diamond Ring", "inside the Phen.^000000"])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::GetItem, vec![Val::from(2613), Val::from(1)])?;
+                                return Err(Stop::End);
+                            } else if (l_randfish.clone().number()? > 90 && l_randfish.clone().number()? < 101) {
+                                ctx.lines(args![
+                                    "^3355FFYou find a ring",
+                                    "with a name engraved",
+                                    "inside the band.^000000"
+                                ])?;
+                                ctx.next()?;
+                                ctx.lines(args!["^3355FFYou take the", "engagement ring.^000000"])?;
+                                ctx.close_window()?;
+                                ctx.var("thai_find").set(Val::from(2))?;
+                                ctx.call(Function::ChangeQuest, vec![Val::from(12029), Val::from(12030)])?;
+                                ctx.call(Function::GetItem, vec![Val::from(7288), Val::from(1)])?;
+                                return Err(Stop::End);
                             }
                         }
                     }
@@ -1328,48 +1305,46 @@ fn fisherman_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         }
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("thai_find").get()?.number()? < 1 {
+        ctx.lines_as(
+            "Dannai",
+            args![
+                "The fish here tend",
+                "to eat anything they find.",
+                "When you gut them, you can",
+                "often find interesting things inside."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Dannai",
+            args![
+                "So when you get a chance,",
+                "why don't you sit down, relax",
+                "and enjoy some quiet fishing?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("thai_find").get()?.number()? < 1 {
-            ctx.lines_as(
-                "Dannai",
-                args![
-                    "The fish here tend",
-                    "to eat anything they find.",
-                    "When you gut them, you can",
-                    "often find interesting things inside."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Dannai",
-                args![
-                    "So when you get a chance,",
-                    "why don't you sit down, relax",
-                    "and enjoy some quiet fishing?"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as("Dannai", args!["Welcome, long time no see!", "It seems people learned that you found some kind of fortune from fishing here. After word got around, I've been getting lots", "of customers."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Dannai",
-                args![
-                    "I understand that you want",
-                    "fish, but right now there",
-                    "aren't any fishing spots",
-                    "for you at the moment."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Dannai",
-                args!["Please let other", "people have their", "chance to find their", "own fortunes."],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as("Dannai", args!["Welcome, long time no see!", "It seems people learned that you found some kind of fortune from fishing here. After word got around, I've been getting lots", "of customers."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Dannai",
+            args![
+                "I understand that you want",
+                "fish, but right now there",
+                "aren't any fishing spots",
+                "for you at the moment."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Dannai",
+            args!["Please let other", "people have their", "chance to find their", "own fortunes."],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -1391,8 +1366,8 @@ fn ayofootprint1_run(ctx: &Ctx, mut step: Ayofootprint1Step, args: Vec<Val>) -> 
                 continue 'machine;
             }
             Ayofootprint1Step::OnTouch => {
-                if ctx.var("thai_find").get()? == 4 {
-                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
+                if ctx.var("thai_find").get()? == 4
+                    && ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
                         ctx.call(
                             Function::Emotion,
                             vec![
@@ -1406,7 +1381,6 @@ fn ayofootprint1_run(ctx: &Ctx, mut step: Ayofootprint1Step, args: Vec<Val>) -> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 return Err(Stop::End);
             }
         }
@@ -1435,8 +1409,8 @@ fn ayofootprint2_run(ctx: &Ctx, mut step: Ayofootprint2Step, args: Vec<Val>) -> 
                 continue 'machine;
             }
             Ayofootprint2Step::OnTouch => {
-                if ctx.var("thai_find").get()? == 5 {
-                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
+                if ctx.var("thai_find").get()? == 5
+                    && ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
                         ctx.call(
                             Function::Emotion,
                             vec![
@@ -1449,7 +1423,6 @@ fn ayofootprint2_run(ctx: &Ctx, mut step: Ayofootprint2Step, args: Vec<Val>) -> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 return Err(Stop::End);
             }
         }
@@ -1478,8 +1451,8 @@ fn ayofootprint3_run(ctx: &Ctx, mut step: Ayofootprint3Step, args: Vec<Val>) -> 
                 continue 'machine;
             }
             Ayofootprint3Step::OnTouch => {
-                if ctx.var("thai_find").get()? == 6 {
-                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
+                if ctx.var("thai_find").get()? == 6
+                    && ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
                         ctx.call(
                             Function::Emotion,
                             vec![
@@ -1495,7 +1468,6 @@ fn ayofootprint3_run(ctx: &Ctx, mut step: Ayofootprint3Step, args: Vec<Val>) -> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 return Err(Stop::End);
             }
         }
@@ -1524,8 +1496,8 @@ fn ayofootprint4_run(ctx: &Ctx, mut step: Ayofootprint4Step, args: Vec<Val>) -> 
                 continue 'machine;
             }
             Ayofootprint4Step::OnTouch => {
-                if ctx.var("thai_find").get()? == 7 {
-                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
+                if ctx.var("thai_find").get()? == 7
+                    && ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
                         ctx.call(
                             Function::Emotion,
                             vec![
@@ -1538,7 +1510,6 @@ fn ayofootprint4_run(ctx: &Ctx, mut step: Ayofootprint4Step, args: Vec<Val>) -> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 return Err(Stop::End);
             }
         }
@@ -1567,8 +1538,8 @@ fn ayofootprint5_run(ctx: &Ctx, mut step: Ayofootprint5Step, args: Vec<Val>) -> 
                 continue 'machine;
             }
             Ayofootprint5Step::OnTouch => {
-                if ctx.var("thai_find").get()? == 8 {
-                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
+                if ctx.var("thai_find").get()? == 8
+                    && ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
                         ctx.lines(args![
                             "^3355FFYou find the same footprints",
                             "in this place. It seems pretty",
@@ -1581,7 +1552,6 @@ fn ayofootprint5_run(ctx: &Ctx, mut step: Ayofootprint5Step, args: Vec<Val>) -> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 return Err(Stop::End);
             }
         }
@@ -1611,8 +1581,8 @@ fn ayofootprint6_run(ctx: &Ctx, mut step: Ayofootprint6Step, args: Vec<Val>) -> 
                 continue 'machine;
             }
             Ayofootprint6Step::OnTouch => {
-                if ctx.var("thai_find").get()? == 9 {
-                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])? == 1 {
+                if ctx.var("thai_find").get()? == 9
+                    && ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])? == 1 {
                         ctx.call(
                             Function::Emotion,
                             vec![
@@ -1667,61 +1637,58 @@ fn ayofootprint6_run(ctx: &Ctx, mut step: Ayofootprint6Step, args: Vec<Val>) -> 
                                     ctx.call(Function::GetItem, vec![Val::from(504), Val::from(10)])?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
+                                } else if (l_randayo.clone().number()? > 2 && l_randayo.clone().number()? < 5) {
+                                    ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Why, this is a pack of Yellow Potions. Whoever owned these must have dropped these by accident. Hmm, I could use these for later..."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                        args![
+                                            "Wait...",
+                                            "There are more",
+                                            "footprints heading",
+                                            "toward the ^5C3317East^000000.",
+                                            "I better look",
+                                            "into this."
+                                        ],
+                                    )?;
+                                    ctx.var("thai_find").set(Val::from(10))?;
+                                    ctx.call(Function::GetItem, vec![Val::from(503), Val::from(10)])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 } else {
-                                    if (l_randayo.clone().number()? > 2 && l_randayo.clone().number()? < 5) {
-                                        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Why, this is a pack of Yellow Potions. Whoever owned these must have dropped these by accident. Hmm, I could use these for later..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args![
-                                                "Wait...",
-                                                "There are more",
-                                                "footprints heading",
-                                                "toward the ^5C3317East^000000.",
-                                                "I better look",
-                                                "into this."
-                                            ],
-                                        )?;
-                                        ctx.var("thai_find").set(Val::from(10))?;
-                                        ctx.call(Function::GetItem, vec![Val::from(503), Val::from(10)])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as("Rat", args!["^FF0000Squeak!", "^FF0000Squeak Squeak!^000000"])?;
-                                        ctx.call(
-                                            Function::Emotion,
-                                            vec![
-                                                ctx.constant("ET_HUK")?,
-                                                Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args!["^8C1717Wah^000000!", "What was that?!"],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines(args![
-                                            "^3355FFIt was just a rat.",
-                                            "It feels awful silly to be scared by just a little rat, does it not?^000000"
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines(args![
-                                            "^3355FFYou find another trail",
-                                            "of footprints that heads",
-                                            "towards the ^5C3317East^3355FF.^000000"
-                                        ])?;
-                                        ctx.var("thai_find").set(Val::from(10))?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
+                                    ctx.lines_as("Rat", args!["^FF0000Squeak!", "^FF0000Squeak Squeak!^000000"])?;
+                                    ctx.call(
+                                        Function::Emotion,
+                                        vec![
+                                            ctx.constant("ET_HUK")?,
+                                            Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                        args!["^8C1717Wah^000000!", "What was that?!"],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines(args![
+                                        "^3355FFIt was just a rat.",
+                                        "It feels awful silly to be scared by just a little rat, does it not?^000000"
+                                    ])?;
+                                    ctx.next()?;
+                                    ctx.lines(args![
+                                        "^3355FFYou find another trail",
+                                        "of footprints that heads",
+                                        "towards the ^5C3317East^3355FF.^000000"
+                                    ])?;
+                                    ctx.var("thai_find").set(Val::from(10))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                         }
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 return Err(Stop::End);
             }
         }
@@ -1750,8 +1717,8 @@ fn ayofootprint7_run(ctx: &Ctx, mut step: Ayofootprint7Step, args: Vec<Val>) -> 
                 continue 'machine;
             }
             Ayofootprint7Step::OnTouch => {
-                if ctx.var("thai_find").get()? == 10 {
-                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
+                if ctx.var("thai_find").get()? == 10
+                    && ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
                         ctx.call(
                             Function::Emotion,
                             vec![
@@ -1770,7 +1737,6 @@ fn ayofootprint7_run(ctx: &Ctx, mut step: Ayofootprint7Step, args: Vec<Val>) -> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 return Err(Stop::End);
             }
         }
@@ -1799,8 +1765,8 @@ fn ayofootprint8_run(ctx: &Ctx, mut step: Ayofootprint8Step, args: Vec<Val>) -> 
                 continue 'machine;
             }
             Ayofootprint8Step::OnTouch => {
-                if ctx.var("thai_find").get()? == 11 {
-                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
+                if ctx.var("thai_find").get()? == 11
+                    && ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?.number()? < 2 {
                         ctx.call(
                             Function::Emotion,
                             vec![
@@ -1814,7 +1780,6 @@ fn ayofootprint8_run(ctx: &Ctx, mut step: Ayofootprint8Step, args: Vec<Val>) -> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                }
                 return Err(Stop::End);
             }
         }
@@ -1913,32 +1878,30 @@ fn old_man_02_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else if (l_randayo.clone().number()? > 4 && l_randayo.clone().number()? < 7) {
+            ctx.lines_as(
+                "Tham",
+                args![
+                    "Ah~",
+                    "I've got this craving for Ms. Mali the Spicy's food, especially her 'Tom Yum Goong.'"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Tham", args!["I think it's the", "most delicious dish", "in the entire world!"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if (l_randayo.clone().number()? > 4 && l_randayo.clone().number()? < 7) {
-                ctx.lines_as(
-                    "Tham",
-                    args![
-                        "Ah~",
-                        "I've got this craving for Ms. Mali the Spicy's food, especially her 'Tom Yum Goong.'"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Tham", args!["I think it's the", "most delicious dish", "in the entire world!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Tham",
-                    args!["Oh hello~", "I can tell from your clothes that you must be from Midgard."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Tham",
-                    args!["I hope that you enjoy your stay here, and that you come visit Ayothaya as often as you can~"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.lines_as(
+                "Tham",
+                args!["Oh hello~", "I can tell from your clothes that you must be from Midgard."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Tham",
+                args!["I hope that you enjoy your stay here, and that you come visit Ayothaya as often as you can~"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
 }
@@ -2056,25 +2019,23 @@ fn dusit_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Dusit", args!["You do now?", "Then be careful!", "It'll eat you alive!"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("ayodunquest").get()?.number()? > 0 {
-            ctx.lines_as(
-                "Dusit",
-                args![
-                    "How are you?",
-                    "If you're interested",
-                    "in the Sa-mhing Tiger,",
-                    "please go talk to Boonthom."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Dusit",
-                args!["But beware!", "The Sa-mhing Tiger might be", "closer to you than you expect!"],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("ayodunquest").get()?.number()? > 0 {
+        ctx.lines_as(
+            "Dusit",
+            args![
+                "How are you?",
+                "If you're interested",
+                "in the Sa-mhing Tiger,",
+                "please go talk to Boonthom."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Dusit",
+            args!["But beware!", "The Sa-mhing Tiger might be", "closer to you than you expect!"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -2605,221 +2566,211 @@ fn shaman_thai_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.var("ayodunquest").get()? == 11 {
-                                if ctx.call(Function::CountItem, vec![Val::from(7287)])?.number()? > 0 {
-                                    ctx.lines_as(
-                                        "Boonthom",
-                                        args![
-                                            "Those threads",
-                                            "will protect you",
-                                            "from the spiritual",
-                                            "dangers, but it's up",
-                                            "to you to defend yourself",
-                                            "from monster attacks, okay?"
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ((((ctx.call(Function::CountItem, vec![Val::from(523)])?.number()? > 1
-                                        && ctx.call(Function::CountItem, vec![Val::from(610)])?.number()? > 0)
-                                        && ctx
-                                            .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
-                                            .number()?
-                                            > 1)
-                                        && ctx
-                                            .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(1), false)])?
-                                            .number()?
-                                            > 1)
-                                        && ctx.call(Function::CountItem, vec![Val::from(7287)])? == 0)
-                                    {
-                                        ctx.lines_as("Boonthom", args!["Ooooohmmmmm..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Boonthom", args!["Hmmmmmm...", "Hmmmmmmmmm."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Boonthom", args!["Pffff pffff..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Boonthom",
-                                            args![
-                                                "Here you go.",
-                                                "Please take these holy threads.",
-                                                "With this, you will be able to enter the ruins with less worry."
-                                            ],
-                                        )?;
-                                        ctx.call(
-                                            Function::DelItem,
-                                            vec![runtime::local_get(&l_items, &Val::from(0), false), Val::from(2)],
-                                        )?;
-                                        ctx.call(
-                                            Function::DelItem,
-                                            vec![runtime::local_get(&l_items, &Val::from(1), false), Val::from(2)],
-                                        )?;
-                                        ctx.call(Function::DelItem, vec![Val::from(610), Val::from(1)])?;
-                                        ctx.call(Function::DelItem, vec![Val::from(523), Val::from(2)])?;
-                                        ctx.call(Function::GetItem, vec![Val::from(7287), Val::from(1)])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
+                        } else if ctx.var("ayodunquest").get()? == 11 {
+                            if ctx.call(Function::CountItem, vec![Val::from(7287)])?.number()? > 0 {
                                 ctx.lines_as(
                                     "Boonthom",
                                     args![
-                                        "Hmm...?",
-                                        "Didn't I tell you",
-                                        "what I need to make",
-                                        "a more powerful",
-                                        "holy thread?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Boonthom",
-                                    args![
-                                        "^3366992 Holy Water^000000,",
-                                        "^3366991 Yggdrasil Leaf^000000,",
-                                        ((Val::from("^3366992 ")
-                                            + ctx
-                                                .call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
-                                            + Val::from("^000000 and")),
-                                        ((Val::from("^3366992 ")
-                                            + ctx
-                                                .call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(1), false)])?)
-                                            + Val::from("^000000."))
+                                        "Those threads",
+                                        "will protect you",
+                                        "from the spiritual",
+                                        "dangers, but it's up",
+                                        "to you to defend yourself",
+                                        "from monster attacks, okay?"
                                     ],
                                 )?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
-                            } else {
-                                if ctx.var("ayodunquest").get()? == 12 {
-                                    ctx.lines_as(
-                                        "Boonthom",
-                                        args![
-                                            "Huh...!",
-                                            "You must have seen something.",
-                                            "I can tell by the gloomy look on your face, and the shadow looming over your soul."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                        args!["I found", "this old letter", "in the ruins."],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Old Letter", args!["^333333Dear, Boonthom...I was a fool...There is Sa-mhing Tig'...One who ....my remains... Please take...to Boonthom..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Boonthom", args!["I see...", "Oh, my dear", "old friend..."])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Boonthom",
-                                        args![
-                                            "Thank you for your trouble.",
-                                            "My friend left that box for me.",
-                                            "But I guess he would wish to give that box to the person who found his remains."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Boonthom", args!["If you wish to explore the building again, but you don't have any holy thread, feel free to ask me at anytime."])?;
-                                    ctx.var("ayodunquest").set(Val::from(13))?;
-                                    ctx.call(Function::CompleteQuest, vec![Val::from(12039)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if ctx.var("ayodunquest").get()?.number()? > 12 {
-                                        if ctx.call(Function::CountItem, vec![Val::from(7287)])?.number()? > 0 {
-                                            ctx.lines_as("Boonthom", args!["Best of luck on your", "expeditions, brave", "adventurer~"])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            if ((((ctx.call(Function::CountItem, vec![Val::from(523)])?.number()? > 1
-                                                && ctx.call(Function::CountItem, vec![Val::from(610)])?.number()? > 0)
-                                                && ctx
-                                                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
-                                                    .number()?
-                                                    > 1)
-                                                && ctx
-                                                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(1), false)])?
-                                                    .number()?
-                                                    > 1)
-                                                && ctx.call(Function::CountItem, vec![Val::from(7287)])? == 0)
-                                            {
-                                                ctx.lines_as(
-                                                    "Boonthom",
-                                                    args![
-                                                        "Lost the",
-                                                        "holy threads",
-                                                        "somehow, did you?",
-                                                        "With the items you",
-                                                        "have, I'll simply",
-                                                        "make more of them."
-                                                    ],
-                                                )?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Boonthom", args!["Ooooohmmmmm..."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Boonthom", args!["Hmmmmmm...", "Hmmmmmmmmm."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Boonthom", args!["Pffff pffff..."])?;
-                                                ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Boonthom",
-                                                    args![
-                                                        "Here you go.",
-                                                        "Please take these holy threads.",
-                                                        "With this, you will be able to enter the ruins with less worry."
-                                                    ],
-                                                )?;
-                                                ctx.call(
-                                                    Function::DelItem,
-                                                    vec![runtime::local_get(&l_items, &Val::from(0), false), Val::from(2)],
-                                                )?;
-                                                ctx.call(
-                                                    Function::DelItem,
-                                                    vec![runtime::local_get(&l_items, &Val::from(1), false), Val::from(2)],
-                                                )?;
-                                                ctx.call(Function::DelItem, vec![Val::from(610), Val::from(1)])?;
-                                                ctx.call(Function::DelItem, vec![Val::from(523), Val::from(2)])?;
-                                                ctx.call(Function::GetItem, vec![Val::from(7287), Val::from(1)])?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                        }
-                                        ctx.lines_as(
-                                            "Boonthom",
-                                            args![
-                                                "Hmm...?",
-                                                "Didn't I tell you",
-                                                "what I need to make",
-                                                "a more powerful",
-                                                "holy thread?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Boonthom",
-                                            args![
-                                                "^3366992 Holy Water^000000,",
-                                                "^3366991 Yggdrasil Leaf^000000,",
-                                                ((Val::from("^3366992 ")
-                                                    + ctx.call(
-                                                        Function::GetItemName,
-                                                        vec![runtime::local_get(&l_items, &Val::from(0), false)]
-                                                    )?)
-                                                    + Val::from("^000000 and")),
-                                                ((Val::from("^3366992 ")
-                                                    + ctx.call(
-                                                        Function::GetItemName,
-                                                        vec![runtime::local_get(&l_items, &Val::from(1), false)]
-                                                    )?)
-                                                    + Val::from("^000000."))
-                                            ],
-                                        )?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
+                            } else if ((((ctx.call(Function::CountItem, vec![Val::from(523)])?.number()? > 1
+                                && ctx.call(Function::CountItem, vec![Val::from(610)])?.number()? > 0)
+                                && ctx
+                                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
+                                    .number()?
+                                    > 1)
+                                && ctx
+                                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(1), false)])?
+                                    .number()?
+                                    > 1)
+                                && ctx.call(Function::CountItem, vec![Val::from(7287)])? == 0)
+                            {
+                                ctx.lines_as("Boonthom", args!["Ooooohmmmmm..."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Boonthom", args!["Hmmmmmm...", "Hmmmmmmmmm."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Boonthom", args!["Pffff pffff..."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Boonthom",
+                                    args![
+                                        "Here you go.",
+                                        "Please take these holy threads.",
+                                        "With this, you will be able to enter the ruins with less worry."
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_items, &Val::from(0), false), Val::from(2)],
+                                )?;
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_items, &Val::from(1), false), Val::from(2)],
+                                )?;
+                                ctx.call(Function::DelItem, vec![Val::from(610), Val::from(1)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(523), Val::from(2)])?;
+                                ctx.call(Function::GetItem, vec![Val::from(7287), Val::from(1)])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
+                            ctx.lines_as(
+                                "Boonthom",
+                                args![
+                                    "Hmm...?",
+                                    "Didn't I tell you",
+                                    "what I need to make",
+                                    "a more powerful",
+                                    "holy thread?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Boonthom",
+                                args![
+                                    "^3366992 Holy Water^000000,",
+                                    "^3366991 Yggdrasil Leaf^000000,",
+                                    ((Val::from("^3366992 ")
+                                        + ctx
+                                            .call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(0), false)])?)
+                                        + Val::from("^000000 and")),
+                                    ((Val::from("^3366992 ")
+                                        + ctx
+                                            .call(Function::GetItemName, vec![runtime::local_get(&l_items, &Val::from(1), false)])?)
+                                        + Val::from("^000000."))
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("ayodunquest").get()? == 12 {
+                            ctx.lines_as(
+                                "Boonthom",
+                                args![
+                                    "Huh...!",
+                                    "You must have seen something.",
+                                    "I can tell by the gloomy look on your face, and the shadow looming over your soul."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["I found", "this old letter", "in the ruins."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Old Letter", args!["^333333Dear, Boonthom...I was a fool...There is Sa-mhing Tig'...One who ....my remains... Please take...to Boonthom..."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Boonthom", args!["I see...", "Oh, my dear", "old friend..."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Boonthom",
+                                args![
+                                    "Thank you for your trouble.",
+                                    "My friend left that box for me.",
+                                    "But I guess he would wish to give that box to the person who found his remains."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Boonthom", args!["If you wish to explore the building again, but you don't have any holy thread, feel free to ask me at anytime."])?;
+                            ctx.var("ayodunquest").set(Val::from(13))?;
+                            ctx.call(Function::CompleteQuest, vec![Val::from(12039)])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("ayodunquest").get()?.number()? > 12 {
+                            if ctx.call(Function::CountItem, vec![Val::from(7287)])?.number()? > 0 {
+                                ctx.lines_as("Boonthom", args!["Best of luck on your", "expeditions, brave", "adventurer~"])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            } else if ((((ctx.call(Function::CountItem, vec![Val::from(523)])?.number()? > 1
+                                && ctx.call(Function::CountItem, vec![Val::from(610)])?.number()? > 0)
+                                && ctx
+                                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
+                                    .number()?
+                                    > 1)
+                                && ctx
+                                    .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(1), false)])?
+                                    .number()?
+                                    > 1)
+                                && ctx.call(Function::CountItem, vec![Val::from(7287)])? == 0)
+                            {
+                                ctx.lines_as(
+                                    "Boonthom",
+                                    args![
+                                        "Lost the",
+                                        "holy threads",
+                                        "somehow, did you?",
+                                        "With the items you",
+                                        "have, I'll simply",
+                                        "make more of them."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Boonthom", args!["Ooooohmmmmm..."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Boonthom", args!["Hmmmmmm...", "Hmmmmmmmmm."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Boonthom", args!["Pffff pffff..."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Boonthom",
+                                    args![
+                                        "Here you go.",
+                                        "Please take these holy threads.",
+                                        "With this, you will be able to enter the ruins with less worry."
+                                    ],
+                                )?;
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_items, &Val::from(0), false), Val::from(2)],
+                                )?;
+                                ctx.call(
+                                    Function::DelItem,
+                                    vec![runtime::local_get(&l_items, &Val::from(1), false), Val::from(2)],
+                                )?;
+                                ctx.call(Function::DelItem, vec![Val::from(610), Val::from(1)])?;
+                                ctx.call(Function::DelItem, vec![Val::from(523), Val::from(2)])?;
+                                ctx.call(Function::GetItem, vec![Val::from(7287), Val::from(1)])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            ctx.lines_as(
+                                "Boonthom",
+                                args![
+                                    "Hmm...?",
+                                    "Didn't I tell you",
+                                    "what I need to make",
+                                    "a more powerful",
+                                    "holy thread?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Boonthom",
+                                args![
+                                    "^3366992 Holy Water^000000,",
+                                    "^3366991 Yggdrasil Leaf^000000,",
+                                    ((Val::from("^3366992 ")
+                                        + ctx.call(
+                                            Function::GetItemName,
+                                            vec![runtime::local_get(&l_items, &Val::from(0), false)]
+                                        )?)
+                                        + Val::from("^000000 and")),
+                                    ((Val::from("^3366992 ")
+                                        + ctx.call(
+                                            Function::GetItemName,
+                                            vec![runtime::local_get(&l_items, &Val::from(1), false)]
+                                        )?)
+                                        + Val::from("^000000."))
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -3367,21 +3318,19 @@ fn einon_ayo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("tomyumgoong").get()? == 1 {
-            ctx.lines_as(
-                "Einon",
-                args![
-                    "Ah, you wanna know",
-                    "where ^3131FFMali the Spicy^000000 is?",
-                    "Well, there's not too many places",
-                    "a cook would stay other than in",
-                    "a restaurant, right? Hahaha~"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("tomyumgoong").get()? == 1 {
+        ctx.lines_as(
+            "Einon",
+            args![
+                "Ah, you wanna know",
+                "where ^3131FFMali the Spicy^000000 is?",
+                "Well, there's not too many places",
+                "a cook would stay other than in",
+                "a restaurant, right? Hahaha~"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.lines_as(
         "Einon",
@@ -3496,374 +3445,362 @@ fn cook_ayo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-    } else {
-        if (ctx.var("tomyumgoong").get()?.number()? > 1 && ctx.var("tomyumgoong").get()?.number()? < 4) {
-            if (ctx.var("tomyumgoong").get()? == 2 && ctx.call(Function::CountItem, vec![Val::from(567)])?.number()? > 19) {
-                ctx.lines_as(
-                    "Mali the Spicy",
-                    args![
-                        "Errr...",
-                        "What's wrong with these Shrimp?",
-                        "They all have these scratches and rips in them! I can't believe Thongpool sold such bad Shrimp",
-                        "to his customers!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Mali the Spicy",
-                    args!["I'm so sorry, but", "I can't cook the best", "Tom Yum Goong with", "these Shrimp."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Mali the Spicy",
-                    args![
-                        "I know it's an inconvenience, but would you go back to Thongpool",
-                        "and ask him to give you the freshest Shrimp to cook the best",
-                        "Tom Yum Goong?"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("tomyumgoong").get()? == 3 {
-                    if ctx.call(Function::CountItem, vec![Val::from(567)])?.number()? > 19 {
-                        ctx.lines_as(
-                            "Mali the Spicy",
-                            args![
-                                "Ah, you came back!",
-                                "Now, let me see what",
-                                "you've brought. Hmm...",
-                                "These are..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.call(Function::Emotion, vec![ctx.constant("ET_BEST")?])?;
-                        ctx.lines_as(
-                            "Mali the Spicy",
-                            args![
-                                "The freshest Shrimp that",
-                                "I've been looking for! Well done~",
-                                "With these big and fresh Shrimp,",
-                                "I can cook the best Tom Yum Goong for you! Thank you so much!"
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(567), Val::from(20)])?;
-                        ctx.next()?;
-                        ctx.lines_as("Mali the Spicy", args!["It will be a perfect food with the natural sweetness of the Shrimp, the sourness of Lemons and a little bit of fish sauce!"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Mali the Spicy",
-                            args![
-                                "Oh... Right.",
-                                "But we only have Shrimp.",
-                                "Now, I want you to bring",
-                                "me some ^CE0000Lemons^000000."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Where can I find Lemons?:I hate sour food. I'd better quit!")],
-                        )?) == 1
-                        {
-                            ctx.var("tomyumgoong").set(Val::from(4))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(8124), Val::from(8125)])?;
-                            ctx.lines_as(
-                                "Mali the Spicy",
-                                args![
-                                    "A few days ago, I saw a good",
-                                    "Lemon tree while taking a walk.",
-                                    "But this tree belongs to an ordinary man who's not a Fruit Merchant."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mali the Spicy",
-                                args![
-                                    "I'm not sure whether",
-                                    "or not he'd sell Lemons",
-                                    "to you, but you can try,",
-                                    "I guess."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        ctx.call(Function::Emotion, vec![ctx.constant("ET_ANGER")?])?;
-                        ctx.lines_as("Mali the Spicy", args!["What a stupid...!", "If you quit just because you really hate sour flavors, you must not be that eager to have my Tom Yum Goong!"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Mali the Spicy",
-                            args!["Once you taste my", "Tom Yum Goong, you'll", "regret what you just said!"],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as(
-                        "Mali the Spicy",
-                        args![
-                            "Huh...?",
-                            "What did you do",
-                            "with the Shrimps?",
-                            "You didn't eat them",
-                            "on the way here, did you?"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
+    } else if (ctx.var("tomyumgoong").get()?.number()? > 1 && ctx.var("tomyumgoong").get()?.number()? < 4) {
+        if (ctx.var("tomyumgoong").get()? == 2 && ctx.call(Function::CountItem, vec![Val::from(567)])?.number()? > 19) {
             ctx.lines_as(
                 "Mali the Spicy",
-                args!["Make sure you ask", "Mr. Thongpool to give", "you 20 Shrimps.", "Now hurry~"],
+                args![
+                    "Errr...",
+                    "What's wrong with these Shrimp?",
+                    "They all have these scratches and rips in them! I can't believe Thongpool sold such bad Shrimp",
+                    "to his customers!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Mali the Spicy",
+                args!["I'm so sorry, but", "I can't cook the best", "Tom Yum Goong with", "these Shrimp."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Mali the Spicy",
+                args![
+                    "I know it's an inconvenience, but would you go back to Thongpool",
+                    "and ask him to give you the freshest Shrimp to cook the best",
+                    "Tom Yum Goong?"
+                ],
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if (ctx.var("tomyumgoong").get()?.number()? > 3 && ctx.var("tomyumgoong").get()?.number()? < 6) {
-                if (ctx.var("tomyumgoong").get()? == 4 && ctx.call(Function::CountItem, vec![Val::from(568)])?.number()? > 9) {
+        } else if ctx.var("tomyumgoong").get()? == 3 {
+            if ctx.call(Function::CountItem, vec![Val::from(567)])?.number()? > 19 {
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "Ah, you came back!",
+                        "Now, let me see what",
+                        "you've brought. Hmm...",
+                        "These are..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_BEST")?])?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "The freshest Shrimp that",
+                        "I've been looking for! Well done~",
+                        "With these big and fresh Shrimp,",
+                        "I can cook the best Tom Yum Goong for you! Thank you so much!"
+                    ],
+                )?;
+                ctx.call(Function::DelItem, vec![Val::from(567), Val::from(20)])?;
+                ctx.next()?;
+                ctx.lines_as("Mali the Spicy", args!["It will be a perfect food with the natural sweetness of the Shrimp, the sourness of Lemons and a little bit of fish sauce!"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "Oh... Right.",
+                        "But we only have Shrimp.",
+                        "Now, I want you to bring",
+                        "me some ^CE0000Lemons^000000."
+                    ],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Where can I find Lemons?:I hate sour food. I'd better quit!")],
+                )?) == 1
+                {
+                    ctx.var("tomyumgoong").set(Val::from(4))?;
+                    ctx.call(Function::ChangeQuest, vec![Val::from(8124), Val::from(8125)])?;
                     ctx.lines_as(
                         "Mali the Spicy",
-                        args!["You think these are", "the best quality Lemons?", "Take a closer look!"],
+                        args![
+                            "A few days ago, I saw a good",
+                            "Lemon tree while taking a walk.",
+                            "But this tree belongs to an ordinary man who's not a Fruit Merchant."
+                        ],
                     )?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Mali the Spicy",
                         args![
-                            "The skin of these",
-                            "Lemons lack luster",
-                            "and they don't even smell",
-                            "fresh! They're just",
-                            "common Lemons!"
+                            "I'm not sure whether",
+                            "or not he'd sell Lemons",
+                            "to you, but you can try,",
+                            "I guess."
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("tomyumgoong").get()? == 5 {
-                        if ctx.call(Function::CountItem, vec![Val::from(568)])?.number()? > 9 {
-                            ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
-                            ctx.lines_as(
-                                "Mali the Spicy",
-                                args![
-                                    "Welcome back!",
-                                    "Wow, you came back",
-                                    "really fast! Okay, let me",
-                                    "see the Lemons",
-                                    "you brought?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mali the Spicy",
-                                args![
-                                    "Wow, great!",
-                                    "These are really fresh Lemons!",
-                                    "How could you bring all of these by yourself? Thanks for your trouble~"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mali the Spicy",
-                                args![
-                                    "Now, you should go buy",
-                                    "some ^CE0000Chiles^000000 and some",
-                                    "other materials in the Market."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mali the Spicy",
-                                args![
-                                    "When you talk",
-                                    "to the Merchants",
-                                    "in the Market, they",
-                                    "will know what you want."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from(
-                                    "Okay, I'll be right back.:Ah, I'm tired now. Let me take a rest first...",
-                                )],
-                            )?) == 1
-                            {
-                                ctx.call(Function::DelItem, vec![Val::from(568), Val::from(10)])?;
-                                ctx.var("tomyumgoong").set(Val::from(6))?;
-                                ctx.call(Function::ChangeQuest, vec![Val::from(8125), Val::from(8126)])?;
-                                ctx.lines_as("Mali the Spicy", args!["See you in a bit~"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            ctx.lines_as(
-                                "Mali the Spicy",
-                                args![
-                                    "It's your call.",
-                                    "But remember...",
-                                    "The Shrimps might go bad",
-                                    "while you're taking a rest."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as(
-                            "Mali the Spicy",
-                            args![
-                                "Huh...?",
-                                "What did you",
-                                "do with Lemons?",
-                                "You didn't eat them",
-                                "all on the way here, did you?"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
                 }
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_ANGER")?])?;
+                ctx.lines_as("Mali the Spicy", args!["What a stupid...!", "If you quit just because you really hate sour flavors, you must not be that eager to have my Tom Yum Goong!"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args!["Once you taste my", "Tom Yum Goong, you'll", "regret what you just said!"],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as(
+                "Mali the Spicy",
+                args![
+                    "Huh...?",
+                    "What did you do",
+                    "with the Shrimps?",
+                    "You didn't eat them",
+                    "on the way here, did you?"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Mali the Spicy",
+            args!["Make sure you ask", "Mr. Thongpool to give", "you 20 Shrimps.", "Now hurry~"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (ctx.var("tomyumgoong").get()?.number()? > 3 && ctx.var("tomyumgoong").get()?.number()? < 6) {
+        if (ctx.var("tomyumgoong").get()? == 4 && ctx.call(Function::CountItem, vec![Val::from(568)])?.number()? > 9) {
+            ctx.lines_as(
+                "Mali the Spicy",
+                args!["You think these are", "the best quality Lemons?", "Take a closer look!"],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Mali the Spicy",
+                args![
+                    "The skin of these",
+                    "Lemons lack luster",
+                    "and they don't even smell",
+                    "fresh! They're just",
+                    "common Lemons!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("tomyumgoong").get()? == 5 {
+            if ctx.call(Function::CountItem, vec![Val::from(568)])?.number()? > 9 {
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
                 ctx.lines_as(
                     "Mali the Spicy",
                     args![
-                        "Alright...",
-                        "I'm counting on you",
-                        "to get the best Lemons",
-                        "from the guy that owns that tree."
+                        "Welcome back!",
+                        "Wow, you came back",
+                        "really fast! Okay, let me",
+                        "see the Lemons",
+                        "you brought?"
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Mali the Spicy",
                     args![
-                        "Somehow, you've got",
-                        "to get those high quality",
-                        "Lemons so that I can make",
-                        "some Tom Yum Goong!"
+                        "Wow, great!",
+                        "These are really fresh Lemons!",
+                        "How could you bring all of these by yourself? Thanks for your trouble~"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "Now, you should go buy",
+                        "some ^CE0000Chiles^000000 and some",
+                        "other materials in the Market."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "When you talk",
+                        "to the Merchants",
+                        "in the Market, they",
+                        "will know what you want."
+                    ],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Okay, I'll be right back.:Ah, I'm tired now. Let me take a rest first...",
+                    )],
+                )?) == 1
+                {
+                    ctx.call(Function::DelItem, vec![Val::from(568), Val::from(10)])?;
+                    ctx.var("tomyumgoong").set(Val::from(6))?;
+                    ctx.call(Function::ChangeQuest, vec![Val::from(8125), Val::from(8126)])?;
+                    ctx.lines_as("Mali the Spicy", args!["See you in a bit~"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "It's your call.",
+                        "But remember...",
+                        "The Shrimps might go bad",
+                        "while you're taking a rest."
                     ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("tomyumgoong").get()? == 6 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7286)])?.number()? > 29 {
-                        ctx.lines_as(
-                            "Mali the Spicy",
-                            args![
-                                "I don't understand...",
-                                "Where did you get these",
-                                "bad ingredients?! Didn't",
-                                "I tell you that my",
-                                "Tom Yum Goong",
-                                "requires the best?!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    ctx.lines_as("Mali the Spicy", args!["I know you've been working hard to do me this favor. I hope you'll put forth that last little bit of effort to finish this."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Malli the Spicy", args!["Please go take a look in the Market. I don't doubt that it will be a good experience. After all, my fantastic Tom Yum Goong is waiting for you!"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("tomyumgoong").get()? == 7 {
-                        if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? > 1499 {
-                            if ctx.call(Function::CountItem, vec![Val::from(7286)])?.number()? > 29 {
-                                ctx.call(Function::DelItem, vec![Val::from(7286), Val::from(30)])?;
-                                ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
-                                ctx.lines_as(
-                                    "Mali the Spicy",
-                                    args![
-                                        "Now...",
-                                        "Everything is all set!",
-                                        "Before we start, let me",
-                                        "check the materials."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Mali the Spicy",
-                                    args![
-                                        "^CE0000Shrimp^000000, ^CE0000Chiles^000000, ^CE0000Lemons^000000...",
-                                        "Fish sauce and other little things..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Mali the Spicy", args!["Perfect!", "Shall we begin?"])?;
-                                ctx.next()?;
-                                ctx.lines(args!["^FF0000*Tuk*^000000", "^9C009C*Tup*^000000", "^009C00*Puk*^000000"])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_ENCHANTPOISON")?])?;
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^FF0031*Chop chop*^000000",
-                                    "^FF9C00*Tup tup tup*^000000",
-                                    "^639CFF*Pu pu^000000 -"
-                                ])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Mali the Spicy",
-                                    args![
-                                        "- ^9C6300Tup tup^000000 ^006363chook^000000",
-                                        "^316363Chop chop^000000",
-                                        "^FF0000Tup tup tup^000000 ^009C00Pu pu^000000 -"
-                                    ],
-                                )?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_STONECURSE")?])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HASTEUP")?])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL")?])?;
-                                ctx.next()?;
-                                ctx.lines_as("Mali the Spicy", args!["Wah^00009Cah^0000FFahhhh^0063FFaaaahhh^000000!"])?;
-                                ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_FLASHER")?])?;
-                                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_LORD")?])?;
-                                ctx.next()?;
-                                ctx.lines_as("Mali the Spicy", args![" ...", " ......", " ........."])?;
-                                ctx.next()?;
-                                ctx.var("tomyumgoong").set(Val::from(8))?;
-                                ctx.call(Function::CompleteQuest, vec![Val::from(8126)])?;
-                                ctx.call(Function::GetItem, vec![Val::from(566), Val::from(10)])?;
-                                ctx.call(Function::Emotion, vec![ctx.constant("ET_BEST")?])?;
-                                ctx.lines_as(
-                                    "Mali the Spicy",
-                                    args![
-                                        "Here's your",
-                                        "Tom Yum Goong!",
-                                        "Ah~ This taste,",
-                                        "this scent... Yeah.",
-                                        "I know I did a good job."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Mali the Spicy", args!["Do you know what is the secret of Tom Yum Goong? It isn't simply just food. This has the power to heal you, and help you get into better shape."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Mali the Spicy", args!["Because...", "It contains the", "power of God."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Mali the Spicy",
-                                    args!["Okay...!", "I'm giving you", "10 Tom Yum Goong", "free of charge~"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Mali the Spicy", args!["Thank you for all the trouble that you have been though to get these ingredients. It would make me happy if you shared Tom Yum Goong with your friends."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Mali the Spicy", args!["Share the flavor of Ayothaya, and let them know how beautiful our land is. It was good to see you, take care now~"])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            ctx.lines_as(
-                                "Mali the Spicy",
-                                args!["Huh? What did you do with the Chiles? You didn't eat them all on the way here, did you?"],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        ctx.lines_as("Mali the Spicy", args!["Hmm...", "You seem to be carrying too many things. Why don't you free up some space in your inventory first, and then come back?"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
             }
+            ctx.lines_as(
+                "Mali the Spicy",
+                args![
+                    "Huh...?",
+                    "What did you",
+                    "do with Lemons?",
+                    "You didn't eat them",
+                    "all on the way here, did you?"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+        ctx.lines_as(
+            "Mali the Spicy",
+            args![
+                "Alright...",
+                "I'm counting on you",
+                "to get the best Lemons",
+                "from the guy that owns that tree."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Mali the Spicy",
+            args![
+                "Somehow, you've got",
+                "to get those high quality",
+                "Lemons so that I can make",
+                "some Tom Yum Goong!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("tomyumgoong").get()? == 6 {
+        if ctx.call(Function::CountItem, vec![Val::from(7286)])?.number()? > 29 {
+            ctx.lines_as(
+                "Mali the Spicy",
+                args![
+                    "I don't understand...",
+                    "Where did you get these",
+                    "bad ingredients?! Didn't",
+                    "I tell you that my",
+                    "Tom Yum Goong",
+                    "requires the best?!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as("Mali the Spicy", args!["I know you've been working hard to do me this favor. I hope you'll put forth that last little bit of effort to finish this."])?;
+        ctx.next()?;
+        ctx.lines_as("Malli the Spicy", args!["Please go take a look in the Market. I don't doubt that it will be a good experience. After all, my fantastic Tom Yum Goong is waiting for you!"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("tomyumgoong").get()? == 7 {
+        if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? > 1499 {
+            if ctx.call(Function::CountItem, vec![Val::from(7286)])?.number()? > 29 {
+                ctx.call(Function::DelItem, vec![Val::from(7286), Val::from(30)])?;
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "Now...",
+                        "Everything is all set!",
+                        "Before we start, let me",
+                        "check the materials."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "^CE0000Shrimp^000000, ^CE0000Chiles^000000, ^CE0000Lemons^000000...",
+                        "Fish sauce and other little things..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Mali the Spicy", args!["Perfect!", "Shall we begin?"])?;
+                ctx.next()?;
+                ctx.lines(args!["^FF0000*Tuk*^000000", "^9C009C*Tup*^000000", "^009C00*Puk*^000000"])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_ENCHANTPOISON")?])?;
+                ctx.next()?;
+                ctx.lines(args![
+                    "^FF0031*Chop chop*^000000",
+                    "^FF9C00*Tup tup tup*^000000",
+                    "^639CFF*Pu pu^000000 -"
+                ])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_VENOMDUST")?])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "- ^9C6300Tup tup^000000 ^006363chook^000000",
+                        "^316363Chop chop^000000",
+                        "^FF0000Tup tup tup^000000 ^009C00Pu pu^000000 -"
+                    ],
+                )?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_STONECURSE")?])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_HASTEUP")?])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_BEGINSPELL")?])?;
+                ctx.next()?;
+                ctx.lines_as("Mali the Spicy", args!["Wah^00009Cah^0000FFahhhh^0063FFaaaahhh^000000!"])?;
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_FLASHER")?])?;
+                ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_LORD")?])?;
+                ctx.next()?;
+                ctx.lines_as("Mali the Spicy", args![" ...", " ......", " ........."])?;
+                ctx.next()?;
+                ctx.var("tomyumgoong").set(Val::from(8))?;
+                ctx.call(Function::CompleteQuest, vec![Val::from(8126)])?;
+                ctx.call(Function::GetItem, vec![Val::from(566), Val::from(10)])?;
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_BEST")?])?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args![
+                        "Here's your",
+                        "Tom Yum Goong!",
+                        "Ah~ This taste,",
+                        "this scent... Yeah.",
+                        "I know I did a good job."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Mali the Spicy", args!["Do you know what is the secret of Tom Yum Goong? It isn't simply just food. This has the power to heal you, and help you get into better shape."])?;
+                ctx.next()?;
+                ctx.lines_as("Mali the Spicy", args!["Because...", "It contains the", "power of God."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mali the Spicy",
+                    args!["Okay...!", "I'm giving you", "10 Tom Yum Goong", "free of charge~"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Mali the Spicy", args!["Thank you for all the trouble that you have been though to get these ingredients. It would make me happy if you shared Tom Yum Goong with your friends."])?;
+                ctx.next()?;
+                ctx.lines_as("Mali the Spicy", args!["Share the flavor of Ayothaya, and let them know how beautiful our land is. It was good to see you, take care now~"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            ctx.lines_as(
+                "Mali the Spicy",
+                args!["Huh? What did you do with the Chiles? You didn't eat them all on the way here, did you?"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as("Mali the Spicy", args!["Hmm...", "You seem to be carrying too many things. Why don't you free up some space in your inventory first, and then come back?"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.call(Function::Emotion, vec![ctx.constant("ET_KEK")?])?;
     ctx.lines_as(
@@ -3999,52 +3936,50 @@ fn thongpool_ayo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("tomyumgoong").get()? == 3 {
-            ctx.lines_as(
-                "Thongpool",
-                args!["Mmm...?", "Did you need", "more Shrimps?", "Would you like", "to buy more?"],
-            )?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("Yes!:No, thanks.")])?) == 1 {
-                if ctx.var("Zeny").get()?.number()? > 10999 {
-                    if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? > 3999 {
-                        ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(11000))?))?;
-                        ctx.call(Function::GetItem, vec![Val::from(567), Val::from(20)])?;
-                        ctx.lines_as(
-                            "Thongpool",
-                            args![
-                                "There you go~",
-                                "The freshest Shrimp you can ever get in this village, and maybe even the world!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+    } else if ctx.var("tomyumgoong").get()? == 3 {
+        ctx.lines_as(
+            "Thongpool",
+            args!["Mmm...?", "Did you need", "more Shrimps?", "Would you like", "to buy more?"],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Yes!:No, thanks.")])?) == 1 {
+            if ctx.var("Zeny").get()?.number()? > 10999 {
+                if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? > 3999 {
+                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(11000))?))?;
+                    ctx.call(Function::GetItem, vec![Val::from(567), Val::from(20)])?;
                     ctx.lines_as(
                         "Thongpool",
                         args![
-                            "Awww...",
-                            "You're carrying too much stuff with you. I don't think you can carry more than what you have right now."
+                            "There you go~",
+                            "The freshest Shrimp you can ever get in this village, and maybe even the world!"
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                ctx.lines_as("Thongpool", args!["Awww...", "You don't have", "enough money."])?;
+                ctx.lines_as(
+                    "Thongpool",
+                    args![
+                        "Awww...",
+                        "You're carrying too much stuff with you. I don't think you can carry more than what you have right now."
+                    ],
+                )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            ctx.lines_as(
-                "Thongpool",
-                args![
-                    "Good, now you have gotten the freshest shrimps in this village!",
-                    "It's time for you to go back and ask Ms. Mali to cook for you."
-                ],
-            )?;
+            ctx.lines_as("Thongpool", args!["Awww...", "You don't have", "enough money."])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        ctx.lines_as(
+            "Thongpool",
+            args![
+                "Good, now you have gotten the freshest shrimps in this village!",
+                "It's time for you to go back and ask Ms. Mali to cook for you."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.lines_as(
         "Thongpool",
@@ -4300,33 +4235,31 @@ fn mr_jun_ayo_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 args!["Hmpf.", "It's a draw.", "One more time!", "Rock! Paper!", "Scissors!"],
                                             )?;
                                             ctx.next()?;
+                                        } else if l_jun_mark.clone() == 2 {
+                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_ROCK")?])?;
+                                            ctx.call(
+                                                Function::Emotion,
+                                                vec![
+                                                    ctx.constant("ET_SCISSOR")?,
+                                                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                                ],
+                                            )?;
+                                            ctx.var("@pc_score").set((ctx.var("@pc_score").get()? + Val::from(1)))?;
+                                            ctx.lines_as("Mr. Jun", args!["Yes...!", "Oh my God, yes!"])?;
+                                            ctx.next()?;
                                         } else {
-                                            if l_jun_mark.clone() == 2 {
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_ROCK")?])?;
-                                                ctx.call(
-                                                    Function::Emotion,
-                                                    vec![
-                                                        ctx.constant("ET_SCISSOR")?,
-                                                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                                    ],
-                                                )?;
-                                                ctx.var("@pc_score").set((ctx.var("@pc_score").get()? + Val::from(1)))?;
-                                                ctx.lines_as("Mr. Jun", args!["Yes...!", "Oh my God, yes!"])?;
-                                                ctx.next()?;
-                                            } else {
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_WRAP")?])?;
-                                                ctx.call(
-                                                    Function::Emotion,
-                                                    vec![
-                                                        ctx.constant("ET_SCISSOR")?,
-                                                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                                    ],
-                                                )?;
-                                                ctx.var("@pc_score").set((ctx.var("@pc_score").get()? + Val::from(1)))?;
-                                                ctx.var("@user_score").set((ctx.var("@user_score").get()? + Val::from(1)))?;
-                                                ctx.lines_as("Mr. Jun", args!["What...?", "I don't believe it!", "Bah.. !"])?;
-                                                ctx.next()?;
-                                            }
+                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_WRAP")?])?;
+                                            ctx.call(
+                                                Function::Emotion,
+                                                vec![
+                                                    ctx.constant("ET_SCISSOR")?,
+                                                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                                ],
+                                            )?;
+                                            ctx.var("@pc_score").set((ctx.var("@pc_score").get()? + Val::from(1)))?;
+                                            ctx.var("@user_score").set((ctx.var("@user_score").get()? + Val::from(1)))?;
+                                            ctx.lines_as("Mr. Jun", args!["What...?", "I don't believe it!", "Bah.. !"])?;
+                                            ctx.next()?;
                                         }
                                         break 'b2;
                                     }
@@ -4347,34 +4280,32 @@ fn mr_jun_ayo_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.var("@user_score").set((ctx.var("@user_score").get()? + Val::from(1)))?;
                                             ctx.lines_as("Mr. Jun", args!["No...!", "Sacrilege!"])?;
                                             ctx.next()?;
+                                        } else if l_jun_mark.clone() == 2 {
+                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_ROCK")?])?;
+                                            ctx.call(
+                                                Function::Emotion,
+                                                vec![
+                                                    ctx.constant("ET_ROCK")?,
+                                                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                                ],
+                                            )?;
+                                            ctx.lines_as(
+                                                "Mr. Jun",
+                                                args!["Hmpf.", "It's a draw.", "One more time!", "Rock! Paper!", "Scissors!"],
+                                            )?;
+                                            ctx.next()?;
                                         } else {
-                                            if l_jun_mark.clone() == 2 {
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_ROCK")?])?;
-                                                ctx.call(
-                                                    Function::Emotion,
-                                                    vec![
-                                                        ctx.constant("ET_ROCK")?,
-                                                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                                    ],
-                                                )?;
-                                                ctx.lines_as(
-                                                    "Mr. Jun",
-                                                    args!["Hmpf.", "It's a draw.", "One more time!", "Rock! Paper!", "Scissors!"],
-                                                )?;
-                                                ctx.next()?;
-                                            } else {
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_WRAP")?])?;
-                                                ctx.call(
-                                                    Function::Emotion,
-                                                    vec![
-                                                        ctx.constant("ET_ROCK")?,
-                                                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                                    ],
-                                                )?;
-                                                ctx.var("@pc_score").set((ctx.var("@pc_score").get()? + Val::from(1)))?;
-                                                ctx.lines_as("Mr. Jun", args!["Bwahahaha!", "You lose, kid!"])?;
-                                                ctx.next()?;
-                                            }
+                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_WRAP")?])?;
+                                            ctx.call(
+                                                Function::Emotion,
+                                                vec![
+                                                    ctx.constant("ET_ROCK")?,
+                                                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                                ],
+                                            )?;
+                                            ctx.var("@pc_score").set((ctx.var("@pc_score").get()? + Val::from(1)))?;
+                                            ctx.lines_as("Mr. Jun", args!["Bwahahaha!", "You lose, kid!"])?;
+                                            ctx.next()?;
                                         }
                                         break 'b2;
                                     }
@@ -4394,35 +4325,33 @@ fn mr_jun_ayo_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.var("@pc_score").set((ctx.var("@pc_score").get()? + Val::from(1)))?;
                                             ctx.lines_as("Mr. Jun", args!["Heh heh~", "Young fool!"])?;
                                             ctx.next()?;
+                                        } else if l_jun_mark.clone() == 2 {
+                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_ROCK")?])?;
+                                            ctx.call(
+                                                Function::Emotion,
+                                                vec![
+                                                    ctx.constant("ET_WRAP")?,
+                                                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                                ],
+                                            )?;
+                                            ctx.var("@user_score").set((ctx.var("@user_score").get()? + Val::from(1)))?;
+                                            ctx.var("@pc_score").set((ctx.var("@pc_score").get()? + Val::from(1)))?;
+                                            ctx.lines_as("Mr. Jun", args!["Noooo...!", "This cannot be!"])?;
+                                            ctx.next()?;
                                         } else {
-                                            if l_jun_mark.clone() == 2 {
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_ROCK")?])?;
-                                                ctx.call(
-                                                    Function::Emotion,
-                                                    vec![
-                                                        ctx.constant("ET_WRAP")?,
-                                                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                                    ],
-                                                )?;
-                                                ctx.var("@user_score").set((ctx.var("@user_score").get()? + Val::from(1)))?;
-                                                ctx.var("@pc_score").set((ctx.var("@pc_score").get()? + Val::from(1)))?;
-                                                ctx.lines_as("Mr. Jun", args!["Noooo...!", "This cannot be!"])?;
-                                                ctx.next()?;
-                                            } else {
-                                                ctx.call(Function::Emotion, vec![ctx.constant("ET_WRAP")?])?;
-                                                ctx.call(
-                                                    Function::Emotion,
-                                                    vec![
-                                                        ctx.constant("ET_WRAP")?,
-                                                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                                                    ],
-                                                )?;
-                                                ctx.lines_as(
-                                                    "Mr. Jun",
-                                                    args!["Hmpf.", "It's a draw.", "One more time!", "Rock! Paper!", "Scissors!"],
-                                                )?;
-                                                ctx.next()?;
-                                            }
+                                            ctx.call(Function::Emotion, vec![ctx.constant("ET_WRAP")?])?;
+                                            ctx.call(
+                                                Function::Emotion,
+                                                vec![
+                                                    ctx.constant("ET_WRAP")?,
+                                                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                                                ],
+                                            )?;
+                                            ctx.lines_as(
+                                                "Mr. Jun",
+                                                args!["Hmpf.", "It's a draw.", "One more time!", "Rock! Paper!", "Scissors!"],
+                                            )?;
+                                            ctx.next()?;
                                         }
                                         break 'b2;
                                     }
@@ -4584,59 +4513,57 @@ fn merchant_ayo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("tomyumgoong").get()? == 7 {
+    } else if ctx.var("tomyumgoong").get()? == 7 {
+        ctx.lines_as(
+            "Merchant Thongdum",
+            args![
+                "I thought I provided you",
+                "with enough ingredients, but",
+                "now that I think about it, I don't",
+                "know how much Tom Yum Goong",
+                "you're making."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Merchant Thongdum", args!["Would you like to", "buy some more Chilis?"])?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("No, thanks.:Yes, please.")])?) == 1 {
+            ctx.lines_as("Merchant Thongdum", args!["Fare well~"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        if ctx.var("Zeny").get()?.number()? > 1999 {
+            if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? > 1199 {
+                ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(2000))?))?;
+                ctx.call(Function::GetItem, vec![Val::from(7286), Val::from(30)])?;
+                ctx.lines_as("Merchant Thongdum", args!["Thank you,", "come again!"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
             ctx.lines_as(
                 "Merchant Thongdum",
-                args![
-                    "I thought I provided you",
-                    "with enough ingredients, but",
-                    "now that I think about it, I don't",
-                    "know how much Tom Yum Goong",
-                    "you're making."
-                ],
+                args!["Uh oh...", "It looks like", "you're carrying", "too much stuff", "right now."],
             )?;
             ctx.next()?;
-            ctx.lines_as("Merchant Thongdum", args!["Would you like to", "buy some more Chilis?"])?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("No, thanks.:Yes, please.")])?) == 1 {
-                ctx.lines_as("Merchant Thongdum", args!["Fare well~"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if ctx.var("Zeny").get()?.number()? > 1999 {
-                if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? > 1199 {
-                    ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(2000))?))?;
-                    ctx.call(Function::GetItem, vec![Val::from(7286), Val::from(30)])?;
-                    ctx.lines_as("Merchant Thongdum", args!["Thank you,", "come again!"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                ctx.lines_as(
-                    "Merchant Thongdum",
-                    args!["Uh oh...", "It looks like", "you're carrying", "too much stuff", "right now."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Merchant Thongdum",
-                    args!["I can't give you", "anything if you don't", "have the room to hold it!"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
             ctx.lines_as(
                 "Merchant Thongdum",
-                args![
-                    "Hmm...?",
-                    "Right now, it looks",
-                    "like you don't have the",
-                    "money to buy what you",
-                    "need from me."
-                ],
+                args!["I can't give you", "anything if you don't", "have the room to hold it!"],
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        ctx.lines_as(
+            "Merchant Thongdum",
+            args![
+                "Hmm...?",
+                "Right now, it looks",
+                "like you don't have the",
+                "money to buy what you",
+                "need from me."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.lines_as("Merchant Thongdum", args!["Hello there!", "Ever try a Chili before?"])?;
     ctx.next()?;

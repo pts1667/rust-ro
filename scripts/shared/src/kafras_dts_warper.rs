@@ -450,31 +450,29 @@ pub fn f_votekafra(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         }
                     }
                 }
+            } else if ctx.var("$dts_result").get()?.number()? == 1 {
+                ctx.lines_as(
+                    "Kafra Voting Staff",
+                    args![
+                        "I'm sorry, but because of",
+                        "the results from the most",
+                        "recent election, Cool Event",
+                        "Corp. is currently handling",
+                        "the Dungeon Teleport Service. We apologize for the inconvenience."
+                    ],
+                )?;
             } else {
-                if ctx.var("$dts_result").get()?.number()? == 1 {
-                    ctx.lines_as(
-                        "Kafra Voting Staff",
-                        args![
-                            "I'm sorry, but because of",
-                            "the results from the most",
-                            "recent election, Cool Event",
-                            "Corp. is currently handling",
-                            "the Dungeon Teleport Service. We apologize for the inconvenience."
-                        ],
-                    )?;
-                } else {
-                    ctx.lines_as(
-                        "Kafra Voting Staff",
-                        args![
-                            "I'm sorry, but the",
-                            "Dungeon Teleport Service",
-                            "is not active during the voting",
-                            "period. Once the election is",
-                            "over, the Dungeon Teleport",
-                            "Service will become available."
-                        ],
-                    )?;
-                }
+                ctx.lines_as(
+                    "Kafra Voting Staff",
+                    args![
+                        "I'm sorry, but the",
+                        "Dungeon Teleport Service",
+                        "is not active during the voting",
+                        "period. Once the election is",
+                        "over, the Dungeon Teleport",
+                        "Service will become available."
+                    ],
+                )?;
             }
         }
         3 => {

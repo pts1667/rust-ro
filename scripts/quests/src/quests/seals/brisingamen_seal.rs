@@ -368,427 +368,425 @@ fn bard_brising_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     break 'b1;
                 }
             }
-        } else {
-            if (ctx.var("god_brising").get()?.number()? > 0 && ctx.var("god_brising").get()?.number()? < 50) {
-                ctx.lines_as(
-                    "Nelliorde",
-                    args![
-                        "So, have you",
-                        "met Mr. Kaili?",
-                        "Please do your best.",
-                        "After all, I especially",
-                        "recommended you~"
-                    ],
-                )?;
-                ctx.next()?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Tell me a story.:Sing a song for me.")],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
-                        ctx.lines_as("Nelliorde", args!["Hmm. What would", "be a good story for", "you this time...? Ah yes, I've got it. Let me tell you about one of my own adventures. It was a pretty amazing experience."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["I went to Morocc, the city of the desert. On my way there, I became exhausted from the heat. Luckily, I found a hole beneath the shadows and climbed in to rest."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args![
-                                "Oh my God...",
-                                "If I had known",
-                                "better, I would have",
-                                "never gone inside that place..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args!["I actually crawled into the infamous ^FF0000Ant Hell^000000! I don't sound like a coward to you, do I?"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["Well, the ants aren't the only ones living there. I wasn't afraid of them at all. Except, of course, when they attacked in groups."])?;
-                        ctx.next()?;
-                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad03"), Val::from(2)])?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args!["What I was really afraid of was this type of strawberry colored... tongue thing. Phreeoni!"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args!["Fortunately, I survived the whole incident, although I still have nightmares of that man-sized tongue."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["Once I got out of there, I craved human companionship to restore my sense of normalcy. The closest place that I knew was Paros Lighthouse."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["Yet again, I decided to traverse the desert, despite the fact that the Kafra Ladies provide a very convenient teleport service there."])?;
-                        ctx.next()?;
-                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad01"), Val::from(2)])?;
-                        ctx.lines_as("Nelliorde", args!["Anyway, the fortress of Sandaruman is on the way to Paros Lighthouse. I remember Serutero, a guy I met in south Morocc, telling me about its scenic beauty."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args![
-                                "I was so excited",
-                                "about seeing it",
-                                "for myself. After all, doesn't 'Sandaruman' sound like the",
-                                "name of a beautiful place?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["But I immediately regretted my decision once I arrived. Of course, the view was breathtaking: the sandy hills near the ocean, as", "well as the ruins."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["And of course I forgot Serutero's warning about all the monsters. Argh! It was a nightmare! Instead of enjoying the scenary, I ended up running for my life."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args![
-                                "I was still trying to escape those monsters when I stumbled upon",
-                                "an old house, West of Sandaruman, that seemed to be in a state of decay."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["I recalled that Serutero said that no one was living in that area, so I began to worry a bit. Still, I was desperate and needed refuge."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["In my panic, I violently knocked on the door and screamed for someone to let me inside. Then do you know what I heard?"])?;
-                        ctx.next()?;
-                        ctx.mes("[Nelliorde]")?;
-                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad03"), Val::from(2)])?;
-                        ctx.lines(args![
-                            "^FF0000Who's there?!",
-                            "Who would dare to intrude",
-                            "upon my territory?^000000",
-                            "I was freaked out! Whoever owned that house must have been some",
-                            "kind of lunatic!"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["Th-then, with the specter of Death nipping at my heels, he told me to get lost! Luckily, I was saved by a mysterious, wandering SuperNovice, but that's another story."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["In any case, I finally arrived at Paros Lighthouse. There, I learned that the old house was a secret camp for the Rogue Guild. "])?;
-                        ctx.next()?;
-                        ctx.lines_as("Nelliorde", args!["It's amazing, how they can live in such dangerous areas. Only Rogues would be able to survive there, you know?"])?;
-                        ctx.next()?;
-                        ctx.mes("[Nelliorde]")?;
-                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad01"), Val::from(2)])?;
-                        ctx.lines(args!["Ah...", "I'm so tired from talking so much. But if I happen to have another adventure, I shall share that tale with you."])?;
-                        ctx.close_window()?;
-                        break 'b4;
-                    }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args!["Ah, you wish", "to hear a song?", "Okay! I shall then", "perform my favorite."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args![
-                                "I chased after fame.",
-                                "It eluded me.",
-                                "I ran after happiness",
-                                "But never caught it."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args![
-                                "But tomorrow will still",
-                                "Be there, I'm sure.",
-                                "Like the Water Mill",
-                                "In Al De Baran",
-                                "Which turns as",
-                                "Life goes on."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad04"), Val::from(2)])?;
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args![
-                                "Cheer up! Life goes on.",
-                                "As surely as the Water",
-                                "Mill turns, tomorrow",
-                                "Will come."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        break 'b4;
-                    }
+        } else if (ctx.var("god_brising").get()?.number()? > 0 && ctx.var("god_brising").get()?.number()? < 50) {
+            ctx.lines_as(
+                "Nelliorde",
+                args![
+                    "So, have you",
+                    "met Mr. Kaili?",
+                    "Please do your best.",
+                    "After all, I especially",
+                    "recommended you~"
+                ],
+            )?;
+            ctx.next()?;
+            'b4: {
+                let subject4 = Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Tell me a story.:Sing a song for me.")],
+                )?);
+                let mut matched4 = false;
+                let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                    matched4 = true;
                 }
-            } else {
-                ctx.lines_as(
-                    "Nelliorde",
-                    args!["Say...", "Have we met before?", "Hmm? Never? Well...", "That's rather odd."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Nelliorde", args!["I seem to recall that you've asked me to give you some information if I ever have any. Well, now I have and shall share it with you~"])?;
-                ctx.next()?;
-                ctx.lines_as("Nelliorde", args!["The usefulness of this information all depends on you. Now, have you heard of the ^3333CCMonster Research Organization^000000?"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Nelliorde",
-                    args!["I happened to get this information from its headquarters in Juno. So how does that sound?"],
-                )?;
-                ctx.next()?;
-                'b5: {
-                    let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("Wee~ I want to hear!:Booooring~")])?);
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                if matched4 {
+                    ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
+                    ctx.lines_as("Nelliorde", args!["Hmm. What would", "be a good story for", "you this time...? Ah yes, I've got it. Let me tell you about one of my own adventures. It was a pretty amazing experience."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["I went to Morocc, the city of the desert. On my way there, I became exhausted from the heat. Luckily, I found a hole beneath the shadows and climbed in to rest."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args![
+                            "Oh my God...",
+                            "If I had known",
+                            "better, I would have",
+                            "never gone inside that place..."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args!["I actually crawled into the infamous ^FF0000Ant Hell^000000! I don't sound like a coward to you, do I?"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["Well, the ants aren't the only ones living there. I wasn't afraid of them at all. Except, of course, when they attacked in groups."])?;
+                    ctx.next()?;
+                    ctx.call(Function::Cutin, vec![Val::from("god_nelluad03"), Val::from(2)])?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args!["What I was really afraid of was this type of strawberry colored... tongue thing. Phreeoni!"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args!["Fortunately, I survived the whole incident, although I still have nightmares of that man-sized tongue."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["Once I got out of there, I craved human companionship to restore my sense of normalcy. The closest place that I knew was Paros Lighthouse."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["Yet again, I decided to traverse the desert, despite the fact that the Kafra Ladies provide a very convenient teleport service there."])?;
+                    ctx.next()?;
+                    ctx.call(Function::Cutin, vec![Val::from("god_nelluad01"), Val::from(2)])?;
+                    ctx.lines_as("Nelliorde", args!["Anyway, the fortress of Sandaruman is on the way to Paros Lighthouse. I remember Serutero, a guy I met in south Morocc, telling me about its scenic beauty."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args![
+                            "I was so excited",
+                            "about seeing it",
+                            "for myself. After all, doesn't 'Sandaruman' sound like the",
+                            "name of a beautiful place?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["But I immediately regretted my decision once I arrived. Of course, the view was breathtaking: the sandy hills near the ocean, as", "well as the ruins."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["And of course I forgot Serutero's warning about all the monsters. Argh! It was a nightmare! Instead of enjoying the scenary, I ended up running for my life."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args![
+                            "I was still trying to escape those monsters when I stumbled upon",
+                            "an old house, West of Sandaruman, that seemed to be in a state of decay."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["I recalled that Serutero said that no one was living in that area, so I began to worry a bit. Still, I was desperate and needed refuge."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["In my panic, I violently knocked on the door and screamed for someone to let me inside. Then do you know what I heard?"])?;
+                    ctx.next()?;
+                    ctx.mes("[Nelliorde]")?;
+                    ctx.call(Function::Cutin, vec![Val::from("god_nelluad03"), Val::from(2)])?;
+                    ctx.lines(args![
+                        "^FF0000Who's there?!",
+                        "Who would dare to intrude",
+                        "upon my territory?^000000",
+                        "I was freaked out! Whoever owned that house must have been some",
+                        "kind of lunatic!"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["Th-then, with the specter of Death nipping at my heels, he told me to get lost! Luckily, I was saved by a mysterious, wandering SuperNovice, but that's another story."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["In any case, I finally arrived at Paros Lighthouse. There, I learned that the old house was a secret camp for the Rogue Guild. "])?;
+                    ctx.next()?;
+                    ctx.lines_as("Nelliorde", args!["It's amazing, how they can live in such dangerous areas. Only Rogues would be able to survive there, you know?"])?;
+                    ctx.next()?;
+                    ctx.mes("[Nelliorde]")?;
+                    ctx.call(Function::Cutin, vec![Val::from("god_nelluad01"), Val::from(2)])?;
+                    ctx.lines(args!["Ah...", "I'm so tired from talking so much. But if I happen to have another adventure, I shall share that tale with you."])?;
+                    ctx.close_window()?;
+                    break 'b4;
+                }
+                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                    matched4 = true;
+                }
+                if matched4 {
+                    ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args!["Ah, you wish", "to hear a song?", "Okay! I shall then", "perform my favorite."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args![
+                            "I chased after fame.",
+                            "It eluded me.",
+                            "I ran after happiness",
+                            "But never caught it."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args![
+                            "But tomorrow will still",
+                            "Be there, I'm sure.",
+                            "Like the Water Mill",
+                            "In Al De Baran",
+                            "Which turns as",
+                            "Life goes on."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.call(Function::Cutin, vec![Val::from("god_nelluad04"), Val::from(2)])?;
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args![
+                            "Cheer up! Life goes on.",
+                            "As surely as the Water",
+                            "Mill turns, tomorrow",
+                            "Will come."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    break 'b4;
+                }
+            }
+        } else {
+            ctx.lines_as(
+                "Nelliorde",
+                args!["Say...", "Have we met before?", "Hmm? Never? Well...", "That's rather odd."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Nelliorde", args!["I seem to recall that you've asked me to give you some information if I ever have any. Well, now I have and shall share it with you~"])?;
+            ctx.next()?;
+            ctx.lines_as("Nelliorde", args!["The usefulness of this information all depends on you. Now, have you heard of the ^3333CCMonster Research Organization^000000?"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Nelliorde",
+                args!["I happened to get this information from its headquarters in Juno. So how does that sound?"],
+            )?;
+            ctx.next()?;
+            'b5: {
+                let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("Wee~ I want to hear!:Booooring~")])?);
+                let mut matched5 = false;
+                let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
+                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                    matched5 = true;
+                }
+                if matched5 {
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args![
+                            "Well...!",
+                            "You seem to be",
+                            "very excited about",
+                            "this new tidbit of",
+                            "knowledge I have~"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    if ctx.var("BaseLevel").get()?.number()? < 70 {
+                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad03"), Val::from(2)])?;
+                        ctx.lines_as(
+                            "Nelliorde",
+                            args!["Alas, this information doesn't seem to be very valuable to someone such as yourself."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Nelliorde", args!["I'm so very sorry to have excited you, but only people that are strong enough to handle grueling work can benefit from this."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Nelliorde", args!["Why don't you travel around and gain more experiences? I will let you know when you're ready, you know~"])?;
+                        ctx.close_window()?;
+                    } else {
+                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
                         ctx.lines_as(
                             "Nelliorde",
                             args![
-                                "Well...!",
-                                "You seem to be",
-                                "very excited about",
-                                "this new tidbit of",
-                                "knowledge I have~"
+                                "Ooh...",
+                                "And you look",
+                                "like you can handle",
+                                "this kind of information.",
+                                "I'll share everything I know!"
                             ],
                         )?;
                         ctx.next()?;
-                        if ctx.var("BaseLevel").get()?.number()? < 70 {
-                            ctx.call(Function::Cutin, vec![Val::from("god_nelluad03"), Val::from(2)])?;
-                            ctx.lines_as(
-                                "Nelliorde",
-                                args!["Alas, this information doesn't seem to be very valuable to someone such as yourself."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Nelliorde", args!["I'm so very sorry to have excited you, but only people that are strong enough to handle grueling work can benefit from this."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Nelliorde", args!["Why don't you travel around and gain more experiences? I will let you know when you're ready, you know~"])?;
-                            ctx.close_window()?;
-                        } else {
+                        ctx.lines_as("Nelliorde", args!["One day, an adventurer discovered a strange, mysterious object. Unable to figure out what it could do, he visited the Monster Organization."])?;
+                        ctx.next()?;
+                        ctx.call(Function::Cutin, vec![Val::from("god_nelluad01"), Val::from(2)])?;
+                        ctx.lines_as("Nelliorde", args!["There, it was entrusted to a scholar by the name of Mr. Kaili. He still hasn't uncovered the truth about that item and wishes for assistance in his investigation."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Nelliorde", args!["Mr. Kaili suspects that the item might be part of an undiscovered ancient relic. Fortunately, he is also researching ancient relics as a project assigned by the royal court."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Nelliorde", args!["So what do you think? Isn't that interesting? Of course, you'd better speak to Mr. Kaili if you wish to learn more. If you'd like, I shall write you a letter or recommendation."])?;
+                        ctx.next()?;
+                        'b6: {
+                            let subject6 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Sure! Sounds good.:Sorry, I am not that interested.")],
+                            )?);
+                            let mut matched6 = false;
+                            let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
+                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                                matched6 = true;
+                            }
+                            if matched6 {
+                                ctx.lines_as(
+                                    "Nelliorde",
+                                    args![
+                                        "Excellent...!",
+                                        "So your name is...",
+                                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("?"))
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Nelliorde", args!["Alright, I shall contact him right away! Oh, and you can find the Monster Organization west of Juno's central plaza. It shouldn't be hard to find. Good luck!"])?;
+                                ctx.var("god_brising").set(Val::from(1))?;
+                                ctx.close_window()?;
+                                break 'b6;
+                            }
+                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                                matched6 = true;
+                            }
+                            if matched6 {
+                                ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
+                                ctx.lines_as("Nelliorde", args!["Ah, it's disappointing to hear that. I thought that you'd be perfect to help out Mr. Kaili. Oh well, talk to you later~"])?;
+                                ctx.close_window()?;
+                                break 'b6;
+                            }
+                        }
+                    }
+                    break 'b5;
+                }
+                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                    matched5 = true;
+                }
+                if matched5 {
+                    ctx.lines_as(
+                        "Nelliorde",
+                        args![
+                            "Boring, you say?",
+                            "Perhaps, but not as",
+                            "boring as an adventurer",
+                            "that passes up a chance",
+                            "for an adventure, yes?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    'b7: {
+                        let subject7 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Tell me a story.:Sing a song for me.")],
+                        )?);
+                        let mut matched7 = false;
+                        let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
+                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                            matched7 = true;
+                        }
+                        if matched7 {
                             ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
+                            ctx.lines_as("Nelliorde", args!["Hmm. What would", "be a good story for", "you this time...? Ah yes, I've got it. Let me tell you about one of my own adventures. It was a pretty amazing experience."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["I went to Morocc, the city of the desert. On my way there, I became exhausted from the heat. Luckily, I found a hole beneath the shadows and climbed in to rest."])?;
+                            ctx.next()?;
                             ctx.lines_as(
                                 "Nelliorde",
                                 args![
-                                    "Ooh...",
-                                    "And you look",
-                                    "like you can handle",
-                                    "this kind of information.",
-                                    "I'll share everything I know!"
+                                    "Oh my God...",
+                                    "If I had known",
+                                    "better, I never",
+                                    "would have gone",
+                                    "inside that place..."
                                 ],
                             )?;
                             ctx.next()?;
-                            ctx.lines_as("Nelliorde", args!["One day, an adventurer discovered a strange, mysterious object. Unable to figure out what it could do, he visited the Monster Organization."])?;
+                            ctx.lines_as("Nelliorde", args!["I actually crawled into the infamous ^FF0000Ant Hell^000000! I don't sound like a coward to you, do I?"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["Well, the ants aren't the only ones living there. I wasn't afraid of them at all. Except, of course, when they attacked in groups."])?;
+                            ctx.next()?;
+                            ctx.call(Function::Cutin, vec![Val::from("god_nelluad03"), Val::from(2)])?;
+                            ctx.lines_as(
+                                "Nelliorde",
+                                args!["What I was really afraid of was this type of strawberry colored... tongue thing. Phreeoni!"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["Fortunately, I survived the whole incident, although I still have nightmares of that man-sized tongue."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["Once I got out of there, I craved human companionship to restore my sense of normalcy. The closest place that I knew was Paros Lighthouse."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["Yet again, I decided to traverse the desert, despite the fact that the Kafra Ladies provide a very convenient teleport service there."])?;
                             ctx.next()?;
                             ctx.call(Function::Cutin, vec![Val::from("god_nelluad01"), Val::from(2)])?;
-                            ctx.lines_as("Nelliorde", args!["There, it was entrusted to a scholar by the name of Mr. Kaili. He still hasn't uncovered the truth about that item and wishes for assistance in his investigation."])?;
+                            ctx.lines_as("Nelliorde", args!["Anyway, the fortress of Sandaruman is on the way to Paros Lighthouse. I remember Serutero, a guy I met in south Morocc, telling me about its scenic beauty."])?;
                             ctx.next()?;
-                            ctx.lines_as("Nelliorde", args!["Mr. Kaili suspects that the item might be part of an undiscovered ancient relic. Fortunately, he is also researching ancient relics as a project assigned by the royal court."])?;
+                            ctx.lines_as(
+                                "Nelliorde",
+                                args![
+                                    "I was so excited",
+                                    "about seeing it",
+                                    "for myself. After all, doesn't 'Sandaruman' sound like the",
+                                    "name of a beautiful place?"
+                                ],
+                            )?;
                             ctx.next()?;
-                            ctx.lines_as("Nelliorde", args!["So what do you think? Isn't that interesting? Of course, you'd better speak to Mr. Kaili if you wish to learn more. If you'd like, I shall write you a letter or recommendation."])?;
+                            ctx.lines_as("Nelliorde", args!["But I immediately regretted my decision once I arrived. Of course, the view was breathtaking: the sandy hills near the ocean, as", "well as the ruins."])?;
                             ctx.next()?;
-                            'b6: {
-                                let subject6 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from("Sure! Sounds good.:Sorry, I am not that interested.")],
-                                )?);
-                                let mut matched6 = false;
-                                let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                    matched6 = true;
-                                }
-                                if matched6 {
-                                    ctx.lines_as(
-                                        "Nelliorde",
-                                        args![
-                                            "Excellent...!",
-                                            "So your name is...",
-                                            ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("?"))
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Nelliorde", args!["Alright, I shall contact him right away! Oh, and you can find the Monster Organization west of Juno's central plaza. It shouldn't be hard to find. Good luck!"])?;
-                                    ctx.var("god_brising").set(Val::from(1))?;
-                                    ctx.close_window()?;
-                                    break 'b6;
-                                }
-                                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                    matched6 = true;
-                                }
-                                if matched6 {
-                                    ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
-                                    ctx.lines_as("Nelliorde", args!["Ah, it's disappointing to hear that. I thought that you'd be perfect to help out Mr. Kaili. Oh well, talk to you later~"])?;
-                                    ctx.close_window()?;
-                                    break 'b6;
-                                }
-                            }
+                            ctx.lines_as("Nelliorde", args!["And of course I forgot Serutero's warning about all the monsters. Argh! It was a nightmare! Instead of enjoying the scenary, I ended up running for my life."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Nelliorde",
+                                args![
+                                    "I was still trying to escape those monsters when I stumbled upon",
+                                    "an old house, West of Sandaruman, that seemed to be in a state of decay."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["I recalled that Serutero said that no one was living in that area, so I began to worry a bit. Still, I was desperate and needed refuge."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["In my panic, I violently knocked on the door and screamed for someone to let me inside. Then do you know what I heard?"])?;
+                            ctx.next()?;
+                            ctx.call(Function::Cutin, vec![Val::from("god_nelluad04"), Val::from(2)])?;
+                            ctx.lines_as(
+                                "Nelliorde",
+                                args![
+                                    "^FF0000Who's there?!",
+                                    "Who would dare to intrude",
+                                    "upon my territory?^000000",
+                                    "I was freaked out! Whoever owned that house must have been some",
+                                    "kind of lunatic!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["Th-then, with the specter of Death nipping at my heels, he told me to get lost! Luckily, I was saved by a mysterious, wandering SuperNovice, but that's another story."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["In any case, I finally arrived at Paros Lighthouse. There, I learned that the old house was a secret camp for the Rogue Guild. "])?;
+                            ctx.next()?;
+                            ctx.lines_as("Nelliorde", args!["It's amazing, how they can live in such dangerous areas. Only Rogues would be able to survive there, you know?"])?;
+                            ctx.next()?;
+                            ctx.call(Function::Cutin, vec![Val::from("god_nelluad01"), Val::from(2)])?;
+                            ctx.lines_as("Nelliorde", args!["Ah...", "I'm so tired from talking so much. But if I happen to have another adventure, I shall share that tale with you."])?;
+                            ctx.close_window()?;
+                            break 'b7;
                         }
-                        break 'b5;
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.lines_as(
-                            "Nelliorde",
-                            args![
-                                "Boring, you say?",
-                                "Perhaps, but not as",
-                                "boring as an adventurer",
-                                "that passes up a chance",
-                                "for an adventure, yes?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        'b7: {
-                            let subject7 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Tell me a story.:Sing a song for me.")],
-                            )?);
-                            let mut matched7 = false;
-                            let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
-                                ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
-                                ctx.lines_as("Nelliorde", args!["Hmm. What would", "be a good story for", "you this time...? Ah yes, I've got it. Let me tell you about one of my own adventures. It was a pretty amazing experience."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["I went to Morocc, the city of the desert. On my way there, I became exhausted from the heat. Luckily, I found a hole beneath the shadows and climbed in to rest."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Nelliorde",
-                                    args![
-                                        "Oh my God...",
-                                        "If I had known",
-                                        "better, I never",
-                                        "would have gone",
-                                        "inside that place..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["I actually crawled into the infamous ^FF0000Ant Hell^000000! I don't sound like a coward to you, do I?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["Well, the ants aren't the only ones living there. I wasn't afraid of them at all. Except, of course, when they attacked in groups."])?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("god_nelluad03"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    "Nelliorde",
-                                    args!["What I was really afraid of was this type of strawberry colored... tongue thing. Phreeoni!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["Fortunately, I survived the whole incident, although I still have nightmares of that man-sized tongue."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["Once I got out of there, I craved human companionship to restore my sense of normalcy. The closest place that I knew was Paros Lighthouse."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["Yet again, I decided to traverse the desert, despite the fact that the Kafra Ladies provide a very convenient teleport service there."])?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("god_nelluad01"), Val::from(2)])?;
-                                ctx.lines_as("Nelliorde", args!["Anyway, the fortress of Sandaruman is on the way to Paros Lighthouse. I remember Serutero, a guy I met in south Morocc, telling me about its scenic beauty."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Nelliorde",
-                                    args![
-                                        "I was so excited",
-                                        "about seeing it",
-                                        "for myself. After all, doesn't 'Sandaruman' sound like the",
-                                        "name of a beautiful place?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["But I immediately regretted my decision once I arrived. Of course, the view was breathtaking: the sandy hills near the ocean, as", "well as the ruins."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["And of course I forgot Serutero's warning about all the monsters. Argh! It was a nightmare! Instead of enjoying the scenary, I ended up running for my life."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Nelliorde",
-                                    args![
-                                        "I was still trying to escape those monsters when I stumbled upon",
-                                        "an old house, West of Sandaruman, that seemed to be in a state of decay."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["I recalled that Serutero said that no one was living in that area, so I began to worry a bit. Still, I was desperate and needed refuge."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["In my panic, I violently knocked on the door and screamed for someone to let me inside. Then do you know what I heard?"])?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("god_nelluad04"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    "Nelliorde",
-                                    args![
-                                        "^FF0000Who's there?!",
-                                        "Who would dare to intrude",
-                                        "upon my territory?^000000",
-                                        "I was freaked out! Whoever owned that house must have been some",
-                                        "kind of lunatic!"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["Th-then, with the specter of Death nipping at my heels, he told me to get lost! Luckily, I was saved by a mysterious, wandering SuperNovice, but that's another story."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["In any case, I finally arrived at Paros Lighthouse. There, I learned that the old house was a secret camp for the Rogue Guild. "])?;
-                                ctx.next()?;
-                                ctx.lines_as("Nelliorde", args!["It's amazing, how they can live in such dangerous areas. Only Rogues would be able to survive there, you know?"])?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("god_nelluad01"), Val::from(2)])?;
-                                ctx.lines_as("Nelliorde", args!["Ah...", "I'm so tired from talking so much. But if I happen to have another adventure, I shall share that tale with you."])?;
-                                ctx.close_window()?;
-                                break 'b7;
-                            }
-                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
-                                ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    "Nelliorde",
-                                    args!["Ah, you wish", "to hear a song?", "Okay! I shall then", "perform my favorite."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Nelliorde",
-                                    args![
-                                        "I chased after fame.",
-                                        "It eluded me.",
-                                        "I ran after happiness",
-                                        "But never caught it."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Nelliorde",
-                                    args![
-                                        "But tomorrow will still",
-                                        "Be there, I'm sure.",
-                                        "Like the Water Mill",
-                                        "In Al De Baran",
-                                        "Which turns as",
-                                        "Life goes on."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("god_nelluad04"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    "Nelliorde",
-                                    args![
-                                        "Cheer up! Life goes on.",
-                                        "As surely as the Water",
-                                        "Mill turns, tomorrow",
-                                        "Will come."
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                break 'b7;
-                            }
+                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                            matched7 = true;
                         }
-                        break 'b5;
+                        if matched7 {
+                            ctx.call(Function::Cutin, vec![Val::from("god_nelluad02"), Val::from(2)])?;
+                            ctx.lines_as(
+                                "Nelliorde",
+                                args!["Ah, you wish", "to hear a song?", "Okay! I shall then", "perform my favorite."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Nelliorde",
+                                args![
+                                    "I chased after fame.",
+                                    "It eluded me.",
+                                    "I ran after happiness",
+                                    "But never caught it."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Nelliorde",
+                                args![
+                                    "But tomorrow will still",
+                                    "Be there, I'm sure.",
+                                    "Like the Water Mill",
+                                    "In Al De Baran",
+                                    "Which turns as",
+                                    "Life goes on."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.call(Function::Cutin, vec![Val::from("god_nelluad04"), Val::from(2)])?;
+                            ctx.lines_as(
+                                "Nelliorde",
+                                args![
+                                    "Cheer up! Life goes on.",
+                                    "As surely as the Water",
+                                    "Mill turns, tomorrow",
+                                    "Will come."
+                                ],
+                            )?;
+                            ctx.close_window()?;
+                            break 'b7;
+                        }
                     }
+                    break 'b5;
                 }
             }
         }
@@ -1248,29 +1246,27 @@ fn studying_scholar_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         Function::Announce,
                         vec![Val::from("The 3rd Seal of [Brisingamen] has appeared."), ctx.constant("BC_ALL")?],
                     )?;
-                } else {
-                    if ctx.var("$god3").get()?.loosely_equals(&ctx.var("$@god_check2").get()?) {
-                        if (((ctx.var("$god1").get()?.loosely_equals(&ctx.var("$@god_check2").get()?)
-                            && ctx.var("$god2").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
-                            && ctx.var("$god3").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
-                            && ctx.var("$god4").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
-                        {
-                            ctx.call(
-                                Function::Announce,
-                                vec![
-                                    Val::from("Four seals have been released at the same time with the seal of [Brisingamen]."),
-                                    ctx.constant("BC_ALL")?,
-                                ],
-                            )?;
-                        } else {
-                            ctx.call(
-                                Function::Announce,
-                                vec![
-                                    Val::from("The 3rd seal of [Brisingamen] has been released."),
-                                    ctx.constant("BC_ALL")?,
-                                ],
-                            )?;
-                        }
+                } else if ctx.var("$god3").get()?.loosely_equals(&ctx.var("$@god_check2").get()?) {
+                    if (((ctx.var("$god1").get()?.loosely_equals(&ctx.var("$@god_check2").get()?)
+                        && ctx.var("$god2").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
+                        && ctx.var("$god3").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
+                        && ctx.var("$god4").get()?.loosely_equals(&ctx.var("$@god_check2").get()?))
+                    {
+                        ctx.call(
+                            Function::Announce,
+                            vec![
+                                Val::from("Four seals have been released at the same time with the seal of [Brisingamen]."),
+                                ctx.constant("BC_ALL")?,
+                            ],
+                        )?;
+                    } else {
+                        ctx.call(
+                            Function::Announce,
+                            vec![
+                                Val::from("The 3rd seal of [Brisingamen] has been released."),
+                                ctx.constant("BC_ALL")?,
+                            ],
+                        )?;
                     }
                 }
                 ctx.close_window()?;
@@ -1726,206 +1722,198 @@ fn studying_scholar_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             )?;
                                                             ctx.close_window()?;
                                                             return Err(Stop::End);
-                                                        } else {
-                                                            if (ctx.var("god_brising").get()?.number()? > 3
-                                                                && ctx.var("god_brising").get()?.number()? < 10)
-                                                            {
-                                                                ctx.lines_as(
-                                                                    "Enrico Kaili",
-                                                                    args![
-                                                                        "So have you",
-                                                                        "met Hermite? Hm?",
-                                                                        "He actually asked",
-                                                                        "you to do that?"
-                                                                    ],
-                                                                )?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Enrico Kaili", args!["For now, it looks like you might have no alternative. It would probably be wise to do what he wants. Knowing Charles, it's probably won't be too bad."])?;
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            } else {
-                                                                if ctx.var("god_brising").get()? == 3 {
+                                                        } else if (ctx.var("god_brising").get()?.number()? > 3
+                                                            && ctx.var("god_brising").get()?.number()? < 10)
+                                                        {
+                                                            ctx.lines_as(
+                                                                "Enrico Kaili",
+                                                                args![
+                                                                    "So have you",
+                                                                    "met Hermite? Hm?",
+                                                                    "He actually asked",
+                                                                    "you to do that?"
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Enrico Kaili", args!["For now, it looks like you might have no alternative. It would probably be wise to do what he wants. Knowing Charles, it's probably won't be too bad."])?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        } else if ctx.var("god_brising").get()? == 3 {
+                                                            ctx.lines_as(
+                                                                "Enrico Kaili",
+                                                                args![
+                                                                    "Hermite...?",
+                                                                    "Do you need more",
+                                                                    "information about him?",
+                                                                    "Let's see..."
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Enrico Kaili", args!["Oh, that's right!", "He's a registered member of that Monster Research Organization. Why don't you ask the lady over there for more information on him?"])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Enrico Kaili", args!["If she'll let you look at her records, you can probably find out where he lives. Now why don't you talk to that lady towards the left part of this room?"])?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
+                                                        } else if ctx.var("god_brising").get()? == 2 {
+                                                            ctx.lines_as(
+                                                                "Enrico Kaili",
+                                                                args![
+                                                                    "So, have you",
+                                                                    "considered my proposal?",
+                                                                    "Work for me, and I shall",
+                                                                    "surely repay you."
+                                                                ],
+                                                            )?;
+                                                            ctx.next()?;
+                                                            'b3: {
+                                                                let subject3 = Val::from(runtime::select_values(
+                                                                    ctx,
+                                                                    &[Val::from("No thanks.:Sure, why not.")],
+                                                                )?);
+                                                                let mut matched3 = false;
+                                                                let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                                                    && !subject3.loosely_equals(&Val::from(2));
+                                                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                                                    matched3 = true;
+                                                                }
+                                                                if matched3 {
                                                                     ctx.lines_as(
                                                                         "Enrico Kaili",
                                                                         args![
-                                                                            "Hermite...?",
-                                                                            "Do you need more",
-                                                                            "information about him?",
-                                                                            "Let's see..."
+                                                                            "What...?!",
+                                                                            "Then why bother",
+                                                                            "to speak to me?",
+                                                                            "If you just intend to",
+                                                                            "bother me, then please",
+                                                                            "leave right away."
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                }
+                                                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                                                    matched3 = true;
+                                                                }
+                                                                if matched3 {
+                                                                    ctx.lines_as("Enrico Kaili", args!["Really?", "If you could help me, that would be great! Before we start, would you take a look at this?"])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines(args!["^3355FFEnrico Kaili showed you a small white crystallization inside a box. It looked very fragile, but emanated an intensely", "cold aura.^000000"])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Enrico Kaili", args!["I call this the Snow Crystal.", "It looks just like a snowflake, doesn't it? Strangely enough,", "it's never melted."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Enrico Kaili", args!["A few years ago,", "a young adventurer", "gave this to me. I need to find this person so that I can find out exactly what this is, as well as where it came from."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as(
+                                                                        "Enrico Kaili",
+                                                                        args![
+                                                                            "Now, the person",
+                                                                            "who brought this to",
+                                                                            "me is, let's see, ah...",
+                                                                            "Hermite Charles."
                                                                         ],
                                                                     )?;
                                                                     ctx.next()?;
-                                                                    ctx.lines_as("Enrico Kaili", args!["Oh, that's right!", "He's a registered member of that Monster Research Organization. Why don't you ask the lady over there for more information on him?"])?;
+                                                                    ctx.lines_as(
+                                                                        "Enrico Kaili",
+                                                                        args![
+                                                                            "When you find him,",
+                                                                            "please give him this letter."
+                                                                        ],
+                                                                    )?;
                                                                     ctx.next()?;
-                                                                    ctx.lines_as("Enrico Kaili", args!["If she'll let you look at her records, you can probably find out where he lives. Now why don't you talk to that lady towards the left part of this room?"])?;
+                                                                    ctx.lines(args![
+                                                                        "^3355FFEnrico gave you a small",
+                                                                        "letter addressed to Hermite",
+                                                                        "Charles that is sealed with",
+                                                                        "red wax.^000000"
+                                                                    ])?;
+                                                                    ctx.var("god_brising").set(Val::from(3))?;
                                                                     ctx.close_window()?;
                                                                     return Err(Stop::End);
-                                                                } else {
-                                                                    if ctx.var("god_brising").get()? == 2 {
-                                                                        ctx.lines_as(
-                                                                            "Enrico Kaili",
-                                                                            args![
-                                                                                "So, have you",
-                                                                                "considered my proposal?",
-                                                                                "Work for me, and I shall",
-                                                                                "surely repay you."
-                                                                            ],
-                                                                        )?;
-                                                                        ctx.next()?;
-                                                                        'b3: {
-                                                                            let subject3 = Val::from(runtime::select_values(
-                                                                                ctx,
-                                                                                &[Val::from("No thanks.:Sure, why not.")],
-                                                                            )?);
-                                                                            let mut matched3 = false;
-                                                                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                                                                && !subject3.loosely_equals(&Val::from(2));
-                                                                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                                                                matched3 = true;
-                                                                            }
-                                                                            if matched3 {
-                                                                                ctx.lines_as(
-                                                                                    "Enrico Kaili",
-                                                                                    args![
-                                                                                        "What...?!",
-                                                                                        "Then why bother",
-                                                                                        "to speak to me?",
-                                                                                        "If you just intend to",
-                                                                                        "bother me, then please",
-                                                                                        "leave right away."
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.close_window()?;
-                                                                                return Err(Stop::End);
-                                                                            }
-                                                                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                                                                matched3 = true;
-                                                                            }
-                                                                            if matched3 {
-                                                                                ctx.lines_as("Enrico Kaili", args!["Really?", "If you could help me, that would be great! Before we start, would you take a look at this?"])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines(args!["^3355FFEnrico Kaili showed you a small white crystallization inside a box. It looked very fragile, but emanated an intensely", "cold aura.^000000"])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as("Enrico Kaili", args!["I call this the Snow Crystal.", "It looks just like a snowflake, doesn't it? Strangely enough,", "it's never melted."])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as("Enrico Kaili", args!["A few years ago,", "a young adventurer", "gave this to me. I need to find this person so that I can find out exactly what this is, as well as where it came from."])?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as(
-                                                                                    "Enrico Kaili",
-                                                                                    args![
-                                                                                        "Now, the person",
-                                                                                        "who brought this to",
-                                                                                        "me is, let's see, ah...",
-                                                                                        "Hermite Charles."
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines_as(
-                                                                                    "Enrico Kaili",
-                                                                                    args![
-                                                                                        "When you find him,",
-                                                                                        "please give him this letter."
-                                                                                    ],
-                                                                                )?;
-                                                                                ctx.next()?;
-                                                                                ctx.lines(args![
-                                                                                    "^3355FFEnrico gave you a small",
-                                                                                    "letter addressed to Hermite",
-                                                                                    "Charles that is sealed with",
-                                                                                    "red wax.^000000"
-                                                                                ])?;
-                                                                                ctx.var("god_brising").set(Val::from(3))?;
-                                                                                ctx.close_window()?;
-                                                                                return Err(Stop::End);
-                                                                            }
-                                                                        }
-                                                                    } else {
-                                                                        if ctx.var("god_brising").get()? == 1 {
-                                                                            ctx.lines_as("Enrico Kaili", args!["Ah, you've arrived!", ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(", right?")), "Yes, I was told by Nelliorde that you'd come. He always manages", "to find me good, reliable help."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as("Enrico Kaili", args!["As Nelliorde probably mentioned,", "I need some help in completing my research. Since you adventurers are always traveling, I was hoping you'd help me find someone."])?;
-                                                                            ctx.next()?;
-                                                                            'b4: {
-                                                                                let subject4 = Val::from(runtime::select_values(
-                                                                                    ctx,
-                                                                                    &[Val::from(
-                                                                                        "I'm no good at finding people.:I can do that!",
-                                                                                    )],
-                                                                                )?);
-                                                                                let mut matched4 = false;
-                                                                                let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                                                                    && !subject4.loosely_equals(&Val::from(2));
-                                                                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                                                                    matched4 = true;
-                                                                                }
-                                                                                if matched4 {
-                                                                                    ctx.lines_as("Enrico Kaili", args!["Oh... Really?", "I was really hoping that you'd be able to help me. But I understand if it's not within your capacity."])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as("Enrico Kaili", args!["I suppose I can try to find another adventurer to help me. But if you change your mind later, please do not hesitate to lend me your assistance."])?;
-                                                                                    ctx.var("god_brising").set(Val::from(2))?;
-                                                                                    ctx.close_window()?;
-                                                                                    return Err(Stop::End);
-                                                                                }
-                                                                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                                                    matched4 = true;
-                                                                                }
-                                                                                if matched4 {
-                                                                                    ctx.lines_as("Enrico Kaili", args!["Really?", "If you could help me, that would be great! Before we start, would you take a look at this?"])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines(args!["^3355FFEnrico Kaili showed you a small white crystallization inside a box. It looked very fragile, but emanated an intensely", "cold aura.^000000"])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as("Enrico Kaili", args!["I call this the Snow Crystal.", "It looks just like a snowflake, doesn't it? Strangely enough,", "it's never melted."])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as("Enrico Kaili", args!["A few years ago,", "a young adventurer", "gave this to me. I need to find this person so that I can find out exactly what this is, as well as where it came from."])?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as(
-                                                                                        "Enrico Kaili",
-                                                                                        args![
-                                                                                            "Now, the person",
-                                                                                            "who brought this to",
-                                                                                            "me is, let's see, ah...",
-                                                                                            "Hermite Charles."
-                                                                                        ],
-                                                                                    )?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines_as(
-                                                                                        "Enrico Kaili",
-                                                                                        args![
-                                                                                            "When you find him,",
-                                                                                            "please give him this letter."
-                                                                                        ],
-                                                                                    )?;
-                                                                                    ctx.next()?;
-                                                                                    ctx.lines(args![
-                                                                                        "^3355FFEnrico gave you a small",
-                                                                                        "letter addressed to Hermite",
-                                                                                        "Charles that is sealed with",
-                                                                                        "red wax.^000000"
-                                                                                    ])?;
-                                                                                    ctx.var("god_brising").set(Val::from(3))?;
-                                                                                    ctx.close_window()?;
-                                                                                    return Err(Stop::End);
-                                                                                }
-                                                                            }
-                                                                        } else {
-                                                                            ctx.lines_as("Enrico Kaili", args!["I'm not exactly sure why you've come to me, but I apologize for the fact that I'm unable to help you."])?;
-                                                                            ctx.next()?;
-                                                                            ctx.lines_as(
-                                                                                "Enrico Kaili",
-                                                                                args![
-                                                                                    "Right now, I'm far",
-                                                                                    "too busy trying to",
-                                                                                    "complete my research.",
-                                                                                    "Please leave me alone",
-                                                                                    "to do my work."
-                                                                                ],
-                                                                            )?;
-                                                                            ctx.close_window()?;
-                                                                            return Err(Stop::End);
-                                                                        }
-                                                                    }
                                                                 }
                                                             }
+                                                        } else if ctx.var("god_brising").get()? == 1 {
+                                                            ctx.lines_as("Enrico Kaili", args!["Ah, you've arrived!", ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(", right?")), "Yes, I was told by Nelliorde that you'd come. He always manages", "to find me good, reliable help."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as("Enrico Kaili", args!["As Nelliorde probably mentioned,", "I need some help in completing my research. Since you adventurers are always traveling, I was hoping you'd help me find someone."])?;
+                                                            ctx.next()?;
+                                                            'b4: {
+                                                                let subject4 = Val::from(runtime::select_values(
+                                                                    ctx,
+                                                                    &[Val::from(
+                                                                        "I'm no good at finding people.:I can do that!",
+                                                                    )],
+                                                                )?);
+                                                                let mut matched4 = false;
+                                                                let no_case4 = !subject4.loosely_equals(&Val::from(1))
+                                                                    && !subject4.loosely_equals(&Val::from(2));
+                                                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                                                    matched4 = true;
+                                                                }
+                                                                if matched4 {
+                                                                    ctx.lines_as("Enrico Kaili", args!["Oh... Really?", "I was really hoping that you'd be able to help me. But I understand if it's not within your capacity."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Enrico Kaili", args!["I suppose I can try to find another adventurer to help me. But if you change your mind later, please do not hesitate to lend me your assistance."])?;
+                                                                    ctx.var("god_brising").set(Val::from(2))?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                }
+                                                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                                                    matched4 = true;
+                                                                }
+                                                                if matched4 {
+                                                                    ctx.lines_as("Enrico Kaili", args!["Really?", "If you could help me, that would be great! Before we start, would you take a look at this?"])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines(args!["^3355FFEnrico Kaili showed you a small white crystallization inside a box. It looked very fragile, but emanated an intensely", "cold aura.^000000"])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Enrico Kaili", args!["I call this the Snow Crystal.", "It looks just like a snowflake, doesn't it? Strangely enough,", "it's never melted."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as("Enrico Kaili", args!["A few years ago,", "a young adventurer", "gave this to me. I need to find this person so that I can find out exactly what this is, as well as where it came from."])?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as(
+                                                                        "Enrico Kaili",
+                                                                        args![
+                                                                            "Now, the person",
+                                                                            "who brought this to",
+                                                                            "me is, let's see, ah...",
+                                                                            "Hermite Charles."
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines_as(
+                                                                        "Enrico Kaili",
+                                                                        args![
+                                                                            "When you find him,",
+                                                                            "please give him this letter."
+                                                                        ],
+                                                                    )?;
+                                                                    ctx.next()?;
+                                                                    ctx.lines(args![
+                                                                        "^3355FFEnrico gave you a small",
+                                                                        "letter addressed to Hermite",
+                                                                        "Charles that is sealed with",
+                                                                        "red wax.^000000"
+                                                                    ])?;
+                                                                    ctx.var("god_brising").set(Val::from(3))?;
+                                                                    ctx.close_window()?;
+                                                                    return Err(Stop::End);
+                                                                }
+                                                            }
+                                                        } else {
+                                                            ctx.lines_as("Enrico Kaili", args!["I'm not exactly sure why you've come to me, but I apologize for the fact that I'm unable to help you."])?;
+                                                            ctx.next()?;
+                                                            ctx.lines_as(
+                                                                "Enrico Kaili",
+                                                                args![
+                                                                    "Right now, I'm far",
+                                                                    "too busy trying to",
+                                                                    "complete my research.",
+                                                                    "Please leave me alone",
+                                                                    "to do my work."
+                                                                ],
+                                                            )?;
+                                                            ctx.close_window()?;
+                                                            return Err(Stop::End);
                                                         }
                                                     }
                                                 }
@@ -2118,821 +2106,813 @@ fn praying_man_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.var("god_brising").set(Val::from(10))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("god_brising").get()? == 11 {
-                        ctx.lines_as("Hermite Charles", args!["Yes...", "Lowen is no", "longer with us."])?;
-                        ctx.next()?;
+                } else if ctx.var("god_brising").get()? == 11 {
+                    ctx.lines_as("Hermite Charles", args!["Yes...", "Lowen is no", "longer with us."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Hermite Charles",
+                        args!["I've heard different rumors, but she definitely passed away. I was even at her funeral."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Hermite Charles",
+                        args![
+                            "The last time I saw her alive",
+                            "was in Geffen. Two years after that, I saw her buried in her grave. Didn't I tell you this?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Hermite Charles", args!["I wanted you to find out what happened in those two years before she died. I wanted to know what led to her death."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Hermite Charles",
+                        args!["What the hell", "killed her?!", "Don't you understand", "the way I feel?"],
+                    )?;
+                    ctx.var("god_brising").set(Val::from(20))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("god_brising").get()? == 10 {
+                    ctx.lines_as(
+                        "Hermite Charles",
+                        args!["Lowen was a Crusader, a knight in the service of holiness preparing for the Holy War."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Hermite Charles",
+                        args![
+                            "I always expected her to",
+                            "become a Knight in the Prontera Chivalry, but suddenly she changed her mind and became a Crusader.",
+                            "I saw her for the last time in Geffen."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Hermite Charles",
+                        args![
+                            "I beg you...",
+                            "Please learn",
+                            "anything you can",
+                            "about what happened",
+                            "to Lowen."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("god_brising").get()? == 5 {
+                    if ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])? == 1 {
                         ctx.lines_as(
                             "Hermite Charles",
-                            args!["I've heard different rumors, but she definitely passed away. I was even at her funeral."],
+                            args!["You're still here.", "Does that mean you", "want to hear my", "story after all?"],
                         )?;
                         ctx.next()?;
-                        ctx.lines_as(
-                            "Hermite Charles",
-                            args![
-                                "The last time I saw her alive",
-                                "was in Geffen. Two years after that, I saw her buried in her grave. Didn't I tell you this?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Hermite Charles", args!["I wanted you to find out what happened in those two years before she died. I wanted to know what led to her death."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Hermite Charles",
-                            args!["What the hell", "killed her?!", "Don't you understand", "the way I feel?"],
-                        )?;
-                        ctx.var("god_brising").set(Val::from(20))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("god_brising").get()? == 10 {
-                            ctx.lines_as(
-                                "Hermite Charles",
-                                args!["Lowen was a Crusader, a knight in the service of holiness preparing for the Holy War."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Hermite Charles",
-                                args![
-                                    "I always expected her to",
-                                    "become a Knight in the Prontera Chivalry, but suddenly she changed her mind and became a Crusader.",
-                                    "I saw her for the last time in Geffen."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Hermite Charles",
-                                args![
-                                    "I beg you...",
-                                    "Please learn",
-                                    "anything you can",
-                                    "about what happened",
-                                    "to Lowen."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            if ctx.var("god_brising").get()? == 5 {
-                                if ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])? == 1 {
-                                    ctx.lines_as(
-                                        "Hermite Charles",
-                                        args!["You're still here.", "Does that mean you", "want to hear my", "story after all?"],
-                                    )?;
-                                    ctx.next()?;
-                                    'b1: {
-                                        let subject1 =
-                                            Val::from(runtime::select_values(ctx, &[Val::from("Yes, I would like to.:No, thanks.")])?);
-                                        let mut matched1 = false;
-                                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
-                                            ctx.lines_as(
-                                                "Hermite Charles",
-                                                args![
-                                                    "Thank you...",
-                                                    "Perhaps you're doing this",
-                                                    "merely out of consideration,",
-                                                    "but I still appreciate your kindness. The story I will",
-                                                    "tell you is very old."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Hermite Charles",
-                                                args![
-                                                    "Long ago, there was a little boy who never knew his parents. Just",
-                                                    "to survive, he became a Thief and eventually joined the Rogue Guild."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Hermite Charles", args!["Without any goals or dreams, his life was pretty aimless. He pretty much only lived so that he could see tomorrow."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Hermite Charles", args!["However, the little boy met someone who was full of hope and kindess. He admired her and she became his reason for living."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Hermite Charles", args!["She will never know that the little boy loved her more than anything else. Unlike the boy, her dream was devote her life to God."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Hermite Charles", args!["Although he never understood that, he knew that he would be happy to just be near her, watching from a distance."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Hermite Charles",
-                                                args!["But one day, because of one fatal mistake, he lost her and she never came back."],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Hermite Charles",
-                                                args![
-                                                    "Ever since, that boy has been coming to the Sanctuary everyday",
-                                                    "to pray for her safety, even into adulthood."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Hermite Charles",
-                                                args!["...", "^333333*Sob*^000000", "Please find", "her for me.", "Find Lowen."],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Hermite Charles",
-                                                args![
-                                                    "I know that Enrico has sent you. I'm guessing he needs something from me. Am I wrong?"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Hermite Charles", args!["I'll do whatever you want if you do what I want you to do. It's simple: find out anything you can about Lowen."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Hermite Charles", args!["It's doesn't matter how insignificant the clues may be, anything will do. I want to know everything related to her!"])?;
-                                            ctx.next()?;
-                                            'b2: {
-                                                let subject2 = Val::from(runtime::select_values(
-                                                    ctx,
-                                                    &[Val::from("Uhhhhh...:Sorry, I can't.:When was the last time you saw her?")],
-                                                )?);
-                                                let mut matched2 = false;
-                                                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                                    && !subject2.loosely_equals(&Val::from(2))
-                                                    && !subject2.loosely_equals(&Val::from(3));
-                                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                                    matched2 = true;
-                                                }
-                                                if matched2 {
-                                                    ctx.lines_as(
-                                                        "Hermite Charles",
-                                                        args![
-                                                            "Please consider my",
-                                                            "proposal. If you can",
-                                                            "find Lowen for me, I'll",
-                                                            "give you what you want."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["Please, I beg you.", "You are a strong and well-experienced adventurer. Isn't this a simple thing for you to do?"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["If you've ever dearly loved someone, then you'd know how desperate I am. Please find Lowen for me. Please..."])?;
-                                                    ctx.next()?;
-                                                    'b3: {
-                                                        let subject3 = Val::from(runtime::select_values(
-                                                            ctx,
-                                                            &[Val::from("...Alright.:I'm sorry, I don't think I can do it.")],
-                                                        )?);
-                                                        let mut matched3 = false;
-                                                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                                            && !subject3.loosely_equals(&Val::from(2));
-                                                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                                            matched3 = true;
-                                                        }
-                                                        if matched3 {
-                                                            ctx.lines_as(
-                                                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                                                args![
-                                                                    "Alright.",
-                                                                    "I'll try my best to find her. Would you tell me more about Lowen?"
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Hermite Charles",
-                                                                args![
-                                                                    "She is a Crusader.",
-                                                                    "The last time I saw her was",
-                                                                    "deep inside Geffen Dungeon."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hermite Charles", args!["Long ago, some Crusaders entered the Geffen Dungeon on a monster subjugation expedition."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Hermite Charles",
-                                                                args!["Please find", "anything that", "you can. I beg", "of you..."],
-                                                            )?;
-                                                            ctx.var("god_brising").set(Val::from(10))?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                                            matched3 = true;
-                                                        }
-                                                        if matched3 {
-                                                            ctx.lines_as(
-                                                                "Hermite Charles",
-                                                                args![
-                                                                    "^333333*Sigh*^000000",
-                                                                    "I understand.",
-                                                                    "But if you don't help me, then Kaili won't get the help he needs..."
-                                                                ],
-                                                            )?;
-                                                            ctx.var("god_brising").set(Val::from(9))?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                }
-                                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                                    matched2 = true;
-                                                }
-                                                if matched2 {
-                                                    ctx.lines_as("Hermite Charles", args!["You don't understand!", "If I weren't this much of a coward, I would already have gone out to find out what I could for myself."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["I'm not afraid of monsters or dying. It's the fact that she might hate me now. That's what I fear: Lowen's reproach."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["All I can do for her is just earnestly pray. I had no idea it'd be so horrible not to be able to see her anymore..."])?;
-                                                    ctx.var("god_brising").set(Val::from(9))?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                                    matched2 = true;
-                                                }
-                                                if matched2 {
-                                                    ctx.lines_as(
-                                                        "Hermite Charles",
-                                                        args!["The last time", "I saw her was deep", "inside the Geffen Dungeon."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["Although it was created by humans, that dungeon is now cursed and inhabited with horrific monsters."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["I'm guessing the Crusaders saw that it was necessary to exterminate the monsters there to keep it from getting even worse."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Hermite Charles",
-                                                        args![
-                                                            "Lowen accompanied",
-                                                            "a group of other Crusaders",
-                                                            "for the good of the people,",
-                                                            "but I haven't heard anything",
-                                                            "about her since..."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Hermite Charles",
-                                                        args![
-                                                            "That was the last time...",
-                                                            "Please find out anything",
-                                                            "you can. I beg you..."
-                                                        ],
-                                                    )?;
-                                                    ctx.var("god_brising").set(Val::from(10))?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
-                                            ctx.lines_as("Hermite Charles", args!["I misunderstood you.", "I should have realized that people never really listen unless it's of some benefit to them."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Hermite Charles",
-                                                args![
-                                                    "I won't waste any more of",
-                                                    "your time. I'll accept Kaili's letter and wait until I find someone who'll listen to",
-                                                    "my story and help me."
-                                                ],
-                                            )?;
-                                            ctx.var("god_brising").set(Val::from(5))?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
+                        'b1: {
+                            let subject1 =
+                                Val::from(runtime::select_values(ctx, &[Val::from("Yes, I would like to.:No, thanks.")])?);
+                            let mut matched1 = false;
+                            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args![
+                                        "Thank you...",
+                                        "Perhaps you're doing this",
+                                        "merely out of consideration,",
+                                        "but I still appreciate your kindness. The story I will",
+                                        "tell you is very old."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args![
+                                        "Long ago, there was a little boy who never knew his parents. Just",
+                                        "to survive, he became a Thief and eventually joined the Rogue Guild."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Hermite Charles", args!["Without any goals or dreams, his life was pretty aimless. He pretty much only lived so that he could see tomorrow."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Hermite Charles", args!["However, the little boy met someone who was full of hope and kindess. He admired her and she became his reason for living."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Hermite Charles", args!["She will never know that the little boy loved her more than anything else. Unlike the boy, her dream was devote her life to God."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Hermite Charles", args!["Although he never understood that, he knew that he would be happy to just be near her, watching from a distance."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args!["But one day, because of one fatal mistake, he lost her and she never came back."],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args![
+                                        "Ever since, that boy has been coming to the Sanctuary everyday",
+                                        "to pray for her safety, even into adulthood."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args!["...", "^333333*Sob*^000000", "Please find", "her for me.", "Find Lowen."],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args![
+                                        "I know that Enrico has sent you. I'm guessing he needs something from me. Am I wrong?"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Hermite Charles", args!["I'll do whatever you want if you do what I want you to do. It's simple: find out anything you can about Lowen."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Hermite Charles", args!["It's doesn't matter how insignificant the clues may be, anything will do. I want to know everything related to her!"])?;
+                                ctx.next()?;
+                                'b2: {
+                                    let subject2 = Val::from(runtime::select_values(
+                                        ctx,
+                                        &[Val::from("Uhhhhh...:Sorry, I can't.:When was the last time you saw her?")],
+                                    )?);
+                                    let mut matched2 = false;
+                                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                                        && !subject2.loosely_equals(&Val::from(2))
+                                        && !subject2.loosely_equals(&Val::from(3));
+                                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                                        matched2 = true;
                                     }
-                                } else {
-                                    ctx.lines_as(
-                                        "Hermite Charles",
-                                        args![
-                                            "...",
-                                            "^333333*Sob...*^000000",
-                                            "I'm sorry.",
-                                            "I'm so sorry, Lowen.",
-                                            "It was all my fault..."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            } else {
-                                if ctx.var("god_brising").get()? == 4 {
-                                    ctx.lines_as(
-                                        "Hermite Charles",
-                                        args!["What do you", "want from me?", "Were you sent by", "the Rogue Guild?"],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Hermite Charles", args!["Tell them", "I quit already.", "Leave me alone!"])?;
-                                    ctx.next()?;
-                                    'b4: {
-                                        let subject4 = Val::from(runtime::select_values(
-                                            ctx,
-                                            &[Val::from("Leave him alone.:Give him Kaili's Letter.")],
-                                        )?);
-                                        let mut matched4 = false;
-                                        let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
-                                            ctx.mes("^3355FFYou're not sure why he's so upset, but it doesn't seem to be the best time to try to speak with him. Perhaps later would be better...^000000")?;
-                                            ctx.var("god_brising").set(Val::from(4))?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
-                                            ctx.lines_as(
-                                                "Hermite Charles",
-                                                args!["Huh...", "Enrico Kaili.", "Yeah, I remember", "him. So what..?"],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines(args!["^3355FFHermite nonchalantly", "tosses the letter back to you.^000000"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Hermite Charles", args!["...", "^333333*Sigh...*^000000"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Hermite Charles", args!["You...", "Would you like to", "listen to my story?"])?;
-                                            ctx.next()?;
-                                            'b5: {
-                                                let subject5 =
-                                                    Val::from(runtime::select_values(ctx, &[Val::from("Sure!:I'm busy, actually.")])?);
-                                                let mut matched5 = false;
-                                                let no_case5 =
-                                                    !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                                                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                                    matched5 = true;
-                                                }
-                                                if matched5 {
-                                                    ctx.lines_as(
-                                                        "Hermite Charles",
-                                                        args![
-                                                            "Thank you...",
-                                                            "Perhaps you're doing this",
-                                                            "merely out of consideration,",
-                                                            "but I still appreciate your kindness. The story I will",
-                                                            "tell you is very old."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Hermite Charles",
-                                                        args![
-                                                            "Long ago, there was a little boy who never knew his parents. Just",
-                                                            "to survive, he became a Thief and eventually joined the Rogue Guild."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["Without any goals or dreams, his life was pretty aimless. He pretty much only lived so that he could see tomorrow."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["However, the little boy met someone who was full of hope and kindess. He admired her and she became his reason for living."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["She will never know that the little boy loved her more than anything else. Unlike the boy, her dream was devote her life to God."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["Although he never understood that, he knew that he would be happy to just be near her, watching from a distance."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["But one day, because of one fatal mistake, he lost her and she never came back."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Hermite Charles",
-                                                        args![
-                                                            "Ever since, that boy has been coming to the Sanctuary everyday",
-                                                            "to pray for her safety, even into adulthood."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Hermite Charles",
-                                                        args!["...", "^333333*Sob*^000000", "Please find", "her for me.", "Find Lowen."],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["I know that Enrico has sent you. I'm guessing he needs something from me. Am I wrong?"])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["I'll do whatever you want if you do what I want you to do. It's simple: find out anything you can about Lowen."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["It's doesn't matter how insignificant the clues may be, anything will do. I want to know everything related to her!"])?;
-                                                    ctx.next()?;
-                                                    'b6: {
-                                                        let subject6 = Val::from(runtime::select_values(
-                                                            ctx,
-                                                            &[Val::from("Uhhhhh...:Sorry, I can't.:When was the last time you saw her?")],
-                                                        )?);
-                                                        let mut matched6 = false;
-                                                        let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                                                            && !subject6.loosely_equals(&Val::from(2))
-                                                            && !subject6.loosely_equals(&Val::from(3));
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            ctx.lines_as(
-                                                                "Hermite Charles",
-                                                                args![
-                                                                    "Please consider my",
-                                                                    "proposal. If you can",
-                                                                    "find Lowen for me, I'll",
-                                                                    "give you what you want."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hermite Charles", args!["Please, I beg you.", "You are a strong and well-experienced adventurer. Isn't this a simple thing for you to do?"])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hermite Charles", args!["If you've ever dearly loved someone, then you'd know how desperate I am. Please find Lowen for me. Please..."])?;
-                                                            ctx.next()?;
-                                                            'b7: {
-                                                                let subject7 = Val::from(runtime::select_values(
-                                                                    ctx,
-                                                                    &[Val::from("...Alright.:I'm sorry, I don't think I can do it.")],
-                                                                )?);
-                                                                let mut matched7 = false;
-                                                                let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                                                                    && !subject7.loosely_equals(&Val::from(2));
-                                                                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                                                    matched7 = true;
-                                                                }
-                                                                if matched7 {
-                                                                    ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Alright.", "I'll try my best to find her. Would you tell me more about Lowen?"])?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as(
-                                                                        "Hermite Charles",
-                                                                        args![
-                                                                            "She is a Crusader.",
-                                                                            "The last time I saw her was",
-                                                                            "deep inside Geffen Dungeon."
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as("Hermite Charles", args!["Long ago, some Crusaders entered the Geffen Dungeon on a monster subjugation expedition."])?;
-                                                                    ctx.next()?;
-                                                                    ctx.lines_as(
-                                                                        "Hermite Charles",
-                                                                        args![
-                                                                            "Please find",
-                                                                            "anything that",
-                                                                            "you can. I beg",
-                                                                            "of you..."
-                                                                        ],
-                                                                    )?;
-                                                                    ctx.var("god_brising").set(Val::from(10))?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                }
-                                                                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                                                    matched7 = true;
-                                                                }
-                                                                if matched7 {
-                                                                    ctx.lines_as("Hermite Charles", args!["^333333*Sigh*^000000", "I understand.", "But if you don't help me, then Kaili won't get the help he needs..."])?;
-                                                                    ctx.var("god_brising").set(Val::from(9))?;
-                                                                    ctx.close_window()?;
-                                                                    return Err(Stop::End);
-                                                                }
-                                                            }
-                                                        }
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            ctx.lines_as("Hermite Charles", args!["You don't understand!", "If I weren't this much of a coward, I would already have gone out to find out what I could for myself."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hermite Charles", args!["I'm not afraid of monsters or dying. It's the fact that she might hate me now. That's what I fear: Lowen's reproach."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hermite Charles", args!["All I can do for her is just earnestly pray. I had no idea it'd be so horrible not to be able to see her anymore..."])?;
-                                                            ctx.var("god_brising").set(Val::from(9))?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                        if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                                            matched6 = true;
-                                                        }
-                                                        if matched6 {
-                                                            ctx.lines_as(
-                                                                "Hermite Charles",
-                                                                args!["The last time", "I saw her was deep", "inside the Geffen Dungeon."],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hermite Charles", args!["Although it was created by humans, that dungeon is now cursed and inhabited with horrific monsters."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as("Hermite Charles", args!["I'm guessing the Crusaders saw that it was necessary to exterminate the monsters there to keep it from getting even worse."])?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Hermite Charles",
-                                                                args![
-                                                                    "Lowen accompanied",
-                                                                    "a group of other Crusaders",
-                                                                    "for the good of the people,",
-                                                                    "but I haven't heard anything",
-                                                                    "about her since..."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Hermite Charles",
-                                                                args![
-                                                                    "That was the last time...",
-                                                                    "Please find out anything",
-                                                                    "you can. I beg you..."
-                                                                ],
-                                                            )?;
-                                                            ctx.var("god_brising").set(Val::from(10))?;
-                                                            ctx.close_window()?;
-                                                            return Err(Stop::End);
-                                                        }
-                                                    }
-                                                }
-                                                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                                    matched5 = true;
-                                                }
-                                                if matched5 {
-                                                    ctx.lines_as("Hermite Charles", args!["I misunderstood you.", "I should have realized that people never really listen unless it's of some benefit to them."])?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as("Hermite Charles", args!["I won't waste any more of", "your time. I'll accept Kaili's letter and wait until I find someone who'll listen to", "my story and help me."])?;
-                                                    ctx.var("god_brising").set(Val::from(5))?;
-                                                    ctx.close_window()?;
-                                                    return Err(Stop::End);
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    if ctx.var("god_brising").get()? == 3 {
+                                    if matched2 {
                                         ctx.lines_as(
-                                            "Sad-looking Man",
-                                            args!["...", "^333333*Sob...*^000000", "I am so", "sorry, Lowen.", "It's all fault..."],
+                                            "Hermite Charles",
+                                            args![
+                                                "Please consider my",
+                                                "proposal. If you can",
+                                                "find Lowen for me, I'll",
+                                                "give you what you want."
+                                            ],
                                         )?;
                                         ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["Please, I beg you.", "You are a strong and well-experienced adventurer. Isn't this a simple thing for you to do?"])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["If you've ever dearly loved someone, then you'd know how desperate I am. Please find Lowen for me. Please..."])?;
+                                        ctx.next()?;
+                                        'b3: {
+                                            let subject3 = Val::from(runtime::select_values(
+                                                ctx,
+                                                &[Val::from("...Alright.:I'm sorry, I don't think I can do it.")],
+                                            )?);
+                                            let mut matched3 = false;
+                                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                                && !subject3.loosely_equals(&Val::from(2));
+                                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                                matched3 = true;
+                                            }
+                                            if matched3 {
+                                                ctx.lines_as(
+                                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                                    args![
+                                                        "Alright.",
+                                                        "I'll try my best to find her. Would you tell me more about Lowen?"
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args![
+                                                        "She is a Crusader.",
+                                                        "The last time I saw her was",
+                                                        "deep inside Geffen Dungeon."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["Long ago, some Crusaders entered the Geffen Dungeon on a monster subjugation expedition."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args!["Please find", "anything that", "you can. I beg", "of you..."],
+                                                )?;
+                                                ctx.var("god_brising").set(Val::from(10))?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                                matched3 = true;
+                                            }
+                                            if matched3 {
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args![
+                                                        "^333333*Sigh*^000000",
+                                                        "I understand.",
+                                                        "But if you don't help me, then Kaili won't get the help he needs..."
+                                                    ],
+                                                )?;
+                                                ctx.var("god_brising").set(Val::from(9))?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                        }
+                                    }
+                                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                                        matched2 = true;
+                                    }
+                                    if matched2 {
+                                        ctx.lines_as("Hermite Charles", args!["You don't understand!", "If I weren't this much of a coward, I would already have gone out to find out what I could for myself."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["I'm not afraid of monsters or dying. It's the fact that she might hate me now. That's what I fear: Lowen's reproach."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["All I can do for her is just earnestly pray. I had no idea it'd be so horrible not to be able to see her anymore..."])?;
+                                        ctx.var("god_brising").set(Val::from(9))?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                                        matched2 = true;
+                                    }
+                                    if matched2 {
                                         ctx.lines_as(
-                                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                            args!["Excuse me.", "I am looking", "for someone named...", "Hermite?"],
+                                            "Hermite Charles",
+                                            args!["The last time", "I saw her was deep", "inside the Geffen Dungeon."],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["Although it was created by humans, that dungeon is now cursed and inhabited with horrific monsters."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["I'm guessing the Crusaders saw that it was necessary to exterminate the monsters there to keep it from getting even worse."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Hermite Charles",
+                                            args![
+                                                "Lowen accompanied",
+                                                "a group of other Crusaders",
+                                                "for the good of the people,",
+                                                "but I haven't heard anything",
+                                                "about her since..."
+                                            ],
                                         )?;
                                         ctx.next()?;
                                         ctx.lines_as(
                                             "Hermite Charles",
-                                            args!["Hm...?", "Hermite? That's me.", "But if you don't mind,", "I want to be alone..."],
+                                            args![
+                                                "That was the last time...",
+                                                "Please find out anything",
+                                                "you can. I beg you..."
+                                            ],
+                                        )?;
+                                        ctx.var("god_brising").set(Val::from(10))?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                }
+                            }
+                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                                matched1 = true;
+                            }
+                            if matched1 {
+                                ctx.lines_as("Hermite Charles", args!["I misunderstood you.", "I should have realized that people never really listen unless it's of some benefit to them."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args![
+                                        "I won't waste any more of",
+                                        "your time. I'll accept Kaili's letter and wait until I find someone who'll listen to",
+                                        "my story and help me."
+                                    ],
+                                )?;
+                                ctx.var("god_brising").set(Val::from(5))?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        }
+                    } else {
+                        ctx.lines_as(
+                            "Hermite Charles",
+                            args![
+                                "...",
+                                "^333333*Sob...*^000000",
+                                "I'm sorry.",
+                                "I'm so sorry, Lowen.",
+                                "It was all my fault..."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                } else {
+                    if ctx.var("god_brising").get()? == 4 {
+                        ctx.lines_as(
+                            "Hermite Charles",
+                            args!["What do you", "want from me?", "Were you sent by", "the Rogue Guild?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Hermite Charles", args!["Tell them", "I quit already.", "Leave me alone!"])?;
+                        ctx.next()?;
+                        'b4: {
+                            let subject4 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Leave him alone.:Give him Kaili's Letter.")],
+                            )?);
+                            let mut matched4 = false;
+                            let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                matched4 = true;
+                            }
+                            if matched4 {
+                                ctx.mes("^3355FFYou're not sure why he's so upset, but it doesn't seem to be the best time to try to speak with him. Perhaps later would be better...^000000")?;
+                                ctx.var("god_brising").set(Val::from(4))?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                matched4 = true;
+                            }
+                            if matched4 {
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args!["Huh...", "Enrico Kaili.", "Yeah, I remember", "him. So what..?"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines(args!["^3355FFHermite nonchalantly", "tosses the letter back to you.^000000"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Hermite Charles", args!["...", "^333333*Sigh...*^000000"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Hermite Charles", args!["You...", "Would you like to", "listen to my story?"])?;
+                                ctx.next()?;
+                                'b5: {
+                                    let subject5 =
+                                        Val::from(runtime::select_values(ctx, &[Val::from("Sure!:I'm busy, actually.")])?);
+                                    let mut matched5 = false;
+                                    let no_case5 =
+                                        !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
+                                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                                        matched5 = true;
+                                    }
+                                    if matched5 {
+                                        ctx.lines_as(
+                                            "Hermite Charles",
+                                            args![
+                                                "Thank you...",
+                                                "Perhaps you're doing this",
+                                                "merely out of consideration,",
+                                                "but I still appreciate your kindness. The story I will",
+                                                "tell you is very old."
+                                            ],
                                         )?;
                                         ctx.next()?;
-                                        'b8: {
-                                            let subject8 = Val::from(runtime::select_values(
+                                        ctx.lines_as(
+                                            "Hermite Charles",
+                                            args![
+                                                "Long ago, there was a little boy who never knew his parents. Just",
+                                                "to survive, he became a Thief and eventually joined the Rogue Guild."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["Without any goals or dreams, his life was pretty aimless. He pretty much only lived so that he could see tomorrow."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["However, the little boy met someone who was full of hope and kindess. He admired her and she became his reason for living."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["She will never know that the little boy loved her more than anything else. Unlike the boy, her dream was devote her life to God."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["Although he never understood that, he knew that he would be happy to just be near her, watching from a distance."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["But one day, because of one fatal mistake, he lost her and she never came back."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Hermite Charles",
+                                            args![
+                                                "Ever since, that boy has been coming to the Sanctuary everyday",
+                                                "to pray for her safety, even into adulthood."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Hermite Charles",
+                                            args!["...", "^333333*Sob*^000000", "Please find", "her for me.", "Find Lowen."],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["I know that Enrico has sent you. I'm guessing he needs something from me. Am I wrong?"])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["I'll do whatever you want if you do what I want you to do. It's simple: find out anything you can about Lowen."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["It's doesn't matter how insignificant the clues may be, anything will do. I want to know everything related to her!"])?;
+                                        ctx.next()?;
+                                        'b6: {
+                                            let subject6 = Val::from(runtime::select_values(
                                                 ctx,
-                                                &[Val::from("Leave him alone.:Give him Kaili's Letter.")],
+                                                &[Val::from("Uhhhhh...:Sorry, I can't.:When was the last time you saw her?")],
                                             )?);
-                                            let mut matched8 = false;
-                                            let no_case8 =
-                                                !subject8.loosely_equals(&Val::from(1)) && !subject8.loosely_equals(&Val::from(2));
-                                            if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                                                matched8 = true;
+                                            let mut matched6 = false;
+                                            let no_case6 = !subject6.loosely_equals(&Val::from(1))
+                                                && !subject6.loosely_equals(&Val::from(2))
+                                                && !subject6.loosely_equals(&Val::from(3));
+                                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                                                matched6 = true;
                                             }
-                                            if matched8 {
-                                                ctx.mes("^3355FFYou're not sure why he's so upset, but it doesn't seem to be the best time to try to speak with him. Perhaps later would be better...^000000")?;
-                                                ctx.var("god_brising").set(Val::from(4))?;
-                                                ctx.close_window()?;
-                                                return Err(Stop::End);
-                                            }
-                                            if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                                                matched8 = true;
-                                            }
-                                            if matched8 {
+                                            if matched6 {
                                                 ctx.lines_as(
                                                     "Hermite Charles",
-                                                    args!["Huh...", "Enrico Kaili.", "Yeah, I remember", "him. So what..?"],
+                                                    args![
+                                                        "Please consider my",
+                                                        "proposal. If you can",
+                                                        "find Lowen for me, I'll",
+                                                        "give you what you want."
+                                                    ],
                                                 )?;
                                                 ctx.next()?;
-                                                ctx.lines(args!["^3355FFHermite nonchalantly", "tosses the letter back to you.^000000"])?;
+                                                ctx.lines_as("Hermite Charles", args!["Please, I beg you.", "You are a strong and well-experienced adventurer. Isn't this a simple thing for you to do?"])?;
                                                 ctx.next()?;
-                                                ctx.lines_as("Hermite Charles", args!["...", "^333333*Sigh...*^000000"])?;
+                                                ctx.lines_as("Hermite Charles", args!["If you've ever dearly loved someone, then you'd know how desperate I am. Please find Lowen for me. Please..."])?;
                                                 ctx.next()?;
-                                                ctx.lines_as(
-                                                    "Hermite Charles",
-                                                    args!["You...", "Would you like to", "listen to my story?"],
-                                                )?;
-                                                ctx.next()?;
-                                                'b9: {
-                                                    let subject9 =
-                                                        Val::from(runtime::select_values(ctx, &[Val::from("Sure!:I'm busy, actually.")])?);
-                                                    let mut matched9 = false;
-                                                    let no_case9 =
-                                                        !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
-                                                    if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                                                        matched9 = true;
+                                                'b7: {
+                                                    let subject7 = Val::from(runtime::select_values(
+                                                        ctx,
+                                                        &[Val::from("...Alright.:I'm sorry, I don't think I can do it.")],
+                                                    )?);
+                                                    let mut matched7 = false;
+                                                    let no_case7 = !subject7.loosely_equals(&Val::from(1))
+                                                        && !subject7.loosely_equals(&Val::from(2));
+                                                    if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                                                        matched7 = true;
                                                     }
-                                                    if matched9 {
+                                                    if matched7 {
+                                                        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Alright.", "I'll try my best to find her. Would you tell me more about Lowen?"])?;
+                                                        ctx.next()?;
                                                         ctx.lines_as(
                                                             "Hermite Charles",
                                                             args![
-                                                                "Thank you...",
-                                                                "Perhaps you're doing this",
-                                                                "merely out of consideration,",
-                                                                "but I still appreciate your kindness. The story I will",
-                                                                "tell you is very old."
+                                                                "She is a Crusader.",
+                                                                "The last time I saw her was",
+                                                                "deep inside Geffen Dungeon."
                                                             ],
                                                         )?;
                                                         ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Hermite Charles",
-                                                            args![
-                                                                "Long ago, there was a little boy who never knew his parents. Just",
-                                                                "to survive, he became a Thief and eventually joined the Rogue Guild."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hermite Charles", args!["Without any goals or dreams, his life was pretty aimless. He pretty much only lived so that he could see tomorrow."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hermite Charles", args!["However, the little boy met someone who was full of hope and kindess. He admired her and she became his reason for living."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hermite Charles", args!["She will never know that the little boy loved her more than anything else. Unlike the boy, her dream was devote her life to God."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hermite Charles", args!["Although he never understood that, he knew that he would be happy to just be near her, watching from a distance."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hermite Charles", args!["But one day, because of one fatal mistake, he lost her and she never came back."])?;
+                                                        ctx.lines_as("Hermite Charles", args!["Long ago, some Crusaders entered the Geffen Dungeon on a monster subjugation expedition."])?;
                                                         ctx.next()?;
                                                         ctx.lines_as(
                                                             "Hermite Charles",
                                                             args![
-                                                                "Ever since, that boy has been coming to the Sanctuary everyday",
-                                                                "to pray for her safety, even into adulthood."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Hermite Charles",
-                                                            args![
-                                                                "...",
-                                                                "^333333*Sob*^000000",
                                                                 "Please find",
-                                                                "her for me.",
-                                                                "Find Lowen."
+                                                                "anything that",
+                                                                "you can. I beg",
+                                                                "of you..."
                                                             ],
                                                         )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hermite Charles", args!["I know that Enrico has sent you. I'm guessing he needs something from me. Am I wrong?"])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hermite Charles", args!["I'll do whatever you want if you do what I want you to do. It's simple: find out anything you can about Lowen."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hermite Charles", args!["It's doesn't matter how insignificant the clues may be, anything will do. I want to know everything related to her!"])?;
-                                                        ctx.next()?;
-                                                        'b10: {
-                                                            let subject10 = Val::from(runtime::select_values(
-                                                                ctx,
-                                                                &[Val::from(
-                                                                    "Uhhhhh...:Sorry, I can't.:When was the last time you saw her?",
-                                                                )],
-                                                            )?);
-                                                            let mut matched10 = false;
-                                                            let no_case10 = !subject10.loosely_equals(&Val::from(1))
-                                                                && !subject10.loosely_equals(&Val::from(2))
-                                                                && !subject10.loosely_equals(&Val::from(3));
-                                                            if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                                                                matched10 = true;
-                                                            }
-                                                            if matched10 {
-                                                                ctx.lines_as(
-                                                                    "Hermite Charles",
-                                                                    args![
-                                                                        "Please consider my",
-                                                                        "proposal. If you can",
-                                                                        "find Lowen for me, I'll",
-                                                                        "give you what you want."
-                                                                    ],
-                                                                )?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Hermite Charles", args!["Please, I beg you.", "You are a strong and well-experienced adventurer. Isn't this a simple thing for you to do?"])?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Hermite Charles", args!["If you've ever dearly loved someone, then you'd know how desperate I am. Please find Lowen for me. Please..."])?;
-                                                                ctx.next()?;
-                                                                'b11: {
-                                                                    let subject11 = Val::from(runtime::select_values(
-                                                                        ctx,
-                                                                        &[Val::from("...Alright.:I'm sorry, I don't think I can do it.")],
-                                                                    )?);
-                                                                    let mut matched11 = false;
-                                                                    let no_case11 = !subject11.loosely_equals(&Val::from(1))
-                                                                        && !subject11.loosely_equals(&Val::from(2));
-                                                                    if !matched11 && subject11.loosely_equals(&Val::from(1)) {
-                                                                        matched11 = true;
-                                                                    }
-                                                                    if matched11 {
-                                                                        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Alright.", "I'll try my best to find her. Would you tell me more about Lowen?"])?;
-                                                                        ctx.next()?;
-                                                                        ctx.lines_as(
-                                                                            "Hermite Charles",
-                                                                            args![
-                                                                                "She is a Crusader.",
-                                                                                "The last time I saw her was",
-                                                                                "deep inside Geffen Dungeon."
-                                                                            ],
-                                                                        )?;
-                                                                        ctx.next()?;
-                                                                        ctx.lines_as("Hermite Charles", args!["Long ago, some Crusaders entered the Geffen Dungeon on a monster subjugation expedition."])?;
-                                                                        ctx.next()?;
-                                                                        ctx.lines_as(
-                                                                            "Hermite Charles",
-                                                                            args![
-                                                                                "Please find",
-                                                                                "anything that",
-                                                                                "you can. I beg",
-                                                                                "of you..."
-                                                                            ],
-                                                                        )?;
-                                                                        ctx.var("god_brising").set(Val::from(10))?;
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    }
-                                                                    if !matched11 && subject11.loosely_equals(&Val::from(2)) {
-                                                                        matched11 = true;
-                                                                    }
-                                                                    if matched11 {
-                                                                        ctx.lines_as("Hermite Charles", args!["^333333*Sigh*^000000", "I understand.", "But if you don't help me, then Kaili won't get the help he needs..."])?;
-                                                                        ctx.var("god_brising").set(Val::from(9))?;
-                                                                        ctx.close_window()?;
-                                                                        return Err(Stop::End);
-                                                                    }
-                                                                }
-                                                            }
-                                                            if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                                                                matched10 = true;
-                                                            }
-                                                            if matched10 {
-                                                                ctx.lines_as("Hermite Charles", args!["You don't understand!", "If I weren't this much of a coward, I would already have gone out to find out what I could for myself."])?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Hermite Charles", args!["I'm not afraid of monsters or dying. It's the fact that she might hate me now. That's what I fear: Lowen's reproach."])?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Hermite Charles", args!["All I can do for her is just earnestly pray. I had no idea it'd be so horrible not to be able to see her anymore..."])?;
-                                                                ctx.var("god_brising").set(Val::from(9))?;
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            }
-                                                            if !matched10 && subject10.loosely_equals(&Val::from(3)) {
-                                                                matched10 = true;
-                                                            }
-                                                            if matched10 {
-                                                                ctx.lines_as(
-                                                                    "Hermite Charles",
-                                                                    args![
-                                                                        "The last time",
-                                                                        "I saw her was deep",
-                                                                        "inside the Geffen Dungeon."
-                                                                    ],
-                                                                )?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Hermite Charles", args!["Although it was created by humans, that dungeon is now cursed and inhabited with horrific monsters."])?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as("Hermite Charles", args!["I'm guessing the Crusaders saw that it was necessary to exterminate the monsters there to keep it from getting even worse."])?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as(
-                                                                    "Hermite Charles",
-                                                                    args![
-                                                                        "Lowen accompanied",
-                                                                        "a group of other Crusaders",
-                                                                        "for the good of the people,",
-                                                                        "but I haven't heard anything",
-                                                                        "about her since..."
-                                                                    ],
-                                                                )?;
-                                                                ctx.next()?;
-                                                                ctx.lines_as(
-                                                                    "Hermite Charles",
-                                                                    args![
-                                                                        "That was the last time...",
-                                                                        "Please find out anything",
-                                                                        "you can. I beg you..."
-                                                                    ],
-                                                                )?;
-                                                                ctx.var("god_brising").set(Val::from(10))?;
-                                                                ctx.close_window()?;
-                                                                return Err(Stop::End);
-                                                            }
-                                                        }
+                                                        ctx.var("god_brising").set(Val::from(10))?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
                                                     }
-                                                    if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                                                        matched9 = true;
+                                                    if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                                                        matched7 = true;
                                                     }
-                                                    if matched9 {
-                                                        ctx.lines_as("Hermite Charles", args!["I misunderstood you.", "I should have realized that people never really listen unless it's of some benefit to them."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Hermite Charles", args!["I won't waste any more of", "your time. I'll accept Kaili's letter and wait until I find someone who'll listen to", "my story and help me."])?;
-                                                        ctx.var("god_brising").set(Val::from(5))?;
+                                                    if matched7 {
+                                                        ctx.lines_as("Hermite Charles", args!["^333333*Sigh*^000000", "I understand.", "But if you don't help me, then Kaili won't get the help he needs..."])?;
+                                                        ctx.var("god_brising").set(Val::from(9))?;
                                                         ctx.close_window()?;
                                                         return Err(Stop::End);
                                                     }
                                                 }
                                             }
+                                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                                                matched6 = true;
+                                            }
+                                            if matched6 {
+                                                ctx.lines_as("Hermite Charles", args!["You don't understand!", "If I weren't this much of a coward, I would already have gone out to find out what I could for myself."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["I'm not afraid of monsters or dying. It's the fact that she might hate me now. That's what I fear: Lowen's reproach."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["All I can do for her is just earnestly pray. I had no idea it'd be so horrible not to be able to see her anymore..."])?;
+                                                ctx.var("god_brising").set(Val::from(9))?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
+                                                matched6 = true;
+                                            }
+                                            if matched6 {
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args!["The last time", "I saw her was deep", "inside the Geffen Dungeon."],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["Although it was created by humans, that dungeon is now cursed and inhabited with horrific monsters."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["I'm guessing the Crusaders saw that it was necessary to exterminate the monsters there to keep it from getting even worse."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args![
+                                                        "Lowen accompanied",
+                                                        "a group of other Crusaders",
+                                                        "for the good of the people,",
+                                                        "but I haven't heard anything",
+                                                        "about her since..."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args![
+                                                        "That was the last time...",
+                                                        "Please find out anything",
+                                                        "you can. I beg you..."
+                                                    ],
+                                                )?;
+                                                ctx.var("god_brising").set(Val::from(10))?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
                                         }
-                                    } else {
-                                        ctx.lines_as(
-                                            "Sad-looking Man",
-                                            args![
-                                                "...",
-                                                "^333333*Sob...*",
-                                                "Lowen...",
-                                                "I'm so sorry.",
-                                                "It's all my fault.",
-                                                "Please be okay..."
-                                            ],
-                                        )?;
+                                    }
+                                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                                        matched5 = true;
+                                    }
+                                    if matched5 {
+                                        ctx.lines_as("Hermite Charles", args!["I misunderstood you.", "I should have realized that people never really listen unless it's of some benefit to them."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["I won't waste any more of", "your time. I'll accept Kaili's letter and wait until I find someone who'll listen to", "my story and help me."])?;
+                                        ctx.var("god_brising").set(Val::from(5))?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
                                 }
                             }
                         }
+                    } else if ctx.var("god_brising").get()? == 3 {
+                        ctx.lines_as(
+                            "Sad-looking Man",
+                            args!["...", "^333333*Sob...*^000000", "I am so", "sorry, Lowen.", "It's all fault..."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args!["Excuse me.", "I am looking", "for someone named...", "Hermite?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Hermite Charles",
+                            args!["Hm...?", "Hermite? That's me.", "But if you don't mind,", "I want to be alone..."],
+                        )?;
+                        ctx.next()?;
+                        'b8: {
+                            let subject8 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Leave him alone.:Give him Kaili's Letter.")],
+                            )?);
+                            let mut matched8 = false;
+                            let no_case8 =
+                                !subject8.loosely_equals(&Val::from(1)) && !subject8.loosely_equals(&Val::from(2));
+                            if !matched8 && subject8.loosely_equals(&Val::from(1)) {
+                                matched8 = true;
+                            }
+                            if matched8 {
+                                ctx.mes("^3355FFYou're not sure why he's so upset, but it doesn't seem to be the best time to try to speak with him. Perhaps later would be better...^000000")?;
+                                ctx.var("god_brising").set(Val::from(4))?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched8 && subject8.loosely_equals(&Val::from(2)) {
+                                matched8 = true;
+                            }
+                            if matched8 {
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args!["Huh...", "Enrico Kaili.", "Yeah, I remember", "him. So what..?"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines(args!["^3355FFHermite nonchalantly", "tosses the letter back to you.^000000"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Hermite Charles", args!["...", "^333333*Sigh...*^000000"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Hermite Charles",
+                                    args!["You...", "Would you like to", "listen to my story?"],
+                                )?;
+                                ctx.next()?;
+                                'b9: {
+                                    let subject9 =
+                                        Val::from(runtime::select_values(ctx, &[Val::from("Sure!:I'm busy, actually.")])?);
+                                    let mut matched9 = false;
+                                    let no_case9 =
+                                        !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
+                                    if !matched9 && subject9.loosely_equals(&Val::from(1)) {
+                                        matched9 = true;
+                                    }
+                                    if matched9 {
+                                        ctx.lines_as(
+                                            "Hermite Charles",
+                                            args![
+                                                "Thank you...",
+                                                "Perhaps you're doing this",
+                                                "merely out of consideration,",
+                                                "but I still appreciate your kindness. The story I will",
+                                                "tell you is very old."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Hermite Charles",
+                                            args![
+                                                "Long ago, there was a little boy who never knew his parents. Just",
+                                                "to survive, he became a Thief and eventually joined the Rogue Guild."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["Without any goals or dreams, his life was pretty aimless. He pretty much only lived so that he could see tomorrow."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["However, the little boy met someone who was full of hope and kindess. He admired her and she became his reason for living."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["She will never know that the little boy loved her more than anything else. Unlike the boy, her dream was devote her life to God."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["Although he never understood that, he knew that he would be happy to just be near her, watching from a distance."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["But one day, because of one fatal mistake, he lost her and she never came back."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Hermite Charles",
+                                            args![
+                                                "Ever since, that boy has been coming to the Sanctuary everyday",
+                                                "to pray for her safety, even into adulthood."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Hermite Charles",
+                                            args![
+                                                "...",
+                                                "^333333*Sob*^000000",
+                                                "Please find",
+                                                "her for me.",
+                                                "Find Lowen."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["I know that Enrico has sent you. I'm guessing he needs something from me. Am I wrong?"])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["I'll do whatever you want if you do what I want you to do. It's simple: find out anything you can about Lowen."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["It's doesn't matter how insignificant the clues may be, anything will do. I want to know everything related to her!"])?;
+                                        ctx.next()?;
+                                        'b10: {
+                                            let subject10 = Val::from(runtime::select_values(
+                                                ctx,
+                                                &[Val::from(
+                                                    "Uhhhhh...:Sorry, I can't.:When was the last time you saw her?",
+                                                )],
+                                            )?);
+                                            let mut matched10 = false;
+                                            let no_case10 = !subject10.loosely_equals(&Val::from(1))
+                                                && !subject10.loosely_equals(&Val::from(2))
+                                                && !subject10.loosely_equals(&Val::from(3));
+                                            if !matched10 && subject10.loosely_equals(&Val::from(1)) {
+                                                matched10 = true;
+                                            }
+                                            if matched10 {
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args![
+                                                        "Please consider my",
+                                                        "proposal. If you can",
+                                                        "find Lowen for me, I'll",
+                                                        "give you what you want."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["Please, I beg you.", "You are a strong and well-experienced adventurer. Isn't this a simple thing for you to do?"])?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["If you've ever dearly loved someone, then you'd know how desperate I am. Please find Lowen for me. Please..."])?;
+                                                ctx.next()?;
+                                                'b11: {
+                                                    let subject11 = Val::from(runtime::select_values(
+                                                        ctx,
+                                                        &[Val::from("...Alright.:I'm sorry, I don't think I can do it.")],
+                                                    )?);
+                                                    let mut matched11 = false;
+                                                    let no_case11 = !subject11.loosely_equals(&Val::from(1))
+                                                        && !subject11.loosely_equals(&Val::from(2));
+                                                    if !matched11 && subject11.loosely_equals(&Val::from(1)) {
+                                                        matched11 = true;
+                                                    }
+                                                    if matched11 {
+                                                        ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Alright.", "I'll try my best to find her. Would you tell me more about Lowen?"])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as(
+                                                            "Hermite Charles",
+                                                            args![
+                                                                "She is a Crusader.",
+                                                                "The last time I saw her was",
+                                                                "deep inside Geffen Dungeon."
+                                                            ],
+                                                        )?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as("Hermite Charles", args!["Long ago, some Crusaders entered the Geffen Dungeon on a monster subjugation expedition."])?;
+                                                        ctx.next()?;
+                                                        ctx.lines_as(
+                                                            "Hermite Charles",
+                                                            args![
+                                                                "Please find",
+                                                                "anything that",
+                                                                "you can. I beg",
+                                                                "of you..."
+                                                            ],
+                                                        )?;
+                                                        ctx.var("god_brising").set(Val::from(10))?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
+                                                    }
+                                                    if !matched11 && subject11.loosely_equals(&Val::from(2)) {
+                                                        matched11 = true;
+                                                    }
+                                                    if matched11 {
+                                                        ctx.lines_as("Hermite Charles", args!["^333333*Sigh*^000000", "I understand.", "But if you don't help me, then Kaili won't get the help he needs..."])?;
+                                                        ctx.var("god_brising").set(Val::from(9))?;
+                                                        ctx.close_window()?;
+                                                        return Err(Stop::End);
+                                                    }
+                                                }
+                                            }
+                                            if !matched10 && subject10.loosely_equals(&Val::from(2)) {
+                                                matched10 = true;
+                                            }
+                                            if matched10 {
+                                                ctx.lines_as("Hermite Charles", args!["You don't understand!", "If I weren't this much of a coward, I would already have gone out to find out what I could for myself."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["I'm not afraid of monsters or dying. It's the fact that she might hate me now. That's what I fear: Lowen's reproach."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["All I can do for her is just earnestly pray. I had no idea it'd be so horrible not to be able to see her anymore..."])?;
+                                                ctx.var("god_brising").set(Val::from(9))?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                            if !matched10 && subject10.loosely_equals(&Val::from(3)) {
+                                                matched10 = true;
+                                            }
+                                            if matched10 {
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args![
+                                                        "The last time",
+                                                        "I saw her was deep",
+                                                        "inside the Geffen Dungeon."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["Although it was created by humans, that dungeon is now cursed and inhabited with horrific monsters."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as("Hermite Charles", args!["I'm guessing the Crusaders saw that it was necessary to exterminate the monsters there to keep it from getting even worse."])?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args![
+                                                        "Lowen accompanied",
+                                                        "a group of other Crusaders",
+                                                        "for the good of the people,",
+                                                        "but I haven't heard anything",
+                                                        "about her since..."
+                                                    ],
+                                                )?;
+                                                ctx.next()?;
+                                                ctx.lines_as(
+                                                    "Hermite Charles",
+                                                    args![
+                                                        "That was the last time...",
+                                                        "Please find out anything",
+                                                        "you can. I beg you..."
+                                                    ],
+                                                )?;
+                                                ctx.var("god_brising").set(Val::from(10))?;
+                                                ctx.close_window()?;
+                                                return Err(Stop::End);
+                                            }
+                                        }
+                                    }
+                                    if !matched9 && subject9.loosely_equals(&Val::from(2)) {
+                                        matched9 = true;
+                                    }
+                                    if matched9 {
+                                        ctx.lines_as("Hermite Charles", args!["I misunderstood you.", "I should have realized that people never really listen unless it's of some benefit to them."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Hermite Charles", args!["I won't waste any more of", "your time. I'll accept Kaili's letter and wait until I find someone who'll listen to", "my story and help me."])?;
+                                        ctx.var("god_brising").set(Val::from(5))?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        ctx.lines_as(
+                            "Sad-looking Man",
+                            args![
+                                "...",
+                                "^333333*Sob...*",
+                                "Lowen...",
+                                "I'm so sorry.",
+                                "It's all my fault.",
+                                "Please be okay..."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -2962,197 +2942,193 @@ fn librarian_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.mes("^3355FFThis librarian seems to be deeply asleep. It'd be smarter not to wake him if you want to check the Crusader Personnel Records.^000000")?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("god_brising").get()? == 10 {
-            ctx.lines_as(
-                "Librarian",
-                args![
-                    "All confidential personnel records are kept here in the royal library. However, you need authorization",
-                    "for full access."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Librarian",
-                args![
-                    "Did you say that you",
-                    "need to find a person?",
-                    "Please give me that",
-                    "person's name, as well",
-                    "as your relationship."
-                ],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Lowen, Sibling:Lowen, Spouse:Lowen, Enemy:Lowen, a Friend")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3))
-                    && !subject1.loosely_equals(&Val::from(4));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                        ctx.lines_as("Librarian", args!["How dare you", "lie to the royal", "librarian!"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Librarian",
-                            args!["It says here", "in the records", "that Lowen did not", "have any male siblings!"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Librarian",
-                            args![
-                                "^333333(Crap...!",
-                                "I just disclosed",
-                                "^666666classified^000000 ^333333info!)^000000"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Librarian",
-                            args!["The Royal Library won't", "tolerate identity fraud!", "Please leave!"],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Librarian",
-                            args!["You're related to Miss Lowen? How have you not received any news about her before?"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Librarian",
-                            args!["I see...", "Separated at birth,", "that's truly tragic.", "Okay, let me check."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Librarian",
-                            args!["I feel terrible telling you this, but it's too late to find Lowen Ellenen, according to the records."],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Librarian", args!["During the monster subjugation mission in Geffen dungeon she reportedly disappeared and... was later pronounced dead."])?;
-                        ctx.next()?;
-                        ctx.lines_as("Librarian", args!["I'm sorry, but", "that's all I know.", "Thank you..."])?;
-                        ctx.var("god_brising").set(Val::from(11))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                        ctx.lines_as("Librarian", args!["Spouse...?", "Well, I guess you look like a husband. Heh, I've got a girlfriend myself. Well, at least I think so. Anyway..."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Librarian",
-                            args![
-                                "Lowen Ellenen",
-                                "the Crusader, right?",
-                                "I'm so... sorry.",
-                                "You might want",
-                                "to have a seat."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Librarian",
-                            args![
-                                "During the monster",
-                                "subjugation in Geffen",
-                                "Dungeon, she reportedly",
-                                "disappeared. And later,",
-                                "she was pronounced dead."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Librarian",
-                            args!["That's all the", "information I have,", "sir. I'm truly sorry", "for your loss."],
-                        )?;
-                        ctx.var("god_brising").set(Val::from(11))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Librarian",
-                            args!["Hmmm...?", "Spouse?", "Or ^333333*Ahem*^000000", "cohabitational partners?"],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFThe librarian",
-                            "now seems awfully",
-                            "distracted, as if",
-                            "he were lost in",
-                            "vivid daydream...^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+    } else if ctx.var("god_brising").get()? == 10 {
+        ctx.lines_as(
+            "Librarian",
+            args![
+                "All confidential personnel records are kept here in the royal library. However, you need authorization",
+                "for full access."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Librarian",
+            args![
+                "Did you say that you",
+                "need to find a person?",
+                "Please give me that",
+                "person's name, as well",
+                "as your relationship."
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Lowen, Sibling:Lowen, Spouse:Lowen, Enemy:Lowen, a Friend")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3))
+                && !subject1.loosely_equals(&Val::from(4));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                    ctx.lines_as("Librarian", args!["How dare you", "lie to the royal", "librarian!"])?;
+                    ctx.next()?;
                     ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args!["I'm looking", "for Ellenen.", "Lowen Ellenen.", "My sworn arch-enemy."],
+                        "Librarian",
+                        args!["It says here", "in the records", "that Lowen did not", "have any male siblings!"],
                     )?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Librarian",
                         args![
-                            "Arch-enemy...?",
-                            "Um, uh ^666666*Ahem!*^000000",
-                            "All I can tell you is that there was a Crusader by that name."
+                            "^333333(Crap...!",
+                            "I just disclosed",
+                            "^666666classified^000000 ^333333info!)^000000"
                         ],
                     )?;
                     ctx.next()?;
-                    ctx.lines_as("Librarian", args!["I'm sorry, but", "I can't tell you", "more than that."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Librarian", args!["^333333*Cough*^000000", "^666666Nutcase!^000000"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                    matched1 = true;
-                }
-                if matched1 {
                     ctx.lines_as(
                         "Librarian",
-                        args!["A friend...?", "Well, we have a", "record of someone", "named Lohen Phelica."],
+                        args!["The Royal Library won't", "tolerate identity fraud!", "Please leave!"],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as(
+                        "Librarian",
+                        args!["You're related to Miss Lowen? How have you not received any news about her before?"],
                     )?;
                     ctx.next()?;
-                    ctx.lines_as("Librarian", args!["He retired from the service a few years ago. I'd like to give you his address, but we don't have any of that information."])?;
-                    ctx.var("god_brising").set(Val::from(12))?;
+                    ctx.lines_as(
+                        "Librarian",
+                        args!["I see...", "Separated at birth,", "that's truly tragic.", "Okay, let me check."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Librarian",
+                        args!["I feel terrible telling you this, but it's too late to find Lowen Ellenen, according to the records."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Librarian", args!["During the monster subjugation mission in Geffen dungeon she reportedly disappeared and... was later pronounced dead."])?;
+                    ctx.next()?;
+                    ctx.lines_as("Librarian", args!["I'm sorry, but", "that's all I know.", "Thank you..."])?;
+                    ctx.var("god_brising").set(Val::from(11))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if (ctx.var("god_brising").get()?.number()? > 10 && ctx.var("god_brising").get()?.number()? < 13) {
-                ctx.lines_as("Librarian", args!["Now, may", "I excuse myself?", "Thank you!"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                    ctx.lines_as("Librarian", args!["Spouse...?", "Well, I guess you look like a husband. Heh, I've got a girlfriend myself. Well, at least I think so. Anyway..."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Librarian",
+                        args![
+                            "Lowen Ellenen",
+                            "the Crusader, right?",
+                            "I'm so... sorry.",
+                            "You might want",
+                            "to have a seat."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Librarian",
+                        args![
+                            "During the monster",
+                            "subjugation in Geffen",
+                            "Dungeon, she reportedly",
+                            "disappeared. And later,",
+                            "she was pronounced dead."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Librarian",
+                        args!["That's all the", "information I have,", "sir. I'm truly sorry", "for your loss."],
+                    )?;
+                    ctx.var("god_brising").set(Val::from(11))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as(
+                        "Librarian",
+                        args!["Hmmm...?", "Spouse?", "Or ^333333*Ahem*^000000", "cohabitational partners?"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFThe librarian",
+                        "now seems awfully",
+                        "distracted, as if",
+                        "he were lost in",
+                        "vivid daydream...^000000"
+                    ])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["I'm looking", "for Ellenen.", "Lowen Ellenen.", "My sworn arch-enemy."],
+                )?;
+                ctx.next()?;
                 ctx.lines_as(
                     "Librarian",
                     args![
-                        "All confidential personnel records are kept here in the royal library. However, you need authorization",
-                        "for full access."
+                        "Arch-enemy...?",
+                        "Um, uh ^666666*Ahem!*^000000",
+                        "All I can tell you is that there was a Crusader by that name."
                     ],
                 )?;
+                ctx.next()?;
+                ctx.lines_as("Librarian", args!["I'm sorry, but", "I can't tell you", "more than that."])?;
+                ctx.next()?;
+                ctx.lines_as("Librarian", args!["^333333*Cough*^000000", "^666666Nutcase!^000000"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Librarian",
+                    args!["A friend...?", "Well, we have a", "record of someone", "named Lohen Phelica."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Librarian", args!["He retired from the service a few years ago. I'd like to give you his address, but we don't have any of that information."])?;
+                ctx.var("god_brising").set(Val::from(12))?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
+    } else if (ctx.var("god_brising").get()?.number()? > 10 && ctx.var("god_brising").get()?.number()? < 13) {
+        ctx.lines_as("Librarian", args!["Now, may", "I excuse myself?", "Thank you!"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines_as(
+            "Librarian",
+            args![
+                "All confidential personnel records are kept here in the royal library. However, you need authorization",
+                "for full access."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -3209,115 +3185,111 @@ fn woman_rosa_ellenen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("god_brising").get()? == 21 {
+        ctx.lines_as("Rosa Ellenen", args!["What are you", "talking about?", "A message from Lowen?"])?;
+        ctx.next()?;
+        ctx.lines_as("Rosa Ellenen", args!["What?!", "Why hasn't she", "gone to heaven yet?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rosa Ellenen",
+            args![
+                "I hope you remember",
+                "everything I'm going",
+                "to tell you. She should",
+                "go to heaven right now!",
+                "I still don't understand..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Rosa Ellenen", args!["And please tell that praying fool that he shouldn't waste his time blaming himself. ^333333*Sigh*^000000 I still don't know why she chose to", "speak to you."])?;
+        ctx.next()?;
+        ctx.lines_as("Rosa Ellenen", args!["Let me tell you something. Lowen was a fencing prodigy. However, she always had trouble enduring the rigorous training and bearing the weight of the armor..."])?;
+        ctx.next()?;
+        ctx.lines_as("Rosa Ellenen", args!["But she loved fencing and always tried twice as hard to develop her physical strength so that she could serve God in battle."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rosa Ellenen",
+            args![
+                "Finally, she became a Crusader.",
+                "For a while things were great, but then she suddenly disappeared while on a mission to Geffen Dungeon."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Rosa Ellenen", args!["Two years later, she was buried in this grave after her body was found by some adventurers. I was given the broken shards of armor and a blood stained ribbon she left behind."])?;
+        ctx.next()?;
+        ctx.lines_as("Rosa Ellenen", args!["I never really learned what exactly happened. And Hermite was always following her like she was his real sister. Ever since she died, he's changed. I hope he doesn't hurt himself..."])?;
+        ctx.next()?;
+        ctx.lines_as("Rosa Ellenen", args!["Something suspicious seems to have happened in the military, but they won't even talk to me about it. What could have happened?!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rosa Ellenen",
+            args!["In the end, I gave up trying to find the truth. After all, nothing can bring her back..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rosa Ellenen",
+            args![
+                "Please tell her I'm fine,",
+                "but I want to know why her",
+                "soul hasn't moved on to",
+                "heaven! Maybe..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rose Ellenen",
+            args![
+                "Maybe there's",
+                "something in the",
+                "Crusader Personnel",
+                "Records that might",
+                "explain something?"
+            ],
+        )?;
+        ctx.var("god_brising").set(Val::from(25))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (ctx.var("god_brising").get()?.number()? > 9 && ctx.var("god_brising").get()?.number()? < 20) {
+        ctx.lines_as(
+            "Rosa Ellenen",
+            args!["This is my little", "sister's grave...", "Her name was Lowen."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rosa Ellenen",
+            args![
+                "Are you a friend",
+                "of Lowen's? Hmmm?",
+                "The man in the Sanctuary?",
+                "That must be Hermite."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rosa Ellenen",
+            args![
+                "He was shocked when Lowen",
+                "died but he doesn't have to blame himself for her death. I don't want him to suffer from the guilt."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rosa Ellenen",
+            args![
+                "Anyway, thank you for visiting",
+                "my little sister. It's good to know she has friends, even after she's passed on."
+            ],
+        )?;
+        ctx.var("god_brising").set(Val::from(11))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("god_brising").get()? == 21 {
-            ctx.lines_as("Rosa Ellenen", args!["What are you", "talking about?", "A message from Lowen?"])?;
-            ctx.next()?;
-            ctx.lines_as("Rosa Ellenen", args!["What?!", "Why hasn't she", "gone to heaven yet?"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rosa Ellenen",
-                args![
-                    "I hope you remember",
-                    "everything I'm going",
-                    "to tell you. She should",
-                    "go to heaven right now!",
-                    "I still don't understand..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Rosa Ellenen", args!["And please tell that praying fool that he shouldn't waste his time blaming himself. ^333333*Sigh*^000000 I still don't know why she chose to", "speak to you."])?;
-            ctx.next()?;
-            ctx.lines_as("Rosa Ellenen", args!["Let me tell you something. Lowen was a fencing prodigy. However, she always had trouble enduring the rigorous training and bearing the weight of the armor..."])?;
-            ctx.next()?;
-            ctx.lines_as("Rosa Ellenen", args!["But she loved fencing and always tried twice as hard to develop her physical strength so that she could serve God in battle."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rosa Ellenen",
-                args![
-                    "Finally, she became a Crusader.",
-                    "For a while things were great, but then she suddenly disappeared while on a mission to Geffen Dungeon."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Rosa Ellenen", args!["Two years later, she was buried in this grave after her body was found by some adventurers. I was given the broken shards of armor and a blood stained ribbon she left behind."])?;
-            ctx.next()?;
-            ctx.lines_as("Rosa Ellenen", args!["I never really learned what exactly happened. And Hermite was always following her like she was his real sister. Ever since she died, he's changed. I hope he doesn't hurt himself..."])?;
-            ctx.next()?;
-            ctx.lines_as("Rosa Ellenen", args!["Something suspicious seems to have happened in the military, but they won't even talk to me about it. What could have happened?!"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rosa Ellenen",
-                args!["In the end, I gave up trying to find the truth. After all, nothing can bring her back..."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rosa Ellenen",
-                args![
-                    "Please tell her I'm fine,",
-                    "but I want to know why her",
-                    "soul hasn't moved on to",
-                    "heaven! Maybe..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rose Ellenen",
-                args![
-                    "Maybe there's",
-                    "something in the",
-                    "Crusader Personnel",
-                    "Records that might",
-                    "explain something?"
-                ],
-            )?;
-            ctx.var("god_brising").set(Val::from(25))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if (ctx.var("god_brising").get()?.number()? > 9 && ctx.var("god_brising").get()?.number()? < 20) {
-                ctx.lines_as(
-                    "Rosa Ellenen",
-                    args!["This is my little", "sister's grave...", "Her name was Lowen."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rosa Ellenen",
-                    args![
-                        "Are you a friend",
-                        "of Lowen's? Hmmm?",
-                        "The man in the Sanctuary?",
-                        "That must be Hermite."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rosa Ellenen",
-                    args![
-                        "He was shocked when Lowen",
-                        "died but he doesn't have to blame himself for her death. I don't want him to suffer from the guilt."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rosa Ellenen",
-                    args![
-                        "Anyway, thank you for visiting",
-                        "my little sister. It's good to know she has friends, even after she's passed on."
-                    ],
-                )?;
-                ctx.var("god_brising").set(Val::from(11))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as(
-                    "Rosa Ellenen",
-                    args!["Oh hello...", "Have you come", "to pay your respects", "to someone here as well?"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-        }
+        ctx.lines_as(
+            "Rosa Ellenen",
+            args!["Oh hello...", "Have you come", "to pay your respects", "to someone here as well?"],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -3413,32 +3385,28 @@ fn lowentrace_run(ctx: &Ctx, mut step: LowentraceStep, args: Vec<Val>) -> Result
                                     ])?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
+                                } else if ctx.var("god_brising").get()? == 21 {
+                                    ctx.lines_as("Lowen Ellenen", args!["^6E7B8BPlease tell Rosa", "not to worry about me anymore. You might be able to find her beside my grave. I don't want her to suffer anymore...^000000"])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                } else if ctx.var("god_brising").get()? == 25 {
+                                    ctx.lines_as("Lowen Ellenen", args!["^6E7B8BYou've come back.", "Have you met Rosa?", "Hm, yes, it sounds like she'd say that. But thank you for sending her my message.^000000"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Lowen Ellenen", args!["^6E7B8BAh, it's too dangero--", "This place is too dangerous for you. I hate myself for not being able to help protect you from", "these evil creatures. Be careful...^000000"])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 } else {
-                                    if ctx.var("god_brising").get()? == 21 {
-                                        ctx.lines_as("Lowen Ellenen", args!["^6E7B8BPlease tell Rosa", "not to worry about me anymore. You might be able to find her beside my grave. I don't want her to suffer anymore...^000000"])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("god_brising").get()? == 25 {
-                                            ctx.lines_as("Lowen Ellenen", args!["^6E7B8BYou've come back.", "Have you met Rosa?", "Hm, yes, it sounds like she'd say that. But thank you for sending her my message.^000000"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Lowen Ellenen", args!["^6E7B8BAh, it's too dangero--", "This place is too dangerous for you. I hate myself for not being able to help protect you from", "these evil creatures. Be careful...^000000"])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            ctx.lines_as(
-                                                "Lowen Ellenen",
-                                                args![
-                                                    "^6E7B8BMy spirit is",
-                                                    "growing weaker...",
-                                                    "Please be careful...",
-                                                    "This place is too dangerous.^000000"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
+                                    ctx.lines_as(
+                                        "Lowen Ellenen",
+                                        args![
+                                            "^6E7B8BMy spirit is",
+                                            "growing weaker...",
+                                            "Please be careful...",
+                                            "This place is too dangerous.^000000"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             } else {
                                 ctx.close_window()?;
@@ -3453,98 +3421,96 @@ fn lowentrace_run(ctx: &Ctx, mut step: LowentraceStep, args: Vec<Val>) -> Result
                             return Err(Stop::End);
                         }
                     }
-                } else {
-                    if ctx.var("god_brising").get()? == 20 {
-                        ctx.lines_as(
-                            "The voice of a female",
-                            args!["^6E7B8BI-It's dangerous...", "Be careful...^000000"],
-                        )?;
-                        ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Ignore it.:What are you talking about?")],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.lines_as(
-                                    "The voice of a female",
-                                    args![
-                                        "^6E7B8B...No way...",
-                                        "You can hear me?",
-                                        "I can't believe this.",
-                                        "It's impossible...",
-                                        "But if you don't mind,",
-                                        "may I talk to you...?^000000"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                'b3: {
-                                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Holy...! Run!:What are you?!")])?);
-                                    let mut matched3 = false;
-                                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
-                                        ctx.lines_as("The voice of a female", args!["^6E7B8BI...", "I don't have my body anymore, so... I think I'm a ghost. Yes, I've been wandering in this place ever since I got here.^000000"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "The voice of a female",
-                                            args![
-                                                "^6E7B8BI'm still not sure why I'm",
-                                                "bound to this realm. If you",
-                                                "don't mind, would you visit",
-                                                "my sister for me?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "The voice of a female",
-                                            args![
-                                                "^6E7B8BPlease tell her...",
-                                                "Please tell her that her",
-                                                "little sister Lowen is fine.^000000"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "The voice of a female",
-                                            args![
-                                                "^6E7B8BUm...",
-                                                "If you want to meet me again, just say my name out loud. '^000000Lowen^6E7B8B.'^000000"
-                                            ],
-                                        )?;
-                                        ctx.var("god_brising").set(Val::from(21))?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
+                } else if ctx.var("god_brising").get()? == 20 {
+                    ctx.lines_as(
+                        "The voice of a female",
+                        args!["^6E7B8BI-It's dangerous...", "Be careful...^000000"],
+                    )?;
+                    ctx.next()?;
+                    'b2: {
+                        let subject2 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Ignore it.:What are you talking about?")],
+                        )?);
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.lines_as(
+                                "The voice of a female",
+                                args![
+                                    "^6E7B8B...No way...",
+                                    "You can hear me?",
+                                    "I can't believe this.",
+                                    "It's impossible...",
+                                    "But if you don't mind,",
+                                    "may I talk to you...?^000000"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            'b3: {
+                                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Holy...! Run!:What are you?!")])?);
+                                let mut matched3 = false;
+                                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.lines_as("The voice of a female", args!["^6E7B8BI...", "I don't have my body anymore, so... I think I'm a ghost. Yes, I've been wandering in this place ever since I got here.^000000"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "The voice of a female",
+                                        args![
+                                            "^6E7B8BI'm still not sure why I'm",
+                                            "bound to this realm. If you",
+                                            "don't mind, would you visit",
+                                            "my sister for me?"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "The voice of a female",
+                                        args![
+                                            "^6E7B8BPlease tell her...",
+                                            "Please tell her that her",
+                                            "little sister Lowen is fine.^000000"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "The voice of a female",
+                                        args![
+                                            "^6E7B8BUm...",
+                                            "If you want to meet me again, just say my name out loud. '^000000Lowen^6E7B8B.'^000000"
+                                        ],
+                                    )?;
+                                    ctx.var("god_brising").set(Val::from(21))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                         }
-                    } else {
-                        ctx.mes("^3355FFYou find a piece of twisted, dry wood. Looking at it seems to bring out a feeling of sadness within you for some reason.^000000")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
                     }
+                } else {
+                    ctx.mes("^3355FFYou find a piece of twisted, dry wood. Looking at it seems to bring out a feeling of sadness within you for some reason.^000000")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 step = LowentraceStep::OnTouch;
                 continue 'machine;
@@ -3635,33 +3601,29 @@ fn lowentrace1_run(ctx: &Ctx, mut step: Lowentrace1Step, args: Vec<Val>) -> Resu
                                             return Err(Stop::End);
                                         }
                                     }
+                                } else if ctx.var("god_brising").get()? == 30 {
+                                    ctx.lines_as("Lowen Ellenen", args!["^6E7B8BAh yes. This is it.", "You look very curious about me, yet I am amazed that you can hear my voice. Please let me tell you an old story.^000000"])?;
+                                    ctx.close_window()?;
+                                    ctx.call(Function::Warp, vec![Val::from("que_god02"), Val::from(47), Val::from(53)])?;
+                                    return Err(Stop::End);
+                                } else if ctx.var("god_brising").get()? == 25 {
+                                    ctx.lines_as("Lowen Ellenen", args!["^6E7B8BYou've come back.", "Have you met Rosa?", "Hm, yes, it sounds like she'd say that. But thank you for sending her my message.^000000"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Lowen Ellenen", args!["^6E7B8BAh, it's too dangero--", "This place is too dangerous for you. I hate myself for not being able to help protect you from", "these evil creatures. Be careful...^000000"])?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 } else {
-                                    if ctx.var("god_brising").get()? == 30 {
-                                        ctx.lines_as("Lowen Ellenen", args!["^6E7B8BAh yes. This is it.", "You look very curious about me, yet I am amazed that you can hear my voice. Please let me tell you an old story.^000000"])?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::Warp, vec![Val::from("que_god02"), Val::from(47), Val::from(53)])?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        if ctx.var("god_brising").get()? == 25 {
-                                            ctx.lines_as("Lowen Ellenen", args!["^6E7B8BYou've come back.", "Have you met Rosa?", "Hm, yes, it sounds like she'd say that. But thank you for sending her my message.^000000"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Lowen Ellenen", args!["^6E7B8BAh, it's too dangero--", "This place is too dangerous for you. I hate myself for not being able to help protect you from", "these evil creatures. Be careful...^000000"])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        } else {
-                                            ctx.lines_as(
-                                                "Lowen Ellenen",
-                                                args![
-                                                    "^6E7B8BMy spirit is",
-                                                    "growing weaker...",
-                                                    "Please be careful...",
-                                                    "This place is too dangerous.^000000"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                    }
+                                    ctx.lines_as(
+                                        "Lowen Ellenen",
+                                        args![
+                                            "^6E7B8BMy spirit is",
+                                            "growing weaker...",
+                                            "Please be careful...",
+                                            "This place is too dangerous.^000000"
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             } else {
                                 ctx.close_window()?;
@@ -3676,98 +3638,96 @@ fn lowentrace1_run(ctx: &Ctx, mut step: Lowentrace1Step, args: Vec<Val>) -> Resu
                             return Err(Stop::End);
                         }
                     }
-                } else {
-                    if ctx.var("god_brising").get()? == 20 {
-                        ctx.lines_as(
-                            "The voice of a female",
-                            args!["^6E7B8BI-It's dangerous...", "Be careful...^000000"],
-                        )?;
-                        ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Ignore it.:What are you talking about?")],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.lines_as(
-                                    "The voice of a female",
-                                    args![
-                                        "^6E7B8B...No way...",
-                                        "You can hear me?",
-                                        "I can't believe this.",
-                                        "It's impossible...",
-                                        "But if you don't mind,",
-                                        "may I talk to you...?^000000"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                'b4: {
-                                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Holy...! Run!:What are you?!")])?);
-                                    let mut matched4 = false;
-                                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as("The voice of a female", args!["^6E7B8BI...", "I don't have my body anymore, so... I think I'm a ghost. Yes, I've been wandering in this place ever since I got here.^000000"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "The voice of a female",
-                                            args![
-                                                "^6E7B8BI'm still not sure why I'm",
-                                                "bound to this realm. If you",
-                                                "don't mind, would you visit",
-                                                "my sister for me?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "The voice of a female",
-                                            args![
-                                                "^6E7B8BPlease tell her...",
-                                                "Please tell her that her",
-                                                "little sister Lowen is fine.^000000"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "The voice of a female",
-                                            args![
-                                                "^6E7B8BUm...",
-                                                "If you want to meet me again, just say my name out loud. '^000000Lowen^6E7B8B.'^000000"
-                                            ],
-                                        )?;
-                                        ctx.var("god_brising").set(Val::from(21))?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
+                } else if ctx.var("god_brising").get()? == 20 {
+                    ctx.lines_as(
+                        "The voice of a female",
+                        args!["^6E7B8BI-It's dangerous...", "Be careful...^000000"],
+                    )?;
+                    ctx.next()?;
+                    'b3: {
+                        let subject3 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Ignore it.:What are you talking about?")],
+                        )?);
+                        let mut matched3 = false;
+                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.lines_as(
+                                "The voice of a female",
+                                args![
+                                    "^6E7B8B...No way...",
+                                    "You can hear me?",
+                                    "I can't believe this.",
+                                    "It's impossible...",
+                                    "But if you don't mind,",
+                                    "may I talk to you...?^000000"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            'b4: {
+                                let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Holy...! Run!:What are you?!")])?);
+                                let mut matched4 = false;
+                                let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
+                                }
+                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    ctx.lines_as("The voice of a female", args!["^6E7B8BI...", "I don't have my body anymore, so... I think I'm a ghost. Yes, I've been wandering in this place ever since I got here.^000000"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "The voice of a female",
+                                        args![
+                                            "^6E7B8BI'm still not sure why I'm",
+                                            "bound to this realm. If you",
+                                            "don't mind, would you visit",
+                                            "my sister for me?"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "The voice of a female",
+                                        args![
+                                            "^6E7B8BPlease tell her...",
+                                            "Please tell her that her",
+                                            "little sister Lowen is fine.^000000"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "The voice of a female",
+                                        args![
+                                            "^6E7B8BUm...",
+                                            "If you want to meet me again, just say my name out loud. '^000000Lowen^6E7B8B.'^000000"
+                                        ],
+                                    )?;
+                                    ctx.var("god_brising").set(Val::from(21))?;
+                                    ctx.close_window()?;
+                                    return Err(Stop::End);
                                 }
                             }
                         }
-                    } else {
-                        ctx.mes("^3355FFYou find a piece of twisted, dry wood. Looking at it seems to bring out a feeling of sadness within you for some reason.^000000")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
                     }
+                } else {
+                    ctx.mes("^3355FFYou find a piece of twisted, dry wood. Looking at it seems to bring out a feeling of sadness within you for some reason.^000000")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 step = Lowentrace1Step::OnTouch;
                 continue 'machine;
@@ -3924,25 +3884,23 @@ fn lowen_ellenen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
+    } else if ctx.var("god_brising").get()? == 31 {
+        ctx.lines_as(
+            "Lowen Ellenen",
+            args![
+                "Walk down the stairs",
+                "ahead. From this point",
+                "I can only travel with",
+                "you in your mind..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("god_brising").get()? == 31 {
-            ctx.lines_as(
-                "Lowen Ellenen",
-                args![
-                    "Walk down the stairs",
-                    "ahead. From this point",
-                    "I can only travel with",
-                    "you in your mind..."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as("Lowen Ellenen", args!["How come...", "You're here?"])?;
-            ctx.close_window()?;
-            ctx.call(Function::Warp, vec![Val::from("geffen"), Val::from(120), Val::from(101)])?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as("Lowen Ellenen", args!["How come...", "You're here?"])?;
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("geffen"), Val::from(120), Val::from(101)])?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -5649,297 +5607,289 @@ fn alfrik_1_run(ctx: &Ctx, mut step: Alfrik1Step, args: Vec<Val>) -> Result<Val,
                                 return Err(Stop::End);
                             }
                         }
-                    } else {
-                        if ctx.var("god_brising").get()? == 40 {
-                            ctx.lines_as(
-                                "Alfrik",
-                                args![
-                                    "^333333*Yawn...*^000000",
-                                    "It's been a long time since I've been outside! W-wait! You're not..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Alfrik", args!["Who sent you?!", "Loki? Heimdall?", "Or was it Freya?"])?;
-                            ctx.next()?;
-                            'b2: {
-                                let subject2 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from("No one, it was an accident!:It was Valkyrie.")],
-                                )?);
-                                let mut matched2 = false;
-                                let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
-                                    ctx.lines_as("Alfrik", args!["Don't even think of lying to me, human! There's no way you could have awoken me without knowing", "the password! Now, speak!"])?;
-                                    ctx.next()?;
-                                    'b3: {
-                                        let subject3 = Val::from(runtime::select_values(
-                                            ctx,
-                                            &[Val::from("Valkyrie told me.:It was a coincidence!")],
-                                        )?);
-                                        let mut matched3 = false;
-                                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
-                                            ctx.lines_as(
-                                                "Alfrik",
-                                                args![
-                                                    "Valkyrie...?",
-                                                    "Odin's warmonger?",
-                                                    "What could Odin want,",
-                                                    "I haven't done anything wrong!"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.mes("^3355FFYou explained everything to Alfrik, who seems to worry about being targeted by Odin.^000000")?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Alfrik",
-                                                args![
-                                                    "So that's it.",
-                                                    "Seeking out our",
-                                                    "masterpiece? You",
-                                                    "humans must desire",
-                                                    "the power of the gods.",
-                                                    "Interesting."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Alfrik",
-                                                args![
-                                                    "The time for us to revive may actually have come! Alright then,",
-                                                    "I, Alfrik shall cooperate with you humans."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Alfrik", args!["After all, getting on Odin's good side like this is much better than being tortured by Loki."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as(
-                                                "Alfrik",
-                                                args![
-                                                    "Now...",
-                                                    "Understand that",
-                                                    "there can only be",
-                                                    "one true Brisingamen.",
-                                                    "After all, it's our",
-                                                    "masterpiece."
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Alfrik", args!["However, that doesn't mean an imitation, with the same power as that godly item, can't be made. Isn't it tempting, the power of a god?"])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Alfrik", args!["First things first. If you want to make the necklace, you must", "awaken all four of us. Because of Loki's threat, we all hid ourselves in different places."])?;
-                                            ctx.next()?;
-                                            ctx.lines_as("Alfrik", args!["Go wake all my brothers!", "Let's see if the Brisingamen can be made once again! First, go and wake Dvalin before the gods and giants find out!"])?;
-                                            ctx.var("god_brising").set(Val::from(41))?;
-                                            ctx.close_window()?;
-                                            ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
-                                            ctx.lines_as(
-                                                "Alfrik",
-                                                args![
-                                                    "Coincidence?",
-                                                    "Impossible! How dare you lie! Don't ever come back, or the gods will find me!"
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
-                                            return Err(Stop::End);
-                                        }
+                    } else if ctx.var("god_brising").get()? == 40 {
+                        ctx.lines_as(
+                            "Alfrik",
+                            args![
+                                "^333333*Yawn...*^000000",
+                                "It's been a long time since I've been outside! W-wait! You're not..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Alfrik", args!["Who sent you?!", "Loki? Heimdall?", "Or was it Freya?"])?;
+                        ctx.next()?;
+                        'b2: {
+                            let subject2 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("No one, it was an accident!:It was Valkyrie.")],
+                            )?);
+                            let mut matched2 = false;
+                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                                matched2 = true;
+                            }
+                            if matched2 {
+                                ctx.lines_as("Alfrik", args!["Don't even think of lying to me, human! There's no way you could have awoken me without knowing", "the password! Now, speak!"])?;
+                                ctx.next()?;
+                                'b3: {
+                                    let subject3 = Val::from(runtime::select_values(
+                                        ctx,
+                                        &[Val::from("Valkyrie told me.:It was a coincidence!")],
+                                    )?);
+                                    let mut matched3 = false;
+                                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                        matched3 = true;
                                     }
-                                }
-                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
-                                    ctx.lines_as(
-                                        "Alfrik",
-                                        args![
-                                            "Valkyrie...?",
-                                            "Odin's warmonger?",
-                                            "What could Odin want,",
-                                            "I haven't done anything wrong!"
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.mes("^3355FFYou explained everything to Alfrik, who seems to worry about being targeted by Odin.^000000")?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Alfrik",
-                                        args![
-                                            "So that's it.",
-                                            "Seeking out our",
-                                            "masterpiece? You",
-                                            "humans must desire",
-                                            "the power of the gods.",
-                                            "Interesting."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Alfrik",
-                                        args![
-                                            "The time for us to revive may actually have come! Alright then,",
-                                            "I, Alfrik shall cooperate with you humans."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Alfrik",
-                                        args![
-                                            "After all, getting on Odin's good side like this is much better than being tortured by Loki."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Alfrik",
-                                        args![
-                                            "Now...",
-                                            "Understand that",
-                                            "there can only be",
-                                            "one true Brisingamen.",
-                                            "After all, it's our",
-                                            "masterpiece."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Alfrik", args!["However, that doesn't mean an imitation, with the same power as that godly item, can't be made. Isn't it tempting, the power of a god?"])?;
-                                    ctx.next()?;
-                                    ctx.lines_as(
-                                        "Alfrik",
-                                        args![
-                                            "First things first. If you want to make the necklace, you must",
-                                            "awaken all four of us. Because of Loki's threat, we all hid ourselves in different places."
-                                        ],
-                                    )?;
-                                    ctx.next()?;
-                                    ctx.lines_as("Alfrik", args!["Go wake all my brothers!", "Let's see if the Brisingamen can be made once again! First, go and wake Dvalin before the gods and giants find out!"])?;
-                                    ctx.var("god_brising").set(Val::from(41))?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
-                                    return Err(Stop::End);
+                                    if matched3 {
+                                        ctx.lines_as(
+                                            "Alfrik",
+                                            args![
+                                                "Valkyrie...?",
+                                                "Odin's warmonger?",
+                                                "What could Odin want,",
+                                                "I haven't done anything wrong!"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.mes("^3355FFYou explained everything to Alfrik, who seems to worry about being targeted by Odin.^000000")?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Alfrik",
+                                            args![
+                                                "So that's it.",
+                                                "Seeking out our",
+                                                "masterpiece? You",
+                                                "humans must desire",
+                                                "the power of the gods.",
+                                                "Interesting."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Alfrik",
+                                            args![
+                                                "The time for us to revive may actually have come! Alright then,",
+                                                "I, Alfrik shall cooperate with you humans."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Alfrik", args!["After all, getting on Odin's good side like this is much better than being tortured by Loki."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Alfrik",
+                                            args![
+                                                "Now...",
+                                                "Understand that",
+                                                "there can only be",
+                                                "one true Brisingamen.",
+                                                "After all, it's our",
+                                                "masterpiece."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Alfrik", args!["However, that doesn't mean an imitation, with the same power as that godly item, can't be made. Isn't it tempting, the power of a god?"])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Alfrik", args!["First things first. If you want to make the necklace, you must", "awaken all four of us. Because of Loki's threat, we all hid ourselves in different places."])?;
+                                        ctx.next()?;
+                                        ctx.lines_as("Alfrik", args!["Go wake all my brothers!", "Let's see if the Brisingamen can be made once again! First, go and wake Dvalin before the gods and giants find out!"])?;
+                                        ctx.var("god_brising").set(Val::from(41))?;
+                                        ctx.close_window()?;
+                                        ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                        matched3 = true;
+                                    }
+                                    if matched3 {
+                                        ctx.lines_as(
+                                            "Alfrik",
+                                            args![
+                                                "Coincidence?",
+                                                "Impossible! How dare you lie! Don't ever come back, or the gods will find me!"
+                                            ],
+                                        )?;
+                                        ctx.close_window()?;
+                                        ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
+                                        return Err(Stop::End);
+                                    }
                                 }
                             }
-                        } else {
-                            if ctx.var("god_brising").get()? == 41 {
-                                ctx.lines_as("Alfrik", args!["Why are you still here?", "I told you go wake Dvalin!"])?;
+                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                                matched2 = true;
+                            }
+                            if matched2 {
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args![
+                                        "Valkyrie...?",
+                                        "Odin's warmonger?",
+                                        "What could Odin want,",
+                                        "I haven't done anything wrong!"
+                                    ],
+                                )?;
                                 ctx.next()?;
-                                'b4: {
-                                    let subject4 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("Where is he?:Tell me more about Brisingamen.")],
-                                    )?);
-                                    let mut matched4 = false;
-                                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as(
-                                            "Alfrik",
-                                            args!["Ah. Right.", "I forgot to tell", "you. Poor Dvalin.", "Now, where was it?"],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["We were afraid that Odin and Heimdall would punish us because, well, in their eyes we disgraced the goddess."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Alfrik",
-                                            args!["Oh course, they never would have been angered if it weren't for Loki's trickery."],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["We loved Freya so much that we decided to hide ourselves beneath the path that she walked. To be as close to any trace of her as we could."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["Poor Dvalin is sleeping", "under the path in the East. Once there, you'll feel the scent the goddess. I can't remember where the others are sleeping, but you cannot forget these words..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Alfrik",
-                                            args![
-                                                "^4d4dffHer lovely scent",
-                                                "Still lingers in the wind.",
-                                                "We surrendered our hearts",
-                                                "To those tender teardrops",
-                                                "Those seductive red lips.^000000"
-                                            ],
-                                        )?;
-                                        ctx.var("god_brising").set(Val::from(42))?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
-                                        return Err(Stop::End);
-                                    }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        ctx.lines_as("Alfrik", args!["Brisingamen is our masterpiece, a necklace we forged for Freya. Even if we tried making it again, I doubt it would be as good."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["It looked perfect on Freya. Very difficult to create jewelry that actually enhances the attractiveness of the goddess of beauty."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["Perhaps our greatest reward was that beautiful smile of satisfaction she gave us when that we gave her that necklace. We loved her so."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["Is it that wrong for dwarves to love a goddess? Perhaps we were punished because the gods, even Odin, loved her as well."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["In any case, we've never seen the true Brisingamen again. But something very similar to it can be created..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["You'll need materials that have been graced by the goddess' presense. Traces of the goddess in the earth, water and the wind."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["And if the Brisingamen is recreated, the power of a god will be in the hands of a human. That human could be you!"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["Poor Dvalin is sleeping under the path in the East. Once there, you'll feel the scent the goddess."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Alfrik",
-                                            args!["I can't remember where the others are sleeping, but you cannot forget these words..."],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Alfrik",
-                                            args![
-                                                "^4d4dffHer lovely scent",
-                                                "Still lingers in the wind.",
-                                                "We surrendered our hearts",
-                                                "To those tender teardrops",
-                                                "Those seductive red lips.^000000"
-                                            ],
-                                        )?;
-                                        ctx.var("god_brising").set(Val::from(42))?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            } else {
-                                if ctx.var("god_brising").get()? == 42 {
-                                    ctx.lines_as("Alfrik", args!["Will you please!", "Get lost before Loki and Heimdall find out I've awakened! Now hurry, find Dvalin, and wake him up!"])?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
-                                    return Err(Stop::End);
-                                } else {
-                                    if (ctx.var("god_brising").get()?.number()? > 42 && ctx.var("god_brising").get()?.number()? < 48) {
-                                        ctx.lines_as("Alfrik", args!["Oh, finally all of us have awakened! Now, the power of the goddess can be retrieved from the earth, water and the wind!"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Alfrik", args!["Hahahahaha!", "This should be", "interesting!"])?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
-                                        return Err(Stop::End);
-                                    } else {
-                                        ctx.lines_as("Alfrik", args!["Mmm...?", "I've got", "no business", "with you."])?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
-                                        return Err(Stop::End);
-                                    }
-                                }
+                                ctx.mes("^3355FFYou explained everything to Alfrik, who seems to worry about being targeted by Odin.^000000")?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args![
+                                        "So that's it.",
+                                        "Seeking out our",
+                                        "masterpiece? You",
+                                        "humans must desire",
+                                        "the power of the gods.",
+                                        "Interesting."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args![
+                                        "The time for us to revive may actually have come! Alright then,",
+                                        "I, Alfrik shall cooperate with you humans."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args![
+                                        "After all, getting on Odin's good side like this is much better than being tortured by Loki."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args![
+                                        "Now...",
+                                        "Understand that",
+                                        "there can only be",
+                                        "one true Brisingamen.",
+                                        "After all, it's our",
+                                        "masterpiece."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["However, that doesn't mean an imitation, with the same power as that godly item, can't be made. Isn't it tempting, the power of a god?"])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args![
+                                        "First things first. If you want to make the necklace, you must",
+                                        "awaken all four of us. Because of Loki's threat, we all hid ourselves in different places."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["Go wake all my brothers!", "Let's see if the Brisingamen can be made once again! First, go and wake Dvalin before the gods and giants find out!"])?;
+                                ctx.var("god_brising").set(Val::from(41))?;
+                                ctx.close_window()?;
+                                ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
+                                return Err(Stop::End);
                             }
                         }
+                    } else if ctx.var("god_brising").get()? == 41 {
+                        ctx.lines_as("Alfrik", args!["Why are you still here?", "I told you go wake Dvalin!"])?;
+                        ctx.next()?;
+                        'b4: {
+                            let subject4 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("Where is he?:Tell me more about Brisingamen.")],
+                            )?);
+                            let mut matched4 = false;
+                            let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                matched4 = true;
+                            }
+                            if matched4 {
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args!["Ah. Right.", "I forgot to tell", "you. Poor Dvalin.", "Now, where was it?"],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["We were afraid that Odin and Heimdall would punish us because, well, in their eyes we disgraced the goddess."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args!["Oh course, they never would have been angered if it weren't for Loki's trickery."],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["We loved Freya so much that we decided to hide ourselves beneath the path that she walked. To be as close to any trace of her as we could."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["Poor Dvalin is sleeping", "under the path in the East. Once there, you'll feel the scent the goddess. I can't remember where the others are sleeping, but you cannot forget these words..."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args![
+                                        "^4d4dffHer lovely scent",
+                                        "Still lingers in the wind.",
+                                        "We surrendered our hearts",
+                                        "To those tender teardrops",
+                                        "Those seductive red lips.^000000"
+                                    ],
+                                )?;
+                                ctx.var("god_brising").set(Val::from(42))?;
+                                ctx.close_window()?;
+                                ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
+                                return Err(Stop::End);
+                            }
+                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                matched4 = true;
+                            }
+                            if matched4 {
+                                ctx.lines_as("Alfrik", args!["Brisingamen is our masterpiece, a necklace we forged for Freya. Even if we tried making it again, I doubt it would be as good."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["It looked perfect on Freya. Very difficult to create jewelry that actually enhances the attractiveness of the goddess of beauty."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["Perhaps our greatest reward was that beautiful smile of satisfaction she gave us when that we gave her that necklace. We loved her so."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["Is it that wrong for dwarves to love a goddess? Perhaps we were punished because the gods, even Odin, loved her as well."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["In any case, we've never seen the true Brisingamen again. But something very similar to it can be created..."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["You'll need materials that have been graced by the goddess' presense. Traces of the goddess in the earth, water and the wind."])?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["And if the Brisingamen is recreated, the power of a god will be in the hands of a human. That human could be you!"])?;
+                                ctx.next()?;
+                                ctx.lines_as("Alfrik", args!["Poor Dvalin is sleeping under the path in the East. Once there, you'll feel the scent the goddess."])?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args!["I can't remember where the others are sleeping, but you cannot forget these words..."],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Alfrik",
+                                    args![
+                                        "^4d4dffHer lovely scent",
+                                        "Still lingers in the wind.",
+                                        "We surrendered our hearts",
+                                        "To those tender teardrops",
+                                        "Those seductive red lips.^000000"
+                                    ],
+                                )?;
+                                ctx.var("god_brising").set(Val::from(42))?;
+                                ctx.close_window()?;
+                                ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
+                                return Err(Stop::End);
+                            }
+                        }
+                    } else if ctx.var("god_brising").get()? == 42 {
+                        ctx.lines_as("Alfrik", args!["Will you please!", "Get lost before Loki and Heimdall find out I've awakened! Now hurry, find Dvalin, and wake him up!"])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
+                        return Err(Stop::End);
+                    } else if (ctx.var("god_brising").get()?.number()? > 42 && ctx.var("god_brising").get()?.number()? < 48) {
+                        ctx.lines_as("Alfrik", args!["Oh, finally all of us have awakened! Now, the power of the goddess can be retrieved from the earth, water and the wind!"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Alfrik", args!["Hahahahaha!", "This should be", "interesting!"])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as("Alfrik", args!["Mmm...?", "I've got", "no business", "with you."])?;
+                        ctx.close_window()?;
+                        ctx.call(Function::DisableNpc, vec![Val::from("Alfrik#1")])?;
+                        return Err(Stop::End);
                     }
                 }
                 step = Alfrik1Step::OnInit;
@@ -6387,117 +6337,113 @@ fn dvalin_1_run(ctx: &Ctx, mut step: Dvalin1Step, args: Vec<Val>) -> Result<Val,
                     ctx.close_window()?;
                     ctx.call(Function::DisableNpc, vec![Val::from("Dvalin#1")])?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("god_brising").get()? == 42 {
-                        ctx.lines_as(
-                            "Dvalin",
-                            args![
-                                "Wah, it's not Alfrik?",
-                                "Who are you to wake Dvalin?",
-                                "Tell me right now, or I'll...",
-                                "I'll kick your ass!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        'b1: {
-                            let subject1 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Help!:Alfrik sent me to wake you up!")],
-                            )?);
-                            let mut matched1 = false;
-                            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.lines_as(
-                                    "Dvalin",
-                                    args!["I don't know", "what the hell", "you're doing here,", "but leave!"],
-                                )?;
-                                ctx.close_window()?;
-                                ctx.call(Function::DisableNpc, vec![Val::from("Dvalin#1")])?;
-                                return Err(Stop::End);
-                            }
-                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.lines_as(
-                                    "Dvalin",
-                                    args!["Did you just say Alfrik sent you? How do you know my brother?!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Dvalin",
-                                    args!["Brisingamen?!", "Then, that means", "we can meet Freya again?!"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["Umm...", "I'm afraid not.", "Or, at least, that's", "not why I'm here."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Dvalin",
-                                    args![
-                                        "Okay...",
-                                        "I understand.",
-                                        "Sorry, I was just",
-                                        "hoping you were a",
-                                        "herald of Freya."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Dvalin",
-                                    args![
-                                        "So, an imitation",
-                                        "of Brisingamen...",
-                                        "Even if it's not the original, I'm sure it can possess power comparable to the real thing. Yes..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Dvalin", args!["It's no use trying to predict the future, but I can't help but wonder what would mankind do with the power of the gods?"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Dvalin", args!["If my brother Alfrik already approved of you, then I'll help you out. I'll tell you how to wake my brother Berling."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Dvalin", args!["We hid ourselves near traces of Freya. The path where I am staying is one that my goddess has walked through."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Dvalin", args!["The air that quietly drifts here holds her fragrant scent. You can use this wind to borrow her power."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Dvalin", args!["Aside from Freya, I have", "no special love for the gods or giants. But I am intrigued by you humans. Your race is one of both love and hatred, life and destruction."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Dvalin", args!["Go now and seek Berling. He is sleeping near a river linked to Mount Mjolnir. Travel West to find the river were Freya's Teardrops have fallen."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Dvalin", args!["If the phantom of water gives you a question, answer it. The answer is the punishment that Odin gave to our goddess."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Dvalin", args!["Until thousands of Valkyries filled up Valhala, they had to repeatedly live, die, then be reborn the next day only to die again."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Dvalin", args!["Think about", "who they were.", "That's all I can tell you."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Dvalin",
-                                    args!["Somehow, I know", "you are the one who", "can answer the question.", "Hahahaha!"],
-                                )?;
-                                ctx.var("god_brising").set(Val::from(43))?;
-                                ctx.close_window()?;
-                                ctx.call(Function::DisableNpc, vec![Val::from("Dvalin#1")])?;
-                                return Err(Stop::End);
-                            }
+                } else if ctx.var("god_brising").get()? == 42 {
+                    ctx.lines_as(
+                        "Dvalin",
+                        args![
+                            "Wah, it's not Alfrik?",
+                            "Who are you to wake Dvalin?",
+                            "Tell me right now, or I'll...",
+                            "I'll kick your ass!"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    'b1: {
+                        let subject1 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Help!:Alfrik sent me to wake you up!")],
+                        )?);
+                        let mut matched1 = false;
+                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                            matched1 = true;
                         }
-                    } else {
-                        if ctx.var("god_brising").get()? == 43 {
-                            ctx.lines_as("Dvalin", args!["Why do you keep calling me? I did everything I can do for you. I even gave you the key to the question."])?;
-                            ctx.next()?;
+                        if matched1 {
                             ctx.lines_as(
                                 "Dvalin",
-                                args!["From now on,", "it's all up to you.", "Now, go wake Berling..."],
+                                args!["I don't know", "what the hell", "you're doing here,", "but leave!"],
                             )?;
                             ctx.close_window()?;
                             ctx.call(Function::DisableNpc, vec![Val::from("Dvalin#1")])?;
                             return Err(Stop::End);
                         }
+                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            ctx.lines_as(
+                                "Dvalin",
+                                args!["Did you just say Alfrik sent you? How do you know my brother?!"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Dvalin",
+                                args!["Brisingamen?!", "Then, that means", "we can meet Freya again?!"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["Umm...", "I'm afraid not.", "Or, at least, that's", "not why I'm here."],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Dvalin",
+                                args![
+                                    "Okay...",
+                                    "I understand.",
+                                    "Sorry, I was just",
+                                    "hoping you were a",
+                                    "herald of Freya."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Dvalin",
+                                args![
+                                    "So, an imitation",
+                                    "of Brisingamen...",
+                                    "Even if it's not the original, I'm sure it can possess power comparable to the real thing. Yes..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Dvalin", args!["It's no use trying to predict the future, but I can't help but wonder what would mankind do with the power of the gods?"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Dvalin", args!["If my brother Alfrik already approved of you, then I'll help you out. I'll tell you how to wake my brother Berling."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Dvalin", args!["We hid ourselves near traces of Freya. The path where I am staying is one that my goddess has walked through."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Dvalin", args!["The air that quietly drifts here holds her fragrant scent. You can use this wind to borrow her power."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Dvalin", args!["Aside from Freya, I have", "no special love for the gods or giants. But I am intrigued by you humans. Your race is one of both love and hatred, life and destruction."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Dvalin", args!["Go now and seek Berling. He is sleeping near a river linked to Mount Mjolnir. Travel West to find the river were Freya's Teardrops have fallen."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Dvalin", args!["If the phantom of water gives you a question, answer it. The answer is the punishment that Odin gave to our goddess."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Dvalin", args!["Until thousands of Valkyries filled up Valhala, they had to repeatedly live, die, then be reborn the next day only to die again."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Dvalin", args!["Think about", "who they were.", "That's all I can tell you."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Dvalin",
+                                args!["Somehow, I know", "you are the one who", "can answer the question.", "Hahahaha!"],
+                            )?;
+                            ctx.var("god_brising").set(Val::from(43))?;
+                            ctx.close_window()?;
+                            ctx.call(Function::DisableNpc, vec![Val::from("Dvalin#1")])?;
+                            return Err(Stop::End);
+                        }
                     }
+                } else if ctx.var("god_brising").get()? == 43 {
+                    ctx.lines_as("Dvalin", args!["Why do you keep calling me? I did everything I can do for you. I even gave you the key to the question."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Dvalin",
+                        args!["From now on,", "it's all up to you.", "Now, go wake Berling..."],
+                    )?;
+                    ctx.close_window()?;
+                    ctx.call(Function::DisableNpc, vec![Val::from("Dvalin#1")])?;
+                    return Err(Stop::End);
                 }
                 step = Dvalin1Step::OnInit;
                 continue 'machine;
@@ -6672,157 +6618,153 @@ fn berling_1_run(ctx: &Ctx, mut step: Berling1Step, args: Vec<Val>) -> Result<Va
                     ctx.close_window()?;
                     ctx.call(Function::DisableNpc, vec![Val::from("OnBerling#1")])?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("god_brising").get()? == 43 {
-                        ctx.lines_as(
-                            "Berling",
-                            args!["What the...?", "It's a human?!", "What do you want?", "Wh-who are you?"],
-                        )?;
-                        ctx.next()?;
-                        'b1: {
-                            let subject1 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Dvalin wants you to wake up!:Tell me who you are first!")],
-                            )?);
-                            let mut matched1 = false;
-                            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.lines_as(
-                                    "Berling",
-                                    args![
-                                        "Dvalin?!",
-                                        "You mean my brother!",
-                                        "But he can only be revived if Alfrik is revived. What happened?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["Umm...", "Let me explain..."],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines(args!["...", "......", "........."])?;
-                                ctx.next()?;
-                                ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["...So I guess I need to wake up all four of you dwarves so that Brisingamen, which holds Freya's power, can be made again."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Berling", args!["Oh! Say that name once again! Freya, the goddess who took my body and soul! Did you just say you want to make her necklace?"])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Berling",
-                                    args![
-                                        "Hahahaha!",
-                                        "Stop joking around.",
-                                        "The Brisingamen is",
-                                        "a one of a kind",
-                                        "masterpiece!"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                'b2: {
-                                    let subject2 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("I don't mean the original one, but...")],
-                                    )?);
-                                    let mut matched2 = false;
-                                    let no_case2 = !subject2.loosely_equals(&Val::from(1));
-                                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
-                                        ctx.lines_as(
-                                            "Berling",
-                                            args![
-                                                "Ah, now I see! You want a replica that has roughly the same power.",
-                                                "A Brisingamen used by humans!",
-                                                "Very clever!"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["I, on the other hand, do not desire power. I would be happy to own but a strand of my goddess' hair."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["Oh Freya...", "The more of her beauty exists in this world, the happier I'll be. I'm more than willing to help you recreate this memento of Freya."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["Now, please go and find the last one of my brothers! Poor Grer, perhaps he is still digging silver in that mine for her..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["Go and find Grer. I will give you Freya's golden teardrop, but he might have revived on his own..."])?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Berling",
-                                            args![
-                                                "If he doesn't trust you, sing this song. You must remember each",
-                                                "and every word..."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["^4d4dffNo jewel in the world can compare.^000000"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["^4d4dffOur masterpiece made from love.^000000"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["^4d4dffShe wanted the dazzling necklace.^000000"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["^4d4dffWe wanted the goddess of beauty.^000000"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["^4d4dffOur happiest times were with her.^000000"])?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Berling", args!["Memorize all five lines of this song exactly. Now take this golden teardrop and please seek out Grer."])?;
-                                        ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_IMPOSITIO")?])?;
-                                        ctx.var("god_brising").set(Val::from(44))?;
-                                        ctx.close_window()?;
-                                        ctx.call(Function::DisableNpc, vec![Val::from("Berling#1")])?;
-                                        return Err(Stop::End);
-                                    }
-                                }
-                            }
-                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.lines_as(
-                                    "Berling",
-                                    args![
-                                        "Where the hell",
-                                        "did you come from?",
-                                        "I, Berling, refuse to",
-                                        "give my name to a rude,",
-                                        "ill-bred human like yourself!"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args!["Wait...", "Your name", "is Berling?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Berling", args!["Baaaaahhh!", "Quiet you!", "Mind your own", "business!"])?;
-                                ctx.close_window()?;
-                                ctx.call(Function::DisableNpc, vec![Val::from("Berling#1")])?;
-                                return Err(Stop::End);
-                            }
+                } else if ctx.var("god_brising").get()? == 43 {
+                    ctx.lines_as(
+                        "Berling",
+                        args!["What the...?", "It's a human?!", "What do you want?", "Wh-who are you?"],
+                    )?;
+                    ctx.next()?;
+                    'b1: {
+                        let subject1 = Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Dvalin wants you to wake up!:Tell me who you are first!")],
+                        )?);
+                        let mut matched1 = false;
+                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                            matched1 = true;
                         }
-                    } else {
-                        if ctx.var("god_brising").get()? == 44 {
+                        if matched1 {
                             ctx.lines_as(
                                 "Berling",
-                                args!["Did you already forget the lyrics? Let me tell them to you again, so don't forget this time."],
+                                args![
+                                    "Dvalin?!",
+                                    "You mean my brother!",
+                                    "But he can only be revived if Alfrik is revived. What happened?"
+                                ],
                             )?;
                             ctx.next()?;
-                            ctx.lines_as("Berling", args!["^4d4dffNo jewel in the world can compare.^000000"])?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["Umm...", "Let me explain..."],
+                            )?;
                             ctx.next()?;
-                            ctx.lines_as("Berling", args!["^4d4dffOur masterpiece made from love.^000000"])?;
+                            ctx.lines(args!["...", "......", "........."])?;
                             ctx.next()?;
-                            ctx.lines_as("Berling", args!["^4d4dffShe wanted the dazzling necklace.^000000"])?;
+                            ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["...So I guess I need to wake up all four of you dwarves so that Brisingamen, which holds Freya's power, can be made again."])?;
                             ctx.next()?;
-                            ctx.lines_as("Berling", args!["^4d4dffWe wanted the goddess of beauty.^000000"])?;
+                            ctx.lines_as("Berling", args!["Oh! Say that name once again! Freya, the goddess who took my body and soul! Did you just say you want to make her necklace?"])?;
                             ctx.next()?;
-                            ctx.lines_as("Berling", args!["^4d4dffOur happiest times were with her.^000000"])?;
+                            ctx.lines_as(
+                                "Berling",
+                                args![
+                                    "Hahahaha!",
+                                    "Stop joking around.",
+                                    "The Brisingamen is",
+                                    "a one of a kind",
+                                    "masterpiece!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            'b2: {
+                                let subject2 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("I don't mean the original one, but...")],
+                                )?);
+                                let mut matched2 = false;
+                                let no_case2 = !subject2.loosely_equals(&Val::from(1));
+                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                                    matched2 = true;
+                                }
+                                if matched2 {
+                                    ctx.lines_as(
+                                        "Berling",
+                                        args![
+                                            "Ah, now I see! You want a replica that has roughly the same power.",
+                                            "A Brisingamen used by humans!",
+                                            "Very clever!"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["I, on the other hand, do not desire power. I would be happy to own but a strand of my goddess' hair."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["Oh Freya...", "The more of her beauty exists in this world, the happier I'll be. I'm more than willing to help you recreate this memento of Freya."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["Now, please go and find the last one of my brothers! Poor Grer, perhaps he is still digging silver in that mine for her..."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["Go and find Grer. I will give you Freya's golden teardrop, but he might have revived on his own..."])?;
+                                    ctx.next()?;
+                                    ctx.lines_as(
+                                        "Berling",
+                                        args![
+                                            "If he doesn't trust you, sing this song. You must remember each",
+                                            "and every word..."
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["^4d4dffNo jewel in the world can compare.^000000"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["^4d4dffOur masterpiece made from love.^000000"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["^4d4dffShe wanted the dazzling necklace.^000000"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["^4d4dffWe wanted the goddess of beauty.^000000"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["^4d4dffOur happiest times were with her.^000000"])?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Berling", args!["Memorize all five lines of this song exactly. Now take this golden teardrop and please seek out Grer."])?;
+                                    ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_IMPOSITIO")?])?;
+                                    ctx.var("god_brising").set(Val::from(44))?;
+                                    ctx.close_window()?;
+                                    ctx.call(Function::DisableNpc, vec![Val::from("Berling#1")])?;
+                                    return Err(Stop::End);
+                                }
+                            }
+                        }
+                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                            matched1 = true;
+                        }
+                        if matched1 {
+                            ctx.lines_as(
+                                "Berling",
+                                args![
+                                    "Where the hell",
+                                    "did you come from?",
+                                    "I, Berling, refuse to",
+                                    "give my name to a rude,",
+                                    "ill-bred human like yourself!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args!["Wait...", "Your name", "is Berling?"],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Berling", args!["Baaaaahhh!", "Quiet you!", "Mind your own", "business!"])?;
                             ctx.close_window()?;
                             ctx.call(Function::DisableNpc, vec![Val::from("Berling#1")])?;
                             return Err(Stop::End);
                         }
                     }
+                } else if ctx.var("god_brising").get()? == 44 {
+                    ctx.lines_as(
+                        "Berling",
+                        args!["Did you already forget the lyrics? Let me tell them to you again, so don't forget this time."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as("Berling", args!["^4d4dffNo jewel in the world can compare.^000000"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Berling", args!["^4d4dffOur masterpiece made from love.^000000"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Berling", args!["^4d4dffShe wanted the dazzling necklace.^000000"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Berling", args!["^4d4dffWe wanted the goddess of beauty.^000000"])?;
+                    ctx.next()?;
+                    ctx.lines_as("Berling", args!["^4d4dffOur happiest times were with her.^000000"])?;
+                    ctx.close_window()?;
+                    ctx.call(Function::DisableNpc, vec![Val::from("Berling#1")])?;
+                    return Err(Stop::End);
                 }
                 step = Berling1Step::OnInit;
                 continue 'machine;
@@ -6859,111 +6801,109 @@ fn brisindwarf4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::EnableNpc, vec![Val::from("Grer#1")])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("god_brising").get()? == 45 {
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args!["Let's see.", "Um, that song.", "What was the first line...?"],
-            )?;
-            ctx.next()?;
-            let (input, status) = runtime::input_text(ctx, None, None)?;
-            ctx.var("@dwarfsong1$").set(input)?;
-            if ctx.var("@dwarfsong1$").get()? == "No jewel in the world can compare." {
-                ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
-            }
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    ((Val::from(" ") + ctx.var("@dwarfsong1$").get()?) + Val::from("")),
-                    "Then...ummm..",
-                    "The second line?"
-                ],
-            )?;
-            ctx.next()?;
-            let (input, status) = runtime::input_text(ctx, None, None)?;
-            ctx.var("@dwarfsong2$").set(input)?;
-            if ctx.var("@dwarfsong2$").get()? == "Our masterpiece made from love." {
-                ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
-            }
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    ((Val::from(" ") + ctx.var("@dwarfsong2$").get()?) + Val::from("")),
-                    "Now, what was",
-                    "the third line...?"
-                ],
-            )?;
-            ctx.next()?;
-            let (input, status) = runtime::input_text(ctx, None, None)?;
-            ctx.var("@dwarfsong3$").set(input)?;
-            if ctx.var("@dwarfsong3$").get()? == "She wanted the dazzling necklace." {
-                ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
-            }
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    ((Val::from(" ") + ctx.var("@dwarfsong3$").get()?) + Val::from("")),
-                    "Now, the fourth",
-                    "line after that..."
-                ],
-            )?;
-            ctx.next()?;
-            let (input, status) = runtime::input_text(ctx, None, None)?;
-            ctx.var("@dwarfsong4$").set(input)?;
-            if ctx.var("@dwarfsong4$").get()? == "We wanted the goddess of beauty." {
-                ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
-            }
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    ((Val::from(" ") + ctx.var("@dwarfsong4$").get()?) + Val::from("")),
-                    "Alright, now",
-                    "for the last line..."
-                ],
-            )?;
-            ctx.next()?;
-            let (input, status) = runtime::input_text(ctx, None, None)?;
-            ctx.var("@dwarfsong5$").set(input)?;
-            if ctx.var("@dwarfsong5$").get()? == "Our happiest times were with her." {
-                ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
-            }
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    ((Val::from(" ") + ctx.var("@dwarfsong5$").get()?) + Val::from("")),
-                    "Alright, let's give it a try."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    ((Val::from("") + ctx.var("@dwarfsong1$").get()?) + Val::from("")),
-                    ((Val::from("") + ctx.var("@dwarfsong2$").get()?) + Val::from("")),
-                    ((Val::from("") + ctx.var("@dwarfsong3$").get()?) + Val::from("")),
-                    ((Val::from("") + ctx.var("@dwarfsong4$").get()?) + Val::from("")),
-                    ((Val::from("") + ctx.var("@dwarfsong5$").get()?) + Val::from(""))
-                ],
-            )?;
-            ctx.next()?;
-            if ctx.var("@point").get()?.number()? > 4 {
-                ctx.call(Function::EnableNpc, vec![Val::from("Grer#1")])?;
-                ctx.lines_as("Grer", args!["Wha--?", "Berling", "did send you!"])?;
-                ctx.var("god_brising").set(Val::from(46))?;
-                ctx.call(Function::StopNpcTimer, vec![])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Grer", args!["Bah!", "I knew it!", "I can't trust you!"])?;
-                ctx.close_window()?;
-                ctx.call(Function::Warp, vec![Val::from("mjo_dun02"), Val::from(118), Val::from(56)])?;
-                return Err(Stop::End);
-            }
-        } else {
-            ctx.mes("^3355FFYou found a hole filled with some clod and a lump of coal.^000000")?;
+    } else if ctx.var("god_brising").get()? == 45 {
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args!["Let's see.", "Um, that song.", "What was the first line...?"],
+        )?;
+        ctx.next()?;
+        let (input, status) = runtime::input_text(ctx, None, None)?;
+        ctx.var("@dwarfsong1$").set(input)?;
+        if ctx.var("@dwarfsong1$").get()? == "No jewel in the world can compare." {
+            ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
+        }
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                ((Val::from(" ") + ctx.var("@dwarfsong1$").get()?) + Val::from("")),
+                "Then...ummm..",
+                "The second line?"
+            ],
+        )?;
+        ctx.next()?;
+        let (input, status) = runtime::input_text(ctx, None, None)?;
+        ctx.var("@dwarfsong2$").set(input)?;
+        if ctx.var("@dwarfsong2$").get()? == "Our masterpiece made from love." {
+            ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
+        }
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                ((Val::from(" ") + ctx.var("@dwarfsong2$").get()?) + Val::from("")),
+                "Now, what was",
+                "the third line...?"
+            ],
+        )?;
+        ctx.next()?;
+        let (input, status) = runtime::input_text(ctx, None, None)?;
+        ctx.var("@dwarfsong3$").set(input)?;
+        if ctx.var("@dwarfsong3$").get()? == "She wanted the dazzling necklace." {
+            ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
+        }
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                ((Val::from(" ") + ctx.var("@dwarfsong3$").get()?) + Val::from("")),
+                "Now, the fourth",
+                "line after that..."
+            ],
+        )?;
+        ctx.next()?;
+        let (input, status) = runtime::input_text(ctx, None, None)?;
+        ctx.var("@dwarfsong4$").set(input)?;
+        if ctx.var("@dwarfsong4$").get()? == "We wanted the goddess of beauty." {
+            ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
+        }
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                ((Val::from(" ") + ctx.var("@dwarfsong4$").get()?) + Val::from("")),
+                "Alright, now",
+                "for the last line..."
+            ],
+        )?;
+        ctx.next()?;
+        let (input, status) = runtime::input_text(ctx, None, None)?;
+        ctx.var("@dwarfsong5$").set(input)?;
+        if ctx.var("@dwarfsong5$").get()? == "Our happiest times were with her." {
+            ctx.var("@point").set((ctx.var("@point").get()? + Val::from(1)))?;
+        }
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                ((Val::from(" ") + ctx.var("@dwarfsong5$").get()?) + Val::from("")),
+                "Alright, let's give it a try."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                ((Val::from("") + ctx.var("@dwarfsong1$").get()?) + Val::from("")),
+                ((Val::from("") + ctx.var("@dwarfsong2$").get()?) + Val::from("")),
+                ((Val::from("") + ctx.var("@dwarfsong3$").get()?) + Val::from("")),
+                ((Val::from("") + ctx.var("@dwarfsong4$").get()?) + Val::from("")),
+                ((Val::from("") + ctx.var("@dwarfsong5$").get()?) + Val::from(""))
+            ],
+        )?;
+        ctx.next()?;
+        if ctx.var("@point").get()?.number()? > 4 {
+            ctx.call(Function::EnableNpc, vec![Val::from("Grer#1")])?;
+            ctx.lines_as("Grer", args!["Wha--?", "Berling", "did send you!"])?;
+            ctx.var("god_brising").set(Val::from(46))?;
+            ctx.call(Function::StopNpcTimer, vec![])?;
             ctx.close_window()?;
             return Err(Stop::End);
+        } else {
+            ctx.lines_as("Grer", args!["Bah!", "I knew it!", "I can't trust you!"])?;
+            ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("mjo_dun02"), Val::from(118), Val::from(56)])?;
+            return Err(Stop::End);
         }
+    } else {
+        ctx.mes("^3355FFYou found a hole filled with some clod and a lump of coal.^000000")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -7026,22 +6966,20 @@ fn brisindwarf4_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
+    } else if ctx.var("god_brising").get()? == 45 {
+        ctx.lines_as(
+            "Male Voice",
+            args![
+                "Prove it!",
+                "Otherwise, leave me alone and let me mine silver. Silver...! Heh heh heh..."
+            ],
+        )?;
+        ctx.call(Function::StopNpcTimer, vec![])?;
+        ctx.call(Function::StartNpcTimer, vec![])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("god_brising").get()? == 45 {
-            ctx.lines_as(
-                "Male Voice",
-                args![
-                    "Prove it!",
-                    "Otherwise, leave me alone and let me mine silver. Silver...! Heh heh heh..."
-                ],
-            )?;
-            ctx.call(Function::StopNpcTimer, vec![])?;
-            ctx.call(Function::StartNpcTimer, vec![])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.call(Function::Warp, vec![Val::from("mjo_dun02"), Val::from(118), Val::from(56)])?;
-        }
+        ctx.call(Function::Warp, vec![Val::from("mjo_dun02"), Val::from(118), Val::from(56)])?;
     }
     return Err(Stop::End);
 }
@@ -7132,90 +7070,86 @@ fn grer_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::DisableNpc, vec![Val::from("Grer#1")])?;
         return Err(Stop::End);
+    } else if ctx.var("god_brising").get()? == 46 {
+        ctx.lines_as(
+            "Grer",
+            args![
+                "My name is Grer.",
+                "I should have been",
+                "the last one to be awakened. Now I see that I haven't mined as much silver as I may need."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Grer",
+            args!["You might think gold would better suit a goddess, but no. Silver is what makes her golden hair more beautiful."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Grer",
+            args!["Now that we're revived, there's a good chance that we may see her again. I don't really mind anything else."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Grer",
+            args!["I want her spirit and scent to fill this world. I don't want Odin or Heimdall to know our plan."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Grer",
+            args![
+                "Now, this doesn't mean",
+                "that I prefer humans over",
+                "gods or giants, but if it's for Freya, I'll do anything."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Grer",
+            args![
+                "Anyway, now my brothers",
+                "have been revived. For that, I give you my thanks. Someday, you will have the power to challenge the gods."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Grer",
+            args![
+                "Now, I need to",
+                "get back to my work.",
+                "You'll need a silver ornament for the necklace, so I'll continue to mine silver."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Grer",
+            args!["I will be working", "hard to make the most", "beautiful ornament", "in the world."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Grer", args!["Okay, you", "may go back now!", "Farewell."])?;
+        ctx.var("god_brising").set(Val::from(47))?;
+        ctx.close_window()?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Grer#1")])?;
+        return Err(Stop::End);
+    } else if ctx.var("god_brising").get()? == 47 {
+        ctx.lines_as(
+            "Grer",
+            args![
+                "Heh heh...",
+                "Why are you still",
+                "here? Your job is done.",
+                "Now, go back to where",
+                "you came from!"
+            ],
+        )?;
+        ctx.close_window()?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Grer#1")])?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("god_brising").get()? == 46 {
-            ctx.lines_as(
-                "Grer",
-                args![
-                    "My name is Grer.",
-                    "I should have been",
-                    "the last one to be awakened. Now I see that I haven't mined as much silver as I may need."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Grer",
-                args!["You might think gold would better suit a goddess, but no. Silver is what makes her golden hair more beautiful."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Grer",
-                args!["Now that we're revived, there's a good chance that we may see her again. I don't really mind anything else."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Grer",
-                args!["I want her spirit and scent to fill this world. I don't want Odin or Heimdall to know our plan."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Grer",
-                args![
-                    "Now, this doesn't mean",
-                    "that I prefer humans over",
-                    "gods or giants, but if it's for Freya, I'll do anything."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Grer",
-                args![
-                    "Anyway, now my brothers",
-                    "have been revived. For that, I give you my thanks. Someday, you will have the power to challenge the gods."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Grer",
-                args![
-                    "Now, I need to",
-                    "get back to my work.",
-                    "You'll need a silver ornament for the necklace, so I'll continue to mine silver."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Grer",
-                args!["I will be working", "hard to make the most", "beautiful ornament", "in the world."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Grer", args!["Okay, you", "may go back now!", "Farewell."])?;
-            ctx.var("god_brising").set(Val::from(47))?;
-            ctx.close_window()?;
-            ctx.call(Function::DisableNpc, vec![Val::from("Grer#1")])?;
-            return Err(Stop::End);
-        } else {
-            if ctx.var("god_brising").get()? == 47 {
-                ctx.lines_as(
-                    "Grer",
-                    args![
-                        "Heh heh...",
-                        "Why are you still",
-                        "here? Your job is done.",
-                        "Now, go back to where",
-                        "you came from!"
-                    ],
-                )?;
-                ctx.close_window()?;
-                ctx.call(Function::DisableNpc, vec![Val::from("Grer#1")])?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines_as("Grer", args!["Who the", "hell are you?!"])?;
-                ctx.close_window()?;
-                ctx.call(Function::DisableNpc, vec![Val::from("Grer#1")])?;
-                return Err(Stop::End);
-            }
-        }
+        ctx.lines_as("Grer", args!["Who the", "hell are you?!"])?;
+        ctx.close_window()?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Grer#1")])?;
+        return Err(Stop::End);
     }
 }
 

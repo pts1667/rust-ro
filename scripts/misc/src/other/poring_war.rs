@@ -886,12 +886,10 @@ fn poring_wop_door_a_onstartarena_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val,
         ctx.var("$@wop_teamcount").set(Val::from(1))?;
         ctx.call(Function::DoNpcEvent, vec![Val::from("Poring#wop_door_d::OnDevilingStart")])?;
         ctx.call(Function::DoNpcEvent, vec![Val::from("#wop_warp_rtry::OnStop")])?;
-    } else {
-        if ctx.var("$@wop_teamcount").get()? == 1 {
-            ctx.call(Function::DoNpcEvent, vec![Val::from("#wop_master::OnStart")])?;
-            ctx.call(Function::DoNpcEvent, vec![Val::from("Poring#wop_door_d::OnStop")])?;
-            ctx.call(Function::StopNpcTimer, vec![])?;
-        }
+    } else if ctx.var("$@wop_teamcount").get()? == 1 {
+        ctx.call(Function::DoNpcEvent, vec![Val::from("#wop_master::OnStart")])?;
+        ctx.call(Function::DoNpcEvent, vec![Val::from("Poring#wop_door_d::OnStop")])?;
+        ctx.call(Function::StopNpcTimer, vec![])?;
     }
     return Err(Stop::End);
 }
@@ -1161,12 +1159,10 @@ fn poring_wop_door_d_onstartarena_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val,
         ctx.var("$@wop_teamcount").set(Val::from(1))?;
         ctx.call(Function::DoNpcEvent, vec![Val::from("Poring#wop_door_a::OnAngelingStart")])?;
         ctx.call(Function::DoNpcEvent, vec![Val::from("#wop_warp_rtry::OnStop")])?;
-    } else {
-        if ctx.var("$@wop_teamcount").get()? == 1 {
-            ctx.call(Function::DoNpcEvent, vec![Val::from("#wop_master::OnStart")])?;
-            ctx.call(Function::DoNpcEvent, vec![Val::from("Poring#wop_door_a::OnStop")])?;
-            ctx.call(Function::StopNpcTimer, vec![])?;
-        }
+    } else if ctx.var("$@wop_teamcount").get()? == 1 {
+        ctx.call(Function::DoNpcEvent, vec![Val::from("#wop_master::OnStart")])?;
+        ctx.call(Function::DoNpcEvent, vec![Val::from("Poring#wop_door_a::OnStop")])?;
+        ctx.call(Function::StopNpcTimer, vec![])?;
     }
     return Err(Stop::End);
 }
@@ -1682,119 +1678,117 @@ fn mr_doppel_wop_team_a_run(ctx: &Ctx, mut step: MrDoppelWopTeamAStep, args: Vec
                             }
                         }
                     }
-                } else {
-                    if ctx
-                        .call(
-                            Function::IsPartyLeader,
-                            vec![ctx.call(Function::GetCharacterId, vec![Val::from(1)])?],
-                        )?
-                        .loosely_equals(&Val::from(1))
-                    {
-                        if ctx.var("$@wop_team_a").get()? == 0 {
-                            ctx.lines_as(
-                                "Mr. Doppel",
-                                args![
-                                    "So, you are the party leader of Angeling Team.",
-                                    "Are you sure all the members are in your party?",
-                                    "First, lets register your party name, after, we'll check the members."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mr. Doppel",
-                                args![
-                                    "Lets see... The name of the party is...",
-                                    " ",
-                                    ((Val::from("^4d4dff ") + l_pname_s.clone()) + Val::from(" ^000000")),
-                                    " ",
-                                    "Right? That is the name you wish?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            'b3: {
-                                let subject3 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from("No! You're wrong.:Yes. I would like to register that name.:Cancel")],
-                                )?);
-                                let mut matched3 = false;
-                                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                    && !subject3.loosely_equals(&Val::from(2))
-                                    && !subject3.loosely_equals(&Val::from(3));
-                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines_as("Mr. Doppel", args!["Hey, I don't have all day! Make your mind and register as fast as you can.", "Don't forget to let all the members join the party. Only the members of a registered party can join the battle."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines_as(
-                                        "Mr. Doppel",
-                                        args![
-                                            ((Val::from("So, I'll register your party name as - ") + l_pname_s.clone()) + Val::from(" -.")),
-                                            "Now, Tell your ^4d4dffmembers to confirm your party^000000.",
-                                            "I'll send you to the battlefield as soon as I confirm your party."
-                                        ],
-                                    )?;
-                                    ctx.var("$@wop_team_a")
-                                        .set(ctx.call(Function::GetCharacterId, vec![Val::from(1)])?)?;
-                                    ctx.call(Function::MapAnnounce, vec![Val::from("poring_w02"), Val::from("The registration of the Angeling Team has been confirmed. The party members must confirm their team with Mr. Doppel."), Val::from(0), Val::from(3407718)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines_as(
-                                        "Mr. Doppel",
-                                        args!["The clock is ticking. Make up your mind and register as soon as you can."],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        } else {
-                            ctx.lines_as(
-                                "Mr. Doppel",
-                                args![
-                                    "So, you are the leader of the party.",
-                                    "Haven't you finished the party registration yet?",
-                                    "You must stay on the one that has been registered!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mr. Doppel",
-                                args![
-                                    "The name of the party is ",
-                                    ((Val::from(" ") + l_a_tname_s.clone()) + Val::from(" ")),
-                                    "Please, confirm."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    } else {
+                } else if ctx
+                    .call(
+                        Function::IsPartyLeader,
+                        vec![ctx.call(Function::GetCharacterId, vec![Val::from(1)])?],
+                    )?
+                    .loosely_equals(&Val::from(1))
+                {
+                    if ctx.var("$@wop_team_a").get()? == 0 {
                         ctx.lines_as(
                             "Mr. Doppel",
-                            args!["If you aren't a registered member of the party, you can't join the battle."],
+                            args![
+                                "So, you are the party leader of Angeling Team.",
+                                "Are you sure all the members are in your party?",
+                                "First, lets register your party name, after, we'll check the members."
+                            ],
                         )?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Mr. Doppel",
                             args![
-                                "I'll check again and, after the registeration of the party name, you'll be sent to the battlefield.",
-                                "We must stay together as a party, since this is a team game. Otherwise, we'll have problems."
+                                "Lets see... The name of the party is...",
+                                " ",
+                                ((Val::from("^4d4dff ") + l_pname_s.clone()) + Val::from(" ^000000")),
+                                " ",
+                                "Right? That is the name you wish?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        'b3: {
+                            let subject3 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("No! You're wrong.:Yes. I would like to register that name.:Cancel")],
+                            )?);
+                            let mut matched3 = false;
+                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                && !subject3.loosely_equals(&Val::from(2))
+                                && !subject3.loosely_equals(&Val::from(3));
+                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as("Mr. Doppel", args!["Hey, I don't have all day! Make your mind and register as fast as you can.", "Don't forget to let all the members join the party. Only the members of a registered party can join the battle."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as(
+                                    "Mr. Doppel",
+                                    args![
+                                        ((Val::from("So, I'll register your party name as - ") + l_pname_s.clone()) + Val::from(" -.")),
+                                        "Now, Tell your ^4d4dffmembers to confirm your party^000000.",
+                                        "I'll send you to the battlefield as soon as I confirm your party."
+                                    ],
+                                )?;
+                                ctx.var("$@wop_team_a")
+                                    .set(ctx.call(Function::GetCharacterId, vec![Val::from(1)])?)?;
+                                ctx.call(Function::MapAnnounce, vec![Val::from("poring_w02"), Val::from("The registration of the Angeling Team has been confirmed. The party members must confirm their team with Mr. Doppel."), Val::from(0), Val::from(3407718)])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as(
+                                    "Mr. Doppel",
+                                    args!["The clock is ticking. Make up your mind and register as soon as you can."],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        }
+                    } else {
+                        ctx.lines_as(
+                            "Mr. Doppel",
+                            args![
+                                "So, you are the leader of the party.",
+                                "Haven't you finished the party registration yet?",
+                                "You must stay on the one that has been registered!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Doppel",
+                            args![
+                                "The name of the party is ",
+                                ((Val::from(" ") + l_a_tname_s.clone()) + Val::from(" ")),
+                                "Please, confirm."
                             ],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                } else {
+                    ctx.lines_as(
+                        "Mr. Doppel",
+                        args!["If you aren't a registered member of the party, you can't join the battle."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mr. Doppel",
+                        args![
+                            "I'll check again and, after the registeration of the party name, you'll be sent to the battlefield.",
+                            "We must stay together as a party, since this is a team game. Otherwise, we'll have problems."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 step = MrDoppelWopTeamAStep::OnInit;
                 continue 'machine;
@@ -1965,119 +1959,117 @@ fn mr_doppel_wop_team_d_run(ctx: &Ctx, mut step: MrDoppelWopTeamDStep, args: Vec
                             }
                         }
                     }
-                } else {
-                    if ctx
-                        .call(
-                            Function::IsPartyLeader,
-                            vec![ctx.call(Function::GetCharacterId, vec![Val::from(1)])?],
-                        )?
-                        .loosely_equals(&Val::from(1))
-                    {
-                        if ctx.var("$@wop_team_d").get()? == 0 {
-                            ctx.lines_as(
-                                "Mr. Doppel",
-                                args![
-                                    "So, you are the party leader of Deviling Team.",
-                                    "Are you sure all the members are in your party?",
-                                    "First, lets register your party name, after, we'll check the members."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mr. Doppel",
-                                args![
-                                    "Lets see... The name of the party is...",
-                                    " ",
-                                    ((Val::from("^4d4dff ") + l_pname_s.clone()) + Val::from(" ^000000")),
-                                    " ",
-                                    "Right? That is the name you wish?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            'b3: {
-                                let subject3 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from("No! You're wrong.:Yes. I would like to register that name.:Cancel")],
-                                )?);
-                                let mut matched3 = false;
-                                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                    && !subject3.loosely_equals(&Val::from(2))
-                                    && !subject3.loosely_equals(&Val::from(3));
-                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines_as("Mr. Doppel", args!["Hey, I don't have all day! Make your mind and register as fast as you can.", "Don't forget to let all the members join the party. Only the members of a registered party can join the battle."])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines_as(
-                                        "Mr. Doppel",
-                                        args![
-                                            ((Val::from("So, I'll register your party name as - ") + l_pname_s.clone()) + Val::from(" -.")),
-                                            "Now, Tell your ^4d4dffmembers to confirm your party^000000.",
-                                            "I'll send you to the battlefield as soon as I confirm your party."
-                                        ],
-                                    )?;
-                                    ctx.var("$@wop_team_d")
-                                        .set(ctx.call(Function::GetCharacterId, vec![Val::from(1)])?)?;
-                                    ctx.call(Function::MapAnnounce, vec![Val::from("poring_w02"), Val::from("The registration of the Deviling Team has been confirmed. The party members must confirm their team with Mr. Doppel."), Val::from(0), Val::from(3407718)])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines_as(
-                                        "Mr. Doppel",
-                                        args!["The clock is ticking. Make up your mind and register as soon as you can."],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        } else {
-                            ctx.lines_as(
-                                "Mr. Doppel",
-                                args![
-                                    "So, you are the leader of the party.",
-                                    "Haven't you finished the party registration yet?",
-                                    "You must stay on the one that has been registered!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Mr. Doppel",
-                                args![
-                                    "The name of the party is ",
-                                    ((Val::from(" ") + l_d_tname_s.clone()) + Val::from(" ")),
-                                    "Please, confirm."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    } else {
+                } else if ctx
+                    .call(
+                        Function::IsPartyLeader,
+                        vec![ctx.call(Function::GetCharacterId, vec![Val::from(1)])?],
+                    )?
+                    .loosely_equals(&Val::from(1))
+                {
+                    if ctx.var("$@wop_team_d").get()? == 0 {
                         ctx.lines_as(
                             "Mr. Doppel",
-                            args!["If you aren't a registered member of the party, you can't join the battle."],
+                            args![
+                                "So, you are the party leader of Deviling Team.",
+                                "Are you sure all the members are in your party?",
+                                "First, lets register your party name, after, we'll check the members."
+                            ],
                         )?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Mr. Doppel",
                             args![
-                                "I'll check again and, after the registeration of the party name, you'll be sent to the battlefield.",
-                                "We must stay together as a party, since this is a team game. Otherwise, we'll have problems."
+                                "Lets see... The name of the party is...",
+                                " ",
+                                ((Val::from("^4d4dff ") + l_pname_s.clone()) + Val::from(" ^000000")),
+                                " ",
+                                "Right? That is the name you wish?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        'b3: {
+                            let subject3 = Val::from(runtime::select_values(
+                                ctx,
+                                &[Val::from("No! You're wrong.:Yes. I would like to register that name.:Cancel")],
+                            )?);
+                            let mut matched3 = false;
+                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
+                                && !subject3.loosely_equals(&Val::from(2))
+                                && !subject3.loosely_equals(&Val::from(3));
+                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as("Mr. Doppel", args!["Hey, I don't have all day! Make your mind and register as fast as you can.", "Don't forget to let all the members join the party. Only the members of a registered party can join the battle."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as(
+                                    "Mr. Doppel",
+                                    args![
+                                        ((Val::from("So, I'll register your party name as - ") + l_pname_s.clone()) + Val::from(" -.")),
+                                        "Now, Tell your ^4d4dffmembers to confirm your party^000000.",
+                                        "I'll send you to the battlefield as soon as I confirm your party."
+                                    ],
+                                )?;
+                                ctx.var("$@wop_team_d")
+                                    .set(ctx.call(Function::GetCharacterId, vec![Val::from(1)])?)?;
+                                ctx.call(Function::MapAnnounce, vec![Val::from("poring_w02"), Val::from("The registration of the Deviling Team has been confirmed. The party members must confirm their team with Mr. Doppel."), Val::from(0), Val::from(3407718)])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines_as(
+                                    "Mr. Doppel",
+                                    args!["The clock is ticking. Make up your mind and register as soon as you can."],
+                                )?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        }
+                    } else {
+                        ctx.lines_as(
+                            "Mr. Doppel",
+                            args![
+                                "So, you are the leader of the party.",
+                                "Haven't you finished the party registration yet?",
+                                "You must stay on the one that has been registered!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Mr. Doppel",
+                            args![
+                                "The name of the party is ",
+                                ((Val::from(" ") + l_d_tname_s.clone()) + Val::from(" ")),
+                                "Please, confirm."
                             ],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                } else {
+                    ctx.lines_as(
+                        "Mr. Doppel",
+                        args!["If you aren't a registered member of the party, you can't join the battle."],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mr. Doppel",
+                        args![
+                            "I'll check again and, after the registeration of the party name, you'll be sent to the battlefield.",
+                            "We must stay together as a party, since this is a team game. Otherwise, we'll have problems."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 step = MrDoppelWopTeamDStep::OnInit;
                 continue 'machine;
@@ -3041,70 +3033,66 @@ fn deviruchi_wop_endmaster_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                 ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
                 return Err(Stop::End);
             }
-        } else {
-            if l_a_point.clone().loosely_equals(&l_d_point.clone()) {
+        } else if l_a_point.clone().loosely_equals(&l_d_point.clone()) {
+            ctx.lines_as(
+                "Devi",
+                args![
+                    "You did the best you could.",
+                    "I' ts a shame the battle was tied...",
+                    "Even so, thanks for coming to fight for us. Please, accept this Poring Coin."
+                ],
+            )?;
+            ctx.next()?;
+            if ctx.var("wop_team").get()? == 1 {
+                ctx.lines_as("Devi", args!["Goodbye, my human friend."])?;
+                ctx.close_window()?;
+                ctx.call(Function::GetItem, vec![Val::from(7539), Val::from(1)])?;
+                ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
+                return Err(Stop::End);
+            } else {
                 ctx.lines_as(
                     "Devi",
                     args![
-                        "You did the best you could.",
-                        "I' ts a shame the battle was tied...",
-                        "Even so, thanks for coming to fight for us. Please, accept this Poring Coin."
+                        "Wait a minute, you look suspicious!!",
+                        "Ah, I got it! You are on the side of the Devilings?!",
+                        "You are spying on us!",
+                        "It must have been you that made us tie the battle!!",
+                        "I will never forgive you!"
                     ],
                 )?;
-                ctx.next()?;
-                if ctx.var("wop_team").get()? == 1 {
-                    ctx.lines_as("Devi", args!["Goodbye, my human friend."])?;
-                    ctx.close_window()?;
-                    ctx.call(Function::GetItem, vec![Val::from(7539), Val::from(1)])?;
-                    ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as(
-                        "Devi",
-                        args![
-                            "Wait a minute, you look suspicious!!",
-                            "Ah, I got it! You are on the side of the Devilings?!",
-                            "You are spying on us!",
-                            "It must have been you that made us tie the battle!!",
-                            "I will never forgive you!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.call(Function::PercentHeal, vec![Val::from(99), Val::from(0)])?;
-                    ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
-                    return Err(Stop::End);
-                }
-            } else {
-                if ctx.var("wop_team").get()? == 1 {
-                    ctx.lines_as(
-                        "Devi",
-                        args![
-                            "Well, I guess we had bad luck...",
-                            "I cant give you anything, since we lost and everything..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Devi", args!["Goodbye, my human friend."])?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines_as(
-                        "Devi",
-                        args![
-                            "Wait a minute... There is a traitor here!",
-                            "Ah, I got it! You are on the side of the Devilings?!",
-                            "You are spying on us, Angelings!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Devi", args!["You should be ashamed!"])?;
-                    ctx.close_window()?;
-                    ctx.call(Function::PercentHeal, vec![Val::from(99), Val::from(0)])?;
-                    ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
-                    return Err(Stop::End);
-                }
+                ctx.close_window()?;
+                ctx.call(Function::PercentHeal, vec![Val::from(99), Val::from(0)])?;
+                ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
+                return Err(Stop::End);
             }
+        } else if ctx.var("wop_team").get()? == 1 {
+            ctx.lines_as(
+                "Devi",
+                args![
+                    "Well, I guess we had bad luck...",
+                    "I cant give you anything, since we lost and everything..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Devi", args!["Goodbye, my human friend."])?;
+            ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines_as(
+                "Devi",
+                args![
+                    "Wait a minute... There is a traitor here!",
+                    "Ah, I got it! You are on the side of the Devilings?!",
+                    "You are spying on us, Angelings!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Devi", args!["You should be ashamed!"])?;
+            ctx.close_window()?;
+            ctx.call(Function::PercentHeal, vec![Val::from(99), Val::from(0)])?;
+            ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
+            return Err(Stop::End);
         }
     } else {
         if ctx
@@ -3142,70 +3130,66 @@ fn deviruchi_wop_endmaster_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                     ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
                     return Err(Stop::End);
                 }
-            } else {
-                if l_a_point.clone().loosely_equals(&l_d_point.clone()) {
+            } else if l_a_point.clone().loosely_equals(&l_d_point.clone()) {
+                ctx.lines_as(
+                    "Devi",
+                    args![
+                        "You did the best you could.",
+                        "It's a shame the battle was tied...",
+                        "Even so, thanks for coming to fight for us. Please, accept this Poring Coin."
+                    ],
+                )?;
+                ctx.next()?;
+                if ctx.var("wop_team").get()? == 2 {
+                    ctx.lines_as("Devi", args!["Goodbye, my human friend."])?;
+                    ctx.close_window()?;
+                    ctx.call(Function::GetItem, vec![Val::from(7539), Val::from(1)])?;
+                    ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
+                    return Err(Stop::End);
+                } else {
                     ctx.lines_as(
                         "Devi",
                         args![
-                            "You did the best you could.",
-                            "It's a shame the battle was tied...",
-                            "Even so, thanks for coming to fight for us. Please, accept this Poring Coin."
+                            "Wait a minute, you look suspicious!!",
+                            "Ah, I got it! You are on the side of the Angelings?!",
+                            "You are spying on us!",
+                            "It must have been you that made us tie the battle!!",
+                            "I will never forgive you!"
                         ],
                     )?;
-                    ctx.next()?;
-                    if ctx.var("wop_team").get()? == 2 {
-                        ctx.lines_as("Devi", args!["Goodbye, my human friend."])?;
-                        ctx.close_window()?;
-                        ctx.call(Function::GetItem, vec![Val::from(7539), Val::from(1)])?;
-                        ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Devi",
-                            args![
-                                "Wait a minute, you look suspicious!!",
-                                "Ah, I got it! You are on the side of the Angelings?!",
-                                "You are spying on us!",
-                                "It must have been you that made us tie the battle!!",
-                                "I will never forgive you!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        ctx.call(Function::PercentHeal, vec![Val::from(99), Val::from(0)])?;
-                        ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
-                        return Err(Stop::End);
-                    }
-                } else {
-                    if ctx.var("wop_team").get()? == 2 {
-                        ctx.lines_as(
-                            "Devi",
-                            args![
-                                "Well, I guess we had bad luck...",
-                                "I cant give you anything, since we lost and everything..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Devi", args!["I will allow you to return to your human world."])?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "Devi",
-                            args![
-                                "Wait a minute, you look suspicious!!",
-                                "Ah, I got it! You are on the side of the Angelings?!",
-                                "You are spying on us, Devilings!"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as("Devi", args!["You should be ashamed!"])?;
-                        ctx.close_window()?;
-                        ctx.call(Function::PercentHeal, vec![Val::from(99), Val::from(0)])?;
-                        ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
-                        return Err(Stop::End);
-                    }
+                    ctx.close_window()?;
+                    ctx.call(Function::PercentHeal, vec![Val::from(99), Val::from(0)])?;
+                    ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
+                    return Err(Stop::End);
                 }
+            } else if ctx.var("wop_team").get()? == 2 {
+                ctx.lines_as(
+                    "Devi",
+                    args![
+                        "Well, I guess we had bad luck...",
+                        "I cant give you anything, since we lost and everything..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Devi", args!["I will allow you to return to your human world."])?;
+                ctx.close_window()?;
+                ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
+                return Err(Stop::End);
+            } else {
+                ctx.lines_as(
+                    "Devi",
+                    args![
+                        "Wait a minute, you look suspicious!!",
+                        "Ah, I got it! You are on the side of the Angelings?!",
+                        "You are spying on us, Devilings!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Devi", args!["You should be ashamed!"])?;
+                ctx.close_window()?;
+                ctx.call(Function::PercentHeal, vec![Val::from(99), Val::from(0)])?;
+                ctx.call(Function::Warp, vec![Val::from("prt_fild08"), Val::from(150), Val::from(370)])?;
+                return Err(Stop::End);
             }
         } else {
             ctx.lines_as(
@@ -3763,92 +3747,90 @@ fn wop_ex_1_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 "Party of Angeling~ Popopo, Poring!"
             ],
         )?;
+    } else if ctx.var("wop_team").get()? == 2 {
+        ctx.lines_as(
+            "Porings",
+            args![
+                "Wait, YOU! Aren't you on the side of the Devilings?!",
+                "Get out now! Leave!!",
+                "Booooo~ Boo~ Boooo~"
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_HUK")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa1")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_FRET")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa2")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_HUK")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa3")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_FRET")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa4")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_SURPRISE")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa5")])?,
+            ],
+        )?;
     } else {
-        if ctx.var("wop_team").get()? == 2 {
-            ctx.lines_as(
-                "Porings",
-                args![
-                    "Wait, YOU! Aren't you on the side of the Devilings?!",
-                    "Get out now! Leave!!",
-                    "Booooo~ Boo~ Boooo~"
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_HUK")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa1")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_FRET")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa2")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_HUK")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa3")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_FRET")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa4")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_SURPRISE")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa5")])?,
-                ],
-            )?;
-        } else {
-            ctx.lines_as(
-                "Porings",
-                args!["Hey, human. How about fighting for us Porings on Angeling's side??!"],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_HELP")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa1")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_GO")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa2")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_HELP")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa3")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_GO")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa4")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_GO")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa5")])?,
-                ],
-            )?;
-        }
+        ctx.lines_as(
+            "Porings",
+            args!["Hey, human. How about fighting for us Porings on Angeling's side??!"],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_HELP")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa1")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_GO")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa2")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_HELP")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa3")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_GO")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa4")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_GO")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Angeling Side Poring#wa5")])?,
+            ],
+        )?;
     }
     ctx.next()?;
     ctx.lines_as(
@@ -3929,92 +3911,90 @@ fn wop_ex_2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 "This proves that humans recognize us as true monsters!!"
             ],
         )?;
+    } else if ctx.var("wop_team").get()? == 1 {
+        ctx.lines_as(
+            "Marins",
+            args![
+                "Wait, YOU! Aren't you on the side of the Angelings?!",
+                "Get out now! Leave!!",
+                "Booooo~ Boo~ Boooo~"
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_HUK")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd1")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_FRET")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd2")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_HUK")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd3")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_FRET")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd4")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_SURPRISE")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd5")])?,
+            ],
+        )?;
     } else {
-        if ctx.var("wop_team").get()? == 1 {
-            ctx.lines_as(
-                "Marins",
-                args![
-                    "Wait, YOU! Aren't you on the side of the Angelings?!",
-                    "Get out now! Leave!!",
-                    "Booooo~ Boo~ Boooo~"
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_HUK")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd1")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_FRET")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd2")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_HUK")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd3")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_FRET")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd4")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_SURPRISE")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd5")])?,
-                ],
-            )?;
-        } else {
-            ctx.lines_as(
-                "Marins",
-                args!["Hey, human. Don't you wanna fight for Deviling, the noble of darkness? What do you say?!"],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_HELP")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd1")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_GO")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd2")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_HELP")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd3")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_GO")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd4")])?,
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_GO")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd5")])?,
-                ],
-            )?;
-        }
+        ctx.lines_as(
+            "Marins",
+            args!["Hey, human. Don't you wanna fight for Deviling, the noble of darkness? What do you say?!"],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_HELP")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd1")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_GO")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd2")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_HELP")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd3")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_GO")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd4")])?,
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_GO")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Deviling Side Marin#wd5")])?,
+            ],
+        )?;
     }
     ctx.next()?;
     ctx.lines_as(

@@ -108,44 +108,57 @@ pub fn duffle(ctx: &Ctx) -> Script {
         ctx.lines_as("Duffle", args!["Well then...", "Merry Christmas!!"])?;
         ctx.var("xmas_npc").set(Val::from(2))?;
         return ctx.close();
+    } else if ctx.var("xmas_npc").get()?.number()? > 1 {
+        ctx.lines_as(
+            "Duffle",
+            args!["Have you ever talked to the snowman in front of this town? The lonely snowman who stands in solitude..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Duffle",
+            args![
+                "But he's so warm hearted~! Sometimes, I talk to Snowysnow the snowman. For some weird reason, he can talk just like us!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Duffle",
+            args![
+                "When I talk to Snowysnow, I get to wondering how he came to be. I guess if you talk to him too, you'll feel the same way."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Duffle",
+            args!["How he was created, and how he thinks and talks like a human is such a mystery..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Duffle",
+            args!["Where did he come from and what kind of place was it? And how did he come to Lutie without any legs...?"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Duffle",
+            args!["Lately, it seems more and more people are coming to this town to see Snowysnow."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Duffle",
+            args![
+                "I guess you should talk to the other people living in Lutie if you want to learn more about the mystery of Snowysnow..."
+            ],
+        )?;
+        return ctx.close();
     } else {
-        if ctx.var("xmas_npc").get()?.number()? > 1 {
-            ctx.lines_as(
-                "Duffle",
-                args!["Have you ever talked to the snowman in front of this town? The lonely snowman who stands in solitude..."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Duffle", args!["But he's so warm hearted~! Sometimes, I talk to Snowysnow the snowman. For some weird reason, he can talk just like us!"])?;
-            ctx.next()?;
-            ctx.lines_as("Duffle", args!["When I talk to Snowysnow, I get to wondering how he came to be. I guess if you talk to him too, you'll feel the same way."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Duffle",
-                args!["How he was created, and how he thinks and talks like a human is such a mystery..."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Duffle",
-                args!["Where did he come from and what kind of place was it? And how did he come to Lutie without any legs...?"],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Duffle",
-                args!["Lately, it seems more and more people are coming to this town to see Snowysnow."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Duffle", args!["I guess you should talk to the other people living in Lutie if you want to learn more about the mystery of Snowysnow..."])?;
-            return ctx.close();
-        } else {
-            ctx.lines_as(
-                "Duffle",
-                args![
-                    "Oh...!",
-                    "While you're here, don't forget to visit the original Santa Claus here in Lutie."
-                ],
-            )?;
-            return ctx.close();
-        }
+        ctx.lines_as(
+            "Duffle",
+            args![
+                "Oh...!",
+                "While you're here, don't forget to visit the original Santa Claus here in Lutie."
+            ],
+        )?;
+        return ctx.close();
     }
 }
 

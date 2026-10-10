@@ -165,26 +165,22 @@ fn bazo_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ])?;
             ctx.var("lv4_weapon").set(Val::from(0))?;
             ctx.call(Function::GetItem, vec![Val::from(1141), Val::from(1)])?;
-        } else {
-            if ctx.var("lv4_weapon").get()? == 6 {
-                ctx.lines(args![
-                    "Slash!",
-                    "This mace was born to be yours!",
-                    "Congratulations and hopefully it will be useful to you."
-                ])?;
-                ctx.var("lv4_weapon").set(Val::from(0))?;
-                ctx.call(Function::GetItem, vec![Val::from(1526), Val::from(1)])?;
-            } else {
-                if ctx.var("lv4_weapon").get()? == 7 {
-                    ctx.lines(args![
-                        "Quadrille!",
-                        "This mace was born to be yours!",
-                        "Congratulations and hopefully it will be useful to you."
-                    ])?;
-                    ctx.var("lv4_weapon").set(Val::from(0))?;
-                    ctx.call(Function::GetItem, vec![Val::from(1527), Val::from(1)])?;
-                }
-            }
+        } else if ctx.var("lv4_weapon").get()? == 6 {
+            ctx.lines(args![
+                "Slash!",
+                "This mace was born to be yours!",
+                "Congratulations and hopefully it will be useful to you."
+            ])?;
+            ctx.var("lv4_weapon").set(Val::from(0))?;
+            ctx.call(Function::GetItem, vec![Val::from(1526), Val::from(1)])?;
+        } else if ctx.var("lv4_weapon").get()? == 7 {
+            ctx.lines(args![
+                "Quadrille!",
+                "This mace was born to be yours!",
+                "Congratulations and hopefully it will be useful to you."
+            ])?;
+            ctx.var("lv4_weapon").set(Val::from(0))?;
+            ctx.call(Function::GetItem, vec![Val::from(1527), Val::from(1)])?;
         }
         ctx.next()?;
         ctx.lines_as("Bazo", args!["Ah, I'm very satisfied with these results. If you wish to have another one, please feel free to visit me anytime. Alright then, enjoy your travels~"])?;
@@ -197,14 +193,10 @@ fn bazo_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     {
         if ctx.var("lv4_weapon").get()? == 2 {
             l_itemreq = Val::from(7295);
-        } else {
-            if ctx.var("lv4_weapon").get()? == 3 {
-                l_itemreq = Val::from(7294);
-            } else {
-                if ctx.var("lv4_weapon").get()? == 4 {
-                    l_itemreq = Val::from(7291);
-                }
-            }
+        } else if ctx.var("lv4_weapon").get()? == 3 {
+            l_itemreq = Val::from(7294);
+        } else if ctx.var("lv4_weapon").get()? == 4 {
+            l_itemreq = Val::from(7291);
         }
         ctx.lines_as(
             "Bazo",
@@ -234,30 +226,22 @@ fn bazo_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "What monster am I thinking",
                         "of right now?"
                     ])?;
-                } else {
-                    if l_i.clone() == 2 {
-                        ctx.lines(args![
-                            "Alright...",
-                            "Now guess which monster",
-                            "I'm thinking about right... Now!"
-                        ])?;
-                    } else {
-                        if l_i.clone() == 3 {
-                            ctx.lines(args!["Now what monster", "am I thinking about?"])?;
-                        } else {
-                            if l_i.clone() == 4 {
-                                ctx.lines(args!["Which monster am", "I thinking about right now?"])?;
-                            } else {
-                                if l_i.clone() == 5 {
-                                    ctx.lines(args![
-                                        "Okay, one last time.",
-                                        "Guess which monster I'm",
-                                        "thinking about right now."
-                                    ])?;
-                                }
-                            }
-                        }
-                    }
+                } else if l_i.clone() == 2 {
+                    ctx.lines(args![
+                        "Alright...",
+                        "Now guess which monster",
+                        "I'm thinking about right... Now!"
+                    ])?;
+                } else if l_i.clone() == 3 {
+                    ctx.lines(args!["Now what monster", "am I thinking about?"])?;
+                } else if l_i.clone() == 4 {
+                    ctx.lines(args!["Which monster am", "I thinking about right now?"])?;
+                } else if l_i.clone() == 5 {
+                    ctx.lines(args![
+                        "Okay, one last time.",
+                        "Guess which monster I'm",
+                        "thinking about right now."
+                    ])?;
                 }
                 ctx.next()?;
                 l_answer = Val::from(runtime::select_values(ctx, &[Val::from("Poring:Hode:Obeaune:Minorous")])?);
@@ -278,18 +262,12 @@ fn bazo_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             'b3: {
                 if runtime::local_get(&l_mons, &l_i.clone(), false) == 1 {
                     ctx.mes("Poring")?;
-                } else {
-                    if runtime::local_get(&l_mons, &l_i.clone(), false) == 2 {
-                        ctx.mes("Hode")?;
-                    } else {
-                        if runtime::local_get(&l_mons, &l_i.clone(), false) == 3 {
-                            ctx.mes("Obeaune")?;
-                        } else {
-                            if runtime::local_get(&l_mons, &l_i.clone(), false) == 4 {
-                                ctx.mes("Minorous")?;
-                            }
-                        }
-                    }
+                } else if runtime::local_get(&l_mons, &l_i.clone(), false) == 2 {
+                    ctx.mes("Hode")?;
+                } else if runtime::local_get(&l_mons, &l_i.clone(), false) == 3 {
+                    ctx.mes("Obeaune")?;
+                } else if runtime::local_get(&l_mons, &l_i.clone(), false) == 4 {
+                    ctx.mes("Minorous")?;
                 }
             }
             l_i = (l_i.clone() + Val::from(1));
@@ -297,40 +275,36 @@ fn bazo_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         if l_dap.clone().number()? > 0 {
             ctx.call(Function::DelItem, vec![l_itemreq.clone(), Val::from(30)])?;
             ctx.var("lv4_weapon").set((ctx.var("lv4_weapon").get()? + Val::from(3)))?;
-        } else {
-            if l_dap.clone().number()? < 1 {
-                ctx.call(Function::DelItem, vec![l_itemreq.clone(), Val::from(10)])?;
-            }
+        } else if l_dap.clone().number()? < 1 {
+            ctx.call(Function::DelItem, vec![l_itemreq.clone(), Val::from(10)])?;
         }
         ctx.next()?;
         if l_dap.clone().number()? > 0 {
             ctx.lines_as("Bazo", args![((Val::from("You got the right answer ") + l_dap.clone()) + Val::from(" times! Incredible! As promised, I shall create a specialty Umbala item for you. Give me a little time to get ready, and then we'll get started."))])?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if l_dap.clone().number()? < 1 {
-                ctx.lines_as("Bazo", args!["Huh. You must not be able to", "read minds, or you've got really bad luck. Either way, we can't try this until we drive away the ill fortune around you."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Bazo",
-                    args![
-                        "Hm, we need at least",
-                        ((Val::from("10 ") + ctx.call(Function::GetItemName, vec![l_itemreq.clone()])?) + Val::from(" to try this")),
-                        "again, so go ahead",
-                        "and give me that."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Bazo",
-                    args![
-                        "Well, if you want to try this mind reading game again, just come",
-                        "back with the materials. I'll be waiting to gauge your luck."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if l_dap.clone().number()? < 1 {
+            ctx.lines_as("Bazo", args!["Huh. You must not be able to", "read minds, or you've got really bad luck. Either way, we can't try this until we drive away the ill fortune around you."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Bazo",
+                args![
+                    "Hm, we need at least",
+                    ((Val::from("10 ") + ctx.call(Function::GetItemName, vec![l_itemreq.clone()])?) + Val::from(" to try this")),
+                    "again, so go ahead",
+                    "and give me that."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Bazo",
+                args![
+                    "Well, if you want to try this mind reading game again, just come",
+                    "back with the materials. I'll be waiting to gauge your luck."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ((ctx.var("lv4_weapon").get()? == 2 || ctx.var("lv4_weapon").get()? == 3) || ctx.var("lv4_weapon").get()? == 4) {
@@ -402,105 +376,99 @@ fn bazo_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         break 'b4;
                     }
                 }
+            } else if (ctx.call(Function::CountItem, vec![Val::from(7295)])?.number()? > 29
+                && ctx.call(Function::CountItem, vec![Val::from(7294)])?.number()? > 29)
+            {
+                ctx.lines(args![
+                    "Hahaha, I asked you to",
+                    "bring one kind of ore, not",
+                    "two. So which one would",
+                    "you like to use?"
+                ])?;
+                'b5: {
+                    let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("Citrin:Turquoise")])?);
+                    let mut matched5 = false;
+                    let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
+                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                        matched5 = true;
+                    }
+                    if matched5 {
+                        l_itemreq = Val::from(7295);
+                        break 'b5;
+                    }
+                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                        matched5 = true;
+                    }
+                    if matched5 {
+                        l_itemreq = Val::from(7294);
+                        break 'b5;
+                    }
+                }
+            } else if (ctx.call(Function::CountItem, vec![Val::from(7295)])?.number()? > 29
+                && ctx.call(Function::CountItem, vec![Val::from(7291)])?.number()? > 29)
+            {
+                ctx.lines(args![
+                    "Hahaha, I asked you to",
+                    "bring one kind of ore, not",
+                    "two. So which one would",
+                    "you like to use?"
+                ])?;
+                'b6: {
+                    let subject6 = Val::from(runtime::select_values(ctx, &[Val::from("Citrin:Agate")])?);
+                    let mut matched6 = false;
+                    let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
+                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                        matched6 = true;
+                    }
+                    if matched6 {
+                        l_itemreq = Val::from(7295);
+                        break 'b6;
+                    }
+                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                        matched6 = true;
+                    }
+                    if matched6 {
+                        l_itemreq = Val::from(7291);
+                        break 'b6;
+                    }
+                }
+            } else if (ctx.call(Function::CountItem, vec![Val::from(7294)])?.number()? > 29
+                && ctx.call(Function::CountItem, vec![Val::from(7291)])?.number()? > 29)
+            {
+                ctx.lines(args![
+                    "Hahaha, I asked you to",
+                    "bring one kind of ore, not",
+                    "two. So which one would",
+                    "you like to use?"
+                ])?;
+                'b7: {
+                    let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Turquoise:Agate")])?);
+                    let mut matched7 = false;
+                    let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
+                    if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                        matched7 = true;
+                    }
+                    if matched7 {
+                        l_itemreq = Val::from(7294);
+                        break 'b7;
+                    }
+                    if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                        matched7 = true;
+                    }
+                    if matched7 {
+                        l_itemreq = Val::from(7291);
+                        break 'b7;
+                    }
+                }
             } else {
-                if (ctx.call(Function::CountItem, vec![Val::from(7295)])?.number()? > 29
-                    && ctx.call(Function::CountItem, vec![Val::from(7294)])?.number()? > 29)
-                {
-                    ctx.lines(args![
-                        "Hahaha, I asked you to",
-                        "bring one kind of ore, not",
-                        "two. So which one would",
-                        "you like to use?"
-                    ])?;
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("Citrin:Turquoise")])?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            l_itemreq = Val::from(7295);
-                            break 'b5;
-                        }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
-                            l_itemreq = Val::from(7294);
-                            break 'b5;
-                        }
-                    }
-                } else {
-                    if (ctx.call(Function::CountItem, vec![Val::from(7295)])?.number()? > 29
-                        && ctx.call(Function::CountItem, vec![Val::from(7291)])?.number()? > 29)
-                    {
-                        ctx.lines(args![
-                            "Hahaha, I asked you to",
-                            "bring one kind of ore, not",
-                            "two. So which one would",
-                            "you like to use?"
-                        ])?;
-                        'b6: {
-                            let subject6 = Val::from(runtime::select_values(ctx, &[Val::from("Citrin:Agate")])?);
-                            let mut matched6 = false;
-                            let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                l_itemreq = Val::from(7295);
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                l_itemreq = Val::from(7291);
-                                break 'b6;
-                            }
-                        }
-                    } else {
-                        if (ctx.call(Function::CountItem, vec![Val::from(7294)])?.number()? > 29
-                            && ctx.call(Function::CountItem, vec![Val::from(7291)])?.number()? > 29)
-                        {
-                            ctx.lines(args![
-                                "Hahaha, I asked you to",
-                                "bring one kind of ore, not",
-                                "two. So which one would",
-                                "you like to use?"
-                            ])?;
-                            'b7: {
-                                let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Turquoise:Agate")])?);
-                                let mut matched7 = false;
-                                let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    l_itemreq = Val::from(7294);
-                                    break 'b7;
-                                }
-                                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    l_itemreq = Val::from(7291);
-                                    break 'b7;
-                                }
-                            }
-                        } else {
-                            if ctx.call(Function::CountItem, vec![Val::from(7295)])?.number()? > 29 {
-                                l_itemreq = Val::from(7295);
-                            }
-                            if ctx.call(Function::CountItem, vec![Val::from(7294)])?.number()? > 29 {
-                                l_itemreq = Val::from(7294);
-                            }
-                            if ctx.call(Function::CountItem, vec![Val::from(7291)])?.number()? > 29 {
-                                l_itemreq = Val::from(7291);
-                            }
-                        }
-                    }
+                if ctx.call(Function::CountItem, vec![Val::from(7295)])?.number()? > 29 {
+                    l_itemreq = Val::from(7295);
+                }
+                if ctx.call(Function::CountItem, vec![Val::from(7294)])?.number()? > 29 {
+                    l_itemreq = Val::from(7294);
+                }
+                if ctx.call(Function::CountItem, vec![Val::from(7291)])?.number()? > 29 {
+                    l_itemreq = Val::from(7291);
                 }
             }
             ctx.lines_as("Bazo", args![(ctx.call(Function::GetItemName, vec![l_itemreq.clone()])? + Val::from(", huh?")), "Alright then. Before we start, we must first test your luck. As you may have guessed, item crafting in Umbala is a very delicate process."])?;
@@ -530,14 +498,10 @@ fn bazo_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.call(Function::DelItem, vec![Val::from(714), Val::from(10)])?;
             if l_itemreq.clone() == 7295 {
                 ctx.var("lv4_weapon").set(Val::from(2))?;
-            } else {
-                if l_itemreq.clone() == 7294 {
-                    ctx.var("lv4_weapon").set(Val::from(3))?;
-                } else {
-                    if l_itemreq.clone() == 7291 {
-                        ctx.var("lv4_weapon").set(Val::from(4))?;
-                    }
-                }
+            } else if l_itemreq.clone() == 7294 {
+                ctx.var("lv4_weapon").set(Val::from(3))?;
+            } else if l_itemreq.clone() == 7291 {
+                ctx.var("lv4_weapon").set(Val::from(4))?;
             }
             ctx.close_window()?;
             return Err(Stop::End);
@@ -862,18 +826,14 @@ fn hibilaithan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.mes("Ooh, this is a huge success! But of course, since it's my handiwork, that goes without saying. Hey, this is a weapon... Some sort of... Mailbreaker!")?;
             ctx.var("lv4_weapon").set(Val::from(0))?;
             ctx.call(Function::GetItem, vec![Val::from(1225), Val::from(1)])?;
-        } else {
-            if ctx.var("lv4_weapon").get()? == 13 {
-                ctx.mes("Ooh, this is a huge success! But of course, since it's my handiwork, that goes without saying. Hey, this is a weapon... Some sort of... Swordbreaker!")?;
-                ctx.var("lv4_weapon").set(Val::from(0))?;
-                ctx.call(Function::GetItem, vec![Val::from(1224), Val::from(1)])?;
-            } else {
-                if ctx.var("lv4_weapon").get()? == 14 {
-                    ctx.mes("Ooh, this is a huge success! But of course, since it's my handiwork, that goes without saying. Hey, this is a weapon... Some sort of... Slaughter!")?;
-                    ctx.var("lv4_weapon").set(Val::from(0))?;
-                    ctx.call(Function::GetItem, vec![Val::from(1367), Val::from(1)])?;
-                }
-            }
+        } else if ctx.var("lv4_weapon").get()? == 13 {
+            ctx.mes("Ooh, this is a huge success! But of course, since it's my handiwork, that goes without saying. Hey, this is a weapon... Some sort of... Swordbreaker!")?;
+            ctx.var("lv4_weapon").set(Val::from(0))?;
+            ctx.call(Function::GetItem, vec![Val::from(1224), Val::from(1)])?;
+        } else if ctx.var("lv4_weapon").get()? == 14 {
+            ctx.mes("Ooh, this is a huge success! But of course, since it's my handiwork, that goes without saying. Hey, this is a weapon... Some sort of... Slaughter!")?;
+            ctx.var("lv4_weapon").set(Val::from(0))?;
+            ctx.call(Function::GetItem, vec![Val::from(1367), Val::from(1)])?;
         }
         ctx.next()?;
         ctx.lines_as("Hibilaithan", args!["Ah, yet another creation that's a testament to my awesome skills! Come back to me whenever you want me to make something truly great for you. See you around~"])?;
@@ -886,14 +846,10 @@ fn hibilaithan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     {
         if ctx.var("lv4_weapon").get()? == 9 {
             l_itemreq = Val::from(7292);
-        } else {
-            if ctx.var("lv4_weapon").get()? == 10 {
-                l_itemreq = Val::from(7297);
-            } else {
-                if ctx.var("lv4_weapon").get()? == 11 {
-                    l_itemreq = Val::from(7296);
-                }
-            }
+        } else if ctx.var("lv4_weapon").get()? == 10 {
+            l_itemreq = Val::from(7297);
+        } else if ctx.var("lv4_weapon").get()? == 11 {
+            l_itemreq = Val::from(7296);
         }
         ctx.lines_as(
             "Hibilaithan",
@@ -929,25 +885,17 @@ fn hibilaithan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "Isis. Now... Guess which one",
                         "I'm thinking about right now!"
                     ])?;
-                } else {
-                    if l_i.clone() == 2 {
-                        ctx.lines(args![
-                            "Okay...",
-                            "Now I'm thinking about a different monster. Or am I? Guess which one!"
-                        ])?;
-                    } else {
-                        if l_i.clone() == 3 {
-                            ctx.lines(args!["Now...", "Which monster am", "I thinking about?"])?;
-                        } else {
-                            if l_i.clone() == 4 {
-                                ctx.lines(args!["Can you guess which", "monster is on my mind now?"])?;
-                            } else {
-                                if l_i.clone() == 5 {
-                                    ctx.lines(args!["One more time!", "What monster", "am I thinking of?"])?;
-                                }
-                            }
-                        }
-                    }
+                } else if l_i.clone() == 2 {
+                    ctx.lines(args![
+                        "Okay...",
+                        "Now I'm thinking about a different monster. Or am I? Guess which one!"
+                    ])?;
+                } else if l_i.clone() == 3 {
+                    ctx.lines(args!["Now...", "Which monster am", "I thinking about?"])?;
+                } else if l_i.clone() == 4 {
+                    ctx.lines(args!["Can you guess which", "monster is on my mind now?"])?;
+                } else if l_i.clone() == 5 {
+                    ctx.lines(args!["One more time!", "What monster", "am I thinking of?"])?;
                 }
                 ctx.next()?;
                 l_answer = Val::from(runtime::select_values(ctx, &[Val::from("Zealotus:Alice:Munak:Isis")])?);
@@ -976,18 +924,12 @@ fn hibilaithan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             'b3: {
                 if runtime::local_get(&l_mons, &l_i.clone(), false) == 1 {
                     ctx.mes("Zealotus")?;
-                } else {
-                    if runtime::local_get(&l_mons, &l_i.clone(), false) == 2 {
-                        ctx.mes("Alice")?;
-                    } else {
-                        if runtime::local_get(&l_mons, &l_i.clone(), false) == 3 {
-                            ctx.mes("Munak")?;
-                        } else {
-                            if runtime::local_get(&l_mons, &l_i.clone(), false) == 4 {
-                                ctx.mes("Isis")?;
-                            }
-                        }
-                    }
+                } else if runtime::local_get(&l_mons, &l_i.clone(), false) == 2 {
+                    ctx.mes("Alice")?;
+                } else if runtime::local_get(&l_mons, &l_i.clone(), false) == 3 {
+                    ctx.mes("Munak")?;
+                } else if runtime::local_get(&l_mons, &l_i.clone(), false) == 4 {
+                    ctx.mes("Isis")?;
                 }
             }
             l_i = (l_i.clone() + Val::from(1));
@@ -995,10 +937,8 @@ fn hibilaithan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         if l_dap.clone().number()? > 0 {
             ctx.call(Function::DelItem, vec![l_itemreq.clone(), Val::from(30)])?;
             ctx.var("lv4_weapon").set((ctx.var("lv4_weapon").get()? + Val::from(3)))?;
-        } else {
-            if l_dap.clone().number()? < 1 {
-                ctx.call(Function::DelItem, vec![l_itemreq.clone(), Val::from(10)])?;
-            }
+        } else if l_dap.clone().number()? < 1 {
+            ctx.call(Function::DelItem, vec![l_itemreq.clone(), Val::from(10)])?;
         }
         ctx.next()?;
         ctx.mes("[Hibilaithan]")?;
@@ -1018,26 +958,24 @@ fn hibilaithan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if l_dap.clone().number()? < 1 {
-                ctx.lines(args![
-                    "Oooh...",
-                    "This isn't good.",
-                    "You got all of them ^660000wrong^000000.",
-                    ((Val::from("We better drive away all of your bad luck with 10 ")
-                        + ctx.call(Function::GetItemName, vec![l_itemreq.clone()])?)
-                        + Val::from("."))
-                ])?;
-                ctx.next()?;
-                ctx.lines_as("Hibilaithan", args!["We can't get started until your luck is strong enough, so we'll need to play this game again. If you don't have enough ores, just get some more before coming back."])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hibilaithan",
-                    args!["I'm not going anywhere,", "so there's no rush. Take", "your time, I'll be waiting!"],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if l_dap.clone().number()? < 1 {
+            ctx.lines(args![
+                "Oooh...",
+                "This isn't good.",
+                "You got all of them ^660000wrong^000000.",
+                ((Val::from("We better drive away all of your bad luck with 10 ")
+                    + ctx.call(Function::GetItemName, vec![l_itemreq.clone()])?)
+                    + Val::from("."))
+            ])?;
+            ctx.next()?;
+            ctx.lines_as("Hibilaithan", args!["We can't get started until your luck is strong enough, so we'll need to play this game again. If you don't have enough ores, just get some more before coming back."])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hibilaithan",
+                args!["I'm not going anywhere,", "so there's no rush. Take", "your time, I'll be waiting!"],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ((ctx.var("lv4_weapon").get()? == 9 || ctx.var("lv4_weapon").get()? == 10) || ctx.var("lv4_weapon").get()? == 11) {
@@ -1153,47 +1091,39 @@ fn hibilaithan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 break 'b6;
                             }
                         }
-                    } else {
-                        if (ctx.call(Function::CountItem, vec![Val::from(7297)])?.number()? > 29
-                            && ctx.call(Function::CountItem, vec![Val::from(7296)])?.number()? > 29)
-                        {
-                            ctx.lines_as(
-                                "Hibilaithan",
-                                args!["Hahaha, you only needed to bring one kind of ore, not two. Now, which ore would you like to use?"],
-                            )?;
-                            ctx.next()?;
-                            'b7: {
-                                let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Biotite:Pyroxene")])?);
-                                let mut matched7 = false;
-                                let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    l_itemreq = Val::from(7297);
-                                    break 'b7;
-                                }
-                                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    l_itemreq = Val::from(7296);
-                                    break 'b7;
-                                }
+                    } else if (ctx.call(Function::CountItem, vec![Val::from(7297)])?.number()? > 29
+                        && ctx.call(Function::CountItem, vec![Val::from(7296)])?.number()? > 29)
+                    {
+                        ctx.lines_as(
+                            "Hibilaithan",
+                            args!["Hahaha, you only needed to bring one kind of ore, not two. Now, which ore would you like to use?"],
+                        )?;
+                        ctx.next()?;
+                        'b7: {
+                            let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Biotite:Pyroxene")])?);
+                            let mut matched7 = false;
+                            let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
+                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                                matched7 = true;
                             }
-                        } else {
-                            if ctx.call(Function::CountItem, vec![Val::from(7292)])?.number()? > 29 {
-                                l_itemreq = Val::from(7292);
-                            } else {
-                                if ctx.call(Function::CountItem, vec![Val::from(7297)])?.number()? > 29 {
-                                    l_itemreq = Val::from(7297);
-                                } else {
-                                    if ctx.call(Function::CountItem, vec![Val::from(7296)])?.number()? > 29 {
-                                        l_itemreq = Val::from(7296);
-                                    }
-                                }
+                            if matched7 {
+                                l_itemreq = Val::from(7297);
+                                break 'b7;
+                            }
+                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                                matched7 = true;
+                            }
+                            if matched7 {
+                                l_itemreq = Val::from(7296);
+                                break 'b7;
                             }
                         }
+                    } else if ctx.call(Function::CountItem, vec![Val::from(7292)])?.number()? > 29 {
+                        l_itemreq = Val::from(7292);
+                    } else if ctx.call(Function::CountItem, vec![Val::from(7297)])?.number()? > 29 {
+                        l_itemreq = Val::from(7297);
+                    } else if ctx.call(Function::CountItem, vec![Val::from(7296)])?.number()? > 29 {
+                        l_itemreq = Val::from(7296);
                     }
                 }
             }
@@ -1236,14 +1166,10 @@ fn hibilaithan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.call(Function::DelItem, vec![Val::from(714), Val::from(10)])?;
             if ctx.call(Function::CountItem, vec![Val::from(7292)])?.number()? > 29 {
                 ctx.var("lv4_weapon").set(Val::from(9))?;
-            } else {
-                if ctx.call(Function::CountItem, vec![Val::from(7297)])?.number()? > 29 {
-                    ctx.var("lv4_weapon").set(Val::from(10))?;
-                } else {
-                    if ctx.call(Function::CountItem, vec![Val::from(7296)])?.number()? > 29 {
-                        ctx.var("lv4_weapon").set(Val::from(11))?;
-                    }
-                }
+            } else if ctx.call(Function::CountItem, vec![Val::from(7297)])?.number()? > 29 {
+                ctx.var("lv4_weapon").set(Val::from(10))?;
+            } else if ctx.call(Function::CountItem, vec![Val::from(7296)])?.number()? > 29 {
+                ctx.var("lv4_weapon").set(Val::from(11))?;
             }
             ctx.close_window()?;
             return Err(Stop::End);
@@ -1570,21 +1496,17 @@ fn tabezthan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.lines(args!["I don't believe it!", "This is such an incredibly rare weapon! Yes, I remember its name from what my late father told me. This is... Caesar's Sword!"])?;
             ctx.var("lv4_weapon").set(Val::from(0))?;
             ctx.call(Function::GetItem, vec![Val::from(1134), Val::from(1)])?;
-        } else {
-            if ctx.var("lv4_weapon").get()? == 20 {
-                ctx.lines(args![
-                    "I don't believe it!",
-                    "This is such an incredibly rare weapon! Yes, I remember its name from what my late father told me. This is... Tirfing!"
-                ])?;
-                ctx.var("lv4_weapon").set(Val::from(0))?;
-                ctx.call(Function::GetItem, vec![Val::from(1139), Val::from(1)])?;
-            } else {
-                if ctx.var("lv4_weapon").get()? == 21 {
-                    ctx.lines(args!["I don't believe it!", "This is such an incredibly rare weapon! Yes, I remember its name from what my late father told me. This is... Sabbath!"])?;
-                    ctx.var("lv4_weapon").set(Val::from(0))?;
-                    ctx.call(Function::GetItem, vec![Val::from(1365), Val::from(1)])?;
-                }
-            }
+        } else if ctx.var("lv4_weapon").get()? == 20 {
+            ctx.lines(args![
+                "I don't believe it!",
+                "This is such an incredibly rare weapon! Yes, I remember its name from what my late father told me. This is... Tirfing!"
+            ])?;
+            ctx.var("lv4_weapon").set(Val::from(0))?;
+            ctx.call(Function::GetItem, vec![Val::from(1139), Val::from(1)])?;
+        } else if ctx.var("lv4_weapon").get()? == 21 {
+            ctx.lines(args!["I don't believe it!", "This is such an incredibly rare weapon! Yes, I remember its name from what my late father told me. This is... Sabbath!"])?;
+            ctx.var("lv4_weapon").set(Val::from(0))?;
+            ctx.call(Function::GetItem, vec![Val::from(1365), Val::from(1)])?;
         }
         ctx.next()?;
         ctx.lines_as(
@@ -1604,14 +1526,10 @@ fn tabezthan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     {
         if ctx.var("lv4_weapon").get()? == 16 {
             l_itemreq = Val::from(7290);
-        } else {
-            if ctx.var("lv4_weapon").get()? == 17 {
-                l_itemreq = Val::from(7289);
-            } else {
-                if ctx.var("lv4_weapon").get()? == 18 {
-                    l_itemreq = Val::from(7293);
-                }
-            }
+        } else if ctx.var("lv4_weapon").get()? == 17 {
+            l_itemreq = Val::from(7289);
+        } else if ctx.var("lv4_weapon").get()? == 18 {
+            l_itemreq = Val::from(7293);
         }
         ctx.lines_as("Tabezthan", args!["Shall we begin?", "I will tell you the names of 4 different monsters. You will be given five chances to predict which monster I am thinking about."])?;
         ctx.next()?;
@@ -1642,35 +1560,27 @@ fn tabezthan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "try to guess which one I am",
                         "thinking about."
                     ])?;
-                } else {
-                    if l_i.clone() == 2 {
-                        ctx.lines(args![
-                            "Please try to determine",
-                            "which monster I'm thinking",
-                            "of right this moment."
-                        ])?;
-                    } else {
-                        if l_i.clone() == 3 {
-                            ctx.lines(args!["Now, try to sense", "which monster I am", "visualizing in my mind."])?;
-                        } else {
-                            if l_i.clone() == 4 {
-                                ctx.lines(args![
-                                    "Once again, try",
-                                    "and guess what monster",
-                                    "I'm thinking about right now."
-                                ])?;
-                            } else {
-                                if l_i.clone() == 5 {
-                                    ctx.lines(args![
-                                        "Alright, this is",
-                                        "your last chance to",
-                                        "correctly guess which",
-                                        "monster I'm thinking of."
-                                    ])?;
-                                }
-                            }
-                        }
-                    }
+                } else if l_i.clone() == 2 {
+                    ctx.lines(args![
+                        "Please try to determine",
+                        "which monster I'm thinking",
+                        "of right this moment."
+                    ])?;
+                } else if l_i.clone() == 3 {
+                    ctx.lines(args!["Now, try to sense", "which monster I am", "visualizing in my mind."])?;
+                } else if l_i.clone() == 4 {
+                    ctx.lines(args![
+                        "Once again, try",
+                        "and guess what monster",
+                        "I'm thinking about right now."
+                    ])?;
+                } else if l_i.clone() == 5 {
+                    ctx.lines(args![
+                        "Alright, this is",
+                        "your last chance to",
+                        "correctly guess which",
+                        "monster I'm thinking of."
+                    ])?;
                 }
                 ctx.next()?;
                 l_answer = Val::from(runtime::select_values(
@@ -1697,18 +1607,12 @@ fn tabezthan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             'b3: {
                 if runtime::local_get(&l_mons, &l_i.clone(), false) == 1 {
                     ctx.mes("Baphomet")?;
-                } else {
-                    if runtime::local_get(&l_mons, &l_i.clone(), false) == 2 {
-                        ctx.mes("Dark Lord")?;
-                    } else {
-                        if runtime::local_get(&l_mons, &l_i.clone(), false) == 3 {
-                            ctx.mes("Bloody Knight")?;
-                        } else {
-                            if runtime::local_get(&l_mons, &l_i.clone(), false) == 4 {
-                                ctx.mes("Stormy Knight")?;
-                            }
-                        }
-                    }
+                } else if runtime::local_get(&l_mons, &l_i.clone(), false) == 2 {
+                    ctx.mes("Dark Lord")?;
+                } else if runtime::local_get(&l_mons, &l_i.clone(), false) == 3 {
+                    ctx.mes("Bloody Knight")?;
+                } else if runtime::local_get(&l_mons, &l_i.clone(), false) == 4 {
+                    ctx.mes("Stormy Knight")?;
                 }
             }
             l_i = (l_i.clone() + Val::from(1));
@@ -1716,10 +1620,8 @@ fn tabezthan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         if l_dap.clone().number()? > 0 {
             ctx.call(Function::DelItem, vec![l_itemreq.clone(), Val::from(30)])?;
             ctx.var("lv4_weapon").set((ctx.var("lv4_weapon").get()? + Val::from(3)))?;
-        } else {
-            if l_dap.clone().number()? < 1 {
-                ctx.call(Function::DelItem, vec![l_itemreq.clone(), Val::from(10)])?;
-            }
+        } else if l_dap.clone().number()? < 1 {
+            ctx.call(Function::DelItem, vec![l_itemreq.clone(), Val::from(10)])?;
         }
         ctx.next()?;
         ctx.mes("[Tabezthan]")?;
@@ -1727,22 +1629,20 @@ fn tabezthan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.lines(args![((Val::from("You have answered ") + l_dap.clone()) + Val::from(" times correctly. It appears that your luck is at a high point, and it is an ideal time for me to craft something for you. Give me a little time to prepare, and return to me."))])?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if l_dap.clone().number()? < 1 {
-                ctx.mes("Unfortunately, you weren't able to guess any of them correctly. It seems that your luck is charged with negative energy. We'll need to expel this bad luck with 10 of your Phologopite.")?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Tabezthan",
-                    args![
-                        ((Val::from("Do not be disheartened. Losing 10 ") + ctx.call(Function::GetItemName, vec![l_itemreq.clone()])?)
-                            + Val::from(" is much better than losing 30 on a failed crafting attempt."))
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Tabezthan", args!["Please come back with 30 Phologopite, and we shall try this mind reading game once again. I shall be waiting for you right here."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if l_dap.clone().number()? < 1 {
+            ctx.mes("Unfortunately, you weren't able to guess any of them correctly. It seems that your luck is charged with negative energy. We'll need to expel this bad luck with 10 of your Phologopite.")?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Tabezthan",
+                args![
+                    ((Val::from("Do not be disheartened. Losing 10 ") + ctx.call(Function::GetItemName, vec![l_itemreq.clone()])?)
+                        + Val::from(" is much better than losing 30 on a failed crafting attempt."))
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Tabezthan", args!["Please come back with 30 Phologopite, and we shall try this mind reading game once again. I shall be waiting for you right here."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ((ctx.var("lv4_weapon").get()? == 16 || ctx.var("lv4_weapon").get()? == 17) || ctx.var("lv4_weapon").get()? == 18) {
@@ -1873,52 +1773,44 @@ fn tabezthan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 break 'b6;
                             }
                         }
-                    } else {
-                        if (ctx.call(Function::CountItem, vec![Val::from(7289)])?.number()? > 29
-                            && ctx.call(Function::CountItem, vec![Val::from(7293)])?.number()? > 29)
-                        {
-                            ctx.lines_as(
-                                "Tabezthan",
-                                args![
-                                    "Hahaha, you didn't need",
-                                    "to bring more than one kind",
-                                    "of ore. Now, which one would",
-                                    "you like to use?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            'b7: {
-                                let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Peridot:Rose Quartz")])?);
-                                let mut matched7 = false;
-                                let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    l_itemreq = Val::from(7289);
-                                    break 'b7;
-                                }
-                                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                    matched7 = true;
-                                }
-                                if matched7 {
-                                    l_itemreq = Val::from(7293);
-                                    break 'b7;
-                                }
+                    } else if (ctx.call(Function::CountItem, vec![Val::from(7289)])?.number()? > 29
+                        && ctx.call(Function::CountItem, vec![Val::from(7293)])?.number()? > 29)
+                    {
+                        ctx.lines_as(
+                            "Tabezthan",
+                            args![
+                                "Hahaha, you didn't need",
+                                "to bring more than one kind",
+                                "of ore. Now, which one would",
+                                "you like to use?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        'b7: {
+                            let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Peridot:Rose Quartz")])?);
+                            let mut matched7 = false;
+                            let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
+                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                                matched7 = true;
                             }
-                        } else {
-                            if ctx.call(Function::CountItem, vec![Val::from(7290)])?.number()? > 29 {
-                                l_itemreq = Val::from(7290);
-                            } else {
-                                if ctx.call(Function::CountItem, vec![Val::from(7289)])?.number()? > 29 {
-                                    l_itemreq = Val::from(7289);
-                                } else {
-                                    if ctx.call(Function::CountItem, vec![Val::from(7293)])?.number()? > 29 {
-                                        l_itemreq = Val::from(7293);
-                                    }
-                                }
+                            if matched7 {
+                                l_itemreq = Val::from(7289);
+                                break 'b7;
+                            }
+                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                                matched7 = true;
+                            }
+                            if matched7 {
+                                l_itemreq = Val::from(7293);
+                                break 'b7;
                             }
                         }
+                    } else if ctx.call(Function::CountItem, vec![Val::from(7290)])?.number()? > 29 {
+                        l_itemreq = Val::from(7290);
+                    } else if ctx.call(Function::CountItem, vec![Val::from(7289)])?.number()? > 29 {
+                        l_itemreq = Val::from(7289);
+                    } else if ctx.call(Function::CountItem, vec![Val::from(7293)])?.number()? > 29 {
+                        l_itemreq = Val::from(7293);
                     }
                 }
             }
@@ -1953,14 +1845,10 @@ fn tabezthan_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.call(Function::DelItem, vec![Val::from(714), Val::from(10)])?;
             if ctx.call(Function::CountItem, vec![Val::from(7290)])?.number()? > 29 {
                 ctx.var("lv4_weapon").set(Val::from(16))?;
-            } else {
-                if ctx.call(Function::CountItem, vec![Val::from(7289)])?.number()? > 29 {
-                    ctx.var("lv4_weapon").set(Val::from(17))?;
-                } else {
-                    if ctx.call(Function::CountItem, vec![Val::from(7293)])?.number()? > 29 {
-                        ctx.var("lv4_weapon").set(Val::from(18))?;
-                    }
-                }
+            } else if ctx.call(Function::CountItem, vec![Val::from(7289)])?.number()? > 29 {
+                ctx.var("lv4_weapon").set(Val::from(17))?;
+            } else if ctx.call(Function::CountItem, vec![Val::from(7293)])?.number()? > 29 {
+                ctx.var("lv4_weapon").set(Val::from(18))?;
             }
             ctx.close_window()?;
             return Err(Stop::End);
@@ -2802,29 +2690,25 @@ fn kayron_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::DelItem, vec![Val::from(7293), Val::from(30)])?;
             }
             ctx.var("lv4_weapon").set((ctx.var("lv4_weapon").get()? + Val::from(2)))?;
-        } else {
-            if l_shobu.clone().number()? < 2 {
-                if l_aekddam.clone() == 1 {
-                    if ctx.var("lv4_weapon").get()? == 27 {
-                        ctx.call(Function::DelItem, vec![Val::from(7289), Val::from(30)])?;
-                    } else {
-                        ctx.call(Function::DelItem, vec![Val::from(7290), Val::from(30)])?;
-                    }
+        } else if l_shobu.clone().number()? < 2 {
+            if l_aekddam.clone() == 1 {
+                if ctx.var("lv4_weapon").get()? == 27 {
+                    ctx.call(Function::DelItem, vec![Val::from(7289), Val::from(30)])?;
                 } else {
-                    if l_aekddam.clone() == 2 {
-                        if ctx.var("lv4_weapon").get()? == 27 {
-                            ctx.call(Function::DelItem, vec![Val::from(7294), Val::from(30)])?;
-                        } else {
-                            ctx.call(Function::DelItem, vec![Val::from(7296), Val::from(30)])?;
-                        }
+                    ctx.call(Function::DelItem, vec![Val::from(7290), Val::from(30)])?;
+                }
+            } else {
+                if l_aekddam.clone() == 2 {
+                    if ctx.var("lv4_weapon").get()? == 27 {
+                        ctx.call(Function::DelItem, vec![Val::from(7294), Val::from(30)])?;
                     } else {
-                        if l_aekddam.clone() == 3 {
-                            if ctx.var("lv4_weapon").get()? == 27 {
-                                ctx.call(Function::DelItem, vec![Val::from(7291), Val::from(30)])?;
-                            } else {
-                                ctx.call(Function::DelItem, vec![Val::from(7293), Val::from(30)])?;
-                            }
-                        }
+                        ctx.call(Function::DelItem, vec![Val::from(7296), Val::from(30)])?;
+                    }
+                } else if l_aekddam.clone() == 3 {
+                    if ctx.var("lv4_weapon").get()? == 27 {
+                        ctx.call(Function::DelItem, vec![Val::from(7291), Val::from(30)])?;
+                    } else {
+                        ctx.call(Function::DelItem, vec![Val::from(7293), Val::from(30)])?;
                     }
                 }
             }
@@ -2832,71 +2716,47 @@ fn kayron_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Kayron", args!["We're done!", "Now, I wrote down..."])?;
         if l_npchand1.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand1.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand1.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand1.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand1.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_npchand2.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand2.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand2.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand2.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand2.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_npchand3.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand3.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand3.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand3.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand3.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         ctx.next()?;
         ctx.lines_as("Kayron", args!["You wrote down..."])?;
         if l_myhand1.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand1.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand1.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand1.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand1.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_myhand2.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand2.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand2.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand2.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand2.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_myhand3.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand3.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand3.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand3.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand3.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         ctx.next()?;
         if l_shobu.clone().number()? > 1 {
@@ -2920,26 +2780,24 @@ fn kayron_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if l_shobu.clone().number()? < 2 {
-                ctx.lines_as(
-                    "Kayron",
-                    args![
-                        "Well, I'm sorry to say that you lost. We have no choice but to drive away your bad luck with",
-                        "some of the ore you brought!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Kayron",
-                    args![
-                        "Alright, let's try this again. Go and get the materials we need",
-                        "and come back to me."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if l_shobu.clone().number()? < 2 {
+            ctx.lines_as(
+                "Kayron",
+                args![
+                    "Well, I'm sorry to say that you lost. We have no choice but to drive away your bad luck with",
+                    "some of the ore you brought!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Kayron",
+                args![
+                    "Alright, let's try this again. Go and get the materials we need",
+                    "and come back to me."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ((ctx.var("lv4_weapon").get()? == 26 || ctx.var("lv4_weapon").get()? == 27) || ctx.var("lv4_weapon").get()? == 28) {
@@ -3427,29 +3285,25 @@ fn reyghema_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::DelItem, vec![Val::from(7295), Val::from(30)])?;
             }
             ctx.var("lv4_weapon").set((ctx.var("lv4_weapon").get()? + Val::from(2)))?;
-        } else {
-            if l_shobu.clone().number()? < 2 {
-                if l_aekddam.clone() == 1 {
-                    if ctx.var("lv4_weapon").get()? == 36 {
-                        ctx.call(Function::DelItem, vec![Val::from(7292), Val::from(30)])?;
-                    } else {
-                        ctx.call(Function::DelItem, vec![Val::from(7297), Val::from(30)])?;
-                    }
+        } else if l_shobu.clone().number()? < 2 {
+            if l_aekddam.clone() == 1 {
+                if ctx.var("lv4_weapon").get()? == 36 {
+                    ctx.call(Function::DelItem, vec![Val::from(7292), Val::from(30)])?;
                 } else {
-                    if l_aekddam.clone() == 2 {
-                        if ctx.var("lv4_weapon").get()? == 36 {
-                            ctx.call(Function::DelItem, vec![Val::from(7293), Val::from(30)])?;
-                        } else {
-                            ctx.call(Function::DelItem, vec![Val::from(7291), Val::from(30)])?;
-                        }
+                    ctx.call(Function::DelItem, vec![Val::from(7297), Val::from(30)])?;
+                }
+            } else {
+                if l_aekddam.clone() == 2 {
+                    if ctx.var("lv4_weapon").get()? == 36 {
+                        ctx.call(Function::DelItem, vec![Val::from(7293), Val::from(30)])?;
                     } else {
-                        if l_aekddam.clone() == 3 {
-                            if ctx.var("lv4_weapon").get()? == 36 {
-                                ctx.call(Function::DelItem, vec![Val::from(7289), Val::from(30)])?;
-                            } else {
-                                ctx.call(Function::DelItem, vec![Val::from(7295), Val::from(30)])?;
-                            }
-                        }
+                        ctx.call(Function::DelItem, vec![Val::from(7291), Val::from(30)])?;
+                    }
+                } else if l_aekddam.clone() == 3 {
+                    if ctx.var("lv4_weapon").get()? == 36 {
+                        ctx.call(Function::DelItem, vec![Val::from(7289), Val::from(30)])?;
+                    } else {
+                        ctx.call(Function::DelItem, vec![Val::from(7295), Val::from(30)])?;
                     }
                 }
             }
@@ -3457,71 +3311,47 @@ fn reyghema_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Reyghema", args!["Alright, now", "I wrote down..."])?;
         if l_npchand1.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand1.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand1.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand1.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand1.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_npchand2.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand2.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand2.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand2.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand2.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_npchand3.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand3.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand3.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand3.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand3.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         ctx.next()?;
         ctx.lines_as("Reyghema", args!["You wrote down..."])?;
         if l_myhand1.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand1.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand1.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand1.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand1.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_myhand2.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand2.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand2.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand2.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand2.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_myhand3.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand3.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand3.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand3.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand3.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         ctx.next()?;
         if l_shobu.clone().number()? > 1 {
@@ -3542,21 +3372,19 @@ fn reyghema_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if l_shobu.clone().number()? < 2 {
-                ctx.lines_as(
-                    "Reyghema",
-                    args![
-                        "Damn...",
-                        "I should be happy I won, but that just means your luck is bad and",
-                        "we need to do this again."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as("Reyghema", args!["I'm sorry, but I'll need to take a bunch of one of your ores to get rid of your bad luck. Come back with all of the ore we'll need so we can test your luck again, alright?"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if l_shobu.clone().number()? < 2 {
+            ctx.lines_as(
+                "Reyghema",
+                args![
+                    "Damn...",
+                    "I should be happy I won, but that just means your luck is bad and",
+                    "we need to do this again."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as("Reyghema", args!["I'm sorry, but I'll need to take a bunch of one of your ores to get rid of your bad luck. Come back with all of the ore we'll need so we can test your luck again, alright?"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ((ctx.var("lv4_weapon").get()? == 35 || ctx.var("lv4_weapon").get()? == 36) || ctx.var("lv4_weapon").get()? == 37) {
@@ -4033,29 +3861,25 @@ fn hein_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::DelItem, vec![Val::from(7290), Val::from(30)])?;
             }
             ctx.var("lv4_weapon").set((ctx.var("lv4_weapon").get()? + Val::from(2)))?;
-        } else {
-            if l_shobu.clone().number()? < 2 {
-                if l_aekddam.clone() == 1 {
-                    if ctx.var("lv4_weapon").get()? == 45 {
-                        ctx.call(Function::DelItem, vec![Val::from(7294), Val::from(30)])?;
-                    } else {
-                        ctx.call(Function::DelItem, vec![Val::from(7295), Val::from(30)])?;
-                    }
+        } else if l_shobu.clone().number()? < 2 {
+            if l_aekddam.clone() == 1 {
+                if ctx.var("lv4_weapon").get()? == 45 {
+                    ctx.call(Function::DelItem, vec![Val::from(7294), Val::from(30)])?;
                 } else {
-                    if l_aekddam.clone() == 2 {
-                        if ctx.var("lv4_weapon").get()? == 45 {
-                            ctx.call(Function::DelItem, vec![Val::from(7297), Val::from(30)])?;
-                        } else {
-                            ctx.call(Function::DelItem, vec![Val::from(7296), Val::from(30)])?;
-                        }
+                    ctx.call(Function::DelItem, vec![Val::from(7295), Val::from(30)])?;
+                }
+            } else {
+                if l_aekddam.clone() == 2 {
+                    if ctx.var("lv4_weapon").get()? == 45 {
+                        ctx.call(Function::DelItem, vec![Val::from(7297), Val::from(30)])?;
                     } else {
-                        if l_aekddam.clone() == 3 {
-                            if ctx.var("lv4_weapon").get()? == 45 {
-                                ctx.call(Function::DelItem, vec![Val::from(7293), Val::from(30)])?;
-                            } else {
-                                ctx.call(Function::DelItem, vec![Val::from(7290), Val::from(30)])?;
-                            }
-                        }
+                        ctx.call(Function::DelItem, vec![Val::from(7296), Val::from(30)])?;
+                    }
+                } else if l_aekddam.clone() == 3 {
+                    if ctx.var("lv4_weapon").get()? == 45 {
+                        ctx.call(Function::DelItem, vec![Val::from(7293), Val::from(30)])?;
+                    } else {
+                        ctx.call(Function::DelItem, vec![Val::from(7290), Val::from(30)])?;
                     }
                 }
             }
@@ -4063,71 +3887,47 @@ fn hein_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Hein", args!["Ready? This is", "what I wrote down..."])?;
         if l_npchand1.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand1.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand1.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand1.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand1.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_npchand2.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand2.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand2.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand2.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand2.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_npchand3.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand3.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand3.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand3.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand3.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         ctx.next()?;
         ctx.lines_as("Hein", args!["You wrote down", "these answers in", "this order..."])?;
         if l_myhand1.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand1.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand1.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand1.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand1.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_myhand2.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand2.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand2.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand2.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand2.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_myhand3.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand3.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand3.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand3.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand3.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         ctx.next()?;
         if l_shobu.clone().number()? > 1 {
@@ -4147,30 +3947,28 @@ fn hein_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if l_shobu.clone().number()? < 2 {
-                ctx.lines_as(
-                    "Hein",
-                    args![
-                        "Well, you lost.",
-                        "I'm sorry, but we",
-                        "need to expel the",
-                        "misfortune around you",
-                        "with the ore you've brought..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hein",
-                    args![
-                        "Okay, I'll wait here.",
-                        "Come back with the materials",
-                        "I need and we'll try this again."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if l_shobu.clone().number()? < 2 {
+            ctx.lines_as(
+                "Hein",
+                args![
+                    "Well, you lost.",
+                    "I'm sorry, but we",
+                    "need to expel the",
+                    "misfortune around you",
+                    "with the ore you've brought..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hein",
+                args![
+                    "Okay, I'll wait here.",
+                    "Come back with the materials",
+                    "I need and we'll try this again."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ((ctx.var("lv4_weapon").get()? == 44 || ctx.var("lv4_weapon").get()? == 45) || ctx.var("lv4_weapon").get()? == 46) {
@@ -4653,29 +4451,25 @@ fn waltboughst_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::DelItem, vec![Val::from(7290), Val::from(30)])?;
             }
             ctx.var("lv4_weapon").set((ctx.var("lv4_weapon").get()? + Val::from(2)))?;
-        } else {
-            if l_shobu.clone().number()? < 2 {
-                if l_aekddam.clone() == 1 {
-                    if ctx.var("lv4_weapon").get()? == 54 {
-                        ctx.call(Function::DelItem, vec![Val::from(7292), Val::from(30)])?;
-                    } else {
-                        ctx.call(Function::DelItem, vec![Val::from(7296), Val::from(30)])?;
-                    }
+        } else if l_shobu.clone().number()? < 2 {
+            if l_aekddam.clone() == 1 {
+                if ctx.var("lv4_weapon").get()? == 54 {
+                    ctx.call(Function::DelItem, vec![Val::from(7292), Val::from(30)])?;
                 } else {
-                    if l_aekddam.clone() == 2 {
-                        if ctx.var("lv4_weapon").get()? == 54 {
-                            ctx.call(Function::DelItem, vec![Val::from(7295), Val::from(30)])?;
-                        } else {
-                            ctx.call(Function::DelItem, vec![Val::from(7294), Val::from(30)])?;
-                        }
+                    ctx.call(Function::DelItem, vec![Val::from(7296), Val::from(30)])?;
+                }
+            } else {
+                if l_aekddam.clone() == 2 {
+                    if ctx.var("lv4_weapon").get()? == 54 {
+                        ctx.call(Function::DelItem, vec![Val::from(7295), Val::from(30)])?;
                     } else {
-                        if l_aekddam.clone() == 3 {
-                            if ctx.var("lv4_weapon").get()? == 54 {
-                                ctx.call(Function::DelItem, vec![Val::from(7291), Val::from(30)])?;
-                            } else {
-                                ctx.call(Function::DelItem, vec![Val::from(7290), Val::from(30)])?;
-                            }
-                        }
+                        ctx.call(Function::DelItem, vec![Val::from(7294), Val::from(30)])?;
+                    }
+                } else if l_aekddam.clone() == 3 {
+                    if ctx.var("lv4_weapon").get()? == 54 {
+                        ctx.call(Function::DelItem, vec![Val::from(7291), Val::from(30)])?;
+                    } else {
+                        ctx.call(Function::DelItem, vec![Val::from(7290), Val::from(30)])?;
                     }
                 }
             }
@@ -4683,71 +4477,47 @@ fn waltboughst_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Waltboughst", args!["Okay...", "I wrote down..."])?;
         if l_npchand1.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand1.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand1.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand1.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand1.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_npchand2.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand2.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand2.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand2.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand2.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_npchand3.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_npchand3.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_npchand3.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_npchand3.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_npchand3.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         ctx.next()?;
         ctx.lines_as("Waltboughst", args!["Now, you wrote..."])?;
         if l_myhand1.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand1.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand1.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand1.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand1.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_myhand2.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand2.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand2.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand2.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand2.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         if l_myhand3.clone() == 1 {
             ctx.mes("Scissors")?;
-        } else {
-            if l_myhand3.clone() == 2 {
-                ctx.mes("Rock")?;
-            } else {
-                if l_myhand3.clone() == 3 {
-                    ctx.mes("Paper")?;
-                }
-            }
+        } else if l_myhand3.clone() == 2 {
+            ctx.mes("Rock")?;
+        } else if l_myhand3.clone() == 3 {
+            ctx.mes("Paper")?;
         }
         ctx.next()?;
         if l_shobu.clone().number()? > 1 {
@@ -4769,29 +4539,27 @@ fn waltboughst_lv4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.close_window()?;
             return Err(Stop::End);
-        } else {
-            if l_shobu.clone().number()? < 2 {
-                ctx.lines_as(
-                    "Waltboughst",
-                    args![
-                        "You lost...",
-                        "I'm sorry, but we",
-                        "need to repel the bad",
-                        "luck by throwing away",
-                        "some of your ores..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Waltboughst",
-                    args![
-                        "Gather the required ores again,",
-                        "and come back to me so we can test your luck. I'll be waiting right here."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        } else if l_shobu.clone().number()? < 2 {
+            ctx.lines_as(
+                "Waltboughst",
+                args![
+                    "You lost...",
+                    "I'm sorry, but we",
+                    "need to repel the bad",
+                    "luck by throwing away",
+                    "some of your ores..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Waltboughst",
+                args![
+                    "Gather the required ores again,",
+                    "and come back to me so we can test your luck. I'll be waiting right here."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ((ctx.var("lv4_weapon").get()? == 53 || ctx.var("lv4_weapon").get()? == 54) || ctx.var("lv4_weapon").get()? == 55) {

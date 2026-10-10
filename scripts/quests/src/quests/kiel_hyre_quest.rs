@@ -332,86 +332,82 @@ fn pub_master_kh_run(ctx: &Ctx, mut step: PubMasterKhStep, args: Vec<Val>) -> Re
                             return Err(Stop::End);
                         }
                     }
-                } else {
-                    if (ctx.var("kielhyrequest").get()?.number()? >= 2 && ctx.var("kielhyrequest").get()?.number()? < 6) {
+                } else if (ctx.var("kielhyrequest").get()?.number()? >= 2 && ctx.var("kielhyrequest").get()?.number()? < 6) {
+                    ctx.lines_as(
+                        "Vandt",
+                        args![
+                            "Please deliver that bottle",
+                            "of Wine I gave you to Mrs.",
+                            "Mrs. ^ff0000Lecollane^000000, who should be",
+                            "inside the Kiel Hyre Academy.",
+                            "Hurry and get it to her before she",
+                            "can complain about the delivery."
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("kielhyrequest").get()? == 6 {
+                    if ctx.call(Function::CountItem, vec![Val::from(7487)])? == 0 {
                         ctx.lines_as(
                             "Vandt",
                             args![
-                                "Please deliver that bottle",
-                                "of Wine I gave you to Mrs.",
-                                "Mrs. ^ff0000Lecollane^000000, who should be",
-                                "inside the Kiel Hyre Academy.",
-                                "Hurry and get it to her before she",
-                                "can complain about the delivery."
+                                "Oh, you're back.",
+                                "Thanks for making that",
+                                "delivery. Just give me",
+                                "a moment, and then I can",
+                                "pay you in zeny, okay?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        let choice = runtime::select_values(ctx, &[Val::from("I need more wine...")])?;
+                        ctx.var("@menu").set(choice)?;
+                        ctx.lines_as(
+                            "Vandt",
+                            args![
+                                "Oh, you need to deliver",
+                                "another bottle? Alright,",
+                                "let me look around, and",
+                                "I'll give you the wine",
+                                "and your payment."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args!["^3355FFRummage Rummage^000000", "^3355FFRummage Rummage^000000"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Vandt", args!["There you go!", "Thank you so much", "for helping me out~"])?;
+                        ctx.call(Function::GetItem, vec![Val::from(7487), Val::from(1)])?;
+                        ctx.var("Zeny").set((ctx.var("Zeny").get()? + Val::from(1000)))?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as(
+                            "Vandt",
+                            args![
+                                "Hey, thanks a lot",
+                                "for helping me out that",
+                                "last time. I knew I asked",
+                                "you out of the blue, but",
+                                "you ended up being a life",
+                                "saver! I really appreciate it!"
                             ],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                    } else {
-                        if ctx.var("kielhyrequest").get()? == 6 {
-                            if ctx.call(Function::CountItem, vec![Val::from(7487)])? == 0 {
-                                ctx.lines_as(
-                                    "Vandt",
-                                    args![
-                                        "Oh, you're back.",
-                                        "Thanks for making that",
-                                        "delivery. Just give me",
-                                        "a moment, and then I can",
-                                        "pay you in zeny, okay?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                let choice = runtime::select_values(ctx, &[Val::from("I need more wine...")])?;
-                                ctx.var("@menu").set(choice)?;
-                                ctx.lines_as(
-                                    "Vandt",
-                                    args![
-                                        "Oh, you need to deliver",
-                                        "another bottle? Alright,",
-                                        "let me look around, and",
-                                        "I'll give you the wine",
-                                        "and your payment."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines(args!["^3355FFRummage Rummage^000000", "^3355FFRummage Rummage^000000"])?;
-                                ctx.next()?;
-                                ctx.lines_as("Vandt", args!["There you go!", "Thank you so much", "for helping me out~"])?;
-                                ctx.call(Function::GetItem, vec![Val::from(7487), Val::from(1)])?;
-                                ctx.var("Zeny").set((ctx.var("Zeny").get()? + Val::from(1000)))?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                ctx.lines_as(
-                                    "Vandt",
-                                    args![
-                                        "Hey, thanks a lot",
-                                        "for helping me out that",
-                                        "last time. I knew I asked",
-                                        "you out of the blue, but",
-                                        "you ended up being a life",
-                                        "saver! I really appreciate it!"
-                                    ],
-                                )?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        } else {
-                            ctx.lines_as(
-                                "Vandt",
-                                args![
-                                    "You're a really good",
-                                    "worker, you know that?",
-                                    "Dependable, responsible,",
-                                    "willing to help others, and",
-                                    "proactive too! I think you'll",
-                                    "go far in life, kid, I really do~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
                     }
+                } else {
+                    ctx.lines_as(
+                        "Vandt",
+                        args![
+                            "You're a really good",
+                            "worker, you know that?",
+                            "Dependable, responsible,",
+                            "willing to help others, and",
+                            "proactive too! I think you'll",
+                            "go far in life, kid, I really do~"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 step = PubMasterKhStep::OnTouch;
                 continue 'machine;
@@ -455,115 +451,109 @@ fn little_kid_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 6 {
-            if ctx.var("khtoastgirlend").get()?.number()? < 1 {
-                ctx.lines(args![
-                    "Fresh, crunchy toast!",
-                    "If you want some, come",
-                    "and get some tooooast~",
-                    "Oh! Hi hi~ Did you want",
-                    "to buy some yummy toast?"
-                ])?;
-                ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("I'm here for Elly:No, thanks")])?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            "Cezu",
-                            args![
-                                "Oh, I see. Elly must have",
-                                "wasted another batch of",
-                                "ingredients again. Well,",
-                                "she's a regular customer,",
-                                "so I really want to help, but",
-                                "I can't really do anything."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Cezu",
-                            args![
-                                "You see, I just ran",
-                                "out of ingredients too!",
-                                "But I can't really leave",
-                                "to get some more. What if",
-                                "people need to buy toast?",
-                                "Listen, can you help me out?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Cezu",
-                            args![
-                                "Would you please go get",
-                                "some flour and eggs for me",
-                                "from the ^3355FFLighthalzen Windmill^000000",
-                                "Then, when you come back, I can",
-                                "divide the ingredients, and you",
-                                "can deliver some to Elly."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Cezu",
-                            args![
-                                "I know that I'm basically",
-                                "making you do everything",
-                                "on your own, but please try",
-                                "to understand that my hands",
-                                "are tied. D-don't ask me",
-                                "why, they just are!"
-                            ],
-                        )?;
-                        ctx.var("khtoastgirlend").set(Val::from(1))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as("Cezu", args!["Okay okay~", "Please come again!"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+    } else if ctx.var("kielhyrequest").get()? == 6 {
+        if ctx.var("khtoastgirlend").get()?.number()? < 1 {
+            ctx.lines(args![
+                "Fresh, crunchy toast!",
+                "If you want some, come",
+                "and get some tooooast~",
+                "Oh! Hi hi~ Did you want",
+                "to buy some yummy toast?"
+            ])?;
+            ctx.next()?;
+            'b1: {
+                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("I'm here for Elly:No, thanks")])?);
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
                 }
-            } else {
-                if ctx.var("khtoastgirlend").get()? == 1 {
-                    ctx.lines(args![
-                        "Would you please go to",
-                        "the Lighthalzen Windmill",
-                        "and tell them that Cezu needs",
-                        "lots of flour and lots of eggs!",
-                        "Then, bring all the stuff over",
-                        "to me as soon as you can~"
-                    ])?;
+                if matched1 {
+                    ctx.lines_as(
+                        "Cezu",
+                        args![
+                            "Oh, I see. Elly must have",
+                            "wasted another batch of",
+                            "ingredients again. Well,",
+                            "she's a regular customer,",
+                            "so I really want to help, but",
+                            "I can't really do anything."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Cezu",
+                        args![
+                            "You see, I just ran",
+                            "out of ingredients too!",
+                            "But I can't really leave",
+                            "to get some more. What if",
+                            "people need to buy toast?",
+                            "Listen, can you help me out?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Cezu",
+                        args![
+                            "Would you please go get",
+                            "some flour and eggs for me",
+                            "from the ^3355FFLighthalzen Windmill^000000",
+                            "Then, when you come back, I can",
+                            "divide the ingredients, and you",
+                            "can deliver some to Elly."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Cezu",
+                        args![
+                            "I know that I'm basically",
+                            "making you do everything",
+                            "on your own, but please try",
+                            "to understand that my hands",
+                            "are tied. D-don't ask me",
+                            "why, they just are!"
+                        ],
+                    )?;
+                    ctx.var("khtoastgirlend").set(Val::from(1))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("khtoastgirlend").get()? == 2 {
-                        ctx.lines(args![
-                            "Hey, you're back with the",
-                            "ingredients! Thank you so",
-                            "much, I really needed these!",
-                            "Now please give this flour",
-                            "and these eggs to Elly, and",
-                            "send her my regards. See you~"
-                        ])?;
-                        ctx.call(Function::DelItem, vec![Val::from(7488), Val::from(1)])?;
-                        ctx.call(Function::GetItem, vec![Val::from(7488), Val::from(1)])?;
-                        ctx.var("khtoastgirlend").set(Val::from(3))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.lines_as("Cezu", args!["Okay okay~", "Please come again!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
+        } else if ctx.var("khtoastgirlend").get()? == 1 {
+            ctx.lines(args![
+                "Would you please go to",
+                "the Lighthalzen Windmill",
+                "and tell them that Cezu needs",
+                "lots of flour and lots of eggs!",
+                "Then, bring all the stuff over",
+                "to me as soon as you can~"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if ctx.var("khtoastgirlend").get()? == 2 {
+            ctx.lines(args![
+                "Hey, you're back with the",
+                "ingredients! Thank you so",
+                "much, I really needed these!",
+                "Now please give this flour",
+                "and these eggs to Elly, and",
+                "send her my regards. See you~"
+            ])?;
+            ctx.call(Function::DelItem, vec![Val::from(7488), Val::from(1)])?;
+            ctx.call(Function::GetItem, vec![Val::from(7488), Val::from(1)])?;
+            ctx.var("khtoastgirlend").set(Val::from(3))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     if ctx.var("kielhyrequest").get()?.number()? > 6 {
@@ -606,93 +596,89 @@ fn windmill_owner_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("khtoastgirlend").get()? == 1 {
-            ctx.lines_as(
-                "Mills",
-                args![
-                    "Hey, whaddya want?",
-                    "You just happened to",
-                    "catch me at a good time,",
-                    "but if you need anything,",
-                    "you'd better spit it out quick",
-                    "before things get hectic again."
-                ],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("I'm here for Cezu:......")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Mills",
-                        args![
-                            "Oh, Cezu from the",
-                            "toast stand? Okay,",
-                            "I've got everything",
-                            "that kid needs right",
-                            "here. There's eggs inside,",
-                            "so be really careful with it.",
-                            "It's ready for you..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Mills",
-                        args![
-                            "Kid's one of my regular",
-                            "customers, so you don't",
-                            "have to pay me, or run any",
-                            "extra errands on my end. Yeah,",
-                            "I know how other people treat",
-                            "you adventurers. Well, see ya."
-                        ],
-                    )?;
-                    ctx.call(Function::GetItem, vec![Val::from(7488), Val::from(1)])?;
-                    ctx.var("khtoastgirlend").set(Val::from(2))?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Mills",
-                        args![
-                            "......",
-                            "Um, okay, well, if",
-                            "you need something,",
-                            "just hollar, I guess.",
-                            "Cuts, Cutz where are you?",
-                            "You'd better not be goofing off!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("khtoastgirlend").get()? == 1 {
+        ctx.lines_as(
+            "Mills",
+            args![
+                "Hey, whaddya want?",
+                "You just happened to",
+                "catch me at a good time,",
+                "but if you need anything,",
+                "you'd better spit it out quick",
+                "before things get hectic again."
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("I'm here for Cezu:......")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if ctx.var("khtoastgirlend").get()?.number()? >= 2 {
+            if matched1 {
                 ctx.lines_as(
                     "Mills",
                     args![
-                        "That Cutz is such",
-                        "a lazy rascal. The guy",
-                        "thinks he can fool around",
-                        "when he's on the clock...!",
-                        "Ah well, he knows I can't find",
-                        "a better assistant. He'll learn..."
+                        "Oh, Cezu from the",
+                        "toast stand? Okay,",
+                        "I've got everything",
+                        "that kid needs right",
+                        "here. There's eggs inside,",
+                        "so be really careful with it.",
+                        "It's ready for you..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mills",
+                    args![
+                        "Kid's one of my regular",
+                        "customers, so you don't",
+                        "have to pay me, or run any",
+                        "extra errands on my end. Yeah,",
+                        "I know how other people treat",
+                        "you adventurers. Well, see ya."
+                    ],
+                )?;
+                ctx.call(Function::GetItem, vec![Val::from(7488), Val::from(1)])?;
+                ctx.var("khtoastgirlend").set(Val::from(2))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Mills",
+                    args![
+                        "......",
+                        "Um, okay, well, if",
+                        "you need something,",
+                        "just hollar, I guess.",
+                        "Cuts, Cutz where are you?",
+                        "You'd better not be goofing off!"
                     ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
+    } else if ctx.var("khtoastgirlend").get()?.number()? >= 2 {
+        ctx.lines_as(
+            "Mills",
+            args![
+                "That Cutz is such",
+                "a lazy rascal. The guy",
+                "thinks he can fool around",
+                "when he's on the clock...!",
+                "Ah well, he knows I can't find",
+                "a better assistant. He'll learn..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -715,33 +701,31 @@ fn windmill_owner_s_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
+    } else if ctx.var("khtoastgirlend").get()?.number()? >= 2 {
+        ctx.lines_as(
+            "Cutz",
+            args![
+                "Wh-what makes you",
+                "think I'm goofing off,",
+                "Mills? L-look, look,",
+                "my hands are moving,",
+                "I'm busy, I'm working!"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     } else {
-        if ctx.var("khtoastgirlend").get()?.number()? >= 2 {
-            ctx.lines_as(
-                "Cutz",
-                args![
-                    "Wh-what makes you",
-                    "think I'm goofing off,",
-                    "Mills? L-look, look,",
-                    "my hands are moving,",
-                    "I'm busy, I'm working!"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            ctx.lines_as(
-                "Cutz",
-                args![
-                    "Hey, you're from",
-                    "Cezu's toast stand,",
-                    "right? How is cute",
-                    "little Cezu doing?"
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+        ctx.lines_as(
+            "Cutz",
+            args![
+                "Hey, you're from",
+                "Cezu's toast stand,",
+                "right? How is cute",
+                "little Cezu doing?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -810,104 +794,75 @@ fn security_guard_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 2 {
-            ctx.lines_as(
-                "Security Guard",
-                args![
-                    "I'm sorry, but if you aren't",
-                    "associated with this institution,",
-                    "then you're not authorized to",
-                    "enter the ^FF0000Kiel Hyre Academy^000000.",
-                    "Please leave if you don't have",
-                    "an appointment with the staff."
-                ],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("I'm here for a delivery.:......")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+    } else if ctx.var("kielhyrequest").get()? == 2 {
+        ctx.lines_as(
+            "Security Guard",
+            args![
+                "I'm sorry, but if you aren't",
+                "associated with this institution,",
+                "then you're not authorized to",
+                "enter the ^FF0000Kiel Hyre Academy^000000.",
+                "Please leave if you don't have",
+                "an appointment with the staff."
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("I'm here for a delivery.:......")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Security Guard",
+                    args![
+                        "You're here to deliver",
+                        "something? Okay, just give",
+                        "me the recipient's ^FF0000name^000000,",
+                        "followed by the ^FF0000item^000000 being",
+                        "delivered, and I'll verify it",
+                        "before letting you inside."
+                    ],
+                )?;
+                ctx.next()?;
+                let (input, status) = runtime::input_text(ctx, None, None)?;
+                l_khdelivery_s = input;
+                if l_khdelivery_s.clone() != "Lecollane" {
                     ctx.lines_as(
                         "Security Guard",
                         args![
-                            "You're here to deliver",
-                            "something? Okay, just give",
-                            "me the recipient's ^FF0000name^000000,",
-                            "followed by the ^FF0000item^000000 being",
-                            "delivered, and I'll verify it",
-                            "before letting you inside."
+                            "You're here to deliver some",
+                            "Wine to...to who? What was",
+                            "the name? I...I don't think",
+                            "we have anybody in the",
+                            ((Val::from("academy named ") + l_khdelivery_s.clone()) + Val::from(""))
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                let (input, status) = runtime::input_text(ctx, None, None)?;
+                l_khdelivery_s = input;
+                if l_khdelivery_s.clone() != "Culinary Wine" {
+                    ctx.lines_as(
+                        "Security Guard",
+                        args![
+                            "So you're here to make",
+                            "a delivery to Mrs. Lecollane?",
+                            "What is it you've brought for",
+                            ((Val::from("her? Some ^3355FF") + l_khdelivery_s.clone()) + Val::from("^000000?"))
                         ],
                     )?;
                     ctx.next()?;
-                    let (input, status) = runtime::input_text(ctx, None, None)?;
-                    l_khdelivery_s = input;
-                    if l_khdelivery_s.clone() != "Lecollane" {
-                        ctx.lines_as(
-                            "Security Guard",
-                            args![
-                                "You're here to deliver some",
-                                "Wine to...to who? What was",
-                                "the name? I...I don't think",
-                                "we have anybody in the",
-                                ((Val::from("academy named ") + l_khdelivery_s.clone()) + Val::from(""))
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    let (input, status) = runtime::input_text(ctx, None, None)?;
-                    l_khdelivery_s = input;
-                    if l_khdelivery_s.clone() != "Culinary Wine" {
-                        ctx.lines_as(
-                            "Security Guard",
-                            args![
-                                "So you're here to make",
-                                "a delivery to Mrs. Lecollane?",
-                                "What is it you've brought for",
-                                ((Val::from("her? Some ^3355FF") + l_khdelivery_s.clone()) + Val::from("^000000?"))
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Security Guard",
-                            args![
-                                "Let me buzz her first,",
-                                "and check to make sure",
-                                "that she's been expecting",
-                                "you. Let's see now..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines(args!["......", ".........", "............"])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Security Guard",
-                            args![
-                                "Huh. Mrs Lecollane",
-                                "is expecting a delivery,",
-                                "but not the item that you",
-                                "say that you've brought for",
-                                "her. You might want to check",
-                                "to see if there's been a mixup..."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
                     ctx.lines_as(
                         "Security Guard",
                         args![
-                            "Alright....",
-                            "So you're here to",
-                            "deliver a bottle of",
-                            "Wine to Mrs. Lecollane?",
-                            "Let me buzz her, and get",
-                            "this confirmed real quickly."
+                            "Let me buzz her first,",
+                            "and check to make sure",
+                            "that she's been expecting",
+                            "you. Let's see now..."
                         ],
                     )?;
                     ctx.next()?;
@@ -916,51 +871,76 @@ fn security_guard_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.lines_as(
                         "Security Guard",
                         args![
-                            "Okay, everything looks",
-                            "good. Mrs. Lecollane",
-                            "has been expecting you.",
-                            "I guess you can enter."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Warp, vec![Val::from("kh_school"), Val::from(71), Val::from(155)])?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Security Guard",
-                        args![
-                            "If you don't have",
-                            "an appoointment, then",
-                            "don't loiter around in",
-                            "front of the academy!"
+                            "Huh. Mrs Lecollane",
+                            "is expecting a delivery,",
+                            "but not the item that you",
+                            "say that you've brought for",
+                            "her. You might want to check",
+                            "to see if there's been a mixup..."
                         ],
                     )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-            }
-        } else {
-            if ctx.var("kielhyrequest").get()?.number()? < 32 {
                 ctx.lines_as(
                     "Security Guard",
                     args![
-                        "Oh, did you have",
-                        "other business inside",
-                        "the academy? I remember",
-                        "you from before, so there",
-                        "shouldn't be any problems",
-                        "letting you back inside..."
+                        "Alright....",
+                        "So you're here to",
+                        "deliver a bottle of",
+                        "Wine to Mrs. Lecollane?",
+                        "Let me buzz her, and get",
+                        "this confirmed real quickly."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines(args!["......", ".........", "............"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Security Guard",
+                    args![
+                        "Okay, everything looks",
+                        "good. Mrs. Lecollane",
+                        "has been expecting you.",
+                        "I guess you can enter."
                     ],
                 )?;
                 ctx.close_window()?;
                 ctx.call(Function::Warp, vec![Val::from("kh_school"), Val::from(71), Val::from(155)])?;
                 return Err(Stop::End);
             }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Security Guard",
+                    args![
+                        "If you don't have",
+                        "an appoointment, then",
+                        "don't loiter around in",
+                        "front of the academy!"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+    } else if ctx.var("kielhyrequest").get()?.number()? < 32 {
+        ctx.lines_as(
+            "Security Guard",
+            args![
+                "Oh, did you have",
+                "other business inside",
+                "the academy? I remember",
+                "you from before, so there",
+                "shouldn't be any problems",
+                "letting you back inside..."
+            ],
+        )?;
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("kh_school"), Val::from(71), Val::from(155)])?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -1052,110 +1032,106 @@ fn lady_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 2 {
-            ctx.lines_as(
-                "Mrs. Lecollane",
-                args![
-                    "Oh, hello. Ah!",
-                    "have you come to",
-                    "deliver my wine? The",
-                    "security guard called and",
-                    "mentioned you were coming."
-                ],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Yes, that's right!:Er, s-sorry!")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Mrs. Lecollane",
-                        args![
-                            "Well, you've come a little",
-                            "later than I thought, but",
-                            "I suppose it can't be helped.",
-                            "I guess the waiting has just",
-                            "heightened my anticipation",
-                            "for this bottle of wi--"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.mes("^3355FF*Cling! Crrrack!*^000000")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Mrs. Lecollane",
-                        args![
-                            "Elly? Elly did you",
-                            "break something again?!",
-                            "You've got to be more careful!",
-                            "If you don't finish baking those",
-                            "cookies by the end of today, your",
-                            "semester grades will suffer!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Elly", args!["B-but I just..."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Mrs. Lecollane", args!["^FF0000Elly^000000!!"])?;
-                    ctx.next()?;
-                    ctx.lines_as("Elly", args!["......", "Yes, Mrs. Lecollane."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Mrs. Lecollane",
-                        args![
-                            "*Ahem* Excuse me.",
-                            "Would you please leave",
-                            "the wine over there? You",
-                            "may go now, and please",
-                            "don't wander needlessly",
-                            "around the academy."
-                        ],
-                    )?;
-                    ctx.call(Function::DelItem, vec![Val::from(7487), Val::from(1)])?;
-                    ctx.var("kielhyrequest").set(Val::from(4))?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Mrs. Lecollane",
-                        args![
-                            "Hm...?",
-                            "I guess I must",
-                            "be mistaken. I'm",
-                            "sorry, I thought you",
-                            "were somebody else."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("kielhyrequest").get()? == 2 {
+        ctx.lines_as(
+            "Mrs. Lecollane",
+            args![
+                "Oh, hello. Ah!",
+                "have you come to",
+                "deliver my wine? The",
+                "security guard called and",
+                "mentioned you were coming."
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Yes, that's right!:Er, s-sorry!")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if ctx.var("kielhyrequest").get()? == 4 {
+            if matched1 {
                 ctx.lines_as(
-                    "Mrs Lecollane",
+                    "Mrs. Lecollane",
                     args![
-                        "Well, our business is",
-                        "completed, so would you",
-                        "please leave the campus",
-                        "as soon as you can? *Sigh*",
-                        "I can't believe our future",
-                        "is in these girls' hands..."
+                        "Well, you've come a little",
+                        "later than I thought, but",
+                        "I suppose it can't be helped.",
+                        "I guess the waiting has just",
+                        "heightened my anticipation",
+                        "for this bottle of wi--"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.mes("^3355FF*Cling! Crrrack!*^000000")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mrs. Lecollane",
+                    args![
+                        "Elly? Elly did you",
+                        "break something again?!",
+                        "You've got to be more careful!",
+                        "If you don't finish baking those",
+                        "cookies by the end of today, your",
+                        "semester grades will suffer!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Elly", args!["B-but I just..."])?;
+                ctx.next()?;
+                ctx.lines_as("Mrs. Lecollane", args!["^FF0000Elly^000000!!"])?;
+                ctx.next()?;
+                ctx.lines_as("Elly", args!["......", "Yes, Mrs. Lecollane."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Mrs. Lecollane",
+                    args![
+                        "*Ahem* Excuse me.",
+                        "Would you please leave",
+                        "the wine over there? You",
+                        "may go now, and please",
+                        "don't wander needlessly",
+                        "around the academy."
+                    ],
+                )?;
+                ctx.call(Function::DelItem, vec![Val::from(7487), Val::from(1)])?;
+                ctx.var("kielhyrequest").set(Val::from(4))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Mrs. Lecollane",
+                    args![
+                        "Hm...?",
+                        "I guess I must",
+                        "be mistaken. I'm",
+                        "sorry, I thought you",
+                        "were somebody else."
                     ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
+    } else if ctx.var("kielhyrequest").get()? == 4 {
+        ctx.lines_as(
+            "Mrs Lecollane",
+            args![
+                "Well, our business is",
+                "completed, so would you",
+                "please leave the campus",
+                "as soon as you can? *Sigh*",
+                "I can't believe our future",
+                "is in these girls' hands..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -1648,354 +1624,346 @@ fn cute_student_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 )?;
                                 ctx.call(Function::GetItem, vec![Val::from(7489), Val::from(1)])?;
                                 ctx.var("kielhyrequest").set(Val::from(16))?;
-                            } else {
-                                if (ctx.var("kielhyrequest").get()?.number()? >= 14 && ctx.var("kielhyrequest").get()?.number()? < 20) {
-                                    ctx.lines_as(
-                                        "Elly",
-                                        args![
-                                            "That's so weird...",
-                                            "I thought Grandfather",
-                                            "said that he'd be at",
-                                            "home all day today..."
-                                        ],
-                                    )?;
-                                } else {
-                                    if ctx.var("kielhyrequest").get()? == 20 {
-                                        ctx.lines_as("Elly", args!["Hmm...?", "What's this,", "a letter for me?"])?;
-                                        ctx.next()?;
-                                        ctx.lines(args![
-                                            "^3355FFElly opened the envelope",
-                                            "and started reading the letter.^000000"
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.lines(args![
-                                            "^333333Dearest Elly,",
-                                            " ",
-                                            "I have something to discuss",
-                                            "with my son Kiehl, so I am",
-                                            "leaving to meet with him.",
-                                            "If you don't hear from me",
-                                            "after 7 days after I've written",
-                                            "this letter, then you must",
-                                            "escape the academy as soon",
-                                            "as possible, and retrieve",
-                                            "something inside our ",
-                                            "cottage's study.",
-                                            " ",
-                                            "If you have a friend you",
-                                            "can trust, please ask him",
-                                            "to follow my traces in the",
-                                            "cottage. I might be in danger,",
-                                            "and in dire need of rescue.",
-                                            " ",
-                                            "Elly, don't trust anyone",
-                                            "in the academy, even your",
-                                            "classmates, since they may",
-                                            "be influenced by Kiehl.",
-                                            " ",
-                                            "Be careful, and I love you.",
-                                            " ",
-                                            "--Grandpa^000000"
-                                        ])?;
-                                        ctx.next()?;
-                                        ctx.call(Function::Cutin, vec![Val::from("kh_elly03"), Val::from(2)])?;
+                            } else if (ctx.var("kielhyrequest").get()?.number()? >= 14 && ctx.var("kielhyrequest").get()?.number()? < 20) {
+                                ctx.lines_as(
+                                    "Elly",
+                                    args![
+                                        "That's so weird...",
+                                        "I thought Grandfather",
+                                        "said that he'd be at",
+                                        "home all day today..."
+                                    ],
+                                )?;
+                            } else if ctx.var("kielhyrequest").get()? == 20 {
+                                ctx.lines_as("Elly", args!["Hmm...?", "What's this,", "a letter for me?"])?;
+                                ctx.next()?;
+                                ctx.lines(args![
+                                    "^3355FFElly opened the envelope",
+                                    "and started reading the letter.^000000"
+                                ])?;
+                                ctx.next()?;
+                                ctx.lines(args![
+                                    "^333333Dearest Elly,",
+                                    " ",
+                                    "I have something to discuss",
+                                    "with my son Kiehl, so I am",
+                                    "leaving to meet with him.",
+                                    "If you don't hear from me",
+                                    "after 7 days after I've written",
+                                    "this letter, then you must",
+                                    "escape the academy as soon",
+                                    "as possible, and retrieve",
+                                    "something inside our ",
+                                    "cottage's study.",
+                                    " ",
+                                    "If you have a friend you",
+                                    "can trust, please ask him",
+                                    "to follow my traces in the",
+                                    "cottage. I might be in danger,",
+                                    "and in dire need of rescue.",
+                                    " ",
+                                    "Elly, don't trust anyone",
+                                    "in the academy, even your",
+                                    "classmates, since they may",
+                                    "be influenced by Kiehl.",
+                                    " ",
+                                    "Be careful, and I love you.",
+                                    " ",
+                                    "--Grandpa^000000"
+                                ])?;
+                                ctx.next()?;
+                                ctx.call(Function::Cutin, vec![Val::from("kh_elly03"), Val::from(2)])?;
+                                ctx.lines_as(
+                                    "Elly",
+                                    args![
+                                        "What? Oh no, it's been",
+                                        "ten days since he wrote",
+                                        "this letter! Ah, does this",
+                                        "mean that he's in danger?!",
+                                        "Oh no, what should I do?"
+                                    ],
+                                )?;
+                                ctx.call(Function::DelItem, vec![Val::from(7490), Val::from(1)])?;
+                                ctx.var("kielhyrequest").set(Val::from(22))?;
+                            } else if ctx.var("kielhyrequest").get()? == 22 {
+                                ctx.call(Function::Cutin, vec![Val::from("kh_elly03"), Val::from(2)])?;
+                                ctx.lines_as("Elly", args!["......", ".........", "............"])?;
+                                ctx.next()?;
+                                'b6: {
+                                    let subject6 = Val::from(runtime::select_values(
+                                        ctx,
+                                        &[Val::from("About your grandpa:Tell me about Kiehl:What's with this academy?")],
+                                    )?);
+                                    let mut matched6 = false;
+                                    let no_case6 = !subject6.loosely_equals(&Val::from(1))
+                                        && !subject6.loosely_equals(&Val::from(2))
+                                        && !subject6.loosely_equals(&Val::from(3));
+                                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
+                                        matched6 = true;
+                                    }
+                                    if matched6 {
                                         ctx.lines_as(
                                             "Elly",
                                             args![
-                                                "What? Oh no, it's been",
-                                                "ten days since he wrote",
-                                                "this letter! Ah, does this",
-                                                "mean that he's in danger?!",
-                                                "Oh no, what should I do?"
+                                                "Oh! My grandfather is",
+                                                "Kiel Hyre, founder and",
+                                                "CEO of the Kiel Hyre",
+                                                "foundation. He looks",
+                                                "strict and cold hearted,",
+                                                "but he's actually very nice!"
                                             ],
                                         )?;
-                                        ctx.call(Function::DelItem, vec![Val::from(7490), Val::from(1)])?;
-                                        ctx.var("kielhyrequest").set(Val::from(22))?;
-                                    } else {
-                                        if ctx.var("kielhyrequest").get()? == 22 {
-                                            ctx.call(Function::Cutin, vec![Val::from("kh_elly03"), Val::from(2)])?;
-                                            ctx.lines_as("Elly", args!["......", ".........", "............"])?;
-                                            ctx.next()?;
-                                            'b6: {
-                                                let subject6 = Val::from(runtime::select_values(
-                                                    ctx,
-                                                    &[Val::from("About your grandpa:Tell me about Kiehl:What's with this academy?")],
-                                                )?);
-                                                let mut matched6 = false;
-                                                let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                                                    && !subject6.loosely_equals(&Val::from(2))
-                                                    && !subject6.loosely_equals(&Val::from(3));
-                                                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                                    matched6 = true;
-                                                }
-                                                if matched6 {
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "Oh! My grandfather is",
-                                                            "Kiel Hyre, founder and",
-                                                            "CEO of the Kiel Hyre",
-                                                            "foundation. He looks",
-                                                            "strict and cold hearted,",
-                                                            "but he's actually very nice!"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "We're not related by",
-                                                            "blood, but he's taken",
-                                                            "care of me ever since",
-                                                            "I lost my parents. Oh,",
-                                                            "Grandapa, where are you?",
-                                                            "I'm getting so worried!"
-                                                        ],
-                                                    )?;
-                                                    break 'b6;
-                                                }
-                                                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                                    matched6 = true;
-                                                }
-                                                if matched6 {
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "Kiehl? That's my",
-                                                            "grandfather's son...",
-                                                            "I don't know him that",
-                                                            "well, and only saw him",
-                                                            "once at an academy event."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "Mmm, he's a good looking",
-                                                            "guy with pale skin, silver",
-                                                            "hair, and this cold, fierce",
-                                                            "stare. A lot of my classmates",
-                                                            "worship Kiehl because he's",
-                                                            "also a business genius~"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "It's weird though...",
-                                                            "I have no idea why my",
-                                                            "grandpa and Kiehl don't",
-                                                            "get along. They're both",
-                                                            "really good at what they do..."
-                                                        ],
-                                                    )?;
-                                                    break 'b6;
-                                                }
-                                                if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                                    matched6 = true;
-                                                }
-                                                if matched6 {
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "Well, I know the security",
-                                                            "here is really tight, but",
-                                                            "that's because everything",
-                                                            "here is so luxurious and",
-                                                            "expensive, you know~"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "We also have a very",
-                                                            "special curriculum where",
-                                                            "you learn more of what you",
-                                                            "want. Personally, I want to",
-                                                            "become a great career woman",
-                                                            "like ^0000FFMs. Allysia^000000. Heh heh~"
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "This place certainly",
-                                                            "isn't like other schools.",
-                                                            "Yeah, everything is made to",
-                                                            "fit each of the student's needs."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "Recently, though?",
-                                                            "Some really weird stuff",
-                                                            "has been happening. All of",
-                                                            "my classmates are afraid of",
-                                                            "going out alone by themselves."
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    ctx.call(Function::Cutin, vec![Val::from("kh_elly02"), Val::from(2)])?;
-                                                    ctx.lines_as(
-                                                        "Elly",
-                                                        args![
-                                                            "But I'll be okay!",
-                                                            "You'll be there to",
-                                                            "rescue me from danger,",
-                                                            ((Val::from("right, ")
-                                                                + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                + Val::from("?"))
-                                                        ],
-                                                    )?;
-                                                    ctx.next()?;
-                                                    'b7: {
-                                                        let subject7 = Val::from(runtime::select_values(
-                                                            ctx,
-                                                            &[Val::from("Who is Ms. Allysia?:Strange incidents?")],
-                                                        )?);
-                                                        let mut matched7 = false;
-                                                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                                                            && !subject7.loosely_equals(&Val::from(2));
-                                                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                                            matched7 = true;
-                                                        }
-                                                        if matched7 {
-                                                            ctx.lines_as(
-                                                                "Elly",
-                                                                args![
-                                                                    "Oh, Ms. Allysia is",
-                                                                    "Grandfather's secretary~",
-                                                                    "She's so beautiful, and",
-                                                                    "my grandfather really",
-                                                                    "trusts her with everything!"
-                                                                ],
-                                                            )?;
-                                                            break 'b7;
-                                                        }
-                                                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                                            matched7 = true;
-                                                        }
-                                                        if matched7 {
-                                                            ctx.call(Function::Cutin, vec![Val::from("kh_elly04"), Val::from(2)])?;
-                                                            ctx.lines_as(
-                                                                "Elly",
-                                                                args![
-                                                                    ((Val::from("Well, ")
-                                                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                                        + Val::from("...")),
-                                                                    "I'm not supposed to tell",
-                                                                    "anyone outside of the school,",
-                                                                    "but I can trust you! You see...",
-                                                                    "We're haunted by a ghost!"
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Elly",
-                                                                args![
-                                                                    "I know it sounds crazy,",
-                                                                    "but this ghost wanders the",
-                                                                    "campus, and curses its victims,",
-                                                                    "making them so cold and lifeless.",
-                                                                    "It happened to my roommate,",
-                                                                    "Mayo. It's like she's a statue..."
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.lines_as(
-                                                                "Elly",
-                                                                args![
-                                                                    "I snuck into the medical",
-                                                                    "office to see her, and she...",
-                                                                    "She couldn't do anything!",
-                                                                    "What would happen if the",
-                                                                    "ghost decided to curse me?!"
-                                                                ],
-                                                            )?;
-                                                            ctx.next()?;
-                                                            ctx.call(Function::Cutin, vec![Val::from("kh_elly02"), Val::from(2)])?;
-                                                            ctx.lines_as(
-                                                                "Elly",
-                                                                args![
-                                                                    "You know what...?",
-                                                                    "If I ever got cursed",
-                                                                    "by that ghost, just yell",
-                                                                    "''^FF0000Wake up, Elly!^000000''",
-                                                                    "That'll wake me up for sure!"
-                                                                ],
-                                                            )?;
-                                                            ctx.var("kielhyrequest").set(Val::from(24))?;
-                                                            break 'b7;
-                                                        }
-                                                    }
-                                                }
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Elly",
+                                            args![
+                                                "We're not related by",
+                                                "blood, but he's taken",
+                                                "care of me ever since",
+                                                "I lost my parents. Oh,",
+                                                "Grandapa, where are you?",
+                                                "I'm getting so worried!"
+                                            ],
+                                        )?;
+                                        break 'b6;
+                                    }
+                                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
+                                        matched6 = true;
+                                    }
+                                    if matched6 {
+                                        ctx.lines_as(
+                                            "Elly",
+                                            args![
+                                                "Kiehl? That's my",
+                                                "grandfather's son...",
+                                                "I don't know him that",
+                                                "well, and only saw him",
+                                                "once at an academy event."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Elly",
+                                            args![
+                                                "Mmm, he's a good looking",
+                                                "guy with pale skin, silver",
+                                                "hair, and this cold, fierce",
+                                                "stare. A lot of my classmates",
+                                                "worship Kiehl because he's",
+                                                "also a business genius~"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Elly",
+                                            args![
+                                                "It's weird though...",
+                                                "I have no idea why my",
+                                                "grandpa and Kiehl don't",
+                                                "get along. They're both",
+                                                "really good at what they do..."
+                                            ],
+                                        )?;
+                                        break 'b6;
+                                    }
+                                    if !matched6 && subject6.loosely_equals(&Val::from(3)) {
+                                        matched6 = true;
+                                    }
+                                    if matched6 {
+                                        ctx.lines_as(
+                                            "Elly",
+                                            args![
+                                                "Well, I know the security",
+                                                "here is really tight, but",
+                                                "that's because everything",
+                                                "here is so luxurious and",
+                                                "expensive, you know~"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Elly",
+                                            args![
+                                                "We also have a very",
+                                                "special curriculum where",
+                                                "you learn more of what you",
+                                                "want. Personally, I want to",
+                                                "become a great career woman",
+                                                "like ^0000FFMs. Allysia^000000. Heh heh~"
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Elly",
+                                            args![
+                                                "This place certainly",
+                                                "isn't like other schools.",
+                                                "Yeah, everything is made to",
+                                                "fit each of the student's needs."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.lines_as(
+                                            "Elly",
+                                            args![
+                                                "Recently, though?",
+                                                "Some really weird stuff",
+                                                "has been happening. All of",
+                                                "my classmates are afraid of",
+                                                "going out alone by themselves."
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        ctx.call(Function::Cutin, vec![Val::from("kh_elly02"), Val::from(2)])?;
+                                        ctx.lines_as(
+                                            "Elly",
+                                            args![
+                                                "But I'll be okay!",
+                                                "You'll be there to",
+                                                "rescue me from danger,",
+                                                ((Val::from("right, ")
+                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                    + Val::from("?"))
+                                            ],
+                                        )?;
+                                        ctx.next()?;
+                                        'b7: {
+                                            let subject7 = Val::from(runtime::select_values(
+                                                ctx,
+                                                &[Val::from("Who is Ms. Allysia?:Strange incidents?")],
+                                            )?);
+                                            let mut matched7 = false;
+                                            let no_case7 = !subject7.loosely_equals(&Val::from(1))
+                                                && !subject7.loosely_equals(&Val::from(2));
+                                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                                                matched7 = true;
                                             }
-                                        } else {
-                                            if (ctx.var("kielhyrequest").get()?.number()? >= 24
-                                                && ctx.var("kielhyrequest").get()?.number()? <= 26)
-                                            {
+                                            if matched7 {
+                                                ctx.lines_as(
+                                                    "Elly",
+                                                    args![
+                                                        "Oh, Ms. Allysia is",
+                                                        "Grandfather's secretary~",
+                                                        "She's so beautiful, and",
+                                                        "my grandfather really",
+                                                        "trusts her with everything!"
+                                                    ],
+                                                )?;
+                                                break 'b7;
+                                            }
+                                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                                                matched7 = true;
+                                            }
+                                            if matched7 {
                                                 ctx.call(Function::Cutin, vec![Val::from("kh_elly04"), Val::from(2)])?;
                                                 ctx.lines_as(
                                                     "Elly",
                                                     args![
-                                                        "Argh, I'm in a fix!",
-                                                        "I have to finish my",
-                                                        "homework before it's due!",
-                                                        "Yeah, I've got to go see",
-                                                        "Mrs. Lecollane now."
+                                                        ((Val::from("Well, ")
+                                                            + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                                            + Val::from("...")),
+                                                        "I'm not supposed to tell",
+                                                        "anyone outside of the school,",
+                                                        "but I can trust you! You see...",
+                                                        "We're haunted by a ghost!"
                                                     ],
                                                 )?;
                                                 ctx.next()?;
                                                 ctx.lines_as(
                                                     "Elly",
                                                     args![
-                                                        ((Val::from("Say, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                            + Val::from(",")),
-                                                        "if it's okay, would you",
-                                                        "please go find what my",
-                                                        "grandpa left for me in",
-                                                        "the ^FF0000cottage study^000000? You're",
-                                                        "the only one I can trust!"
+                                                        "I know it sounds crazy,",
+                                                        "but this ghost wanders the",
+                                                        "campus, and curses its victims,",
+                                                        "making them so cold and lifeless.",
+                                                        "It happened to my roommate,",
+                                                        "Mayo. It's like she's a statue..."
                                                     ],
                                                 )?;
                                                 ctx.next()?;
                                                 ctx.lines_as(
                                                     "Elly",
                                                     args![
-                                                        "Anyway, I'll see you later",
-                                                        "in the evening! Please come",
-                                                        "by my ^FF0000dorm room^000000. Um, the",
-                                                        "dorms are in the church just",
-                                                        "behind the academy, okay?"
+                                                        "I snuck into the medical",
+                                                        "office to see her, and she...",
+                                                        "She couldn't do anything!",
+                                                        "What would happen if the",
+                                                        "ghost decided to curse me?!"
                                                     ],
                                                 )?;
                                                 ctx.next()?;
+                                                ctx.call(Function::Cutin, vec![Val::from("kh_elly02"), Val::from(2)])?;
                                                 ctx.lines_as(
                                                     "Elly",
                                                     args![
-                                                        "My room is in the back,",
-                                                        "and it's on the ^FF0000second floor^000000",
-                                                        "^FF0000on the left side^000000. Please use",
-                                                        "a ladder to come up, okay?",
-                                                        "I'll leave my window open",
-                                                        "for you, so just come, okay?"
+                                                        "You know what...?",
+                                                        "If I ever got cursed",
+                                                        "by that ghost, just yell",
+                                                        "''^FF0000Wake up, Elly!^000000''",
+                                                        "That'll wake me up for sure!"
                                                     ],
                                                 )?;
-                                                ctx.next()?;
-                                                ctx.lines_as("Elly", args!["Hurry, hurry, the", "teacher's coming!"])?;
-                                                ctx.var("kielhyrequest").set(Val::from(26))?;
-                                            } else {
-                                                ctx.lines_as("Elly", args!["Hurry, hurry, the", "teacher's coming!"])?;
+                                                ctx.var("kielhyrequest").set(Val::from(24))?;
+                                                break 'b7;
                                             }
                                         }
                                     }
                                 }
+                            } else if (ctx.var("kielhyrequest").get()?.number()? >= 24
+                                && ctx.var("kielhyrequest").get()?.number()? <= 26)
+                            {
+                                ctx.call(Function::Cutin, vec![Val::from("kh_elly04"), Val::from(2)])?;
+                                ctx.lines_as(
+                                    "Elly",
+                                    args![
+                                        "Argh, I'm in a fix!",
+                                        "I have to finish my",
+                                        "homework before it's due!",
+                                        "Yeah, I've got to go see",
+                                        "Mrs. Lecollane now."
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Elly",
+                                    args![
+                                        ((Val::from("Say, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                            + Val::from(",")),
+                                        "if it's okay, would you",
+                                        "please go find what my",
+                                        "grandpa left for me in",
+                                        "the ^FF0000cottage study^000000? You're",
+                                        "the only one I can trust!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Elly",
+                                    args![
+                                        "Anyway, I'll see you later",
+                                        "in the evening! Please come",
+                                        "by my ^FF0000dorm room^000000. Um, the",
+                                        "dorms are in the church just",
+                                        "behind the academy, okay?"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as(
+                                    "Elly",
+                                    args![
+                                        "My room is in the back,",
+                                        "and it's on the ^FF0000second floor^000000",
+                                        "^FF0000on the left side^000000. Please use",
+                                        "a ladder to come up, okay?",
+                                        "I'll leave my window open",
+                                        "for you, so just come, okay?"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.lines_as("Elly", args!["Hurry, hurry, the", "teacher's coming!"])?;
+                                ctx.var("kielhyrequest").set(Val::from(26))?;
+                            } else {
+                                ctx.lines_as("Elly", args!["Hurry, hurry, the", "teacher's coming!"])?;
                             }
                         }
                     }
@@ -2024,80 +1992,76 @@ fn window_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 29 {
-            ctx.lines(args![
-                "^3355FFThis must be Elly's room.",
-                "It doesn't sound like anyone",
-                "is inside, so she probably",
-                "isn't back yet. For now, you",
-                "should try to find what her",
-                "grandfather left for her",
-                "in their cottage's Study.^000000"
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if (ctx.var("kielhyrequest").get()?.number()? >= 30 && ctx.var("kielhyrequest").get()?.number()? <= 45) {
-                ctx.lines(args![
-                    "^3355FFThis slightly open window",
-                    "must lead into Elly's room.",
-                    "Although she asked you to",
-                    "find a ladder to enter her",
-                    "window, you probably won't",
-                    "find one. You might be able",
-                    "to climb up that water pipe...^000000"
-                ])?;
-                ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Climb Water Pipe:Find Another Way")])?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])? == 2 {
-                            ctx.lines(args![
-                                "^3355FFYou climbed up the",
-                                "water pipe, and sneaked",
-                                "into Elly's room successfully.^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("kh_school"), Val::from(185), Val::from(185)])?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFYou tried to climb",
-                                "the water pipe, but",
-                                "you ended up falling",
-                                "and bumping your head.^000000"
-                            ])?;
-                            ctx.call(Function::PercentHeal, vec![Val::from(-10), Val::from(0)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args![
-                            "^3355FFThere must be some",
-                            "other way to get into",
-                            "Elly's room, aside from",
-                            "climbing up this water pipe...^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+    } else if ctx.var("kielhyrequest").get()? == 29 {
+        ctx.lines(args![
+            "^3355FFThis must be Elly's room.",
+            "It doesn't sound like anyone",
+            "is inside, so she probably",
+            "isn't back yet. For now, you",
+            "should try to find what her",
+            "grandfather left for her",
+            "in their cottage's Study.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (ctx.var("kielhyrequest").get()?.number()? >= 30 && ctx.var("kielhyrequest").get()?.number()? <= 45) {
+        ctx.lines(args![
+            "^3355FFThis slightly open window",
+            "must lead into Elly's room.",
+            "Although she asked you to",
+            "find a ladder to enter her",
+            "window, you probably won't",
+            "find one. You might be able",
+            "to climb up that water pipe...^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Climb Water Pipe:Find Another Way")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])? == 2 {
+                    ctx.lines(args![
+                        "^3355FFYou climbed up the",
+                        "water pipe, and sneaked",
+                        "into Elly's room successfully.^000000"
+                    ])?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("kh_school"), Val::from(185), Val::from(185)])?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines(args![
+                        "^3355FFYou tried to climb",
+                        "the water pipe, but",
+                        "you ended up falling",
+                        "and bumping your head.^000000"
+                    ])?;
+                    ctx.call(Function::PercentHeal, vec![Val::from(-10), Val::from(0)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
-            } else {
-                ctx.lines(args!["^3355FFYou can't go up into", "that open window.^000000"])?;
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFThere must be some",
+                    "other way to get into",
+                    "Elly's room, aside from",
+                    "climbing up this water pipe...^000000"
+                ])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
+    } else {
+        ctx.lines(args!["^3355FFYou can't go up into", "that open window.^000000"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -2134,200 +2098,192 @@ fn elly_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.call(Function::PercentHeal, vec![Val::from(-99), Val::from(0)])?;
         ctx.call(Function::Warp, vec![Val::from("yuno_fild08"), Val::from(100), Val::from(100)])?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()?.number()? < 32 {
-            ctx.lines_as("Elly", args!["......", ".........", "............"])?;
+    } else if ctx.var("kielhyrequest").get()?.number()? < 32 {
+        ctx.lines_as("Elly", args!["......", ".........", "............"])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("kielhyrequest").get()? == 32 {
+        ctx.lines_as("Elly", args!["......", ".........", "............"])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFElly seems to have",
+            "been cursed, and is",
+            "completely still and",
+            "lifeless. You've got to",
+            "try something, but what?^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Wake her up by shaking.:Wake her up by yelling.:Ignore")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFYou grab Elly by the",
+                    "shoulders, and try to get",
+                    "her to respond by violently",
+                    "shaking her entire body.^000000"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args!["Elly? Elly! No!", "Come back to us!"],
+                )?;
+                ctx.next()?;
+                ctx.mes("^3355FFElly's not responding...^000000")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                let (input, status) = runtime::input_text(ctx, None, None)?;
+                l_khinput_s = input;
+                if l_khinput_s.clone() == "Wake up, Elly!" {
+                    ctx.lines_as("Elly", args!["............."])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFAs soon as you said those",
+                        "words, a ^000000Small Golden Key^3355FF",
+                        "and a ^000000Button^3355FF drop from Elly's",
+                        "hands. It looks like she woke",
+                        "up, but only for an instant.^000000"
+                    ])?;
+                    ctx.call(Function::GetItem, vec![Val::from(7493), Val::from(1)])?;
+                    ctx.call(Function::GetItem, vec![Val::from(7494), Val::from(1)])?;
+                    ctx.var("kielhyrequest").set(Val::from(34))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as("Elly", args!["......", ".........", "............"])?;
+                    ctx.next()?;
+                    ctx.mes("^3355FFElly's not responding...^000000")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFAlright...",
+                    "But sooner or later,",
+                    "you should try to break",
+                    "the curse placed on Elly.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("kielhyrequest").get()? == 34 {
+        if ctx.call(Function::CountItem, vec![Val::from(7491)])?.number()? < 1 {
+            ctx.lines(args![
+                "^3355FFMaybe the golden key^000000",
+                "unlocks something in the^000000",
+                "Cottage. Let's take another look.^000000"
+            ])?;
             ctx.close_window()?;
             return Err(Stop::End);
         } else {
-            if ctx.var("kielhyrequest").get()? == 32 {
-                ctx.lines_as("Elly", args!["......", ".........", "............"])?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^3355FFElly seems to have",
-                    "been cursed, and is",
-                    "completely still and",
-                    "lifeless. You've got to",
-                    "try something, but what?^000000"
-                ])?;
-                ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Wake her up by shaking.:Wake her up by yelling.:Ignore")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args![
-                            "^3355FFYou grab Elly by the",
-                            "shoulders, and try to get",
-                            "her to respond by violently",
-                            "shaking her entire body.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                            args!["Elly? Elly! No!", "Come back to us!"],
-                        )?;
-                        ctx.next()?;
-                        ctx.mes("^3355FFElly's not responding...^000000")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        let (input, status) = runtime::input_text(ctx, None, None)?;
-                        l_khinput_s = input;
-                        if l_khinput_s.clone() == "Wake up, Elly!" {
-                            ctx.lines_as("Elly", args!["............."])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFAs soon as you said those",
-                                "words, a ^000000Small Golden Key^3355FF",
-                                "and a ^000000Button^3355FF drop from Elly's",
-                                "hands. It looks like she woke",
-                                "up, but only for an instant.^000000"
-                            ])?;
-                            ctx.call(Function::GetItem, vec![Val::from(7493), Val::from(1)])?;
-                            ctx.call(Function::GetItem, vec![Val::from(7494), Val::from(1)])?;
-                            ctx.var("kielhyrequest").set(Val::from(34))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as("Elly", args!["......", ".........", "............"])?;
-                            ctx.next()?;
-                            ctx.mes("^3355FFElly's not responding...^000000")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args![
-                            "^3355FFAlright...",
-                            "But sooner or later,",
-                            "you should try to break",
-                            "the curse placed on Elly.^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-            } else {
-                if ctx.var("kielhyrequest").get()? == 34 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7491)])?.number()? < 1 {
-                        ctx.lines(args![
-                            "^3355FFMaybe the golden key^000000",
-                            "unlocks something in the^000000",
-                            "Cottage. Let's take another look.^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFIt looks like Elly's",
-                            "Golden Key might fit",
-                            "into the keyhole on the",
-                            "Grey Box you found inside",
-                            "Kiel Hyre's Cottage.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFYou successfully open the",
-                            "Grey Box with the Golden Key,",
-                            "and find a Blue Keycard, along",
-                            "with a folded note, inside the",
-                            "Grey Box. You quickly read",
-                            "the note's contents...^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "Dearest Elly,",
-                            "Kiehl finally broke the taboo,",
-                            "and tried to transform you guys",
-                            "into something horrible.",
-                            "^FFFFFF_^000000",
-                            "By the time you read this,",
-                            "my life is probably in danger.",
-                            "Whether I live depends on you.",
-                            "^FFFFFF_^000000",
-                            "You'll already learn if you",
-                            "meet Puppet, but I want to tell",
-                            "you myself: you're not human.",
-                            "You'll learn the details if you",
-                            "enter the factory by using the",
-                            "entrance near the grave next",
-                            "to the church. Then, I want",
-                            "you to find Allysia inside",
-                            "the factory's secret room.",
-                            "I've registered your name in",
-                            "her security system, so don't",
-                            "worry. Hopefully, Allysia will",
-                            "then come to save me...",
-                            "^FFFFFF_^000000",
-                            "Sorry about that,",
-                            "Grandpa"
-                        ])?;
-                        ctx.call(Function::GetItem, vec![Val::from(7495), Val::from(1)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(7491), Val::from(1)])?;
-                        ctx.var("kielhyrequest").set(Val::from(36))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                } else {
-                    if ctx.var("kielhyrequest").get()?.number()? >= 36 {
-                        ctx.lines(args![
-                            "^3355FFThis is where you",
-                            "discovered the note",
-                            "locked inside the Grey Box.",
-                            "The following message was",
-                            "written in the note by Elly's",
-                            "grandfather, Kiel Hyre.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "Dearest Elly,",
-                            "Kiehl finally broke the taboo,",
-                            "and tried to transform you guys",
-                            "into something horrible.",
-                            "^FFFFFF_^000000",
-                            "By the time you read this,",
-                            "my life is probably in danger.",
-                            "Whether I live depends on you.",
-                            "^FFFFFF_^000000",
-                            "You'll already learn if you",
-                            "meet Puppet, but I want to tell",
-                            "you myself: you're not human.",
-                            "You'll learn the details if you",
-                            "enter the factory by using the",
-                            "entrance near the grave next",
-                            "to the church. Then, I want",
-                            "you to find Allysia inside",
-                            "the factory's secret room.",
-                            "I've registered your name in",
-                            "her security system, so don't",
-                            "worry. Hopefully, Allysia will",
-                            "then come to save me...",
-                            "^FFFFFF_^000000",
-                            "Sorry about that,",
-                            "Grandpa"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-            }
+            ctx.lines(args![
+                "^3355FFIt looks like Elly's",
+                "Golden Key might fit",
+                "into the keyhole on the",
+                "Grey Box you found inside",
+                "Kiel Hyre's Cottage.^000000"
+            ])?;
+            ctx.next()?;
+            ctx.lines(args![
+                "^3355FFYou successfully open the",
+                "Grey Box with the Golden Key,",
+                "and find a Blue Keycard, along",
+                "with a folded note, inside the",
+                "Grey Box. You quickly read",
+                "the note's contents...^000000"
+            ])?;
+            ctx.next()?;
+            ctx.lines(args![
+                "Dearest Elly,",
+                "Kiehl finally broke the taboo,",
+                "and tried to transform you guys",
+                "into something horrible.",
+                "^FFFFFF_^000000",
+                "By the time you read this,",
+                "my life is probably in danger.",
+                "Whether I live depends on you.",
+                "^FFFFFF_^000000",
+                "You'll already learn if you",
+                "meet Puppet, but I want to tell",
+                "you myself: you're not human.",
+                "You'll learn the details if you",
+                "enter the factory by using the",
+                "entrance near the grave next",
+                "to the church. Then, I want",
+                "you to find Allysia inside",
+                "the factory's secret room.",
+                "I've registered your name in",
+                "her security system, so don't",
+                "worry. Hopefully, Allysia will",
+                "then come to save me...",
+                "^FFFFFF_^000000",
+                "Sorry about that,",
+                "Grandpa"
+            ])?;
+            ctx.call(Function::GetItem, vec![Val::from(7495), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(7491), Val::from(1)])?;
+            ctx.var("kielhyrequest").set(Val::from(36))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+    } else if ctx.var("kielhyrequest").get()?.number()? >= 36 {
+        ctx.lines(args![
+            "^3355FFThis is where you",
+            "discovered the note",
+            "locked inside the Grey Box.",
+            "The following message was",
+            "written in the note by Elly's",
+            "grandfather, Kiel Hyre.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "Dearest Elly,",
+            "Kiehl finally broke the taboo,",
+            "and tried to transform you guys",
+            "into something horrible.",
+            "^FFFFFF_^000000",
+            "By the time you read this,",
+            "my life is probably in danger.",
+            "Whether I live depends on you.",
+            "^FFFFFF_^000000",
+            "You'll already learn if you",
+            "meet Puppet, but I want to tell",
+            "you myself: you're not human.",
+            "You'll learn the details if you",
+            "enter the factory by using the",
+            "entrance near the grave next",
+            "to the church. Then, I want",
+            "you to find Allysia inside",
+            "the factory's secret room.",
+            "I've registered your name in",
+            "her security system, so don't",
+            "worry. Hopefully, Allysia will",
+            "then come to save me...",
+            "^FFFFFF_^000000",
+            "Sorry about that,",
+            "Grandpa"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -2342,141 +2298,135 @@ fn cookie_basket_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines(args!["^3355FFIt's a cookie", "basket filled with", "delicious cookies.^000000"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 30 {
-            ctx.lines(args![
-                "^3355FFThis must be",
-                "Elly's cookie basket.",
-                "There appears to be",
-                "a folded note wedged",
-                "between the cookies.^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Read Note:Ignore")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(", help!")),
-                        "There's this guy dressed in",
-                        "black who's walking around,",
-                        "and casting this weird spell!",
-                        "He's the one that's been making",
-                        "people cold and lifeless as",
-                        "puppets! I'm getting scared!",
-                        "^FFFFFF_^000000",
-                        "I hope you get this note...",
-                        "He ran after me, but I locked",
-                        "myself in my room. I'm going",
-                        "to leave my window open so that",
-                        "you can still find me. I hope he",
-                        "doesn't cast his curse on me!"
-                    ])?;
-                    ctx.var("kielhyrequest").set(Val::from(32))?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        "^3355FFThat note probably",
-                        "wasn't written just",
-                        "for you, anyway.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("kielhyrequest").get()? == 30 {
+        ctx.lines(args![
+            "^3355FFThis must be",
+            "Elly's cookie basket.",
+            "There appears to be",
+            "a folded note wedged",
+            "between the cookies.^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Read Note:Ignore")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if ctx.var("kielhyrequest").get()?.number()? < 108 {
+            if matched1 {
                 ctx.lines(args![
-                    "^3355FFThese cookies aren't",
-                    "stale yet, but they're no",
-                    "longer warm. If they're",
-                    "not at room temperature,",
-                    "then they're a little cold.^000000"
+                    ((Val::from("") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(", help!")),
+                    "There's this guy dressed in",
+                    "black who's walking around,",
+                    "and casting this weird spell!",
+                    "He's the one that's been making",
+                    "people cold and lifeless as",
+                    "puppets! I'm getting scared!",
+                    "^FFFFFF_^000000",
+                    "I hope you get this note...",
+                    "He ran after me, but I locked",
+                    "myself in my room. I'm going",
+                    "to leave my window open so that",
+                    "you can still find me. I hope he",
+                    "doesn't cast his curse on me!"
+                ])?;
+                ctx.var("kielhyrequest").set(Val::from(32))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFThat note probably",
+                    "wasn't written just",
+                    "for you, anyway.^000000"
                 ])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if ctx.var("kielhyrequest").get()? == 108 {
-                    ctx.lines(args![
-                        "^3355FFAs you stare at the",
-                        "cookie basket, the wind",
-                        "from the window jostles",
-                        "it, revealing a letter that",
-                        "was placed underneath.",
-                        "It was probably written",
-                        "by Elly for you to read.^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        ((Val::from("^333333Dearest ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(",")),
-                        " ",
-                        "My teachers usually yell at me",
-                        "since I make so many mistakes,",
-                        "but today Mrs. Lecollane gave me",
-                        "praise for my yummy cookies!",
-                        "It's all thanks to you, my friend.",
-                        "I'm very happy we've met:",
-                        "you've taught me that there",
-                        "are good people in the world.",
-                        "And I know Grandpa will like",
-                        "you, though, I don't know",
-                        "where he could be...",
-                        " ",
-                        "Someday, I hope to become",
-                        "as nice a person as you are.",
-                        "Let's keep in touch and be",
-                        "really good friends, okay?",
-                        " ",
-                        "Yours, Elly^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^3355FFIt feels like you can",
-                        "still sense Elly's warmth",
-                        "and kindness from her",
-                        "cookie basket. You picked",
-                        "out a cookie, and put it",
-                        "in your mouth. It was",
-                        "deliciously bittersweet."
-                    ])?;
-                    ctx.var("kielhyrequest").set(Val::from(109))?;
-                    ctx.next()?;
-                    let (input, status) = runtime::input_text(ctx, None, None)?;
-                    l_input_s = input;
-                    ctx.lines_as(
-                        ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                        args![
-                            ((Val::from("") + l_input_s.clone()) + Val::from("")),
-                            "It's time to go back. I can't",
-                            "stay here much longer."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Warp, vec![Val::from("yuno_fild08"), Val::from(69), Val::from(183)])?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.lines(args![
-                        "^3355FFAll the cookies",
-                        "in this basket are",
-                        "stale! Well, it shouldn't",
-                        "come as a surprise.",
-                        "It's been a long time",
-                        "since they were baked.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
             }
         }
+    } else if ctx.var("kielhyrequest").get()?.number()? < 108 {
+        ctx.lines(args![
+            "^3355FFThese cookies aren't",
+            "stale yet, but they're no",
+            "longer warm. If they're",
+            "not at room temperature,",
+            "then they're a little cold.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("kielhyrequest").get()? == 108 {
+        ctx.lines(args![
+            "^3355FFAs you stare at the",
+            "cookie basket, the wind",
+            "from the window jostles",
+            "it, revealing a letter that",
+            "was placed underneath.",
+            "It was probably written",
+            "by Elly for you to read.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            ((Val::from("^333333Dearest ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(",")),
+            " ",
+            "My teachers usually yell at me",
+            "since I make so many mistakes,",
+            "but today Mrs. Lecollane gave me",
+            "praise for my yummy cookies!",
+            "It's all thanks to you, my friend.",
+            "I'm very happy we've met:",
+            "you've taught me that there",
+            "are good people in the world.",
+            "And I know Grandpa will like",
+            "you, though, I don't know",
+            "where he could be...",
+            " ",
+            "Someday, I hope to become",
+            "as nice a person as you are.",
+            "Let's keep in touch and be",
+            "really good friends, okay?",
+            " ",
+            "Yours, Elly^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFIt feels like you can",
+            "still sense Elly's warmth",
+            "and kindness from her",
+            "cookie basket. You picked",
+            "out a cookie, and put it",
+            "in your mouth. It was",
+            "deliciously bittersweet."
+        ])?;
+        ctx.var("kielhyrequest").set(Val::from(109))?;
+        ctx.next()?;
+        let (input, status) = runtime::input_text(ctx, None, None)?;
+        l_input_s = input;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                ((Val::from("") + l_input_s.clone()) + Val::from("")),
+                "It's time to go back. I can't",
+                "stay here much longer."
+            ],
+        )?;
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("yuno_fild08"), Val::from(69), Val::from(183)])?;
+        return Err(Stop::End);
+    } else {
+        ctx.lines(args![
+            "^3355FFAll the cookies",
+            "in this basket are",
+            "stale! Well, it shouldn't",
+            "come as a surprise.",
+            "It's been a long time",
+            "since they were baked.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     return Err(Stop::End);
 }
@@ -2506,150 +2456,146 @@ fn grave_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 36 {
-            if ctx.call(Function::CountItem, vec![Val::from(7492)])?.number()? < 1 {
+    } else if ctx.var("kielhyrequest").get()? == 36 {
+        if ctx.call(Function::CountItem, vec![Val::from(7492)])?.number()? < 1 {
+            ctx.lines(args![
+                "^3355FFIt's just a grave.",
+                "It might be important",
+                "to you later, but now",
+                "it's not really all that",
+                "helpful to you.^000000"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines(args![
+                "^3355FFThere's a secret door",
+                "near this grave. It looks",
+                "like there's some kind of",
+                "slot and a number pad",
+                "installed on the door.^000000"
+            ])?;
+            ctx.next()?;
+            ctx.lines(args!["^3355FFWhat should you", "insert into the slot?^000000"])?;
+            ctx.next()?;
+            let (input, status) = runtime::input_text(ctx, None, None)?;
+            l_khinput_s = input;
+            if l_khinput_s.clone() == "Yellow Keycard" {
                 ctx.lines(args![
-                    "^3355FFIt's just a grave.",
-                    "It might be important",
-                    "to you later, but now",
-                    "it's not really all that",
-                    "helpful to you.^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args![
-                    "^3355FFThere's a secret door",
-                    "near this grave. It looks",
-                    "like there's some kind of",
-                    "slot and a number pad",
-                    "installed on the door.^000000"
+                    "^3355FFAn electronic confirmation",
+                    "chime sounds once you insert",
+                    "the Yellow Keycard, followed by",
+                    "an automated voice that asks:^000000"
                 ])?;
                 ctx.next()?;
-                ctx.lines(args!["^3355FFWhat should you", "insert into the slot?^000000"])?;
+                ctx.lines_as("Security System", args!["Please enter the password."])?;
                 ctx.next()?;
                 let (input, status) = runtime::input_text(ctx, None, None)?;
                 l_khinput_s = input;
-                if l_khinput_s.clone() == "Yellow Keycard" {
+                ctx.next()?;
+                if l_khinput_s.clone() == "4772961" {
+                    ctx.lines_as("Security System", args!["Password confirmed.", "Welcome, Kiel Hyre."])?;
+                    ctx.next()?;
                     ctx.lines(args![
-                        "^3355FFAn electronic confirmation",
-                        "chime sounds once you insert",
-                        "the Yellow Keycard, followed by",
-                        "an automated voice that asks:^000000"
+                        "^3355FFYou hear another ",
+                        "pleasant beep, and",
+                        "a secret path opens.^000000"
                     ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Security System", args!["Please enter the password."])?;
-                    ctx.next()?;
-                    let (input, status) = runtime::input_text(ctx, None, None)?;
-                    l_khinput_s = input;
-                    ctx.next()?;
-                    if l_khinput_s.clone() == "4772961" {
-                        ctx.lines_as("Security System", args!["Password confirmed.", "Welcome, Kiel Hyre."])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFYou hear another ",
-                            "pleasant beep, and",
-                            "a secret path opens.^000000"
-                        ])?;
-                        ctx.var("kielhyrequest").set(Val::from(38))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as("Security System", args!["Incorrect password.", "Please try again."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                    ctx.var("kielhyrequest").set(Val::from(38))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 } else {
-                    ctx.lines(args![
-                        "^3355FFWhatever you're trying",
-                        "to insert into the slot",
-                        "isn't working at all...^000000"
-                    ])?;
+                    ctx.lines_as("Security System", args!["Incorrect password.", "Please try again."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+            } else {
+                ctx.lines(args![
+                    "^3355FFWhatever you're trying",
+                    "to insert into the slot",
+                    "isn't working at all...^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else {
+        if (ctx.var("kielhyrequest").get()?.number()? >= 38 && ctx.var("kielhyrequest").get()?.number()? < 106) {
+            ctx.lines(args!["^3355FFThe door to the", "factory is wide open.^000000"])?;
+            ctx.next()?;
+            'b1: {
+                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Enter:Cancel")])?);
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.call(Function::Warp, vec![Val::from("kh_dun01"), Val::from(3), Val::from(230)])?;
+                    return Err(Stop::End);
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.lines(args!["......", ".........", "............"])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             }
-        } else {
-            if (ctx.var("kielhyrequest").get()?.number()? >= 38 && ctx.var("kielhyrequest").get()?.number()? < 106) {
-                ctx.lines(args!["^3355FFThe door to the", "factory is wide open.^000000"])?;
-                ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Enter:Cancel")])?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(Function::Warp, vec![Val::from("kh_dun01"), Val::from(3), Val::from(230)])?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args!["......", ".........", "............"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+        } else if ctx.var("kielhyrequest").get()?.number()? >= 106 {
+            if ctx.call(Function::CountItem, vec![Val::from(7509)])?.number()? < 1 {
+                ctx.lines(args!["^3355FFThe secret entrance", "has now been sealed.^000000"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             } else {
-                if ctx.var("kielhyrequest").get()?.number()? >= 106 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7509)])?.number()? < 1 {
-                        ctx.lines(args!["^3355FFThe secret entrance", "has now been sealed.^000000"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines(args![
-                            "As you aproach the",
-                            "grave, it begins to",
-                            "emit flashes of light.^000000"
-                        ])?;
+                ctx.lines(args![
+                    "As you aproach the",
+                    "grave, it begins to",
+                    "emit flashes of light.^000000"
+                ])?;
+                ctx.next()?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Use the ^0000FFLuxurious Keycard^000000:Ignore")],
+                    )?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines(args!["Once you use the", "Luxurious Keycard,", "a secret path opens^000000"])?;
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Use the ^0000FFLuxurious Keycard^000000:Ignore")],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
+                        'b3: {
+                            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Enter:cancel")])?);
+                            let mut matched3 = false;
+                            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                matched3 = true;
                             }
-                            if matched2 {
-                                ctx.lines(args!["Once you use the", "Luxurious Keycard,", "a secret path opens^000000"])?;
-                                ctx.next()?;
-                                'b3: {
-                                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Enter:cancel")])?);
-                                    let mut matched3 = false;
-                                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
-                                        ctx.call(Function::Warp, vec![Val::from("kh_dun01"), Val::from(3), Val::from(230)])?;
-                                        return Err(Stop::End);
-                                    }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
-                                        ctx.lines(args!["......", ".........", "............"])?;
-                                        ctx.close_window()?;
-                                        return Err(Stop::End);
-                                    }
-                                }
+                            if matched3 {
+                                ctx.call(Function::Warp, vec![Val::from("kh_dun01"), Val::from(3), Val::from(230)])?;
+                                return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
+                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                matched3 = true;
                             }
-                            if matched2 {
+                            if matched3 {
                                 ctx.lines(args!["......", ".........", "............"])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
                         }
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines(args!["......", ".........", "............"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
             }
@@ -2674,81 +2620,79 @@ fn cottage_keeper_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 12 {
-            ctx.lines_as(
-                "Cottage Keeper",
-                args![
-                    "This is private property,",
-                    "so please do not enter this",
-                    "area unless you're authorized."
-                ],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("I have an appointment with Kiel Hyre.:Alright.")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Cottage Keeper",
-                        args!["You have an", "appointment with", "Master Kiel Hyre?", "Um, are you sure?"],
-                    )?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Cottage Keeper",
-                                args![
-                                    "There must be some sort",
-                                    "of mistake. Mister Hyre",
-                                    "wouldn't have left if he",
-                                    "was supposed to keep",
-                                    "an appointment..."
-                                ],
-                            )?;
-                            ctx.var("kielhyrequest").set(Val::from(14))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Cottage Keeper",
-                                args![
-                                    "Well unless you have",
-                                    "an appointment, I don't",
-                                    "think you'll be able to",
-                                    "meet with Mister Hyre."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+    } else if ctx.var("kielhyrequest").get()? == 12 {
+        ctx.lines_as(
+            "Cottage Keeper",
+            args![
+                "This is private property,",
+                "so please do not enter this",
+                "area unless you're authorized."
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("I have an appointment with Kiel Hyre.:Alright.")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Cottage Keeper",
+                    args!["You have an", "appointment with", "Master Kiel Hyre?", "Um, are you sure?"],
+                )?;
+                ctx.next()?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines_as(
+                            "Cottage Keeper",
+                            args![
+                                "There must be some sort",
+                                "of mistake. Mister Hyre",
+                                "wouldn't have left if he",
+                                "was supposed to keep",
+                                "an appointment..."
+                            ],
+                        )?;
+                        ctx.var("kielhyrequest").set(Val::from(14))?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines_as(
+                            "Cottage Keeper",
+                            args![
+                                "Well unless you have",
+                                "an appointment, I don't",
+                                "think you'll be able to",
+                                "meet with Mister Hyre."
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as("Cottage Keeper", args!["Goodbye."])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as("Cottage Keeper", args!["Goodbye."])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -2937,33 +2881,31 @@ fn book_kh1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 26 {
-            if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])? == 8 {
-                ctx.lines(args![
-                    "^3355FFWithout thinking, you",
-                    "reach for a book from",
-                    "the bookshelf. As you",
-                    "pull it towards you, the",
-                    "wall slides opens open",
-                    "to reveal a secret path.^000000"
-                ])?;
-                ctx.var("kielhyrequest").set(Val::from(28))?;
-                ctx.call(
-                    Function::NpcSpecialEffect,
-                    vec![ctx.constant("EF_READYPORTAL2")?, ctx.constant("AREA")?, Val::from("Wall#kh")],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args![
-                    "^3355FFThis bookshelf is",
-                    "crammed with many",
-                    "large, hardcover books.^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if ctx.var("kielhyrequest").get()? == 26 {
+        if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])? == 8 {
+            ctx.lines(args![
+                "^3355FFWithout thinking, you",
+                "reach for a book from",
+                "the bookshelf. As you",
+                "pull it towards you, the",
+                "wall slides opens open",
+                "to reveal a secret path.^000000"
+            ])?;
+            ctx.var("kielhyrequest").set(Val::from(28))?;
+            ctx.call(
+                Function::NpcSpecialEffect,
+                vec![ctx.constant("EF_READYPORTAL2")?, ctx.constant("AREA")?, Val::from("Wall#kh")],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines(args![
+                "^3355FFThis bookshelf is",
+                "crammed with many",
+                "large, hardcover books.^000000"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     Ok(Val::from(0))
@@ -3197,117 +3139,113 @@ fn map_khp1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if (ctx.var("khcottagepoem1").get()? == 2 && ctx.var("kielhyrequest").get()?.number()? < 30) {
-            ctx.lines(args![
-                "^3355FFYou bring the pot of",
-                "steaming hot liquid",
-                "close to the world map.",
-                "As the paste on the wall",
-                "moistens, the map slowly",
-                "begins to peel back.^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFThe peeling map reveals",
-                "a folded piece of paper",
-                "hidden beneath it. You",
-                "take the paper, and smooth",
-                "the map out to adhere it to the",
-                "wall once again. A message is",
-                "written on the piece of paper.^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^0000FFShe will be in a place",
-                "as cold as the poles.",
-                "When the well is dried",
-                "and the earth is cracked,",
-                "the path to her heart, a",
-                "heart as transparent as",
-                "crystal, will be open.^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFI'll have to fight four",
-                "snakes with four swords",
-                "to find her. The first sword",
-                "is love. The second sword",
-                "is despair. The third sword",
-                "is rage. The fourth sword is",
-                "hope. To find her, to rescue her.^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FF...............................",
-                "The deeper meaning",
-                "of this poem, if it even",
-                "exists, eludes you.^000000"
-            ])?;
-            ctx.var("khcottagepoem1").set(Val::from(3))?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        } else {
-            if (ctx.var("khcottagepoem1").get()?.number()? > 2 || ctx.var("kielhyrequest").get()?.number()? >= 30) {
+    } else if (ctx.var("khcottagepoem1").get()? == 2 && ctx.var("kielhyrequest").get()?.number()? < 30) {
+        ctx.lines(args![
+            "^3355FFYou bring the pot of",
+            "steaming hot liquid",
+            "close to the world map.",
+            "As the paste on the wall",
+            "moistens, the map slowly",
+            "begins to peel back.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFThe peeling map reveals",
+            "a folded piece of paper",
+            "hidden beneath it. You",
+            "take the paper, and smooth",
+            "the map out to adhere it to the",
+            "wall once again. A message is",
+            "written on the piece of paper.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^0000FFShe will be in a place",
+            "as cold as the poles.",
+            "When the well is dried",
+            "and the earth is cracked,",
+            "the path to her heart, a",
+            "heart as transparent as",
+            "crystal, will be open.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFI'll have to fight four",
+            "snakes with four swords",
+            "to find her. The first sword",
+            "is love. The second sword",
+            "is despair. The third sword",
+            "is rage. The fourth sword is",
+            "hope. To find her, to rescue her.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FF...............................",
+            "The deeper meaning",
+            "of this poem, if it even",
+            "exists, eludes you.^000000"
+        ])?;
+        ctx.var("khcottagepoem1").set(Val::from(3))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if (ctx.var("khcottagepoem1").get()?.number()? > 2 || ctx.var("kielhyrequest").get()?.number()? >= 30) {
+        ctx.lines(args![
+            "^3355FFThis is were you found",
+            "the paper on which the",
+            "poem was written. Perhaps",
+            "it would be a good idea to",
+            "refresh your memory and",
+            "read that poem again.^000000"
+        ])?;
+        ctx.next()?;
+        'b2: {
+            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Read:Cancel")])?);
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                matched2 = true;
+            }
+            if matched2 {
                 ctx.lines(args![
-                    "^3355FFThis is were you found",
-                    "the paper on which the",
-                    "poem was written. Perhaps",
-                    "it would be a good idea to",
-                    "refresh your memory and",
-                    "read that poem again.^000000"
+                    "^0000FFShe will be in a place",
+                    "as cold as the poles.",
+                    "When the well is dried",
+                    "and the earth is cracked,",
+                    "the path to her heart, a",
+                    "heart as transparent as",
+                    "crystal, will be open.^000000"
                 ])?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Read:Cancel")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines(args![
-                            "^0000FFShe will be in a place",
-                            "as cold as the poles.",
-                            "When the well is dried",
-                            "and the earth is cracked,",
-                            "the path to her heart, a",
-                            "heart as transparent as",
-                            "crystal, will be open.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFI'll have to fight four",
-                            "snakes with four swords",
-                            "to find her. The first sword",
-                            "is love. The second sword",
-                            "is despair. The third sword",
-                            "is rage. The fourth sword is",
-                            "hope. To find her, to rescue her.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FF...............................",
-                            "The deeper meaning",
-                            "of this poem, if it even",
-                            "exists, eludes you.^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines(args![
-                            "^3355FFThere's no need for",
-                            "you to reread this poem.",
-                            "You're a freakin' genius!^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+                ctx.lines(args![
+                    "^3355FFI'll have to fight four",
+                    "snakes with four swords",
+                    "to find her. The first sword",
+                    "is love. The second sword",
+                    "is despair. The third sword",
+                    "is rage. The fourth sword is",
+                    "hope. To find her, to rescue her.^000000"
+                ])?;
+                ctx.next()?;
+                ctx.lines(args![
+                    "^3355FF...............................",
+                    "The deeper meaning",
+                    "of this poem, if it even",
+                    "exists, eludes you.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines(args![
+                    "^3355FFThere's no need for",
+                    "you to reread this poem.",
+                    "You're a freakin' genius!^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -3327,55 +3265,51 @@ fn pot_khp1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("khcottagepoem1").get()? == 1 {
-            ctx.lines(args![
-                "^3355FFYou've found a pot",
-                "filled with boiling,",
-                "steaming liquid.",
-                "Steam... That you could",
-                "use to loosen the glue on",
-                "the map... You're a genius!^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Try it.:That? That won't work!")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        "^3355FFYou picked up the",
-                        "boiling pot, but",
-                        "slightly burned your",
-                        "hands by accident."
-                    ])?;
-                    ctx.var("khcottagepoem1").set(Val::from(2))?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args!["^3355FFNo, no...", "We'd better try", "something else.^000000"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("khcottagepoem1").get()? == 1 {
+        ctx.lines(args![
+            "^3355FFYou've found a pot",
+            "filled with boiling,",
+            "steaming liquid.",
+            "Steam... That you could",
+            "use to loosen the glue on",
+            "the map... You're a genius!^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Try it.:That? That won't work!")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if (ctx.var("khcottagepoem1").get()?.number()? > 1 || ctx.var("kielhyrequest").get()?.number()? >= 30) {
+            if matched1 {
                 ctx.lines(args![
-                    "^3355FFThis is where you",
-                    "picked up the pot filled",
-                    "with steaming hot liquid.^000000"
+                    "^3355FFYou picked up the",
+                    "boiling pot, but",
+                    "slightly burned your",
+                    "hands by accident."
                 ])?;
+                ctx.var("khcottagepoem1").set(Val::from(2))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["^3355FFNo, no...", "We'd better try", "something else.^000000"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
+    } else if (ctx.var("khcottagepoem1").get()?.number()? > 1 || ctx.var("kielhyrequest").get()?.number()? >= 30) {
+        ctx.lines(args![
+            "^3355FFThis is where you",
+            "picked up the pot filled",
+            "with steaming hot liquid.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -3482,144 +3416,140 @@ fn pool_khp1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines(args!["^3355FFYou find a fancy pool", "filled with fresh water.^000000"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("khcottagepoem1").get()? == 3 && ctx.var("kielhyrequest").get()?.number()? < 30) {
-            ctx.lines(args![
-                "^3355FFYou find a fancy pool",
-                "filled with fresh water,",
-                "along with a conscpicuous",
-                "lion statue with two handles.^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Pull Handles:Cancel")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args!["Which handle would", "you like to pull first?"])?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Right Handle:Left Handle")])?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines(args![
-                                "^3355FFYou pull the right",
-                                "handle, causing water",
-                                "to gush out of the lion's",
-                                "mouth. It looks pretty cool~^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines(args![
-                                "^3355FFAs soon as you pull the",
-                                "left handle, the water in",
-                                "the pool drains away. The",
-                                "pool empties, and you can",
-                                "see a layer of green moss",
-                                "covering the pool's bottom.^000000"
-                            ])?;
-                            ctx.next()?;
-                            'b3: {
-                                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Ignore:Investigate")])?);
-                                let mut matched3 = false;
-                                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines(args![
-                                        "^3355FFYou decide that",
-                                        "a pool is little more",
-                                        "than a hole without",
-                                        "any water to fill it.^000000"
-                                    ])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines(args![
-                                        "^3355FFAs you look through",
-                                        "the wet moss at the",
-                                        "bottom of the pool,",
-                                        "you stumble upon a",
-                                        "small, peculiar button.^000000"
-                                    ])?;
-                                    ctx.next()?;
-                                    'b4: {
-                                        let subject4 =
-                                            Val::from(runtime::select_values(ctx, &[Val::from("Press button:Don't Press Button")])?);
-                                        let mut matched4 = false;
-                                        let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
-                                            ctx.lines(args![
-                                                "^3355FFYou press the button,",
-                                                "which seems to trigger",
-                                                "a strange sound coming",
-                                                "from the stairs at the hallway.^000000"
-                                            ])?;
-                                            ctx.var("khcottagepoem1").set(Val::from(4))?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
-                                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
-                                            ctx.lines(args![
-                                                "^3355FFYou'd better not push",
-                                                "this button. Your enemies",
-                                                "must have hidden it carefully",
-                                                "for you to find: it must be",
-                                                "some sort of nefarious trap.^000000"
-                                            ])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
-                                        }
+    } else if (ctx.var("khcottagepoem1").get()? == 3 && ctx.var("kielhyrequest").get()?.number()? < 30) {
+        ctx.lines(args![
+            "^3355FFYou find a fancy pool",
+            "filled with fresh water,",
+            "along with a conscpicuous",
+            "lion statue with two handles.^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Pull Handles:Cancel")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["Which handle would", "you like to pull first?"])?;
+                ctx.next()?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Right Handle:Left Handle")])?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines(args![
+                            "^3355FFYou pull the right",
+                            "handle, causing water",
+                            "to gush out of the lion's",
+                            "mouth. It looks pretty cool~^000000"
+                        ])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines(args![
+                            "^3355FFAs soon as you pull the",
+                            "left handle, the water in",
+                            "the pool drains away. The",
+                            "pool empties, and you can",
+                            "see a layer of green moss",
+                            "covering the pool's bottom.^000000"
+                        ])?;
+                        ctx.next()?;
+                        'b3: {
+                            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Ignore:Investigate")])?);
+                            let mut matched3 = false;
+                            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines(args![
+                                    "^3355FFYou decide that",
+                                    "a pool is little more",
+                                    "than a hole without",
+                                    "any water to fill it.^000000"
+                                ])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                matched3 = true;
+                            }
+                            if matched3 {
+                                ctx.lines(args![
+                                    "^3355FFAs you look through",
+                                    "the wet moss at the",
+                                    "bottom of the pool,",
+                                    "you stumble upon a",
+                                    "small, peculiar button.^000000"
+                                ])?;
+                                ctx.next()?;
+                                'b4: {
+                                    let subject4 =
+                                        Val::from(runtime::select_values(ctx, &[Val::from("Press button:Don't Press Button")])?);
+                                    let mut matched4 = false;
+                                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                        matched4 = true;
+                                    }
+                                    if matched4 {
+                                        ctx.lines(args![
+                                            "^3355FFYou press the button,",
+                                            "which seems to trigger",
+                                            "a strange sound coming",
+                                            "from the stairs at the hallway.^000000"
+                                        ])?;
+                                        ctx.var("khcottagepoem1").set(Val::from(4))?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
+                                    }
+                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                        matched4 = true;
+                                    }
+                                    if matched4 {
+                                        ctx.lines(args![
+                                            "^3355FFYou'd better not push",
+                                            "this button. Your enemies",
+                                            "must have hidden it carefully",
+                                            "for you to find: it must be",
+                                            "some sort of nefarious trap.^000000"
+                                        ])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
                                 }
                             }
                         }
                     }
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args!["^3355FFYou decided not", "to pull any handles.^000000"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
             }
-        } else {
-            if (ctx.var("khcottagepoem1").get()?.number()? > 3 || ctx.var("kielhyrequest").get()?.number()? >= 30) {
-                ctx.lines(args![
-                    "^3355FFThis is where you pressed",
-                    "the small button that caused",
-                    "some strange sound to come",
-                    "from the stairs near the hallway."
-                ])?;
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["^3355FFYou decided not", "to pull any handles.^000000"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
+    } else if (ctx.var("khcottagepoem1").get()?.number()? > 3 || ctx.var("kielhyrequest").get()?.number()? >= 30) {
+        ctx.lines(args![
+            "^3355FFThis is where you pressed",
+            "the small button that caused",
+            "some strange sound to come",
+            "from the stairs near the hallway."
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -3826,69 +3756,67 @@ fn box_khp2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (((ctx.call(Function::CountItem, vec![Val::from(7329)])?.number()? >= 1
-            && ctx.call(Function::CountItem, vec![Val::from(7516)])?.number()? < 1)
-            && ctx.call(Function::CountItem, vec![Val::from(7491)])?.number()? < 1)
-            && ctx.var("kielhyrequest").get()?.number()? < 38)
-        {
-            ctx.lines(args![
-                "^3355FFA solid box is laid",
-                "on the floor in which",
-                "a smaller, locked box",
-                "has been placed inside.",
-                "Perhaps you can use your",
-                "Old Bronze Key to unlock it.^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("Use Old Bronze Key:No, it'll never work.")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        "^3355FFYour hunch paid off!",
-                        "The Old Bronze Key really",
-                        "did unlock that box! You",
-                        "open the inner box and",
-                        "obtain the Green Keycard",
-                        "that was locked inside."
-                    ])?;
-                    ctx.call(Function::GetItem, vec![Val::from(7516), Val::from(1)])?;
-                    ctx.call(Function::DelItem, vec![Val::from(7329), Val::from(1)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        "^3355FFWhat...?",
-                        "What? Using a key",
-                        "to unlock a lock?",
-                        "Come on, that's",
-                        "freakin' crazy talk!^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if (((ctx.call(Function::CountItem, vec![Val::from(7329)])?.number()? >= 1
+        && ctx.call(Function::CountItem, vec![Val::from(7516)])?.number()? < 1)
+        && ctx.call(Function::CountItem, vec![Val::from(7491)])?.number()? < 1)
+        && ctx.var("kielhyrequest").get()?.number()? < 38)
+    {
+        ctx.lines(args![
+            "^3355FFA solid box is laid",
+            "on the floor in which",
+            "a smaller, locked box",
+            "has been placed inside.",
+            "Perhaps you can use your",
+            "Old Bronze Key to unlock it.^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("Use Old Bronze Key:No, it'll never work.")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            ctx.lines(args![
-                "^3355FFThis is the box from",
-                "which you've obtained",
-                "the Green Keycard.^000000"
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFYour hunch paid off!",
+                    "The Old Bronze Key really",
+                    "did unlock that box! You",
+                    "open the inner box and",
+                    "obtain the Green Keycard",
+                    "that was locked inside."
+                ])?;
+                ctx.call(Function::GetItem, vec![Val::from(7516), Val::from(1)])?;
+                ctx.call(Function::DelItem, vec![Val::from(7329), Val::from(1)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFWhat...?",
+                    "What? Using a key",
+                    "to unlock a lock?",
+                    "Come on, that's",
+                    "freakin' crazy talk!^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFThis is the box from",
+            "which you've obtained",
+            "the Green Keycard.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -3963,67 +3891,65 @@ fn bookshelf_khp1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.next()?;
                                     let choice = runtime::select_values(ctx, &[Val::from("Old Bronze Key:Cottage Key")])?;
                                     ctx.var("@menu").set(choice)?;
-                                } else {
-                                    if ctx.call(Function::CountItem, vec![Val::from(7516)])?.number()? >= 1 {
-                                        'b4: {
-                                            let subject4 =
-                                                Val::from(runtime::select_values(ctx, &[Val::from("Green Keycard:Cottage Key")])?);
-                                            let mut matched4 = false;
-                                            let no_case4 =
-                                                !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
-                                                l_khfirstkeyhole = Val::from(1);
-                                                break 'b4;
-                                            }
-                                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
-                                                l_khfirstkeyhole = Val::from(2);
-                                                break 'b4;
-                                            }
+                                } else if ctx.call(Function::CountItem, vec![Val::from(7516)])?.number()? >= 1 {
+                                    'b4: {
+                                        let subject4 =
+                                            Val::from(runtime::select_values(ctx, &[Val::from("Green Keycard:Cottage Key")])?);
+                                        let mut matched4 = false;
+                                        let no_case4 =
+                                            !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
+                                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
+                                            matched4 = true;
                                         }
-                                        ctx.lines(args!["^3355FFWhich key will", "you insert into", "the second keyhole?^000000"])?;
-                                        ctx.next()?;
-                                        'b5: {
-                                            let subject5 =
-                                                Val::from(runtime::select_values(ctx, &[Val::from("Green Keycard:Cottage Key")])?);
-                                            let mut matched5 = false;
-                                            let no_case5 =
-                                                !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                                            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                                matched5 = true;
-                                            }
-                                            if matched5 {
-                                                l_khsecondkeyhole = Val::from(1);
-                                                break 'b5;
-                                            }
-                                            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                                matched5 = true;
-                                            }
-                                            if matched5 {
-                                                l_khsecondkeyhole = Val::from(2);
-                                                break 'b5;
-                                            }
+                                        if matched4 {
+                                            l_khfirstkeyhole = Val::from(1);
+                                            break 'b4;
                                         }
-                                        if (l_khfirstkeyhole.clone() == 2 && l_khsecondkeyhole.clone() == 1) {
-                                            ctx.lines(args![
-                                                "^3355FFThe safe opens with",
-                                                "a click, and you see",
-                                                "a Grey Box inside.",
-                                                "You take the Grey Box",
-                                                "with you, hoping that it",
-                                                "will come in handy later.^000000"
-                                            ])?;
-                                            ctx.call(Function::DelItem, vec![Val::from(7489), Val::from(1)])?;
-                                            ctx.call(Function::DelItem, vec![Val::from(7516), Val::from(1)])?;
-                                            ctx.call(Function::GetItem, vec![Val::from(7491), Val::from(1)])?;
-                                            ctx.close_window()?;
-                                            return Err(Stop::End);
+                                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
+                                            matched4 = true;
                                         }
+                                        if matched4 {
+                                            l_khfirstkeyhole = Val::from(2);
+                                            break 'b4;
+                                        }
+                                    }
+                                    ctx.lines(args!["^3355FFWhich key will", "you insert into", "the second keyhole?^000000"])?;
+                                    ctx.next()?;
+                                    'b5: {
+                                        let subject5 =
+                                            Val::from(runtime::select_values(ctx, &[Val::from("Green Keycard:Cottage Key")])?);
+                                        let mut matched5 = false;
+                                        let no_case5 =
+                                            !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
+                                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                                            matched5 = true;
+                                        }
+                                        if matched5 {
+                                            l_khsecondkeyhole = Val::from(1);
+                                            break 'b5;
+                                        }
+                                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
+                                            matched5 = true;
+                                        }
+                                        if matched5 {
+                                            l_khsecondkeyhole = Val::from(2);
+                                            break 'b5;
+                                        }
+                                    }
+                                    if (l_khfirstkeyhole.clone() == 2 && l_khsecondkeyhole.clone() == 1) {
+                                        ctx.lines(args![
+                                            "^3355FFThe safe opens with",
+                                            "a click, and you see",
+                                            "a Grey Box inside.",
+                                            "You take the Grey Box",
+                                            "with you, hoping that it",
+                                            "will come in handy later.^000000"
+                                        ])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(7489), Val::from(1)])?;
+                                        ctx.call(Function::DelItem, vec![Val::from(7516), Val::from(1)])?;
+                                        ctx.call(Function::GetItem, vec![Val::from(7491), Val::from(1)])?;
+                                        ctx.close_window()?;
+                                        return Err(Stop::End);
                                     }
                                 }
                                 ctx.mes("^3355FFThe safe won't open.^000000")?;
@@ -4110,17 +4036,15 @@ fn desk_khp1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("khcottagepoem2").set(Val::from(1))?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("khcottagepoem2").get()?.number()? >= 1 {
-            ctx.lines(args![
-                "^3355FFThere are piles of papers",
-                "and books, covering various",
-                "scientific and magic topics,",
-                "stacked on top of this desk.^000000"
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("khcottagepoem2").get()?.number()? >= 1 {
+        ctx.lines(args![
+            "^3355FFThere are piles of papers",
+            "and books, covering various",
+            "scientific and magic topics,",
+            "stacked on top of this desk.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -4140,203 +4064,84 @@ fn medicine_chest_khp1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("khcottagepoem2").get()? == 1 && ctx.var("kielhyrequest").get()?.number()? < 30) {
-            ctx.lines(args![
-                "^3355FFThis medicine cabinet",
-                "is filled with bottles of",
-                "various colors. What kind",
-                "of medicine can be found here?^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFWait, you have a blank piece",
-                "of paper with the Kiel Hyre",
-                "Foundation seal! It's strange",
-                "that the seal was put on a blank",
-                "piece of paper. Maybe something",
-                "is written on it with special ink?^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFIt's a crazy hunch, but",
-                "maybe, just maybe, you can",
-                "use something inside this",
-                "medicine cabinet that will",
-                "reveal any invisible ink",
-                "written on this document!^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("What? That's crazy!:Of course! Let's try it!")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args!["^3355FFSorry.", "I thought it", "was a good idea...^000000"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "Try Red Liquid:Try Blue Liquid:Try Yellow Liquid:Try Green Liquid:Cancel",
-                            )],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3))
-                            && !subject2.loosely_equals(&Val::from(4))
-                            && !subject2.loosely_equals(&Val::from(5));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            l_khpotioncolor_s = Val::from("red");
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines(args![
-                                "^3355FFIt works!",
-                                "The blue liquid is",
-                                "revealing small text",
-                                "written on the paper.",
-                                "It looks like some",
-                                "kind of long poem...^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Poem",
-                                args![
-                                    "The first snake is made of",
-                                    "steel, but I used my rage",
-                                    "to destroy it. The second",
-                                    "snake is made of magic,",
-                                    "but my love pierced its heart."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Poem",
-                                args![
-                                    "The third snake is flesh",
-                                    "and blood, but my hope",
-                                    "defeated it in the end.",
-                                    "However, the fourth and",
-                                    "final snake is formless, and",
-                                    "no one knows its appearance."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Poem",
-                                args![
-                                    "I cast my despair to the air,",
-                                    "but nobody knows if it killed",
-                                    "the snake. I am merely ^0000FFa little",
-                                    "lost devil^000000 with four swords and",
-                                    "four snakes, searching for that",
-                                    "girl in the darkness."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFThis is a very",
-                                "strange poem. What",
-                                "could it possibly mean?^000000"
-                            ])?;
-                            ctx.var("khcottagepoem2").set(Val::from(2))?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            l_khpotioncolor_s = Val::from("yellow");
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            l_khpotioncolor_s = Val::from("green");
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines(args![
-                                "^3355FFNever mind.",
-                                "This idea sounds",
-                                "too crazy to work...",
-                                "like puttting a man",
-                                "on the moon. Can you",
-                                "believe that hogwash?^000000"
-                            ])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                    ctx.lines(args![
-                        "^3355FFYou tried sprinkling",
-                        ((Val::from("the ") + l_khpotioncolor_s.clone()) + Val::from(" liquid from the")),
-                        "medicine cabinet onto",
-                        "the blank paper with the",
-                        "Kiel Hyre Foundation seal.",
-                        "However, nothing happened...^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if (ctx.var("khcottagepoem2").get()? == 1 && ctx.var("kielhyrequest").get()?.number()? < 30) {
+        ctx.lines(args![
+            "^3355FFThis medicine cabinet",
+            "is filled with bottles of",
+            "various colors. What kind",
+            "of medicine can be found here?^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFWait, you have a blank piece",
+            "of paper with the Kiel Hyre",
+            "Foundation seal! It's strange",
+            "that the seal was put on a blank",
+            "piece of paper. Maybe something",
+            "is written on it with special ink?^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFIt's a crazy hunch, but",
+            "maybe, just maybe, you can",
+            "use something inside this",
+            "medicine cabinet that will",
+            "reveal any invisible ink",
+            "written on this document!^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("What? That's crazy!:Of course! Let's try it!")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if (ctx.var("khcottagepoem2").get()?.number()? >= 2 || ctx.var("kielhyrequest").get()?.number()? >= 30) {
-                ctx.lines(args![
-                    "^3355FFThis is where you poured",
-                    "some blue liquid to read",
-                    "a poem written in invisible",
-                    "ink on the blank piece of paper",
-                    "with the Kiel Hyre Foundation",
-                    "seal. Would you like read it?^000000"
-                ])?;
-                ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("No time!:Read")])?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
+            if matched1 {
+                ctx.lines(args!["^3355FFSorry.", "I thought it", "was a good idea...^000000"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from(
+                            "Try Red Liquid:Try Blue Liquid:Try Yellow Liquid:Try Green Liquid:Cancel",
+                        )],
+                    )?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
+                        && !subject2.loosely_equals(&Val::from(2))
+                        && !subject2.loosely_equals(&Val::from(3))
+                        && !subject2.loosely_equals(&Val::from(4))
+                        && !subject2.loosely_equals(&Val::from(5));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
                     }
-                    if matched3 {
+                    if matched2 {
+                        l_khpotioncolor_s = Val::from("red");
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
                         ctx.lines(args![
-                            "^3355FFYou're running out of",
-                            "time! For now, it would",
-                            "be best for you to search",
-                            "every inch of this cottage.^000000"
+                            "^3355FFIt works!",
+                            "The blue liquid is",
+                            "revealing small text",
+                            "written on the paper.",
+                            "It looks like some",
+                            "kind of long poem...^000000"
                         ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                        ctx.next()?;
                         ctx.lines_as(
                             "Poem",
                             args![
@@ -4356,7 +4161,7 @@ fn medicine_chest_khp1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 "defeated it in the end.",
                                 "However, the fourth and",
                                 "final snake is formless, and",
-                                "no one knows it's appearance."
+                                "no one knows its appearance."
                             ],
                         )?;
                         ctx.next()?;
@@ -4365,16 +4170,131 @@ fn medicine_chest_khp1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args![
                                 "I cast my despair to the air,",
                                 "but nobody knows if it killed",
-                                "the snake. I am merely a ^3355FFlittle^000000",
-                                "^3355FFlost devil^000000 with four swords and",
+                                "the snake. I am merely ^0000FFa little",
+                                "lost devil^000000 with four swords and",
                                 "four snakes, searching for that",
                                 "girl in the darkness."
                             ],
                         )?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^3355FFThis is a very",
+                            "strange poem. What",
+                            "could it possibly mean?^000000"
+                        ])?;
+                        ctx.var("khcottagepoem2").set(Val::from(2))?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        l_khpotioncolor_s = Val::from("yellow");
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        l_khpotioncolor_s = Val::from("green");
+                        break 'b2;
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(5)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines(args![
+                            "^3355FFNever mind.",
+                            "This idea sounds",
+                            "too crazy to work...",
+                            "like puttting a man",
+                            "on the moon. Can you",
+                            "believe that hogwash?^000000"
+                        ])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
                 }
+                ctx.lines(args![
+                    "^3355FFYou tried sprinkling",
+                    ((Val::from("the ") + l_khpotioncolor_s.clone()) + Val::from(" liquid from the")),
+                    "medicine cabinet onto",
+                    "the blank paper with the",
+                    "Kiel Hyre Foundation seal.",
+                    "However, nothing happened...^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if (ctx.var("khcottagepoem2").get()?.number()? >= 2 || ctx.var("kielhyrequest").get()?.number()? >= 30) {
+        ctx.lines(args![
+            "^3355FFThis is where you poured",
+            "some blue liquid to read",
+            "a poem written in invisible",
+            "ink on the blank piece of paper",
+            "with the Kiel Hyre Foundation",
+            "seal. Would you like read it?^000000"
+        ])?;
+        ctx.next()?;
+        'b3: {
+            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("No time!:Read")])?);
+            let mut matched3 = false;
+            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines(args![
+                    "^3355FFYou're running out of",
+                    "time! For now, it would",
+                    "be best for you to search",
+                    "every inch of this cottage.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                matched3 = true;
+            }
+            if matched3 {
+                ctx.lines_as(
+                    "Poem",
+                    args![
+                        "The first snake is made of",
+                        "steel, but I used my rage",
+                        "to destroy it. The second",
+                        "snake is made of magic,",
+                        "but my love pierced its heart."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Poem",
+                    args![
+                        "The third snake is flesh",
+                        "and blood, but my hope",
+                        "defeated it in the end.",
+                        "However, the fourth and",
+                        "final snake is formless, and",
+                        "no one knows it's appearance."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Poem",
+                    args![
+                        "I cast my despair to the air,",
+                        "but nobody knows if it killed",
+                        "the snake. I am merely a ^3355FFlittle^000000",
+                        "^3355FFlost devil^000000 with four swords and",
+                        "four snakes, searching for that",
+                        "girl in the darkness."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -4398,252 +4318,248 @@ fn sword_hilt_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("khcottagepoem1").get()?.number()? <= 4
-            || (ctx.var("khcottagepoem2").get()?.number()? <= 2 && ctx.var("kielhyrequest").get()?.number()? < 30))
-        {
-            ctx.lines(args![
-                "^3355FFThere are four elaborately",
-                "designed swords positioned",
-                "next to four creepy looking",
-                "snake sculptures. Wait!",
-                "Perhaps they're related to",
-                "that poem you read earlier..."
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("No way!:Of course!")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        "^3355FFImpossible...",
-                        "It must be some",
-                        "kind of coincidence...^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        "^3355FFOf course! And look!",
-                        "There's a hole on top",
-                        "of the head of each snake",
-                        "sculpture. These holes seem",
-                        "big enough to insert each of",
-                        "the ornamental swords nearby...^000000"
-                    ])?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Ignore:Insert Ornamental Swords")])?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+    } else if (ctx.var("khcottagepoem1").get()?.number()? <= 4
+        || (ctx.var("khcottagepoem2").get()?.number()? <= 2 && ctx.var("kielhyrequest").get()?.number()? < 30))
+    {
+        ctx.lines(args![
+            "^3355FFThere are four elaborately",
+            "designed swords positioned",
+            "next to four creepy looking",
+            "snake sculptures. Wait!",
+            "Perhaps they're related to",
+            "that poem you read earlier..."
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("No way!:Of course!")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFImpossible...",
+                    "It must be some",
+                    "kind of coincidence...^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFOf course! And look!",
+                    "There's a hole on top",
+                    "of the head of each snake",
+                    "sculpture. These holes seem",
+                    "big enough to insert each of",
+                    "the ornamental swords nearby...^000000"
+                ])?;
+                ctx.next()?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Ignore:Insert Ornamental Swords")])?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines(args![
+                            "^3355FFImposible...^000000",
+                            "^3355FFIt must be some^000000",
+                            "^3355FFkind of coincidence...^000000"
+                        ])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        if ctx.var("khcottagepoem1").get()? != 4 {
                             ctx.lines(args![
-                                "^3355FFImposible...^000000",
-                                "^3355FFIt must be some^000000",
-                                "^3355FFkind of coincidence...^000000"
+                                "^3355FFCan't... Pull out...",
+                                "Sword! It must be",
+                                "locked into place",
+                                "somehow, or sealed",
+                                "by some strange force!^000000"
                             ])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            if ctx.var("khcottagepoem1").get()? != 4 {
+                        } else {
+                            ctx.lines(args![
+                                "^3355FFYou should probably",
+                                "try to insert each sword",
+                                "into the correct snake.",
+                                "First, please select the",
+                                "snake in which you will",
+                                "insert the first sword.^000000"
+                            ])?;
+                            ctx.next()?;
+                            'b3: {
+                                let subject3 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("First Snake:Second Snake:Third Snake:Fourth Snake")],
+                                )?);
+                                let mut matched3 = false;
+                                let no_case3 = !subject3.loosely_equals(&Val::from(2));
+                                if !matched3 && no_case3 {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    break 'b3;
+                                }
+                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    l_khswords = (l_khswords.clone() + Val::from(1));
+                                    break 'b3;
+                                }
+                            }
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^3355FFNow, please choose",
+                                "the snake in which you",
+                                "will insert the second sword.^000000"
+                            ])?;
+                            ctx.next()?;
+                            'b4: {
+                                let subject4 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("First Snake:Second Snake:Third Snake:Fourth Snake")],
+                                )?);
+                                let mut matched4 = false;
+                                let no_case4 = !subject4.loosely_equals(&Val::from(4));
+                                if !matched4 && no_case4 {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    break 'b4;
+                                }
+                                if !matched4 && subject4.loosely_equals(&Val::from(4)) {
+                                    matched4 = true;
+                                }
+                                if matched4 {
+                                    l_khswords = (l_khswords.clone() + Val::from(1));
+                                    break 'b4;
+                                }
+                            }
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^3355FFNext, please select",
+                                "the snake in which you",
+                                "will insert the third sword.^000000"
+                            ])?;
+                            ctx.next()?;
+                            'b5: {
+                                let subject5 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("First Snake:Second Snake:Third Snake:Fourth Snake")],
+                                )?);
+                                let mut matched5 = false;
+                                let no_case5 = !subject5.loosely_equals(&Val::from(1));
+                                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
+                                    matched5 = true;
+                                }
+                                if matched5 {
+                                    l_khswords = (l_khswords.clone() + Val::from(1));
+                                    break 'b5;
+                                }
+                                if !matched5 && no_case5 {
+                                    matched5 = true;
+                                }
+                                if matched5 {
+                                    break 'b5;
+                                }
+                            }
+                            ctx.next()?;
+                            ctx.lines(args![
+                                "^3355FFLastly, please select",
+                                "the snake in which you",
+                                "will insert the fourth sword.^000000"
+                            ])?;
+                            ctx.next()?;
+                            'b6: {
+                                let subject6 = Val::from(runtime::select_values(
+                                    ctx,
+                                    &[Val::from("First Snake:Second Snake:Third Snake:Fourth Snake")],
+                                )?);
+                                let mut matched6 = false;
+                                let no_case6 = !subject6.loosely_equals(&Val::from(3));
+                                if !matched6 && no_case6 {
+                                    matched6 = true;
+                                }
+                                if matched6 {
+                                    break 'b6;
+                                }
+                                if !matched6 && subject6.loosely_equals(&Val::from(3)) {
+                                    matched6 = true;
+                                }
+                                if matched6 {
+                                    l_khswords = (l_khswords.clone() + Val::from(1));
+                                    break 'b6;
+                                }
+                            }
+                            if l_khswords.clone() == 4 {
                                 ctx.lines(args![
-                                    "^3355FFCan't... Pull out...",
-                                    "Sword! It must be",
-                                    "locked into place",
-                                    "somehow, or sealed",
-                                    "by some strange force!^000000"
+                                    "^3355FFYour ears are suddenly",
+                                    "filled with a low buzzing",
+                                    "noise, and your mind",
+                                    "and body feel as if they",
+                                    "are being swept away...^000000"
                                 ])?;
+                                ctx.var("khcottagepoem1").set(Val::from(5))?;
+                                ctx.var("khcottagepoem2").set(Val::from(3))?;
                                 ctx.close_window()?;
+                                ctx.call(Function::Warp, vec![Val::from("kh_vila"), Val::from(178), Val::from(72)])?;
                                 return Err(Stop::End);
                             } else {
                                 ctx.lines(args![
-                                    "^3355FFYou should probably",
-                                    "try to insert each sword",
-                                    "into the correct snake.",
-                                    "First, please select the",
-                                    "snake in which you will",
-                                    "insert the first sword.^000000"
+                                    "^3355FFNothing happened...",
+                                    "You probably didn't",
+                                    "insert the swords into",
+                                    "the correct snakes. For now,",
+                                    "you should return the swords,",
+                                    "and then try this again later.^000000"
                                 ])?;
-                                ctx.next()?;
-                                'b3: {
-                                    let subject3 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("First Snake:Second Snake:Third Snake:Fourth Snake")],
-                                    )?);
-                                    let mut matched3 = false;
-                                    let no_case3 = !subject3.loosely_equals(&Val::from(2));
-                                    if !matched3 && no_case3 {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
-                                        break 'b3;
-                                    }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
-                                        l_khswords = (l_khswords.clone() + Val::from(1));
-                                        break 'b3;
-                                    }
-                                }
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^3355FFNow, please choose",
-                                    "the snake in which you",
-                                    "will insert the second sword.^000000"
-                                ])?;
-                                ctx.next()?;
-                                'b4: {
-                                    let subject4 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("First Snake:Second Snake:Third Snake:Fourth Snake")],
-                                    )?);
-                                    let mut matched4 = false;
-                                    let no_case4 = !subject4.loosely_equals(&Val::from(4));
-                                    if !matched4 && no_case4 {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        break 'b4;
-                                    }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
-                                        l_khswords = (l_khswords.clone() + Val::from(1));
-                                        break 'b4;
-                                    }
-                                }
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^3355FFNext, please select",
-                                    "the snake in which you",
-                                    "will insert the third sword.^000000"
-                                ])?;
-                                ctx.next()?;
-                                'b5: {
-                                    let subject5 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("First Snake:Second Snake:Third Snake:Fourth Snake")],
-                                    )?);
-                                    let mut matched5 = false;
-                                    let no_case5 = !subject5.loosely_equals(&Val::from(1));
-                                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                        matched5 = true;
-                                    }
-                                    if matched5 {
-                                        l_khswords = (l_khswords.clone() + Val::from(1));
-                                        break 'b5;
-                                    }
-                                    if !matched5 && no_case5 {
-                                        matched5 = true;
-                                    }
-                                    if matched5 {
-                                        break 'b5;
-                                    }
-                                }
-                                ctx.next()?;
-                                ctx.lines(args![
-                                    "^3355FFLastly, please select",
-                                    "the snake in which you",
-                                    "will insert the fourth sword.^000000"
-                                ])?;
-                                ctx.next()?;
-                                'b6: {
-                                    let subject6 = Val::from(runtime::select_values(
-                                        ctx,
-                                        &[Val::from("First Snake:Second Snake:Third Snake:Fourth Snake")],
-                                    )?);
-                                    let mut matched6 = false;
-                                    let no_case6 = !subject6.loosely_equals(&Val::from(3));
-                                    if !matched6 && no_case6 {
-                                        matched6 = true;
-                                    }
-                                    if matched6 {
-                                        break 'b6;
-                                    }
-                                    if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                        matched6 = true;
-                                    }
-                                    if matched6 {
-                                        l_khswords = (l_khswords.clone() + Val::from(1));
-                                        break 'b6;
-                                    }
-                                }
-                                if l_khswords.clone() == 4 {
-                                    ctx.lines(args![
-                                        "^3355FFYour ears are suddenly",
-                                        "filled with a low buzzing",
-                                        "noise, and your mind",
-                                        "and body feel as if they",
-                                        "are being swept away...^000000"
-                                    ])?;
-                                    ctx.var("khcottagepoem1").set(Val::from(5))?;
-                                    ctx.var("khcottagepoem2").set(Val::from(3))?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::Warp, vec![Val::from("kh_vila"), Val::from(178), Val::from(72)])?;
-                                    return Err(Stop::End);
-                                } else {
-                                    ctx.lines(args![
-                                        "^3355FFNothing happened...",
-                                        "You probably didn't",
-                                        "insert the swords into",
-                                        "the correct snakes. For now,",
-                                        "you should return the swords,",
-                                        "and then try this again later.^000000"
-                                    ])?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
+                                ctx.close_window()?;
+                                return Err(Stop::End);
                             }
                         }
                     }
                 }
             }
-        } else {
-            if ((ctx.var("khcottagepoem1").get()? == 5 && ctx.var("khcottagepoem2").get()? == 3)
-                || ctx.var("kielhyrequest").get()?.number()? >= 30)
-            {
-                ctx.lines(args![
-                    "^3355FFHere is a hidden",
-                    "path that leads to",
-                    "the secret laboratory.^000000"
-                ])?;
-                ctx.next()?;
-                'b7: {
-                    let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Enter:Cancel")])?);
-                    let mut matched7 = false;
-                    let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                    if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
-                        ctx.call(Function::Warp, vec![Val::from("kh_vila"), Val::from(178), Val::from(72)])?;
-                        return Err(Stop::End);
-                    }
-                    if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+        }
+    } else if ((ctx.var("khcottagepoem1").get()? == 5 && ctx.var("khcottagepoem2").get()? == 3)
+        || ctx.var("kielhyrequest").get()?.number()? >= 30)
+    {
+        ctx.lines(args![
+            "^3355FFHere is a hidden",
+            "path that leads to",
+            "the secret laboratory.^000000"
+        ])?;
+        ctx.next()?;
+        'b7: {
+            let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Enter:Cancel")])?);
+            let mut matched7 = false;
+            let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
+            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
+                matched7 = true;
+            }
+            if matched7 {
+                ctx.call(Function::Warp, vec![Val::from("kh_vila"), Val::from(178), Val::from(72)])?;
+                return Err(Stop::End);
+            }
+            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
+                matched7 = true;
+            }
+            if matched7 {
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
     }
@@ -4681,97 +4597,93 @@ fn test_tube_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 28 {
-            ctx.lines(args![
-                "^3355FFA strange looking,",
-                "wizened old man is",
-                "held within this test tube.",
-                "There is a small red button",
-                "right underneath the test tube.^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Press Button:Investigate Further")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "???",
-                        args![
-                            "H-hello...? C-can you",
-                            "hear me? I don't recognize",
-                            "you... But... Maybe I forgot?",
-                            "Wait, wait. If you're my friend,",
-                            "then you know what to call me,",
-                            "right? Do you know what I am?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    let (input, status) = runtime::input_text(ctx, None, None)?;
-                    l_khinput_s = input;
-                    if l_khinput_s.clone() == "little lost devil" {
-                        ctx.lines_as("???", args!["Heh... Heh heh...", "He knows... Hey, you", "have to remember these", "numbers, okay? D-don't", "forget, they'll be important...", "^FF00004^000000, ^FF00007^000000, ^FF00007^000000, ^FF00002^000000, ^FF00009^000000, ^FF00006^000000, ^FF00001^000000. That's all..."])?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FF4772961^000000",
-                            "^3355FFWhat could^000000",
-                            "^3355FFthose numbers^000000",
-                            "^3355FFpossibly mean?^000000"
-                        ])?;
-                        ctx.var("khcottagepoem1").set(Val::from(0))?;
-                        ctx.var("khcottagepoem2").set(Val::from(0))?;
-                        ctx.var("kielhyrequest").set(Val::from(30))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines_as(
-                            "???",
-                            args!["No... No...", "That's not right.", "I don't think we", "were friends. No..."],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args!["^3355FFLet's investigate", "this area a little", "more first.^000000"])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("kielhyrequest").get()? == 28 {
+        ctx.lines(args![
+            "^3355FFA strange looking,",
+            "wizened old man is",
+            "held within this test tube.",
+            "There is a small red button",
+            "right underneath the test tube.^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Press Button:Investigate Further")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if ctx.var("kielhyrequest").get()?.number()? >= 30 {
-                if (ctx.call(Function::CountItem, vec![Val::from(7491)])?.number()? > 0
-                    && ctx.call(Function::CountItem, vec![Val::from(7492)])?.number()? > 0)
-                {
+            if matched1 {
+                ctx.lines_as(
+                    "???",
+                    args![
+                        "H-hello...? C-can you",
+                        "hear me? I don't recognize",
+                        "you... But... Maybe I forgot?",
+                        "Wait, wait. If you're my friend,",
+                        "then you know what to call me,",
+                        "right? Do you know what I am?"
+                    ],
+                )?;
+                ctx.next()?;
+                let (input, status) = runtime::input_text(ctx, None, None)?;
+                l_khinput_s = input;
+                if l_khinput_s.clone() == "little lost devil" {
+                    ctx.lines_as("???", args!["Heh... Heh heh...", "He knows... Hey, you", "have to remember these", "numbers, okay? D-don't", "forget, they'll be important...", "^FF00004^000000, ^FF00007^000000, ^FF00007^000000, ^FF00002^000000, ^FF00009^000000, ^FF00006^000000, ^FF00001^000000. That's all..."])?;
+                    ctx.next()?;
                     ctx.lines(args![
-                        "^3355FFWhat could the",
-                        "number 4772961",
-                        "mean? For now, you've",
-                        "found everything that",
-                        "you need from this place,",
-                        "so you should return to Elly.^000000"
+                        "^3355FF4772961^000000",
+                        "^3355FFWhat could^000000",
+                        "^3355FFthose numbers^000000",
+                        "^3355FFpossibly mean?^000000"
                     ])?;
+                    ctx.var("khcottagepoem1").set(Val::from(0))?;
+                    ctx.var("khcottagepoem2").set(Val::from(0))?;
+                    ctx.var("kielhyrequest").set(Val::from(30))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 } else {
-                    ctx.lines(args![
-                        "^3355FFWhat could the",
-                        "number 4772961",
-                        "mean? For now, you'd",
-                        "better search this cottage",
-                        "for any clues you can find...^000000"
-                    ])?;
+                    ctx.lines_as(
+                        "???",
+                        args!["No... No...", "That's not right.", "I don't think we", "were friends. No..."],
+                    )?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["^3355FFLet's investigate", "this area a little", "more first.^000000"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if ctx.var("kielhyrequest").get()?.number()? >= 30 {
+        if (ctx.call(Function::CountItem, vec![Val::from(7491)])?.number()? > 0
+            && ctx.call(Function::CountItem, vec![Val::from(7492)])?.number()? > 0)
+        {
+            ctx.lines(args![
+                "^3355FFWhat could the",
+                "number 4772961",
+                "mean? For now, you've",
+                "found everything that",
+                "you need from this place,",
+                "so you should return to Elly.^000000"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines(args![
+                "^3355FFWhat could the",
+                "number 4772961",
+                "mean? For now, you'd",
+                "better search this cottage",
+                "for any clues you can find...^000000"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     return Err(Stop::End);
@@ -4819,60 +4731,58 @@ fn heavy_door_kh1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-    } else {
-        if (ctx.var("kielhyrequest").get()?.number()? >= 38 && ctx.var("kielhyrequest").get()?.number()? < 46) {
-            ctx.lines(args!["^3355FFThere is a large, heavy", "door in front of you.^000000"])?;
-            ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Open Door:Cancel")])?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    let (input, status) = runtime::input_text(ctx, None, None)?;
-                    l_khinput_s = input;
-                    if l_khinput_s.clone() == "Blue Keycard" {
-                        ctx.lines(args!["^3355FFYou've successfully", "opened the door."])?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("kh_school"), Val::from(119), Val::from(144)])?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.lines(args![
-                            "^3355FFYou try to push the",
-                            "door open with all",
-                            "your might, but fail",
-                            "to make it budge.^000000"
-                        ])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
+    } else if (ctx.var("kielhyrequest").get()?.number()? >= 38 && ctx.var("kielhyrequest").get()?.number()? < 46) {
+        ctx.lines(args!["^3355FFThere is a large, heavy", "door in front of you.^000000"])?;
+        ctx.next()?;
+        'b2: {
+            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Open Door:Cancel")])?);
+            let mut matched2 = false;
+            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                matched2 = true;
+            }
+            if matched2 {
+                let (input, status) = runtime::input_text(ctx, None, None)?;
+                l_khinput_s = input;
+                if l_khinput_s.clone() == "Blue Keycard" {
+                    ctx.lines(args!["^3355FFYou've successfully", "opened the door."])?;
+                    ctx.close_window()?;
+                    ctx.call(Function::Warp, vec![Val::from("kh_school"), Val::from(119), Val::from(144)])?;
+                    return Err(Stop::End);
+                } else {
                     ctx.lines(args![
-                        "^3355FFYou decided to leave",
-                        "this door alone until",
-                        "you can figure out",
-                        "how you can open it.^000000"
+                        "^3355FFYou try to push the",
+                        "door open with all",
+                        "your might, but fail",
+                        "to make it budge.^000000"
                     ])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             }
-        } else {
-            ctx.lines(args![
-                "^3355FFThis is an incredibly",
-                "heavy door that is tightly",
-                "closed. You won't be able to",
-                "open it through brute force.^000000"
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
+            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                matched2 = true;
+            }
+            if matched2 {
+                ctx.lines(args![
+                    "^3355FFYou decided to leave",
+                    "this door alone until",
+                    "you can figure out",
+                    "how you can open it.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFThis is an incredibly",
+            "heavy door that is tightly",
+            "closed. You won't be able to",
+            "open it through brute force.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -5077,14 +4987,12 @@ fn beautiful_lady_kh1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()?.number()? >= 40 {
-            ctx.lines_as("Allysia", args!["Please follow me."])?;
-            ctx.close_window()?;
-            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-            ctx.call(Function::Warp, vec![Val::from("kh_school"), Val::from(120), Val::from(180)])?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("kielhyrequest").get()?.number()? >= 40 {
+        ctx.lines_as("Allysia", args!["Please follow me."])?;
+        ctx.close_window()?;
+        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+        ctx.call(Function::Warp, vec![Val::from("kh_school"), Val::from(120), Val::from(180)])?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -5227,121 +5135,113 @@ fn beautiful_lady_kh6_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
             return Err(Stop::End);
-        } else {
-            if ctx.var("kielhyrequest").get()? == 40 {
-                ctx.lines_as(
-                    "Allysia",
-                    args![
-                        "I can still detect",
-                        "Kiel Hyre's heartbeat,",
-                        "but his sone Kiehl might",
-                        "do something desperate to",
-                        "him soon. Please locate Kiel",
-                        "Hyre before that can happen!"
-                    ],
-                )?;
-                ctx.close_window()?;
-                ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                ctx.call(Function::Warp, vec![Val::from("kh_dun01"), Val::from(22), Val::from(216)])?;
-                return Err(Stop::End);
-            } else {
-                if ctx.var("kielhyrequest").get()? == 42 {
-                    ctx.lines_as("Allysia", args!["Have you already", "located Kiel Hyre?"])?;
-                    ctx.next()?;
-                    ctx.lines(args![
-                        "^3355FFYou tell Allysia where^000000",
-                        "^3355FFKiel Hyre has been locked^000000",
-                        "^3355FFup, and give her the metal^000000",
-                        "^3355FFfragment that Kiel Hyre handed^000000",
-                        "^3355FFto you. She took fragment^000000",
-                        "^3355FFand wore it around her wrist.^000000"
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Allysia",
-                        args![
-                            "...Kiel Hyre's secret code",
-                            "confirmed. B_2_3 area.",
-                            "Vital signs are normal.",
-                            "Envelope received. Sending",
-                            "modified Puppet Designs..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Allysia",
-                        args!["Alright, I've received", "Kiel Hyre's orders, and", "must carry them out..."],
-                    )?;
-                    ctx.call(Function::DelItem, vec![Val::from(7497), Val::from(1)])?;
-                    ctx.var("kielhyrequest").set(Val::from(44))?;
-                    ctx.close_window()?;
-                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("kielhyrequest").get()? == 44 {
-                        ctx.lines_as(
-                            "Allysia",
-                            args![
-                                "Alright, I have a mission",
-                                "to carry out for Kiel Hyre,",
-                                "and I don't have much time.",
-                                "Let me give you some specific",
-                                "instructions very quickly."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Allysia",
-                            args![
-                                "Firstly, I need to take your",
-                                "keycards for security reasons.",
-                                "Secondly, meet me at the Kiel",
-                                "Hyre Mansion in Lighthalzen.",
-                                "Present the Golden Key to",
-                                "be admitted to the premises."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7492), Val::from(1)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(7495), Val::from(1)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(7496), Val::from(1)])?;
-                        ctx.var("kielhyrequest").set(Val::from(46))?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Allysia",
-                            args![
-                                "I understand that this",
-                                "is sudden, and I'm not",
-                                "giving you a thorough",
-                                "explanation, but something",
-                                "horrible will happen if I don't",
-                                "hurry as quickly as possible."
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        ctx.call(Function::Warp, vec![Val::from("yuno_fild08"), Val::from(73), Val::from(172)])?;
-                        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("kielhyrequest").get()?.number()? >= 44 {
-                            ctx.lines_as(
-                                "Allysia",
-                                args![
-                                    "I understand that this",
-                                    "is sudden, and I'm not",
-                                    "giving you a thorough",
-                                    "explanation, but something",
-                                    "horrible will happen if i don't",
-                                    "hurry as quickly as possible."
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            ctx.call(Function::Warp, vec![Val::from("yuno_fild08"), Val::from(73), Val::from(172)])?;
-                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                            return Err(Stop::End);
-                        }
-                    }
-                }
-            }
+        } else if ctx.var("kielhyrequest").get()? == 40 {
+            ctx.lines_as(
+                "Allysia",
+                args![
+                    "I can still detect",
+                    "Kiel Hyre's heartbeat,",
+                    "but his sone Kiehl might",
+                    "do something desperate to",
+                    "him soon. Please locate Kiel",
+                    "Hyre before that can happen!"
+                ],
+            )?;
+            ctx.close_window()?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            ctx.call(Function::Warp, vec![Val::from("kh_dun01"), Val::from(22), Val::from(216)])?;
+            return Err(Stop::End);
+        } else if ctx.var("kielhyrequest").get()? == 42 {
+            ctx.lines_as("Allysia", args!["Have you already", "located Kiel Hyre?"])?;
+            ctx.next()?;
+            ctx.lines(args![
+                "^3355FFYou tell Allysia where^000000",
+                "^3355FFKiel Hyre has been locked^000000",
+                "^3355FFup, and give her the metal^000000",
+                "^3355FFfragment that Kiel Hyre handed^000000",
+                "^3355FFto you. She took fragment^000000",
+                "^3355FFand wore it around her wrist.^000000"
+            ])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Allysia",
+                args![
+                    "...Kiel Hyre's secret code",
+                    "confirmed. B_2_3 area.",
+                    "Vital signs are normal.",
+                    "Envelope received. Sending",
+                    "modified Puppet Designs..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Allysia",
+                args!["Alright, I've received", "Kiel Hyre's orders, and", "must carry them out..."],
+            )?;
+            ctx.call(Function::DelItem, vec![Val::from(7497), Val::from(1)])?;
+            ctx.var("kielhyrequest").set(Val::from(44))?;
+            ctx.close_window()?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            return Err(Stop::End);
+        } else if ctx.var("kielhyrequest").get()? == 44 {
+            ctx.lines_as(
+                "Allysia",
+                args![
+                    "Alright, I have a mission",
+                    "to carry out for Kiel Hyre,",
+                    "and I don't have much time.",
+                    "Let me give you some specific",
+                    "instructions very quickly."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Allysia",
+                args![
+                    "Firstly, I need to take your",
+                    "keycards for security reasons.",
+                    "Secondly, meet me at the Kiel",
+                    "Hyre Mansion in Lighthalzen.",
+                    "Present the Golden Key to",
+                    "be admitted to the premises."
+                ],
+            )?;
+            ctx.call(Function::DelItem, vec![Val::from(7492), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(7495), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(7496), Val::from(1)])?;
+            ctx.var("kielhyrequest").set(Val::from(46))?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Allysia",
+                args![
+                    "I understand that this",
+                    "is sudden, and I'm not",
+                    "giving you a thorough",
+                    "explanation, but something",
+                    "horrible will happen if I don't",
+                    "hurry as quickly as possible."
+                ],
+            )?;
+            ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("yuno_fild08"), Val::from(73), Val::from(172)])?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            return Err(Stop::End);
+        } else if ctx.var("kielhyrequest").get()?.number()? >= 44 {
+            ctx.lines_as(
+                "Allysia",
+                args![
+                    "I understand that this",
+                    "is sudden, and I'm not",
+                    "giving you a thorough",
+                    "explanation, but something",
+                    "horrible will happen if i don't",
+                    "hurry as quickly as possible."
+                ],
+            )?;
+            ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("yuno_fild08"), Val::from(73), Val::from(172)])?;
+            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+            return Err(Stop::End);
         }
     }
     Ok(Val::from(0))
@@ -5382,28 +5282,26 @@ fn mechanical_device_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("kielhyrequest").get()? == 40 && ctx.call(Function::CountItem, vec![Val::from(7496)])?.number()? >= 1) {
-            ctx.lines(args![
-                "^3355FFYou encounter",
-                "a mechanical device.",
-                "It looks like it can be",
-                "operated by inserting the",
-                "correct keycard into the slot.^000000"
-            ])?;
-            ctx.next()?;
-            let (input, status) = runtime::input_text(ctx, None, None)?;
-            l_khinput_s = input;
-            if l_khinput_s.clone() == "Red Keycard" {
-                ctx.lines(args!["^3355FFThe door opens once", "you insert the Red Keycard.^000000"])?;
-                ctx.close_window()?;
-                ctx.call(Function::Warp, vec![Val::from("kh_dun01"), Val::from(170), Val::from(227)])?;
-                return Err(Stop::End);
-            } else {
-                ctx.mes("^3355FFNothing happened.^000000")?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if (ctx.var("kielhyrequest").get()? == 40 && ctx.call(Function::CountItem, vec![Val::from(7496)])?.number()? >= 1) {
+        ctx.lines(args![
+            "^3355FFYou encounter",
+            "a mechanical device.",
+            "It looks like it can be",
+            "operated by inserting the",
+            "correct keycard into the slot.^000000"
+        ])?;
+        ctx.next()?;
+        let (input, status) = runtime::input_text(ctx, None, None)?;
+        l_khinput_s = input;
+        if l_khinput_s.clone() == "Red Keycard" {
+            ctx.lines(args!["^3355FFThe door opens once", "you insert the Red Keycard.^000000"])?;
+            ctx.close_window()?;
+            ctx.call(Function::Warp, vec![Val::from("kh_dun01"), Val::from(170), Val::from(227)])?;
+            return Err(Stop::End);
+        } else {
+            ctx.mes("^3355FFNothing happened.^000000")?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     Ok(Val::from(0))
@@ -5498,12 +5396,10 @@ fn factory_b_area_door_run(ctx: &Ctx, mut step: FactoryBAreaDoorStep, args: Vec<
                     ctx.var("kielhyrequest").set(Val::from(42))?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                } else {
-                    if ctx.var("kielhyrequest").get()?.number()? >= 42 {
-                        ctx.lines_as("Kiel Hyre", args!["......"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                } else if ctx.var("kielhyrequest").get()?.number()? >= 42 {
+                    ctx.lines_as("Kiel Hyre", args!["......"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 return Ok(Val::from(0));
             }
@@ -6439,431 +6335,423 @@ fn kiel_hyre_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                             return Err(Stop::End);
-                        } else {
-                            if ctx.var("kielhyrequest").get()?.number()? <= 70 {
-                                ctx.call(Function::Cutin, vec![Val::from("kh_kyel01"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "You already know that",
-                                        "she was found dead the",
-                                        "next day. But what really",
-                                        "broke my heart was that",
-                                        "she held that ring so tightly",
-                                        "in her hand, even in death..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("kh_kyel03"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "His family had everything",
-                                        "while I had nothing. And",
-                                        "he had the audacity to take",
-                                        "Allysia away from me?!",
-                                        "How could that be right?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "Even though she had passed",
-                                        "away, I still wanted to prove",
-                                        "to Allysia what kind of ugly",
-                                        "person James really was.",
-                                        "That was when I joined the",
-                                        "Rekenber Corporation."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "I designed the very first",
-                                        "First Generation Robot, which",
-                                        "I named Allysia, and sold the",
-                                        "designs to Rekenber. I gave them",
-                                        "robots, and they gave me money,",
-                                        "power, obedient subordinates."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "Of course I knew they'd use",
-                                        "my robots for spying and killing!",
-                                        "But you know what? It didn't",
-                                        "matter so long as they gave me",
-                                        "the means to my revenge. It was",
-                                        "the perfect partnership, really."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "You've got me right",
-                                        "where you want me.",
-                                        "Who are you working",
-                                        "for, and what exactly",
-                                        "do you want? My designs?",
-                                        "My death? Everything...?"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("kh_kyel01"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                    args![
-                                        "Actually, I just want",
-                                        "to ask about the nature",
-                                        "of your professional",
-                                        "relationship with the",
-                                        "Rekenber Corporation.",
-                                        "And about Kiehl."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "Kiehl, eh? After hearing",
-                                        "my crazy story, I'm guessing",
-                                        "that you already suspect the",
-                                        "truth about him... He's also",
-                                        "a robot, specifically the first",
-                                        "of the Second Generation models."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "His mind was developed using.",
-                                        "an experimental, and unstable,",
-                                        "form of the Condensed Magic",
-                                        "Spell Scrolls. He was the only",
-                                        "Second Generation robot that",
-                                        "I was allowed to keep."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "I've become very attached",
-                                        "to Kiehl. It's not surprising,",
-                                        "seeing that robotics have",
-                                        "become my life. I even raised",
-                                        "him as my own son, and taught",
-                                        "him everything about robotics"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "Kiehl is now a genius,",
-                                        "and has even developed the",
-                                        "Third Generation of robots.",
-                                        "Unfortunately, I failed to",
-                                        "properly raise him with",
-                                        "human morals and ethics."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                let choice = runtime::select_values(ctx, &[Val::from("......")])?;
-                                ctx.var("@menu").set(choice)?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "He's been transforming",
-                                        "the Third Generation robots",
-                                        "into killing machines. That's",
-                                        "why I tried to put them all",
-                                        "into the academy, so they",
-                                        "could learn human behavior."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "Although the academy",
-                                        "has delayed Kiehl's plans,",
-                                        "he has succeeded into",
-                                        "converting all of the robots",
-                                        "into uncontrollable engines",
-                                        "of mass destruction."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "Yes, he's been working",
-                                        "closely with Rekenber.",
-                                        "Their true objective is to",
-                                        "create killing machines",
-                                        "for Rekenber's use."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "You know all the secrets",
-                                        "of my past now. I'm not",
-                                        "upset with you or anything,",
-                                        "but I do have something",
-                                        "that I want to ask of you."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "Please! Stop Kiehl!",
-                                        "I don't want his madness",
-                                        "to destroy any more robots!",
-                                        "I see each and every one",
-                                        "of them as one of my children!"
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "I know that I must take",
-                                        "full responsibility for all",
-                                        "that has happened. I promise",
-                                        "to take any punishment for",
-                                        "my actions once everything",
-                                        "has been resolved."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                let choice = runtime::select_values(ctx, &[Val::from("Accept:Okay:Nod")])?;
-                                ctx.var("@menu").set(choice)?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "Thank you so much!",
-                                        "You can find Kiehl",
-                                        "in the underground",
-                                        "level in this mansion."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "He stays in the old room",
-                                        "where he was created, but",
-                                        "he reconstructed it as some",
-                                        "kind of cave to keep everyone",
-                                        "out, including me. Yes, he",
-                                        "doesn't trust anyone anymore..."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "When you find him, I want",
-                                        "you to take Allysia's ring",
-                                        "out of his heart. If you",
-                                        "remove it, that should stop",
-                                        "him from going berserk."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                let choice = runtime::select_values(ctx, &[Val::from("Allysia's Ring?")])?;
-                                ctx.var("@menu").set(choice)?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "Yes... Her ring is the",
-                                        "beginning of everything",
-                                        "I put that in his heart so",
-                                        "that I'd never forget what",
-                                        "the Rosimiers did to me."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "I think Kiehl's grown",
-                                        "so powerful that normal",
-                                        "weapons might not work",
-                                        "on him anymore. Use this",
-                                        "device that will cause his",
-                                        "power supply to fluctuate."
-                                    ],
-                                )?;
-                                ctx.call(Function::GetItem, vec![Val::from(7504), Val::from(1)])?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("kh_kyel03"), Val::from(2)])?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args![
-                                        "If you successfully attach",
-                                        "this to Kiehl's body, then",
-                                        "he won't be able to use his",
-                                        "body's full power. While he's",
-                                        "weakened, open up his chest",
-                                        "and get the ring from his heart."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Kiel Hyre",
-                                    args!["Let me know once", "you're ready. Then, I'll", "guide you Kiehl's room."],
-                                )?;
-                                ctx.var("kielhyrequest").set(Val::from(74))?;
-                            } else {
-                                if (ctx.var("kielhyrequest").get()?.number()? >= 74 && ctx.var("kielhyrequest").get()?.number()? <= 104) {
-                                    ctx.lines_as("Kiel Hyre", args!["Are you ready", "to confront", "Kiehl now?"])?;
-                                    ctx.next()?;
-                                    'b3: {
-                                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
-                                        let mut matched3 = false;
-                                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
-                                            ctx.lines_as(
-                                                "Kiel Hyre",
-                                                args![
-                                                    "There... the secret",
-                                                    "passage is open now.",
-                                                    "Just go to the right of",
-                                                    "me, but be careful. Kiehl",
-                                                    "is extremely dangerous."
-                                                ],
-                                            )?;
-                                            ctx.close_window()?;
-                                            ctx.call(Function::EnableNpc, vec![Val::from("Kiehl_Room_Warp")])?;
-                                            ctx.call(Function::DoNpcEvent, vec![Val::from("Kiehl_Room_Warp::OnEnable")])?;
-                                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                            return Err(Stop::End);
-                                            break 'b3;
-                                        }
-                                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
-                                            ctx.lines_as(
-                                                "Kiel Hyre",
-                                                args!["Please take your", "time. I imagine that", "it won't be easy."],
-                                            )?;
-                                            break 'b3;
-                                        }
-                                    }
-                                } else {
-                                    if (ctx.var("kielhyrequest").get()?.number()? >= 74 && ctx.var("kielhyrequest").get()?.number()? <= 106)
-                                    {
-                                        ctx.call(Function::Cutin, vec![Val::from("kh_kyel01"), Val::from(2)])?;
-                                        ctx.lines_as(
-                                            "Kiel Hyre",
-                                            args![
-                                                "You're back...!",
-                                                "So were you able",
-                                                "to retrieve Allysia's",
-                                                "Ring from Kiehl's heart?"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        if ctx.call(Function::CountItem, vec![Val::from(7508)])?.number()? < 1 {
-                                            ctx.lines_as(
-                                                "Kiel Hyre",
-                                                args![
-                                                    "You mean... You don't have it?",
-                                                    "Please, retrieve Allysia's Ring",
-                                                    "from Kiehl's heart!"
-                                                ],
-                                            )?;
-                                            ctx.next()?;
-                                            ctx.call(Function::EnableNpc, vec![Val::from("Kiehl_Room_Warp")])?;
-                                            ctx.call(Function::DoNpcEvent, vec![Val::from("Kiehl_Room_Warp::OnEnable")])?;
-                                            ctx.close_window()?;
-                                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                            return Err(Stop::End);
-                                        }
-                                        ctx.lines_as(
-                                            "Kiel Hyre",
-                                            args![
-                                                "Wh-what happened...?",
-                                                "Kiehl developed a new",
-                                                "body for himself? Th-that",
-                                                "would make him a Fourth",
-                                                "Generation robot. I had",
-                                                "no idea he was this smart."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Kiel Hyre",
-                                            args![
-                                                "Wait, now that I think about",
-                                                "it, I did see robot bodies that",
-                                                "looked like Kiehl when I was",
-                                                "locked in the factory. So he",
-                                                "was using those copies to",
-                                                "develop personal upgrades."
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as(
-                                            "Kiel Hyre",
-                                            args![
-                                                "Here, please take this",
-                                                "Keycard which will let you",
-                                                "enter and investigate the",
-                                                "deepest levels of the factory.",
-                                                "I'll investigate Kiehl's room."
-                                            ],
-                                        )?;
-                                        ctx.call(Function::GetItem, vec![Val::from(7509), Val::from(1)])?;
-                                        ctx.var("kielhyrequest").set(Val::from(108))?;
-                                        ctx.next()?;
-                                        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_FEMALE")?) {
-                                            if ctx.call(Function::GetPartnerId, vec![])? == 0 {
-                                                l_khtitle_s = Val::from("Miss");
-                                            } else {
-                                                l_khstitle_s = Val::from("Mrs");
-                                            }
-                                        } else {
-                                            l_khtitle_s = Val::from("Mr");
-                                        }
-                                        ctx.lines_as(
-                                            "Kiel Hyre",
-                                            args![
-                                                "Kiehl is my responsibility...",
-                                                "No matter what the cost may",
-                                                "be, I've got to stop him! Oh,",
-                                                "and here, please take this",
-                                                "with my thanks for all of",
-                                                ((((Val::from("your help, ") + l_khtitle_s.clone()) + Val::from(" "))
-                                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                                    + Val::from("."))
-                                            ],
-                                        )?;
-                                        ctx.call(Function::GetItem, vec![Val::from(616), Val::from(1)])?;
-                                        ctx.call(Function::DelItem, vec![Val::from(7508), Val::from(1)])?;
-                                        ctx.call(Function::GetExperience, vec![Val::from(1000000), Val::from(0)])?;
-                                    } else {
-                                        if ctx.var("kielhyrequest").get()?.number()? >= 108 {
-                                            ctx.lines_as("Kiel Hyre", args!["......", ".........", "............"])?;
-                                        }
-                                    }
+                        } else if ctx.var("kielhyrequest").get()?.number()? <= 70 {
+                            ctx.call(Function::Cutin, vec![Val::from("kh_kyel01"), Val::from(2)])?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "You already know that",
+                                    "she was found dead the",
+                                    "next day. But what really",
+                                    "broke my heart was that",
+                                    "she held that ring so tightly",
+                                    "in her hand, even in death..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.call(Function::Cutin, vec![Val::from("kh_kyel03"), Val::from(2)])?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "His family had everything",
+                                    "while I had nothing. And",
+                                    "he had the audacity to take",
+                                    "Allysia away from me?!",
+                                    "How could that be right?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Even though she had passed",
+                                    "away, I still wanted to prove",
+                                    "to Allysia what kind of ugly",
+                                    "person James really was.",
+                                    "That was when I joined the",
+                                    "Rekenber Corporation."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "I designed the very first",
+                                    "First Generation Robot, which",
+                                    "I named Allysia, and sold the",
+                                    "designs to Rekenber. I gave them",
+                                    "robots, and they gave me money,",
+                                    "power, obedient subordinates."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Of course I knew they'd use",
+                                    "my robots for spying and killing!",
+                                    "But you know what? It didn't",
+                                    "matter so long as they gave me",
+                                    "the means to my revenge. It was",
+                                    "the perfect partnership, really."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "You've got me right",
+                                    "where you want me.",
+                                    "Who are you working",
+                                    "for, and what exactly",
+                                    "do you want? My designs?",
+                                    "My death? Everything...?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.call(Function::Cutin, vec![Val::from("kh_kyel01"), Val::from(2)])?;
+                            ctx.lines_as(
+                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                                args![
+                                    "Actually, I just want",
+                                    "to ask about the nature",
+                                    "of your professional",
+                                    "relationship with the",
+                                    "Rekenber Corporation.",
+                                    "And about Kiehl."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Kiehl, eh? After hearing",
+                                    "my crazy story, I'm guessing",
+                                    "that you already suspect the",
+                                    "truth about him... He's also",
+                                    "a robot, specifically the first",
+                                    "of the Second Generation models."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "His mind was developed using.",
+                                    "an experimental, and unstable,",
+                                    "form of the Condensed Magic",
+                                    "Spell Scrolls. He was the only",
+                                    "Second Generation robot that",
+                                    "I was allowed to keep."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "I've become very attached",
+                                    "to Kiehl. It's not surprising,",
+                                    "seeing that robotics have",
+                                    "become my life. I even raised",
+                                    "him as my own son, and taught",
+                                    "him everything about robotics"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Kiehl is now a genius,",
+                                    "and has even developed the",
+                                    "Third Generation of robots.",
+                                    "Unfortunately, I failed to",
+                                    "properly raise him with",
+                                    "human morals and ethics."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            let choice = runtime::select_values(ctx, &[Val::from("......")])?;
+                            ctx.var("@menu").set(choice)?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "He's been transforming",
+                                    "the Third Generation robots",
+                                    "into killing machines. That's",
+                                    "why I tried to put them all",
+                                    "into the academy, so they",
+                                    "could learn human behavior."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Although the academy",
+                                    "has delayed Kiehl's plans,",
+                                    "he has succeeded into",
+                                    "converting all of the robots",
+                                    "into uncontrollable engines",
+                                    "of mass destruction."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Yes, he's been working",
+                                    "closely with Rekenber.",
+                                    "Their true objective is to",
+                                    "create killing machines",
+                                    "for Rekenber's use."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "You know all the secrets",
+                                    "of my past now. I'm not",
+                                    "upset with you or anything,",
+                                    "but I do have something",
+                                    "that I want to ask of you."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Please! Stop Kiehl!",
+                                    "I don't want his madness",
+                                    "to destroy any more robots!",
+                                    "I see each and every one",
+                                    "of them as one of my children!"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "I know that I must take",
+                                    "full responsibility for all",
+                                    "that has happened. I promise",
+                                    "to take any punishment for",
+                                    "my actions once everything",
+                                    "has been resolved."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            let choice = runtime::select_values(ctx, &[Val::from("Accept:Okay:Nod")])?;
+                            ctx.var("@menu").set(choice)?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Thank you so much!",
+                                    "You can find Kiehl",
+                                    "in the underground",
+                                    "level in this mansion."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "He stays in the old room",
+                                    "where he was created, but",
+                                    "he reconstructed it as some",
+                                    "kind of cave to keep everyone",
+                                    "out, including me. Yes, he",
+                                    "doesn't trust anyone anymore..."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "When you find him, I want",
+                                    "you to take Allysia's ring",
+                                    "out of his heart. If you",
+                                    "remove it, that should stop",
+                                    "him from going berserk."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            let choice = runtime::select_values(ctx, &[Val::from("Allysia's Ring?")])?;
+                            ctx.var("@menu").set(choice)?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Yes... Her ring is the",
+                                    "beginning of everything",
+                                    "I put that in his heart so",
+                                    "that I'd never forget what",
+                                    "the Rosimiers did to me."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "I think Kiehl's grown",
+                                    "so powerful that normal",
+                                    "weapons might not work",
+                                    "on him anymore. Use this",
+                                    "device that will cause his",
+                                    "power supply to fluctuate."
+                                ],
+                            )?;
+                            ctx.call(Function::GetItem, vec![Val::from(7504), Val::from(1)])?;
+                            ctx.next()?;
+                            ctx.call(Function::Cutin, vec![Val::from("kh_kyel03"), Val::from(2)])?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "If you successfully attach",
+                                    "this to Kiehl's body, then",
+                                    "he won't be able to use his",
+                                    "body's full power. While he's",
+                                    "weakened, open up his chest",
+                                    "and get the ring from his heart."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args!["Let me know once", "you're ready. Then, I'll", "guide you Kiehl's room."],
+                            )?;
+                            ctx.var("kielhyrequest").set(Val::from(74))?;
+                        } else if (ctx.var("kielhyrequest").get()?.number()? >= 74 && ctx.var("kielhyrequest").get()?.number()? <= 104) {
+                            ctx.lines_as("Kiel Hyre", args!["Are you ready", "to confront", "Kiehl now?"])?;
+                            ctx.next()?;
+                            'b3: {
+                                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
+                                let mut matched3 = false;
+                                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.lines_as(
+                                        "Kiel Hyre",
+                                        args![
+                                            "There... the secret",
+                                            "passage is open now.",
+                                            "Just go to the right of",
+                                            "me, but be careful. Kiehl",
+                                            "is extremely dangerous."
+                                        ],
+                                    )?;
+                                    ctx.close_window()?;
+                                    ctx.call(Function::EnableNpc, vec![Val::from("Kiehl_Room_Warp")])?;
+                                    ctx.call(Function::DoNpcEvent, vec![Val::from("Kiehl_Room_Warp::OnEnable")])?;
+                                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                                    return Err(Stop::End);
+                                    break 'b3;
+                                }
+                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                                    matched3 = true;
+                                }
+                                if matched3 {
+                                    ctx.lines_as(
+                                        "Kiel Hyre",
+                                        args!["Please take your", "time. I imagine that", "it won't be easy."],
+                                    )?;
+                                    break 'b3;
                                 }
                             }
+                        } else if (ctx.var("kielhyrequest").get()?.number()? >= 74 && ctx.var("kielhyrequest").get()?.number()? <= 106)
+                        {
+                            ctx.call(Function::Cutin, vec![Val::from("kh_kyel01"), Val::from(2)])?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "You're back...!",
+                                    "So were you able",
+                                    "to retrieve Allysia's",
+                                    "Ring from Kiehl's heart?"
+                                ],
+                            )?;
+                            ctx.next()?;
+                            if ctx.call(Function::CountItem, vec![Val::from(7508)])?.number()? < 1 {
+                                ctx.lines_as(
+                                    "Kiel Hyre",
+                                    args![
+                                        "You mean... You don't have it?",
+                                        "Please, retrieve Allysia's Ring",
+                                        "from Kiehl's heart!"
+                                    ],
+                                )?;
+                                ctx.next()?;
+                                ctx.call(Function::EnableNpc, vec![Val::from("Kiehl_Room_Warp")])?;
+                                ctx.call(Function::DoNpcEvent, vec![Val::from("Kiehl_Room_Warp::OnEnable")])?;
+                                ctx.close_window()?;
+                                ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                                return Err(Stop::End);
+                            }
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Wh-what happened...?",
+                                    "Kiehl developed a new",
+                                    "body for himself? Th-that",
+                                    "would make him a Fourth",
+                                    "Generation robot. I had",
+                                    "no idea he was this smart."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Wait, now that I think about",
+                                    "it, I did see robot bodies that",
+                                    "looked like Kiehl when I was",
+                                    "locked in the factory. So he",
+                                    "was using those copies to",
+                                    "develop personal upgrades."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Here, please take this",
+                                    "Keycard which will let you",
+                                    "enter and investigate the",
+                                    "deepest levels of the factory.",
+                                    "I'll investigate Kiehl's room."
+                                ],
+                            )?;
+                            ctx.call(Function::GetItem, vec![Val::from(7509), Val::from(1)])?;
+                            ctx.var("kielhyrequest").set(Val::from(108))?;
+                            ctx.next()?;
+                            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_FEMALE")?) {
+                                if ctx.call(Function::GetPartnerId, vec![])? == 0 {
+                                    l_khtitle_s = Val::from("Miss");
+                                } else {
+                                    l_khstitle_s = Val::from("Mrs");
+                                }
+                            } else {
+                                l_khtitle_s = Val::from("Mr");
+                            }
+                            ctx.lines_as(
+                                "Kiel Hyre",
+                                args![
+                                    "Kiehl is my responsibility...",
+                                    "No matter what the cost may",
+                                    "be, I've got to stop him! Oh,",
+                                    "and here, please take this",
+                                    "with my thanks for all of",
+                                    ((((Val::from("your help, ") + l_khtitle_s.clone()) + Val::from(" "))
+                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                        + Val::from("."))
+                                ],
+                            )?;
+                            ctx.call(Function::GetItem, vec![Val::from(616), Val::from(1)])?;
+                            ctx.call(Function::DelItem, vec![Val::from(7508), Val::from(1)])?;
+                            ctx.call(Function::GetExperience, vec![Val::from(1000000), Val::from(0)])?;
+                        } else if ctx.var("kielhyrequest").get()?.number()? >= 108 {
+                            ctx.lines_as("Kiel Hyre", args!["......", ".........", "............"])?;
                         }
                     }
                 }
@@ -7471,148 +7359,140 @@ fn mysterious_woman_kh_run(ctx: &Ctx, mut step: MysteriousWomanKhStep, args: Vec
                             }
                         }
                     }
-                } else {
-                    if ctx.var("kielhyrequest").get()? == 52 {
-                        ctx.lines_as(
-                            "Mitchell",
-                            args![
-                                "I've got some new",
-                                "information for you.",
-                                "There's an old lady in",
-                                "Juno that knew a woman",
-                                "named Allysia 30 years ago."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Mitchell",
-                            args![
-                                "The clincher is that this",
-                                "Allysia from 30 years ago",
-                                "commited suicide, and is",
-                                "identical to Kiel Hyre's",
-                                "secretary, who is also",
-                                "named Allysia."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Mitchell",
-                            args![
-                                "This is too much of a",
-                                "coincidence. I want you to",
-                                "go to Juno and investigate.",
-                                "When you're done, talk to",
-                                "Kiel Hyre's steward, and",
-                                "he'll send you over to me."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Mitchell",
-                            args![
-                                "Yeah, I know.",
-                                "That guy actually",
-                                "works for me. Anyway,",
-                                "when you're ready to go",
-                                "to Juno, let me know, and you",
-                                "can board the federal airship."
-                            ],
-                        )?;
-                        ctx.var("kielhyrequest").set(Val::from(54))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        if ctx.var("kielhyrequest").get()? == 54 {
+                } else if ctx.var("kielhyrequest").get()? == 52 {
+                    ctx.lines_as(
+                        "Mitchell",
+                        args![
+                            "I've got some new",
+                            "information for you.",
+                            "There's an old lady in",
+                            "Juno that knew a woman",
+                            "named Allysia 30 years ago."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mitchell",
+                        args![
+                            "The clincher is that this",
+                            "Allysia from 30 years ago",
+                            "commited suicide, and is",
+                            "identical to Kiel Hyre's",
+                            "secretary, who is also",
+                            "named Allysia."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mitchell",
+                        args![
+                            "This is too much of a",
+                            "coincidence. I want you to",
+                            "go to Juno and investigate.",
+                            "When you're done, talk to",
+                            "Kiel Hyre's steward, and",
+                            "he'll send you over to me."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mitchell",
+                        args![
+                            "Yeah, I know.",
+                            "That guy actually",
+                            "works for me. Anyway,",
+                            "when you're ready to go",
+                            "to Juno, let me know, and you",
+                            "can board the federal airship."
+                        ],
+                    )?;
+                    ctx.var("kielhyrequest").set(Val::from(54))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if ctx.var("kielhyrequest").get()? == 54 {
+                    ctx.lines_as(
+                        "Mitchell",
+                        args![
+                            "Are you ready?",
+                            "I'll let you board",
+                            "the federal Airship so",
+                            "you can get to Juno, and",
+                            "finish your mission quickly."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    'b3: {
+                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
+                        let mut matched3 = false;
+                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
+                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
                             ctx.lines_as(
                                 "Mitchell",
                                 args![
-                                    "Are you ready?",
-                                    "I'll let you board",
-                                    "the federal Airship so",
-                                    "you can get to Juno, and",
-                                    "finish your mission quickly."
+                                    "Good luck. Once you",
+                                    "complete your mission,",
+                                    "make sure that you report",
+                                    "to Kiel Hyre's steward so",
+                                    "that he can send you to me."
                                 ],
                             )?;
-                            ctx.next()?;
-                            'b3: {
-                                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
-                                let mut matched3 = false;
-                                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines_as(
-                                        "Mitchell",
-                                        args![
-                                            "Good luck. Once you",
-                                            "complete your mission,",
-                                            "make sure that you report",
-                                            "to Kiel Hyre's steward so",
-                                            "that he can send you to me."
-                                        ],
-                                    )?;
-                                    ctx.close_window()?;
-                                    ctx.call(Function::Warp, vec![Val::from("yuno"), Val::from(54), Val::from(209)])?;
-                                    return Err(Stop::End);
-                                }
-                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
-                                    ctx.lines_as(
-                                        "Mitchell",
-                                        args!["Take your time...", "But keep in mind that", "I'm not a patient woman!"],
-                                    )?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        } else {
-                            if ctx.var("kielhyrequest").get()? == 64 {
-                                ctx.lines_as(
-                                    "Mitchell",
-                                    args!["Ah, you're back.", "What do you have", "to report from your", "investigation?"],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Mitchell",
-                                    args![
-                                        ".....................",
-                                        "Ah, I see. Good work.",
-                                        "Why don't you go speak to Kiel",
-                                        "Hyre and confront him with",
-                                        "what you've learned about",
-                                        "his past? Yeah, grill him."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Mitchell",
-                                    args![
-                                        "Wear this hidden mic,",
-                                        "so we can send help if",
-                                        "you're endangered. I want",
-                                        "you to find out who Kiel",
-                                        "really is, and what's his",
-                                        "relationship to Rekenber."
-                                    ],
-                                )?;
-                                ctx.var("kielhyrequest").set(Val::from(68))?;
-                                ctx.next()?;
-                                ctx.call(Function::Warp, vec![Val::from("kh_mansion"), Val::from(83), Val::from(50)])?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("kielhyrequest").get()?.number()? >= 68 {
-                                    ctx.lines_as("Mitchell", args!["Shouldn't you be", "leaving about now?"])?;
-                                    ctx.next()?;
-                                    ctx.call(Function::Warp, vec![Val::from("kh_mansion"), Val::from(83), Val::from(50)])?;
-                                    return Err(Stop::End);
-                                }
-                            }
+                            ctx.close_window()?;
+                            ctx.call(Function::Warp, vec![Val::from("yuno"), Val::from(54), Val::from(209)])?;
+                            return Err(Stop::End);
+                        }
+                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
+                            matched3 = true;
+                        }
+                        if matched3 {
+                            ctx.lines_as(
+                                "Mitchell",
+                                args!["Take your time...", "But keep in mind that", "I'm not a patient woman!"],
+                            )?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
+                } else if ctx.var("kielhyrequest").get()? == 64 {
+                    ctx.lines_as(
+                        "Mitchell",
+                        args!["Ah, you're back.", "What do you have", "to report from your", "investigation?"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mitchell",
+                        args![
+                            ".....................",
+                            "Ah, I see. Good work.",
+                            "Why don't you go speak to Kiel",
+                            "Hyre and confront him with",
+                            "what you've learned about",
+                            "his past? Yeah, grill him."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Mitchell",
+                        args![
+                            "Wear this hidden mic,",
+                            "so we can send help if",
+                            "you're endangered. I want",
+                            "you to find out who Kiel",
+                            "really is, and what's his",
+                            "relationship to Rekenber."
+                        ],
+                    )?;
+                    ctx.var("kielhyrequest").set(Val::from(68))?;
+                    ctx.next()?;
+                    ctx.call(Function::Warp, vec![Val::from("kh_mansion"), Val::from(83), Val::from(50)])?;
+                    return Err(Stop::End);
+                } else if ctx.var("kielhyrequest").get()?.number()? >= 68 {
+                    ctx.lines_as("Mitchell", args!["Shouldn't you be", "leaving about now?"])?;
+                    ctx.next()?;
+                    ctx.call(Function::Warp, vec![Val::from("kh_mansion"), Val::from(83), Val::from(50)])?;
+                    return Err(Stop::End);
                 }
                 return Ok(Val::from(0));
             }
@@ -7695,126 +7575,108 @@ fn odd_grandma_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 54 {
-            ctx.lines_as(
-                "Grandma",
-                args!["Lullabye...", "Say goodnight...", "Hush little baby...", "Go to sleeeeep~"],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("What are you doing?:Um, I don't see a baby...")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Grandma",
-                        args![
-                            "Oh? My baby won't stop",
-                            "crying and can't seem",
-                            "to sleep. She needs to",
-                            "rest, so I can go to work.",
-                            "The house is so messy,",
-                            "and the boss is unhappy..."
-                        ],
-                    )?;
-                    ctx.var("kielhyrequest").set(Val::from(56))?;
-                    ctx.next()?;
-                    let choice = runtime::select_values(ctx, &[Val::from("Um, I don't see a baby...")])?;
-                    ctx.var("@menu").set(choice)?;
-                    ctx.lines_as(
-                        "Grandma",
-                        args![
-                            "What, she's right--",
-                            "Well. Darling, what",
-                            "are you doing? Don't",
-                            "misbehave in front of",
-                            "our friend! Shhh, be",
-                            "good, my little girl."
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Grandma",
-                        args![
-                            "What are you...?",
-                            "Oh, look at that.",
-                            "You made my little",
-                            "darling cry! Shhh,",
-                            "hush, little ^0000FFAllysia^000000.",
-                            "Go to sleeeeeeep~"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("kielhyrequest").get()? == 54 {
+        ctx.lines_as(
+            "Grandma",
+            args!["Lullabye...", "Say goodnight...", "Hush little baby...", "Go to sleeeeep~"],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("What are you doing?:Um, I don't see a baby...")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            if (ctx.var("kielhyrequest").get()?.number()? >= 56 && ctx.var("kielhyrequest").get()?.number()? < 60) {
+            if matched1 {
                 ctx.lines_as(
                     "Grandma",
                     args![
-                        "Allysia...?!",
-                        "Allysia, where did",
-                        "you go? You were",
-                        "supposed to come",
-                        "home a while ago!"
+                        "Oh? My baby won't stop",
+                        "crying and can't seem",
+                        "to sleep. She needs to",
+                        "rest, so I can go to work.",
+                        "The house is so messy,",
+                        "and the boss is unhappy..."
                     ],
                 )?;
-                if ctx.call(Function::CountItem, vec![Val::from(7500)])?.number()? < 1 {
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Allysia? Isn't she...")])?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.call(Function::Cutin, vec![Val::from("kh_ellisia_port"), Val::from(1)])?;
-                            ctx.lines(args!["^3355FFYou show Allysia's", "portrait to the old woman.^000000"])?;
-                            ctx.next()?;
-                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                            ctx.lines_as(
-                                "Grandma",
-                                args![
-                                    "Oh, do you know",
-                                    "Allysia? She's been",
-                                    "missing! She left home",
-                                    "yesterday and hasn't",
-                                    "come back! C-can you",
-                                    "tell me where she is?!"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
+                ctx.var("kielhyrequest").set(Val::from(56))?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("Um, I don't see a baby...")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as(
+                    "Grandma",
+                    args![
+                        "What, she's right--",
+                        "Well. Darling, what",
+                        "are you doing? Don't",
+                        "misbehave in front of",
+                        "our friend! Shhh, be",
+                        "good, my little girl."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Grandma",
+                    args![
+                        "What are you...?",
+                        "Oh, look at that.",
+                        "You made my little",
+                        "darling cry! Shhh,",
+                        "hush, little ^0000FFAllysia^000000.",
+                        "Go to sleeeeeeep~"
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        }
+    } else if (ctx.var("kielhyrequest").get()?.number()? >= 56 && ctx.var("kielhyrequest").get()?.number()? < 60) {
+        ctx.lines_as(
+            "Grandma",
+            args![
+                "Allysia...?!",
+                "Allysia, where did",
+                "you go? You were",
+                "supposed to come",
+                "home a while ago!"
+            ],
+        )?;
+        if ctx.call(Function::CountItem, vec![Val::from(7500)])?.number()? < 1 {
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.next()?;
+            'b2: {
+                let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Allysia? Isn't she...")])?);
+                let mut matched2 = false;
+                let no_case2 = !subject2.loosely_equals(&Val::from(1));
+                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                    matched2 = true;
                 }
-            } else {
-                if ctx.var("kielhyrequest").get()?.number()? >= 60 {
+                if matched2 {
+                    ctx.call(Function::Cutin, vec![Val::from("kh_ellisia_port"), Val::from(1)])?;
+                    ctx.lines(args!["^3355FFYou show Allysia's", "portrait to the old woman.^000000"])?;
+                    ctx.next()?;
+                    ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                     ctx.lines_as(
                         "Grandma",
                         args![
-                            "Don't worry, Allysia...",
-                            "Mommy will always be",
-                            "here for you. There's no",
-                            "need to be sad..."
+                            "Oh, do you know",
+                            "Allysia? She's been",
+                            "missing! She left home",
+                            "yesterday and hasn't",
+                            "come back! C-can you",
+                            "tell me where she is?!"
                         ],
                     )?;
                     ctx.close_window()?;
@@ -7822,6 +7684,18 @@ fn odd_grandma_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 }
             }
         }
+    } else if ctx.var("kielhyrequest").get()?.number()? >= 60 {
+        ctx.lines_as(
+            "Grandma",
+            args![
+                "Don't worry, Allysia...",
+                "Mommy will always be",
+                "here for you. There's no",
+                "need to be sad..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -7838,243 +7712,235 @@ fn old_lady_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 56 {
-            if ctx.call(Function::CheckWeight, vec![Val::from(7498), Val::from(1)])? == 0 {
-                ctx.lines(args![
-                    "^3355FFJust a second...",
-                    "You're carrying too",
-                    "many items with you",
-                    "right now, so you'll",
-                    "need to free up more",
-                    "Inventory space first...^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
+    } else if ctx.var("kielhyrequest").get()? == 56 {
+        if ctx.call(Function::CheckWeight, vec![Val::from(7498), Val::from(1)])? == 0 {
+            ctx.lines(args![
+                "^3355FFJust a second...",
+                "You're carrying too",
+                "many items with you",
+                "right now, so you'll",
+                "need to free up more",
+                "Inventory space first...^000000"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Old Lady",
+            args![
+                "Goodness, I hate this",
+                "weather! Reminds me",
+                "of how old I've gotten!",
+                "It chills my bones, it does!"
+            ],
+        )?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("......:Do you know that grandma?")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-            ctx.lines_as(
-                "Old Lady",
-                args![
-                    "Goodness, I hate this",
-                    "weather! Reminds me",
-                    "of how old I've gotten!",
-                    "It chills my bones, it does!"
-                ],
-            )?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("......:Do you know that grandma?")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "Damn it! If only I didn't",
-                            "have all those adventures",
-                            "in my youth! Then maybe",
-                            "I wouldn't suffer so in",
-                            "my advanced age!"
-                        ],
-                    )?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "Oh... Yes. She was",
-                            "the mother of my best",
-                            "friend, ^3355FFAllysia^000000. Ever since",
-                            "she commited suicide, things",
-                            "haven't been the same. Her",
-                            "mother lost her sanity..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    let choice = runtime::select_values(ctx, &[Val::from("Was ^3355FFAllysia^000000...?")])?;
-                    ctx.var("@menu").set(choice)?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "Oh, Allysia was such",
-                            "a beautiful girl. So many",
-                            "men wanted her, especially",
-                            "that dashing James Rosimier.",
-                            "I remember hearing that they",
-                            "were going to get married..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "I was so happy for her!",
-                            "But then, all of a sudden,",
-                            "she killed herself. Well,",
-                            "that's what they all say.",
-                            "Even today, I'm still not",
-                            "sure what happened."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    let choice = runtime::select_values(ctx, &[Val::from("Wait, who's James Rosimier?")])?;
-                    ctx.var("@menu").set(choice)?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "Oh, James belonged to",
-                            "one of the oldest and richest",
-                            "families in Juno. Everything",
-                            "was going great for them, but",
-                            "some time after Allysia died,",
-                            "the family went bankrupt."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "The city manages their",
-                            "old residence now. For",
-                            "some reason, they decided",
-                            "to entrust me with the master",
-                            "key to the Rosimier Mansion."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    let choice = runtime::select_values(ctx, &[Val::from("May I borrow the Master Key?")])?;
-                    ctx.var("@menu").set(choice)?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "Well, I'm really not",
-                            "supposed to give it to just",
-                            "anyone, but I can tell that",
-                            "you're working with Allysia's",
-                            "best interests at heart."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "However, you've got to",
-                            "make sure that you return",
-                            "it to me before the people",
-                            "from City Hall ask me for it.",
-                            "Alright then, I hope you find",
-                            "what you're looking for."
-                        ],
-                    )?;
-                    ctx.call(Function::GetItem, vec![Val::from(7498), Val::from(1)])?;
-                    ctx.var("kielhyrequest").set(Val::from(58))?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-            }
-        } else {
-            if ((((ctx.var("kielhyrequest").get()? == 58 && ctx.call(Function::CountItem, vec![Val::from(7499)])?.number()? < 1)
-                || ctx.call(Function::CountItem, vec![Val::from(7500)])?.number()? < 1)
-                || ctx.call(Function::CountItem, vec![Val::from(7501)])?.number()? < 1)
-                || ctx.call(Function::CountItem, vec![Val::from(7502)])?.number()? < 1)
-            {
+            if matched1 {
                 ctx.lines_as(
                     "Old Lady",
                     args![
-                        "Please hurry and find",
-                        "whatever you're searching",
-                        "for in the Rosimier Mansion.",
-                        "I might get in trouble if",
-                        "the people from City Hall",
-                        "come and ask me for the key..."
+                        "Damn it! If only I didn't",
+                        "have all those adventures",
+                        "in my youth! Then maybe",
+                        "I wouldn't suffer so in",
+                        "my advanced age!"
                     ],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
-            } else {
-                if ((((ctx.var("kielhyrequest").get()? == 58 && ctx.call(Function::CountItem, vec![Val::from(7499)])? == 1)
-                    && ctx.call(Function::CountItem, vec![Val::from(7500)])? == 1)
-                    && ctx.call(Function::CountItem, vec![Val::from(7501)])? == 1)
-                    && ctx.call(Function::CountItem, vec![Val::from(7502)])? == 1)
-                {
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "Oh, you're finished",
-                            "searching the mansion?",
-                            "Depressing, isn't it?",
-                            "The creditors basically",
-                            "ransacked everything",
-                            "a very long time ago."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    let choice = runtime::select_values(ctx, &[Val::from("Why did ^3355FFAllysia^000000...?")])?;
-                    ctx.var("@menu").set(choice)?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "Well, I know that James",
-                            "and Allysia were in love,",
-                            "and he promised to marry",
-                            "her. Now, supposedly his",
-                            "family already betrothed",
-                            "him to another woman."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "Time went by, and he",
-                            "was forced to marry his",
-                            "fiancee. Allysia was pretty",
-                            "devastated. I think maybe",
-                            "that's what she... you know..."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "Listen, if you want to learn",
-                            "more about what happened,",
-                            "then I think you should talk",
-                            "to the ^3355FFfisherman that lives^000000",
-                            "^3355FFsouth of the Kiel Hyre Academy.^000000"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Old Lady",
-                        args![
-                            "He's the one that found",
-                            "Allysia's body in the river,",
-                            "so he might have a better",
-                            "idea of what had happened."
-                        ],
-                    )?;
-                    ctx.call(Function::DelItem, vec![Val::from(7498), Val::from(1)])?;
-                    ctx.var("kielhyrequest").set(Val::from(60))?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                } else {
-                    if ctx.var("kielhyrequest").get()?.number()? >= 60 {
-                        ctx.lines_as("Old Lady", args!["Yep, Rain's coming.", "Can feel it in my bones."])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines_as(
+                    "Old Lady",
+                    args![
+                        "Oh... Yes. She was",
+                        "the mother of my best",
+                        "friend, ^3355FFAllysia^000000. Ever since",
+                        "she commited suicide, things",
+                        "haven't been the same. Her",
+                        "mother lost her sanity..."
+                    ],
+                )?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("Was ^3355FFAllysia^000000...?")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as(
+                    "Old Lady",
+                    args![
+                        "Oh, Allysia was such",
+                        "a beautiful girl. So many",
+                        "men wanted her, especially",
+                        "that dashing James Rosimier.",
+                        "I remember hearing that they",
+                        "were going to get married..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Old Lady",
+                    args![
+                        "I was so happy for her!",
+                        "But then, all of a sudden,",
+                        "she killed herself. Well,",
+                        "that's what they all say.",
+                        "Even today, I'm still not",
+                        "sure what happened."
+                    ],
+                )?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("Wait, who's James Rosimier?")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as(
+                    "Old Lady",
+                    args![
+                        "Oh, James belonged to",
+                        "one of the oldest and richest",
+                        "families in Juno. Everything",
+                        "was going great for them, but",
+                        "some time after Allysia died,",
+                        "the family went bankrupt."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Old Lady",
+                    args![
+                        "The city manages their",
+                        "old residence now. For",
+                        "some reason, they decided",
+                        "to entrust me with the master",
+                        "key to the Rosimier Mansion."
+                    ],
+                )?;
+                ctx.next()?;
+                let choice = runtime::select_values(ctx, &[Val::from("May I borrow the Master Key?")])?;
+                ctx.var("@menu").set(choice)?;
+                ctx.lines_as(
+                    "Old Lady",
+                    args![
+                        "Well, I'm really not",
+                        "supposed to give it to just",
+                        "anyone, but I can tell that",
+                        "you're working with Allysia's",
+                        "best interests at heart."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Old Lady",
+                    args![
+                        "However, you've got to",
+                        "make sure that you return",
+                        "it to me before the people",
+                        "from City Hall ask me for it.",
+                        "Alright then, I hope you find",
+                        "what you're looking for."
+                    ],
+                )?;
+                ctx.call(Function::GetItem, vec![Val::from(7498), Val::from(1)])?;
+                ctx.var("kielhyrequest").set(Val::from(58))?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
+    } else if ((((ctx.var("kielhyrequest").get()? == 58 && ctx.call(Function::CountItem, vec![Val::from(7499)])?.number()? < 1)
+        || ctx.call(Function::CountItem, vec![Val::from(7500)])?.number()? < 1)
+        || ctx.call(Function::CountItem, vec![Val::from(7501)])?.number()? < 1)
+        || ctx.call(Function::CountItem, vec![Val::from(7502)])?.number()? < 1)
+    {
+        ctx.lines_as(
+            "Old Lady",
+            args![
+                "Please hurry and find",
+                "whatever you're searching",
+                "for in the Rosimier Mansion.",
+                "I might get in trouble if",
+                "the people from City Hall",
+                "come and ask me for the key..."
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ((((ctx.var("kielhyrequest").get()? == 58 && ctx.call(Function::CountItem, vec![Val::from(7499)])? == 1)
+        && ctx.call(Function::CountItem, vec![Val::from(7500)])? == 1)
+        && ctx.call(Function::CountItem, vec![Val::from(7501)])? == 1)
+        && ctx.call(Function::CountItem, vec![Val::from(7502)])? == 1)
+    {
+        ctx.lines_as(
+            "Old Lady",
+            args![
+                "Oh, you're finished",
+                "searching the mansion?",
+                "Depressing, isn't it?",
+                "The creditors basically",
+                "ransacked everything",
+                "a very long time ago."
+            ],
+        )?;
+        ctx.next()?;
+        let choice = runtime::select_values(ctx, &[Val::from("Why did ^3355FFAllysia^000000...?")])?;
+        ctx.var("@menu").set(choice)?;
+        ctx.lines_as(
+            "Old Lady",
+            args![
+                "Well, I know that James",
+                "and Allysia were in love,",
+                "and he promised to marry",
+                "her. Now, supposedly his",
+                "family already betrothed",
+                "him to another woman."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Old Lady",
+            args![
+                "Time went by, and he",
+                "was forced to marry his",
+                "fiancee. Allysia was pretty",
+                "devastated. I think maybe",
+                "that's what she... you know..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Old Lady",
+            args![
+                "Listen, if you want to learn",
+                "more about what happened,",
+                "then I think you should talk",
+                "to the ^3355FFfisherman that lives^000000",
+                "^3355FFsouth of the Kiel Hyre Academy.^000000"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Old Lady",
+            args![
+                "He's the one that found",
+                "Allysia's body in the river,",
+                "so he might have a better",
+                "idea of what had happened."
+            ],
+        )?;
+        ctx.call(Function::DelItem, vec![Val::from(7498), Val::from(1)])?;
+        ctx.var("kielhyrequest").set(Val::from(60))?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if ctx.var("kielhyrequest").get()?.number()? >= 60 {
+        ctx.lines_as("Old Lady", args!["Yep, Rain's coming.", "Can feel it in my bones."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -8141,29 +8007,27 @@ fn table_khr2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines(args!["^3355FFThere's nothing here", "of importance to you.^000000"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()?.number()? < 60 {
-            if ctx.call(Function::CountItem, vec![Val::from(7499)])?.number()? < 1 {
-                ctx.call(Function::Cutin, vec![Val::from("kh_family_port"), Val::from(1)])?;
-                ctx.lines(args![
-                    "^3355FFYou examine the table,",
-                    "and find a framed portrait",
-                    "inside the open drawer.^000000"
-                ])?;
-                ctx.call(Function::GetItem, vec![Val::from(7499), Val::from(1)])?;
-            } else {
-                ctx.lines(args!["^3355FFThe open drawer of", "this desk is now empty.^000000"])?;
-            }
-        } else {
+    } else if ctx.var("kielhyrequest").get()?.number()? < 60 {
+        if ctx.call(Function::CountItem, vec![Val::from(7499)])?.number()? < 1 {
+            ctx.call(Function::Cutin, vec![Val::from("kh_family_port"), Val::from(1)])?;
             ctx.lines(args![
-                "^3355FFThis was the desk in",
-                "which you obtained the",
-                "Rosimier family portrait.",
-                "Its drawers are empty now.^000000"
+                "^3355FFYou examine the table,",
+                "and find a framed portrait",
+                "inside the open drawer.^000000"
             ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
+            ctx.call(Function::GetItem, vec![Val::from(7499), Val::from(1)])?;
+        } else {
+            ctx.lines(args!["^3355FFThe open drawer of", "this desk is now empty.^000000"])?;
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFThis was the desk in",
+            "which you obtained the",
+            "Rosimier family portrait.",
+            "Its drawers are empty now.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     ctx.close_window()?;
     ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
@@ -8191,92 +8055,90 @@ fn shelf_khr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines(args!["^3355FFThere's nothing here", "of importance to you.^000000"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()?.number()? < 60 {
-            if ctx.call(Function::CountItem, vec![Val::from(7500)])?.number()? < 1 {
-                ctx.lines(args![
-                    "^3355FFThere are locked",
-                    "boxes on these bookshelves.",
-                    "Perhaps if you used this",
-                    "mansions's Master Key, you",
-                    "might be able to open them.^000000"
-                ])?;
-                ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Use Key:Pass")])?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args!["^3355FFWhich box do you", "want to try to open?^000000"])?;
-                        ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("First Box:Second Box")])?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.lines(args![
-                                    "^3355FFYou use the Master Key to",
-                                    "unlock the box, and obtain",
-                                    "a portait of a woman that",
-                                    "looks just like Kiel Hyre's",
-                                    "assistant, Allysia.^000000"
-                                ])?;
-                                ctx.next()?;
-                                ctx.call(Function::Cutin, vec![Val::from("kh_ellisia_port"), Val::from(2)])?;
-                                ctx.lines(args![
-                                    "^3355FFThe message, ''To my love,",
-                                    "Allysia. From James.'' is",
-                                    "written on the back.^000000"
-                                ])?;
-                                ctx.call(Function::GetItem, vec![Val::from(7500), Val::from(1)])?;
-                                ctx.close_window()?;
-                                ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes("^3355FFThis box is empty.^000000")?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+    } else if ctx.var("kielhyrequest").get()?.number()? < 60 {
+        if ctx.call(Function::CountItem, vec![Val::from(7500)])?.number()? < 1 {
+            ctx.lines(args![
+                "^3355FFThere are locked",
+                "boxes on these bookshelves.",
+                "Perhaps if you used this",
+                "mansions's Master Key, you",
+                "might be able to open them.^000000"
+            ])?;
+            ctx.next()?;
+            'b1: {
+                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Use Key:Pass")])?);
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.lines(args!["^3355FFWhich box do you", "want to try to open?^000000"])?;
+                    ctx.next()?;
+                    'b2: {
+                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("First Box:Second Box")])?);
+                        let mut matched2 = false;
+                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.lines(args![
+                                "^3355FFYou use the Master Key to",
+                                "unlock the box, and obtain",
+                                "a portait of a woman that",
+                                "looks just like Kiel Hyre's",
+                                "assistant, Allysia.^000000"
+                            ])?;
+                            ctx.next()?;
+                            ctx.call(Function::Cutin, vec![Val::from("kh_ellisia_port"), Val::from(2)])?;
+                            ctx.lines(args![
+                                "^3355FFThe message, ''To my love,",
+                                "Allysia. From James.'' is",
+                                "written on the back.^000000"
+                            ])?;
+                            ctx.call(Function::GetItem, vec![Val::from(7500), Val::from(1)])?;
+                            ctx.close_window()?;
+                            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+                            return Err(Stop::End);
+                        }
+                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                            matched2 = true;
+                        }
+                        if matched2 {
+                            ctx.mes("^3355FFThis box is empty.^000000")?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.mes("^3355FFThis box is empty.^000000")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
                 }
-            } else {
-                ctx.lines(args![
-                    "^3355FFYou've found a woman's",
-                    "portrait in one of the",
-                    "boxes on this shelf.^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    ctx.mes("^3355FFThis box is empty.^000000")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
             }
         } else {
             ctx.lines(args![
                 "^3355FFYou've found a woman's",
                 "portrait in one of the",
-                "boxes on this shelf.",
-                "This box is now empty.^000000"
+                "boxes on this shelf.^000000"
             ])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFYou've found a woman's",
+            "portrait in one of the",
+            "boxes on this shelf.",
+            "This box is now empty.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -8302,85 +8164,83 @@ fn desk_khr3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.mes("^3355FFIt's just a desk.^000000")?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()?.number()? < 60 {
-            ctx.lines(args!["^3355FFThe desk has", "three drawers.^000000"])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("First Drawer:Second Drawer:Third Drawer:Cancel")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3))
-                    && !subject1.loosely_equals(&Val::from(4));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes("^3355FFThe first drawer is locked.^000000")?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    if ctx.call(Function::CountItem, vec![Val::from(7501)])?.number()? < 1 {
-                        ctx.lines(args![
-                            "^3355FFThere is a letter inside",
-                            "this second drawer. It",
-                            "was sent by a person",
-                            "with the initials, K.H.,",
-                            "and addressed to Allysia.^000000"
-                        ])?;
-                        ctx.call(Function::GetItem, vec![Val::from(7501), Val::from(1)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    } else {
-                        ctx.mes("^3355FFThis drawer is now empty.^000000")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+    } else if ctx.var("kielhyrequest").get()?.number()? < 60 {
+        ctx.lines(args!["^3355FFThe desk has", "three drawers.^000000"])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(
+                ctx,
+                &[Val::from("First Drawer:Second Drawer:Third Drawer:Cancel")],
+            )?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                && !subject1.loosely_equals(&Val::from(2))
+                && !subject1.loosely_equals(&Val::from(3))
+                && !subject1.loosely_equals(&Val::from(4));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.mes("^3355FFThe first drawer is locked.^000000")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                if ctx.call(Function::CountItem, vec![Val::from(7501)])?.number()? < 1 {
                     ctx.lines(args![
-                        "^3355FFThere is a small note",
-                        "inside this third drawer.",
-                        "It's written by James, and",
-                        "mentions that he wants to",
-                        "marry Allysia, and that she",
-                        "received an engagement ring.^000000"
+                        "^3355FFThere is a letter inside",
+                        "this second drawer. It",
+                        "was sent by a person",
+                        "with the initials, K.H.,",
+                        "and addressed to Allysia.^000000"
                     ])?;
+                    ctx.call(Function::GetItem, vec![Val::from(7501), Val::from(1)])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args!["......", ".........", "............"])?;
+                } else {
+                    ctx.mes("^3355FFThis drawer is now empty.^000000")?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             }
-        } else {
-            ctx.lines(args![
-                "^3355FFThis is the desk where",
-                "you found a letter written",
-                "by K.H., and a note scribbled",
-                "by James Rosimier. Both of",
-                "these are addressed to",
-                "the same woman, Allysia.^000000"
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
+            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFThere is a small note",
+                    "inside this third drawer.",
+                    "It's written by James, and",
+                    "mentions that he wants to",
+                    "marry Allysia, and that she",
+                    "received an engagement ring.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args!["......", ".........", "............"])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFThis is the desk where",
+            "you found a letter written",
+            "by K.H., and a note scribbled",
+            "by James Rosimier. Both of",
+            "these are addressed to",
+            "the same woman, Allysia.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -8410,28 +8270,18 @@ fn bookshelf_khr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()?.number()? < 60 {
-            if ctx.call(Function::CountItem, vec![Val::from(7502)])?.number()? < 1 {
-                ctx.lines(args![
-                    "^3355FFYou encounter a dusty",
-                    "bookshelf filled with",
-                    "numerous books. You",
-                    "find a folded note between",
-                    "the books as you examine them.^000000"
-                ])?;
-                ctx.call(Function::GetItem, vec![Val::from(7502), Val::from(1)])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.lines(args![
-                    "^3355FFYou encounter a dusty",
-                    "bookshelf filled with",
-                    "numerous books.^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+    } else if ctx.var("kielhyrequest").get()?.number()? < 60 {
+        if ctx.call(Function::CountItem, vec![Val::from(7502)])?.number()? < 1 {
+            ctx.lines(args![
+                "^3355FFYou encounter a dusty",
+                "bookshelf filled with",
+                "numerous books. You",
+                "find a folded note between",
+                "the books as you examine them.^000000"
+            ])?;
+            ctx.call(Function::GetItem, vec![Val::from(7502), Val::from(1)])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
             ctx.lines(args![
                 "^3355FFYou encounter a dusty",
@@ -8441,6 +8291,14 @@ fn bookshelf_khr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+    } else {
+        ctx.lines(args![
+            "^3355FFYou encounter a dusty",
+            "bookshelf filled with",
+            "numerous books.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
 }
 
@@ -8458,52 +8316,50 @@ fn bed_khr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()?.number()? < 60 {
-            ctx.lines(args![
-                "^3355FFYou found a well made",
-                "bed that has collected",
-                "a thick layer of dust",
-                "after years of disuse.^000000"
-            ])?;
-            ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Check Bedsheets:Check Under Bed")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        "^3355FFYou brush the bed's",
-                        "surface with your hand,",
-                        "causing a cloud of nasty",
-                        "dust to irritate your nose",
-                        "and throat. Eww, yucky!^000000"
-                    ])?;
-                    ctx.call(Function::PercentHeal, vec![Val::from(-10), Val::from(0)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines(args![
-                        "^3355FFYou search underneath",
-                        "the bed, and find an empty",
-                        "engagement ring box.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+    } else if ctx.var("kielhyrequest").get()?.number()? < 60 {
+        ctx.lines(args![
+            "^3355FFYou found a well made",
+            "bed that has collected",
+            "a thick layer of dust",
+            "after years of disuse.^000000"
+        ])?;
+        ctx.next()?;
+        'b1: {
+            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Check Bedsheets:Check Under Bed")])?);
+            let mut matched1 = false;
+            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
+            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                matched1 = true;
             }
-        } else {
-            ctx.mes("^3355FFThis is a dirty bed.^000000")?;
-            ctx.close_window()?;
-            return Err(Stop::End);
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFYou brush the bed's",
+                    "surface with your hand,",
+                    "causing a cloud of nasty",
+                    "dust to irritate your nose",
+                    "and throat. Eww, yucky!^000000"
+                ])?;
+                ctx.call(Function::PercentHeal, vec![Val::from(-10), Val::from(0)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                matched1 = true;
+            }
+            if matched1 {
+                ctx.lines(args![
+                    "^3355FFYou search underneath",
+                    "the bed, and find an empty",
+                    "engagement ring box.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
         }
+    } else {
+        ctx.mes("^3355FFThis is a dirty bed.^000000")?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -8527,144 +8383,140 @@ fn old_fisherman_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 60 {
+    } else if ctx.var("kielhyrequest").get()? == 60 {
+        ctx.lines_as(
+            "Fisherman",
+            args![
+                "Eh? You want something?",
+                "Heh, youngsters! I know",
+                "how much you love handouts,",
+                "but you're not getting any.",
+                "Now, if you bring me some",
+                "Raw Fish, I'd be more friendly~"
+            ],
+        )?;
+        if ctx.call(Function::CountItem, vec![Val::from(544)])?.number()? >= 10 {
+            ctx.next()?;
             ctx.lines_as(
                 "Fisherman",
                 args![
-                    "Eh? You want something?",
-                    "Heh, youngsters! I know",
-                    "how much you love handouts,",
-                    "but you're not getting any.",
-                    "Now, if you bring me some",
-                    "Raw Fish, I'd be more friendly~"
+                    "Oh, is all this fish",
+                    "for me? Heh, how very",
+                    "generous of you. If you're",
+                    "going to be so kind, then",
+                    "I suppose I have to repay",
+                    "the favor. Ask me anything~"
                 ],
             )?;
-            if ctx.call(Function::CountItem, vec![Val::from(544)])?.number()? >= 10 {
-                ctx.next()?;
-                ctx.lines_as(
-                    "Fisherman",
-                    args![
-                        "Oh, is all this fish",
-                        "for me? Heh, how very",
-                        "generous of you. If you're",
-                        "going to be so kind, then",
-                        "I suppose I have to repay",
-                        "the favor. Ask me anything~"
-                    ],
-                )?;
-                ctx.next()?;
-                let choice = runtime::select_values(ctx, &[Val::from("30 years ago, a woman killed herself...")])?;
-                ctx.var("@menu").set(choice)?;
-                ctx.lines_as(
-                    "Fisherman",
-                    args![
-                        "Oh? Ohh. Oh yeah.",
-                        "I remember that. Yeah.",
-                        "it was August 20th, my",
-                        "wife's birthday. That day,",
-                        "instead of catching fish,",
-                        "I caught a dead woman."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Fisherman",
-                    args![
-                        "Of course, I reported it",
-                        "to the Juno Police!  They told",
-                        "me she killed herself since",
-                        "she was betrayed by her lover,",
-                        "who also happened to be her",
-                        "employer. Really tragic stuff."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Fisherman",
-                    args![
-                        "Anyway, when they were",
-                        "moving her body out of the",
-                        "river, her hand dropped",
-                        "some ring. I picked it up,",
-                        "hoping to sell it later for",
-                        "some zeny. I know, I know..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Fisherman",
-                    args![
-                        "I was pretty lucky the",
-                        "police didn't see me take",
-                        "it. Later that day, some guy",
-                        "came up to me and offered",
-                        "me a lot of money for it.",
-                        "I guess it was my lucky day!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Fisherman",
-                    args![
-                        "I found out later that he was",
-                        "some mechanical repairman--",
-                        "something. He sold everything",
-                        "to buy that ring, so I guess",
-                        "he wanted it desperately.",
-                        "Then he just dissapeared."
-                    ],
-                )?;
-                ctx.next()?;
-                let choice = runtime::select_values(ctx, &[Val::from("Do you remember his name?")])?;
-                ctx.var("@menu").set(choice)?;
-                ctx.lines_as(
-                    "Fisherman",
-                    args![
-                        "His name...?",
-                        "It was something like...",
-                        "Heil? Hyre? Anyway, it",
-                        "was a long time ago. Oh,",
-                        "his old house is still around."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Fisherman",
-                    args![
-                        "If you're going to be",
-                        "that curious, you might",
-                        "as well check it out.",
-                        "Let's see, he lived in",
-                        "a hut near the northeast",
-                        "forest guard camp."
-                    ],
-                )?;
-                ctx.call(Function::DelItem, vec![Val::from(544), Val::from(10)])?;
-                ctx.var("kielhyrequest").set(Val::from(62))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.next()?;
+            let choice = runtime::select_values(ctx, &[Val::from("30 years ago, a woman killed herself...")])?;
+            ctx.var("@menu").set(choice)?;
+            ctx.lines_as(
+                "Fisherman",
+                args![
+                    "Oh? Ohh. Oh yeah.",
+                    "I remember that. Yeah.",
+                    "it was August 20th, my",
+                    "wife's birthday. That day,",
+                    "instead of catching fish,",
+                    "I caught a dead woman."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Fisherman",
+                args![
+                    "Of course, I reported it",
+                    "to the Juno Police!  They told",
+                    "me she killed herself since",
+                    "she was betrayed by her lover,",
+                    "who also happened to be her",
+                    "employer. Really tragic stuff."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Fisherman",
+                args![
+                    "Anyway, when they were",
+                    "moving her body out of the",
+                    "river, her hand dropped",
+                    "some ring. I picked it up,",
+                    "hoping to sell it later for",
+                    "some zeny. I know, I know..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Fisherman",
+                args![
+                    "I was pretty lucky the",
+                    "police didn't see me take",
+                    "it. Later that day, some guy",
+                    "came up to me and offered",
+                    "me a lot of money for it.",
+                    "I guess it was my lucky day!"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Fisherman",
+                args![
+                    "I found out later that he was",
+                    "some mechanical repairman--",
+                    "something. He sold everything",
+                    "to buy that ring, so I guess",
+                    "he wanted it desperately.",
+                    "Then he just dissapeared."
+                ],
+            )?;
+            ctx.next()?;
+            let choice = runtime::select_values(ctx, &[Val::from("Do you remember his name?")])?;
+            ctx.var("@menu").set(choice)?;
+            ctx.lines_as(
+                "Fisherman",
+                args![
+                    "His name...?",
+                    "It was something like...",
+                    "Heil? Hyre? Anyway, it",
+                    "was a long time ago. Oh,",
+                    "his old house is still around."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Fisherman",
+                args![
+                    "If you're going to be",
+                    "that curious, you might",
+                    "as well check it out.",
+                    "Let's see, he lived in",
+                    "a hut near the northeast",
+                    "forest guard camp."
+                ],
+            )?;
+            ctx.call(Function::DelItem, vec![Val::from(544), Val::from(10)])?;
+            ctx.var("kielhyrequest").set(Val::from(62))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         } else {
-            if ctx.var("kielhyrequest").get()?.number()? >= 62 {
-                ctx.lines_as(
-                    "Fisherman",
-                    args![
-                        "Don't you remember",
-                        "what I told you? That",
-                        "guy lived in a hut near",
-                        "the northeast forest",
-                        "guard camp! Why don't",
-                        "you check that place out?"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+    } else if ctx.var("kielhyrequest").get()?.number()? >= 62 {
+        ctx.lines_as(
+            "Fisherman",
+            args![
+                "Don't you remember",
+                "what I told you? That",
+                "guy lived in a hut near",
+                "the northeast forest",
+                "guard camp! Why don't",
+                "you check that place out?"
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -8690,36 +8542,34 @@ fn wooden_board_kh_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines(args!["^3355FFIt's a useless", "wooden board", "in the bushes.^000000"])?;
         ctx.close_window()?;
         return Err(Stop::End);
-    } else {
-        if ctx.var("kielhyrequest").get()? == 62 {
-            ctx.lines(args![
-                "^3355FFYou found a long",
-                "wooden board carved",
-                "with the initials, ''K.H.''^000000"
-            ])?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kyel_port"), Val::from(2)])?;
-            ctx.lines(args![
-                "^3355FFYou find a portrait of",
-                "a young man, that looks",
-                "like a younger version",
-                "of Kiel Hyre, in a broken",
-                "picture frame underneath",
-                "the old wooden board.^000000"
-            ])?;
-            ctx.call(Function::GetItem, vec![Val::from(7503), Val::from(1)])?;
-            ctx.var("kielhyrequest").set(Val::from(64))?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-            ctx.lines(args![
-                "^3355FFYou have enough",
-                "information by now,",
-                "so you should report",
-                "back to Mitchell.^000000"
-            ])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if ctx.var("kielhyrequest").get()? == 62 {
+        ctx.lines(args![
+            "^3355FFYou found a long",
+            "wooden board carved",
+            "with the initials, ''K.H.''^000000"
+        ])?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kyel_port"), Val::from(2)])?;
+        ctx.lines(args![
+            "^3355FFYou find a portrait of",
+            "a young man, that looks",
+            "like a younger version",
+            "of Kiel Hyre, in a broken",
+            "picture frame underneath",
+            "the old wooden board.^000000"
+        ])?;
+        ctx.call(Function::GetItem, vec![Val::from(7503), Val::from(1)])?;
+        ctx.var("kielhyrequest").set(Val::from(64))?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+        ctx.lines(args![
+            "^3355FFYou have enough",
+            "information by now,",
+            "so you should report",
+            "back to Mitchell.^000000"
+        ])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -8974,8 +8824,8 @@ fn big_door_bigdoorkhq1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         let (input, status) = runtime::input_text(ctx, None, None)?;
         l_khinput_s = input;
-        if l_khinput_s.clone() == "Black Keycard" {
-            if ctx.call(Function::CountItem, vec![Val::from(7506)])?.number()? >= 1 {
+        if l_khinput_s.clone() == "Black Keycard"
+            && ctx.call(Function::CountItem, vec![Val::from(7506)])?.number()? >= 1 {
                 ctx.lines(args![
                     "^3355FFYou insert the",
                     "Black Keycard into the",
@@ -8989,7 +8839,6 @@ fn big_door_bigdoorkhq1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-        }
         ctx.lines(args![
             "^3355FFYou try to push the",
             "door open with all",
@@ -9088,8 +8937,8 @@ fn big_door_bigdoorkhq2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         let (input, status) = runtime::input_text(ctx, None, None)?;
         l_khinput_s = input;
-        if l_khinput_s.clone() == "Toy Key" {
-            if ctx.call(Function::CountItem, vec![Val::from(7505)])?.number()? >= 1 {
+        if l_khinput_s.clone() == "Toy Key"
+            && ctx.call(Function::CountItem, vec![Val::from(7505)])?.number()? >= 1 {
                 ctx.lines(args![
                     "^3355FFYou insert the key into",
                     "the keyhole, and the door",
@@ -9103,7 +8952,6 @@ fn big_door_bigdoorkhq2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-        }
         ctx.lines(args![
             "^3355FFYou try to push the",
             "door open with all",
@@ -9206,8 +9054,8 @@ fn big_door_bigdoorkhq3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         let (input, status) = runtime::input_text(ctx, None, None)?;
         l_khinput_s = input;
-        if l_khinput_s.clone() == "Black Keycard" {
-            if ctx.call(Function::CountItem, vec![Val::from(7506)])?.number()? >= 1 {
+        if l_khinput_s.clone() == "Black Keycard"
+            && ctx.call(Function::CountItem, vec![Val::from(7506)])?.number()? >= 1 {
                 ctx.lines(args![
                     "^3355FFYou insert the",
                     "Black Keycard into the",
@@ -9221,7 +9069,6 @@ fn big_door_bigdoorkhq3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-        }
         ctx.lines(args![
             "^3355FFYou try to push the",
             "door open with all",
@@ -9324,8 +9171,8 @@ fn big_door_bigdoorkhq4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         let (input, status) = runtime::input_text(ctx, None, None)?;
         l_khinput_s = input;
-        if l_khinput_s.clone() == "Black Keycard" {
-            if ctx.call(Function::CountItem, vec![Val::from(7506)])?.number()? >= 2 {
+        if l_khinput_s.clone() == "Black Keycard"
+            && ctx.call(Function::CountItem, vec![Val::from(7506)])?.number()? >= 2 {
                 ctx.lines(args![
                     "^3355FFYou insert the",
                     "Black Keycard into the",
@@ -9339,7 +9186,6 @@ fn big_door_bigdoorkhq4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-        }
         ctx.lines(args![
             "^3355FFYou try to push the",
             "door open with all",
@@ -9609,183 +9455,177 @@ fn big_door_bigdoorkhq5_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.var("kielhyrequest").set(Val::from(86))?;
             }
             return Err(Stop::End);
-        } else {
-            if (ctx.var("kielhyrequest").get()?.number()? > 84 && ctx.var("kielhyrequest").get()?.number()? < 94) {
-                ctx.lines(args![
-                    "^3355FFYou apply some",
-                    "pressure to the door,",
-                    "and find that you can",
-                    "budge it slightly, but",
-                    "you can't fully open it.^000000"
-                ])?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^3355FFIf you wedged something",
-                    "into the gap between the",
-                    "door and its frame, and",
-                    "fully leveraged it, then you",
-                    "should be able to open it.^000000"
-                ])?;
-                ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Steel:Rusty Iron Piece:Solid Iron Piece:Iron Piece:Screw:Cancel")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4))
-                        && !subject1.loosely_equals(&Val::from(5))
-                        && !subject1.loosely_equals(&Val::from(6));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        l_khpryingitem_s = Val::from("Steel");
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        l_khpryingitem_s = Val::from("Rusty Iron Piece");
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        if ctx.call(Function::CountItem, vec![Val::from(7507)])?.number()? >= 1 {
-                            if ctx.var("kielhyrequest").get()?.number()? < 92 {
-                                ctx.lines(args![
-                                    "^3355FFYou insert one end of",
-                                    "a Solid Iron Piece into the",
-                                    "door's gap in a strenuous",
-                                    "effort to pry the door open",
-                                    "The gap widens a little bit,",
-                                    "but you break one of your",
-                                    "Solid Iron Pieces.^000000"
-                                ])?;
-                                ctx.call(Function::DelItem, vec![Val::from(7507), Val::from(1)])?;
-                                ctx.var("kielhyrequest").set((ctx.var("kielhyrequest").get()? + Val::from(2)))?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            } else {
-                                if ctx.var("kielhyrequest").get()? == 92 {
-                                    ctx.lines(args![
-                                        "^3355FFWith a mighty heave,",
-                                        "you pry a Solid Iron",
-                                        "Piece into the door jamb,",
-                                        "and fling the door wide open",
-                                        "Unable the withstand the",
-                                        "awesome force, this Solid",
-                                        "Iron Piece shatters into dust.^000000"
-                                    ])?;
-                                    ctx.call(Function::DelItem, vec![Val::from(7507), Val::from(1)])?;
-                                    ctx.var("kielhyrequest").set(Val::from(94))?;
-                                    ctx.close_window()?;
-                                    return Err(Stop::End);
-                                }
-                            }
-                        } else {
+        } else if (ctx.var("kielhyrequest").get()?.number()? > 84 && ctx.var("kielhyrequest").get()?.number()? < 94) {
+            ctx.lines(args![
+                "^3355FFYou apply some",
+                "pressure to the door,",
+                "and find that you can",
+                "budge it slightly, but",
+                "you can't fully open it.^000000"
+            ])?;
+            ctx.next()?;
+            ctx.lines(args![
+                "^3355FFIf you wedged something",
+                "into the gap between the",
+                "door and its frame, and",
+                "fully leveraged it, then you",
+                "should be able to open it.^000000"
+            ])?;
+            ctx.next()?;
+            'b1: {
+                let subject1 = Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Steel:Rusty Iron Piece:Solid Iron Piece:Iron Piece:Screw:Cancel")],
+                )?);
+                let mut matched1 = false;
+                let no_case1 = !subject1.loosely_equals(&Val::from(1))
+                    && !subject1.loosely_equals(&Val::from(2))
+                    && !subject1.loosely_equals(&Val::from(3))
+                    && !subject1.loosely_equals(&Val::from(4))
+                    && !subject1.loosely_equals(&Val::from(5))
+                    && !subject1.loosely_equals(&Val::from(6));
+                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    l_khpryingitem_s = Val::from("Steel");
+                    break 'b1;
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    l_khpryingitem_s = Val::from("Rusty Iron Piece");
+                    break 'b1;
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    if ctx.call(Function::CountItem, vec![Val::from(7507)])?.number()? >= 1 {
+                        if ctx.var("kielhyrequest").get()?.number()? < 92 {
                             ctx.lines(args![
-                                "^3355FFIf only you had a Solid",
-                                "Iron Piece you could use to",
-                                "pry open this door.^000000"
+                                "^3355FFYou insert one end of",
+                                "a Solid Iron Piece into the",
+                                "door's gap in a strenuous",
+                                "effort to pry the door open",
+                                "The gap widens a little bit,",
+                                "but you break one of your",
+                                "Solid Iron Pieces.^000000"
                             ])?;
+                            ctx.call(Function::DelItem, vec![Val::from(7507), Val::from(1)])?;
+                            ctx.var("kielhyrequest").set((ctx.var("kielhyrequest").get()? + Val::from(2)))?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if ctx.var("kielhyrequest").get()? == 92 {
+                            ctx.lines(args![
+                                "^3355FFWith a mighty heave,",
+                                "you pry a Solid Iron",
+                                "Piece into the door jamb,",
+                                "and fling the door wide open",
+                                "Unable the withstand the",
+                                "awesome force, this Solid",
+                                "Iron Piece shatters into dust.^000000"
+                            ])?;
+                            ctx.call(Function::DelItem, vec![Val::from(7507), Val::from(1)])?;
+                            ctx.var("kielhyrequest").set(Val::from(94))?;
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        l_khpryingitem_s = Val::from("Iron Piece");
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        l_khpryingitem_s = Val::from("Screw");
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    } else {
                         ctx.lines(args![
-                            "^3355FFLet's look for something",
-                            "heavy we can use to pry",
-                            "open this door.^000000"
+                            "^3355FFIf only you had a Solid",
+                            "Iron Piece you could use to",
+                            "pry open this door.^000000"
                         ])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
                 }
-                ctx.lines(args![
-                    ((Val::from("^3355FFThis ") + l_khpryingitem_s.clone()) + Val::from(" is far")),
-                    "to weak for what you're using it for",
-                    "and breaks.^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
-                if (ctx.var("kielhyrequest").get()?.number()? >= 94 && ctx.var("kielhyrequest").get()?.number()? <= 104) {
-                    if ctx.var(".khdoor5opened").get()? == 0 {
-                        ctx.lines(args![
-                            "^3355FFThe large door",
-                            "is wide open, and.",
-                            "you may now enter.^000000"
-                        ])?;
-                        ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.close_window()?;
-                                ctx.call(Function::DoNpcEvent, vec![Val::from("Big_Door_5_Warp::OnEnable")])?;
-                                ctx.call(Function::EnableNpc, vec![Val::from("Big_Door_5_Warp")])?;
-                                ctx.var(".khdoor5opened").set(Val::from(1))?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.lines(args![
-                                    "^3355FFWho knows what is on the",
-                                    "other side of this door. Let's",
-                                    "think about it before barging in..^000000"
-                                ])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                        }
-                    } else {
-                        ctx.mes("^3355FFThe door is open.^000000")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                } else {
+                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    l_khpryingitem_s = Val::from("Iron Piece");
+                    break 'b1;
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(5)) {
+                    matched1 = true;
+                }
+                if matched1 {
+                    l_khpryingitem_s = Val::from("Screw");
+                    break 'b1;
+                }
+                if !matched1 && subject1.loosely_equals(&Val::from(6)) {
+                    matched1 = true;
+                }
+                if matched1 {
                     ctx.lines(args![
-                        "^3355FFThis large door..",
-                        "is closed shut.",
-                        "If you listen carefully,",
-                        "you can hear the door",
-                        "hinges slightly squeak.^000000"
+                        "^3355FFLet's look for something",
+                        "heavy we can use to pry",
+                        "open this door.^000000"
                     ])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
             }
+            ctx.lines(args![
+                ((Val::from("^3355FFThis ") + l_khpryingitem_s.clone()) + Val::from(" is far")),
+                "to weak for what you're using it for",
+                "and breaks.^000000"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if (ctx.var("kielhyrequest").get()?.number()? >= 94 && ctx.var("kielhyrequest").get()?.number()? <= 104) {
+            if ctx.var(".khdoor5opened").get()? == 0 {
+                ctx.lines(args![
+                    "^3355FFThe large door",
+                    "is wide open, and.",
+                    "you may now enter.^000000"
+                ])?;
+                ctx.next()?;
+                'b2: {
+                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
+                    let mut matched2 = false;
+                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
+                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.close_window()?;
+                        ctx.call(Function::DoNpcEvent, vec![Val::from("Big_Door_5_Warp::OnEnable")])?;
+                        ctx.call(Function::EnableNpc, vec![Val::from("Big_Door_5_Warp")])?;
+                        ctx.var(".khdoor5opened").set(Val::from(1))?;
+                        return Err(Stop::End);
+                    }
+                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
+                        matched2 = true;
+                    }
+                    if matched2 {
+                        ctx.lines(args![
+                            "^3355FFWho knows what is on the",
+                            "other side of this door. Let's",
+                            "think about it before barging in..^000000"
+                        ])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                }
+            } else {
+                ctx.mes("^3355FFThe door is open.^000000")?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+        } else {
+            ctx.lines(args![
+                "^3355FFThis large door..",
+                "is closed shut.",
+                "If you listen carefully,",
+                "you can hear the door",
+                "hinges slightly squeak.^000000"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     } else {
         ctx.lines(args![
@@ -10155,164 +9995,162 @@ fn kiehl_original_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.call(Function::DisableNpc, vec![Val::from("Kiehl#Original")])?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("kielhyrequest").get()? == 94
-            && ctx
-                .call(
-                    Function::GetVariableOfNpc,
-                    vec![Val::from(".khkilled"), Val::from("KiehlRoom"), Val::from(0)],
-                )?
-                .number()?
-                >= 5)
-        {
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel03"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Hmpf! You're pretty good.",
-                    "Father must have spent",
-                    "a lot of money to hire",
-                    "you. So has he sent",
-                    "you to kill me?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    "Kiel Hyre sent me to ask",
-                    "you to stop turning all of",
-                    "the Third Generation robots",
-                    "into killing machines! How",
-                    "can do something like that",
-                    "to other robots like you?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel01"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Why not? It's said that man",
-                    "was made in the image of God.",
-                    "Well, robots were made in the",
-                    "image of man. You humans kill",
-                    "each other as much as you",
-                    "like, as far as I can tell."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "It might not be ethical",
-                    "for me to provide weapons",
-                    "to humans that need them...",
-                    "But that's what they are.",
-                    "Weapons. It's more humane",
-                    "for robots to fight than humans."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Robots don't naturally",
-                    "feel pain or emotions...",
-                    "Not unless they're specially",
-                    "programmed. Sorry, but I don't",
-                    "plans to stop what I'm doing."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel04"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "I am sorry, but I don't have a plan to stop what I am doing.",
-                    "Aside from that, my father showed me a great example of",
-                    "how far a human could go for his own selfinishness by destroying a family.",
-                    "And therefore I don't think that he could create better robots than mine."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    "Humankind may not be",
-                    "perfect, but think about",
-                    "who you're working with!",
-                    "Rekenber is the epitome of",
-                    "human evil! How can you",
-                    "support them like this?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel02"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "I've had a long relationship",
-                    "with Rekenber. I'm fully aware",
-                    "of their capabilities. Do you",
-                    "remember the first room you",
-                    "passed on your way here, the",
-                    "one with all the toys?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "I bet you didn't know that there",
-                    "were 5 Second Generation",
-                    "robots. Me, and my four other",
-                    "brothers and sisters. Father",
-                    "built that room so that all",
-                    "five of us could live together."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel03"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "I was the only one to",
-                    "survive. I returned to",
-                    "Father and even got a",
-                    "name. But yes, I know",
-                    "how bad Rekenber really is..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "I don't... I don't want",
-                    "to talk about this any more.",
-                    "You've made me... Just leave.",
-                    "I think I will let you live."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-            ctx.lines_as(
-                "Mitchell",
-                args![
-                    "Freeze!",
-                    "Kiehl Hyre, you're",
-                    "under arrest for creating",
-                    "and trading illegal weapons!"
-                ],
-            )?;
-            ctx.var("kielhyrequest").set(Val::from(100))?;
-            ctx.call(Function::EnableNpc, vec![Val::from("Mitchell#KiehlRoom")])?;
-            ctx.call(Function::EnableNpc, vec![Val::from("Agent#KHAgent1")])?;
-            ctx.call(Function::EnableNpc, vec![Val::from("Agent#KHAgent2")])?;
-            ctx.call(Function::EnableNpc, vec![Val::from("Agent#KHAgent3")])?;
-            ctx.call(Function::EnableNpc, vec![Val::from("Agent#KHAgent4")])?;
-            ctx.next()?;
-        }
+    } else if (ctx.var("kielhyrequest").get()? == 94
+        && ctx
+            .call(
+                Function::GetVariableOfNpc,
+                vec![Val::from(".khkilled"), Val::from("KiehlRoom"), Val::from(0)],
+            )?
+            .number()?
+            >= 5)
+    {
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel03"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Hmpf! You're pretty good.",
+                "Father must have spent",
+                "a lot of money to hire",
+                "you. So has he sent",
+                "you to kill me?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Kiel Hyre sent me to ask",
+                "you to stop turning all of",
+                "the Third Generation robots",
+                "into killing machines! How",
+                "can do something like that",
+                "to other robots like you?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel01"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Why not? It's said that man",
+                "was made in the image of God.",
+                "Well, robots were made in the",
+                "image of man. You humans kill",
+                "each other as much as you",
+                "like, as far as I can tell."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "It might not be ethical",
+                "for me to provide weapons",
+                "to humans that need them...",
+                "But that's what they are.",
+                "Weapons. It's more humane",
+                "for robots to fight than humans."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Robots don't naturally",
+                "feel pain or emotions...",
+                "Not unless they're specially",
+                "programmed. Sorry, but I don't",
+                "plans to stop what I'm doing."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel04"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "I am sorry, but I don't have a plan to stop what I am doing.",
+                "Aside from that, my father showed me a great example of",
+                "how far a human could go for his own selfinishness by destroying a family.",
+                "And therefore I don't think that he could create better robots than mine."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Humankind may not be",
+                "perfect, but think about",
+                "who you're working with!",
+                "Rekenber is the epitome of",
+                "human evil! How can you",
+                "support them like this?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel02"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "I've had a long relationship",
+                "with Rekenber. I'm fully aware",
+                "of their capabilities. Do you",
+                "remember the first room you",
+                "passed on your way here, the",
+                "one with all the toys?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "I bet you didn't know that there",
+                "were 5 Second Generation",
+                "robots. Me, and my four other",
+                "brothers and sisters. Father",
+                "built that room so that all",
+                "five of us could live together."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel03"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "I was the only one to",
+                "survive. I returned to",
+                "Father and even got a",
+                "name. But yes, I know",
+                "how bad Rekenber really is..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "I don't... I don't want",
+                "to talk about this any more.",
+                "You've made me... Just leave.",
+                "I think I will let you live."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+        ctx.lines_as(
+            "Mitchell",
+            args![
+                "Freeze!",
+                "Kiehl Hyre, you're",
+                "under arrest for creating",
+                "and trading illegal weapons!"
+            ],
+        )?;
+        ctx.var("kielhyrequest").set(Val::from(100))?;
+        ctx.call(Function::EnableNpc, vec![Val::from("Mitchell#KiehlRoom")])?;
+        ctx.call(Function::EnableNpc, vec![Val::from("Agent#KHAgent1")])?;
+        ctx.call(Function::EnableNpc, vec![Val::from("Agent#KHAgent2")])?;
+        ctx.call(Function::EnableNpc, vec![Val::from("Agent#KHAgent3")])?;
+        ctx.call(Function::EnableNpc, vec![Val::from("Agent#KHAgent4")])?;
+        ctx.next()?;
     }
     if (ctx.var("kielhyrequest").get()? == 100
         && ctx
@@ -10400,329 +10238,327 @@ fn kiehl_original_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.call(Function::DisableNpc, vec![Val::from("Kiehl#Original")])?;
         return Err(Stop::End);
-    } else {
-        if (ctx.var("kielhyrequest").get()? == 100
-            && ctx.call(
-                Function::GetVariableOfNpc,
-                vec![Val::from(".khkilledboss"), Val::from("KiehlRoom"), Val::from(0)],
-            )? == 1)
-        {
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel02"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "D-damn...!",
-                    "Well played, adventurer.",
-                    "Well played. I should have",
-                    "known that Father would send",
-                    "the very best after me. Still,",
-                    "you've failed to truly defeat me."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel03"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "I still have a few",
-                    "trump cards left",
-                    "I think... I'll take you",
-                    "to hell with me... Well,",
-                    "if robots can go there~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(
-                Function::MapAnnounce,
-                vec![
-                    Val::from("kh_kiehl02"),
-                    Val::from("*Jeeeezzzgggg~ Geezzz~ Grrrr~ Clank~*"),
-                    ctx.constant("BC_MAP")?,
-                    Val::from("0xFF0000"),
-                ],
-            )?;
-            ctx.lines_as(
-                "Mitchell",
-                args!["No...! We're locked", "in the room! We're...", "We're trapped in here!"],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Kiehl", args!["Yay~ Let's burn", "everything down~"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Mitchell",
-                args![
-                    ((Val::from("Quick, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(",")),
-                    "use Kiel Hyre's power",
-                    "device, the one that's",
-                    "supposed to mess with",
-                    "Kiehl's power supply!",
-                    "Hurry, use it right now!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(
-                Function::MapAnnounce,
-                vec![
-                    Val::from("kh_kiehl02"),
-                    Val::from("*Gzzzz~ Gzzzz~*"),
-                    ctx.constant("BC_MAP")?,
-                    Val::from("0xFF0000"),
-                ],
-            )?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Wh-what? I c-can't",
-                    "move! This day is just",
-                    "full of surprises. Oh, well.",
-                    "I guess it's time for me to",
-                    "use my other trump card."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Mitchell", args!["What...?", "How many trump", "cards do you have?"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "????",
-                args!["I'm so disappointed...", "I can't believe none", "of you thought of this."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Mitchell", args!["Who are you...?", "Show yourself!"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "????",
-                args![
-                    "Please.",
-                    "Don't insult me.",
-                    "You know this voice.",
-                    "It's been talking to",
-                    "you this entire time~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Mitchell", args!["Impossible...", "How can there", "be two of you...?!"])?;
-            ctx.next()?;
-            ctx.call(Function::EnableNpc, vec![Val::from("Kiehl#Copy")])?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel01"), Val::from(0)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Hahahahaha!",
-                    "I'm a robot!",
-                    "I can make extra",
-                    "bodies, switch brains",
-                    "with them. It's awfully",
-                    "convenient, let me tell you."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel03"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Anyway, I don't mean to show",
-                    "off, but I suppose I better",
-                    "reveal to you my final trump",
-                    "card. First of all, I know all",
-                    "about you, Ms. Mitchell Layla~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Mitchell", args!["What? How do you", "know my name?"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args!["Well, I have a few", "spies of my own...", "I'll allow him to explain..."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Masked Man",
-                args!["Mitchell...", "I'm sorry that", "you had to get", "involved in all this..."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Mitchell",
-                args![
-                    "Wolkeus? Wolkeus Kaiser?!",
-                    "You're the spy?! But you risked",
-                    "your life to save our president!",
-                    "No! Oh, God! How can this be",
-                    "happening?! Everything's just...",
-                    "This is all crazy! All of it!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Wolkeus",
-                args![
-                    "This is just the result",
-                    "of elaborate plans that",
-                    "were made years ago. I didn't",
-                    "expect you to be this surprised,",
-                    "Mitchell. It's the way the game",
-                    "is played. You know that."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Mitchell", args!["Mister President...", "I failed you... I'm sorry..."])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Well, Kaiser, she took",
-                    "it pretty badly, but at least",
-                    "you're being gentlemanly",
-                    "about it. Well, I'd like for",
-                    "all of us to get better",
-                    "acquainted, but..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel01"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "We'd better say our",
-                    "farewells here. This",
-                    "place will be gone in",
-                    "five minutes. Ah, and",
-                    "Ms. Layla, you're coming",
-                    "with us. We have questions~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "I'm curious as to what",
-                    "the president's plans are.",
-                    "Mister Kaiser, if you'll",
-                    "escort Ms. Layla, please..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Wolkeus Kaiser",
-                args!["...............................", "Sorry, Mitchell.", "I gotta do it."],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Mitchell", args!["No, get away! Let me go!", "Let go of me, Wolkeus!"])?;
-            ctx.call(Function::DisableNpc, vec![Val::from("Mitchell#KiehlRoom")])?;
-            ctx.call(Function::DisableNpc, vec![Val::from("Agent#KHAgent1")])?;
-            ctx.call(Function::DisableNpc, vec![Val::from("Agent#KHAgent2")])?;
-            ctx.call(Function::DisableNpc, vec![Val::from("Agent#KHAgent3")])?;
-            ctx.call(Function::DisableNpc, vec![Val::from("Agent#KHAgent4")])?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel02"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Great, we're done with",
-                    "that ugly business. Now,",
-                    "where was I? Ah, right.",
-                    "Yes. I'm sorry. We don't",
-                    "have any more time to play."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Here, adventurer.",
-                    "I'm aware that my father",
-                    "sent you here to get this.",
-                    "Consider it my final gift",
-                    "to him. I'm surprised he left",
-                    "this ring inside me, though..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel04"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "I imagine that it must",
-                    "be precious to him. But",
-                    "I wonder why he placed",
-                    "it inside me? Well, anyway,",
-                    "I have a message I'd like",
-                    "for you to deliver to him."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Cutin, vec![Val::from("kh_kiel01"), Val::from(2)])?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "First... I guess we",
-                    "should get rid of this",
-                    "old thing. It was a good",
-                    "body, and it's served me",
-                    "well for 23 years. I'll miss",
-                    "it. Rest well, old Kiehl."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_DEVIL")?])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Now, this was the body",
-                    "that my father made.",
-                    "Please tell him that",
-                    "this means that we're",
-                    "no longer related to",
-                    "each other at all."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "The body I'm using right now?",
-                    "I made it myself with the most",
-                    "advanced technology. Consider",
-                    "it... a Fourth Generation robot",
-                    "body if you will. Father will",
-                    "understand what I mean."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "Anyway, please tell him",
-                    "that, and get his old ring",
-                    "out of my old robot body,",
-                    "and then give it to him. For",
-                    "now, let's get out of here: we",
-                    "just have 3 minutes to evacuate."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kiehl",
-                args![
-                    "You're a worthy opponent,",
-                    "and a human I respect.",
-                    "I don't know if we'll meet",
-                    "again, but who knows?",
-                    "Anyway, I'll open up the",
-                    "exit for you. Farewell~"
-                ],
-            )?;
-            ctx.call(Function::DelItem, vec![Val::from(7504), Val::from(1)])?;
-            ctx.var("kielhyrequest").set(Val::from(104))?;
-            ctx.call(Function::DisableNpc, vec![Val::from("Kiehl#Copy")])?;
-            ctx.call(Function::DoNpcEvent, vec![Val::from("Kiehl_Room_Exit::OnEnable")])?;
-            ctx.call(Function::EnableNpc, vec![Val::from("Kiehl_Room_Exit")])?;
-            ctx.call(Function::InitNpcTimer, vec![])?;
-            ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    } else if (ctx.var("kielhyrequest").get()? == 100
+        && ctx.call(
+            Function::GetVariableOfNpc,
+            vec![Val::from(".khkilledboss"), Val::from("KiehlRoom"), Val::from(0)],
+        )? == 1)
+    {
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel02"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "D-damn...!",
+                "Well played, adventurer.",
+                "Well played. I should have",
+                "known that Father would send",
+                "the very best after me. Still,",
+                "you've failed to truly defeat me."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel03"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "I still have a few",
+                "trump cards left",
+                "I think... I'll take you",
+                "to hell with me... Well,",
+                "if robots can go there~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(
+            Function::MapAnnounce,
+            vec![
+                Val::from("kh_kiehl02"),
+                Val::from("*Jeeeezzzgggg~ Geezzz~ Grrrr~ Clank~*"),
+                ctx.constant("BC_MAP")?,
+                Val::from("0xFF0000"),
+            ],
+        )?;
+        ctx.lines_as(
+            "Mitchell",
+            args!["No...! We're locked", "in the room! We're...", "We're trapped in here!"],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Kiehl", args!["Yay~ Let's burn", "everything down~"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Mitchell",
+            args![
+                ((Val::from("Quick, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from(",")),
+                "use Kiel Hyre's power",
+                "device, the one that's",
+                "supposed to mess with",
+                "Kiehl's power supply!",
+                "Hurry, use it right now!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(
+            Function::MapAnnounce,
+            vec![
+                Val::from("kh_kiehl02"),
+                Val::from("*Gzzzz~ Gzzzz~*"),
+                ctx.constant("BC_MAP")?,
+                Val::from("0xFF0000"),
+            ],
+        )?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Wh-what? I c-can't",
+                "move! This day is just",
+                "full of surprises. Oh, well.",
+                "I guess it's time for me to",
+                "use my other trump card."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Mitchell", args!["What...?", "How many trump", "cards do you have?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "????",
+            args!["I'm so disappointed...", "I can't believe none", "of you thought of this."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Mitchell", args!["Who are you...?", "Show yourself!"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "????",
+            args![
+                "Please.",
+                "Don't insult me.",
+                "You know this voice.",
+                "It's been talking to",
+                "you this entire time~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Mitchell", args!["Impossible...", "How can there", "be two of you...?!"])?;
+        ctx.next()?;
+        ctx.call(Function::EnableNpc, vec![Val::from("Kiehl#Copy")])?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel01"), Val::from(0)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Hahahahaha!",
+                "I'm a robot!",
+                "I can make extra",
+                "bodies, switch brains",
+                "with them. It's awfully",
+                "convenient, let me tell you."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel03"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Anyway, I don't mean to show",
+                "off, but I suppose I better",
+                "reveal to you my final trump",
+                "card. First of all, I know all",
+                "about you, Ms. Mitchell Layla~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Mitchell", args!["What? How do you", "know my name?"])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args!["Well, I have a few", "spies of my own...", "I'll allow him to explain..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Masked Man",
+            args!["Mitchell...", "I'm sorry that", "you had to get", "involved in all this..."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Mitchell",
+            args![
+                "Wolkeus? Wolkeus Kaiser?!",
+                "You're the spy?! But you risked",
+                "your life to save our president!",
+                "No! Oh, God! How can this be",
+                "happening?! Everything's just...",
+                "This is all crazy! All of it!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Wolkeus",
+            args![
+                "This is just the result",
+                "of elaborate plans that",
+                "were made years ago. I didn't",
+                "expect you to be this surprised,",
+                "Mitchell. It's the way the game",
+                "is played. You know that."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Mitchell", args!["Mister President...", "I failed you... I'm sorry..."])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Well, Kaiser, she took",
+                "it pretty badly, but at least",
+                "you're being gentlemanly",
+                "about it. Well, I'd like for",
+                "all of us to get better",
+                "acquainted, but..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel01"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "We'd better say our",
+                "farewells here. This",
+                "place will be gone in",
+                "five minutes. Ah, and",
+                "Ms. Layla, you're coming",
+                "with us. We have questions~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "I'm curious as to what",
+                "the president's plans are.",
+                "Mister Kaiser, if you'll",
+                "escort Ms. Layla, please..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Wolkeus Kaiser",
+            args!["...............................", "Sorry, Mitchell.", "I gotta do it."],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Mitchell", args!["No, get away! Let me go!", "Let go of me, Wolkeus!"])?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Mitchell#KiehlRoom")])?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Agent#KHAgent1")])?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Agent#KHAgent2")])?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Agent#KHAgent3")])?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Agent#KHAgent4")])?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel02"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Great, we're done with",
+                "that ugly business. Now,",
+                "where was I? Ah, right.",
+                "Yes. I'm sorry. We don't",
+                "have any more time to play."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Here, adventurer.",
+                "I'm aware that my father",
+                "sent you here to get this.",
+                "Consider it my final gift",
+                "to him. I'm surprised he left",
+                "this ring inside me, though..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel04"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "I imagine that it must",
+                "be precious to him. But",
+                "I wonder why he placed",
+                "it inside me? Well, anyway,",
+                "I have a message I'd like",
+                "for you to deliver to him."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::Cutin, vec![Val::from("kh_kiel01"), Val::from(2)])?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "First... I guess we",
+                "should get rid of this",
+                "old thing. It was a good",
+                "body, and it's served me",
+                "well for 23 years. I'll miss",
+                "it. Rest well, old Kiehl."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_DEVIL")?])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Now, this was the body",
+                "that my father made.",
+                "Please tell him that",
+                "this means that we're",
+                "no longer related to",
+                "each other at all."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "The body I'm using right now?",
+                "I made it myself with the most",
+                "advanced technology. Consider",
+                "it... a Fourth Generation robot",
+                "body if you will. Father will",
+                "understand what I mean."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "Anyway, please tell him",
+                "that, and get his old ring",
+                "out of my old robot body,",
+                "and then give it to him. For",
+                "now, let's get out of here: we",
+                "just have 3 minutes to evacuate."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kiehl",
+            args![
+                "You're a worthy opponent,",
+                "and a human I respect.",
+                "I don't know if we'll meet",
+                "again, but who knows?",
+                "Anyway, I'll open up the",
+                "exit for you. Farewell~"
+            ],
+        )?;
+        ctx.call(Function::DelItem, vec![Val::from(7504), Val::from(1)])?;
+        ctx.var("kielhyrequest").set(Val::from(104))?;
+        ctx.call(Function::DisableNpc, vec![Val::from("Kiehl#Copy")])?;
+        ctx.call(Function::DoNpcEvent, vec![Val::from("Kiehl_Room_Exit::OnEnable")])?;
+        ctx.call(Function::EnableNpc, vec![Val::from("Kiehl_Room_Exit")])?;
+        ctx.call(Function::InitNpcTimer, vec![])?;
+        ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     if ctx.var("kielhyrequest").get()? == 104 {
         ctx.call(Function::Cutin, vec![Val::from("kh_kiel02"), Val::from(2)])?;
