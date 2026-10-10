@@ -192,13 +192,13 @@ pub fn mocked_repository() -> Arc<MockedRepository> {
 
 pub fn test_item_runtime() -> Arc<WasmRuntime> {
     static ITEMS: std::sync::OnceLock<Arc<WasmRuntime>> = std::sync::OnceLock::new();
-    ITEMS.get_or_init(|| WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/items.wasm")).unwrap()).clone()
+    ITEMS.get_or_init(|| WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/modules/items.wasm")).unwrap()).clone()
 }
 
 pub fn test_item_vm() -> Arc<crate::server::script::ItemVm> {
     static VM: std::sync::OnceLock<Arc<crate::server::script::ItemVm>> = std::sync::OnceLock::new();
     VM.get_or_init(|| {
-        let pets = WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/pets.wasm")).unwrap();
+        let pets = WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/modules/pets.wasm")).unwrap();
         Arc::new(crate::server::script::ItemVm::new(test_item_runtime(), pets))
     })
     .clone()
@@ -208,7 +208,7 @@ pub fn test_item_vm() -> Arc<crate::server::script::ItemVm> {
 pub fn test_systems_runtime() -> Arc<WasmRuntime> {
     static RUNTIME: std::sync::OnceLock<Arc<WasmRuntime>> = std::sync::OnceLock::new();
     RUNTIME
-        .get_or_init(|| WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/systems.wasm")).unwrap())
+        .get_or_init(|| WasmRuntime::from_file(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/modules/systems.wasm")).unwrap())
         .clone()
 }
 
@@ -216,11 +216,7 @@ pub fn test_systems_runtime() -> Arc<WasmRuntime> {
 pub fn test_npc_vm() -> Arc<crate::server::script::ScriptVm> {
     static VM: std::sync::OnceLock<Arc<crate::server::script::ScriptVm>> = std::sync::OnceLock::new();
     VM.get_or_init(|| {
-        let wasm = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm");
-        let modules = ["towns", "misc", "jobs", "quests", "systems"]
-            .into_iter()
-            .map(|name| (name.to_string(), WasmRuntime::from_file(wasm.join(format!("{name}.wasm"))).unwrap()))
-            .collect();
+        let modules = WasmRuntime::from_directory(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/modules"), []).unwrap();
         Arc::new(crate::server::script::ScriptVm::new(modules))
     })
     .clone()

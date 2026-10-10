@@ -1,0 +1,93 @@
+#![allow(
+    unused_imports,
+    unused_labels,
+    unused_assignments,
+    unused_mut,
+    unused_parens,
+    unused_variables,
+    unreachable_code
+)]
+
+mod common;
+mod part_01;
+mod part_02;
+
+pub use part_01::*;
+pub use part_02::*;
+
+script_sdk_2::script_module! {
+    npcs {
+        "Am Mut#ama" => am_mut_ama,
+        "Assistant#ama" => assistant_ama,
+        "Coach#after" => coach_after,
+        "Coach#ama" => coach_ama,
+        "Dokebi#ez" => dokebi_ez,
+        "Dokebi#hd" => dokebi_hd,
+        "Gate Soldier#ama1" => gate_soldier_ama1,
+        "Gate Soldier#ama2" => gate_soldier_ama2,
+        "Gate Soldier#ama3" => gate_soldier_ama3,
+        "Gate Soldier#ama4" => gate_soldier_ama4,
+        "Gate Soldier#ama5" => gate_soldier_ama5,
+        "Gate Soldier#ama6" => gate_soldier_ama6,
+        "Grandma#ama1" => grandma_ama1,
+        "Grandma#ama2" => grandma_ama2,
+        "Grandpa#ama" => grandpa_ama,
+        "Hanako chan#ama" => hanako_chan_ama,
+        "Kitsune Mask#ama" => kitsune_mask_ama,
+        "Kouji#ama" => kouji_ama,
+        "Lord of Palace#ama" => lord_of_palace_ama,
+        "Publisher#ama" => publisher_ama,
+        "Shaman#ama" => shaman_ama,
+        "Soldier#ama1" => soldier_ama1,
+        "Soldier#ama10" => soldier_ama10,
+        "Soldier#ama11" => soldier_ama11,
+        "Soldier#ama2" => soldier_ama2,
+        "Soldier#ama3" => soldier_ama3,
+        "Soldier#ama4" => soldier_ama4,
+        "Soldier#ama5" => soldier_ama5,
+        "Soldier#ama6" => soldier_ama6,
+        "Soldier#ama7" => soldier_ama7,
+        "Soldier#ama8" => soldier_ama8,
+        "Soldier#ama9" => soldier_ama9,
+        "Sushi Master#ama" => sushi_master_ama,
+        "Timer#ama" => timer_ama,
+        "backwarp#ama" => backwarp_ama,
+    }
+    events {
+        "Am Mut#ama::OnEnable" => am_mut_ama_onenable,
+        "Am Mut#ama::OnInit" => am_mut_ama_oninit,
+        "Am Mut#ama::OnMyMobDead" => am_mut_ama_onmymobdead,
+        "Am Mut#ama::OnReset" => am_mut_ama_onreset,
+        "Assistant#ama::OnInit" => assistant_ama_oninit,
+        "Assistant#ama::OnReset" => assistant_ama_onreset,
+        "Assistant#ama::OnStartArena" => assistant_ama_onstartarena,
+        "Coach#after::OnInit" => coach_after_oninit,
+        "Coach#after::OnTouch_" => coach_after_ontouch,
+        "Coach#ama::OnInit" => coach_ama_oninit,
+        "Coach#ama::OnTouch_" => coach_ama_ontouch,
+        "Dokebi#ez::OnEnable" => dokebi_ez_onenable,
+        "Dokebi#ez::OnInit" => dokebi_ez_oninit,
+        "Dokebi#ez::OnMyMobDead" => dokebi_ez_onmymobdead,
+        "Dokebi#ez::OnReset" => dokebi_ez_onreset,
+        "Dokebi#hd::OnEnable" => dokebi_hd_onenable,
+        "Dokebi#hd::OnInit" => dokebi_hd_oninit,
+        "Dokebi#hd::OnMyMobDead" => dokebi_hd_onmymobdead,
+        "Dokebi#hd::OnReset" => dokebi_hd_onreset,
+        "Grandma#ama1::OnInit" => grandma_ama1_oninit,
+        "Grandma#ama1::OnTouch_" => grandma_ama1_ontouch,
+        "Grandpa#ama::OnInit" => grandpa_ama_oninit,
+        "Hanako chan#ama::OnTouch_" => hanako_chan_ama_ontouch,
+        "Timer#ama::OnDisable" => timer_ama_ondisable,
+        "Timer#ama::OnEnable" => timer_ama_onenable,
+        "Timer#ama::OnInit" => timer_ama_oninit,
+        "Timer#ama::OnTimer1000" => timer_ama_ontimer1000,
+        "Timer#ama::OnTimer181000" => timer_ama_ontimer181000,
+        "Timer#ama::OnTimer301000" => timer_ama_ontimer301000,
+        "Timer#ama::OnTimer361000" => timer_ama_ontimer361000,
+        "Timer#ama::OnTimer361500" => timer_ama_ontimer361500,
+        "Timer#ama::OnTimer362000" => timer_ama_ontimer362000,
+        "Timer#ama::OnTimer362500" => timer_ama_ontimer362500,
+        "backwarp#ama::OnInit" => backwarp_ama_oninit,
+        "backwarp#ama::OnTouch_" => backwarp_ama_ontouch,
+    }
+}

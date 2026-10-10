@@ -1,0 +1,11 @@
+[package]
+name = "towns_merchants_misc"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+script-sdk-2.workspace = true
+shared.workspace = true

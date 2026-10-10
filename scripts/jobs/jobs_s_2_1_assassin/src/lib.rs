@@ -1,0 +1,100 @@
+#![allow(
+    unused_imports,
+    unused_labels,
+    unused_assignments,
+    unused_mut,
+    unused_parens,
+    unused_variables,
+    unreachable_code
+)]
+
+mod common;
+mod part_01;
+mod part_02;
+mod part_03;
+
+pub use part_01::*;
+pub use part_02::*;
+pub use part_03::*;
+
+script_sdk_2::script_module! {
+    npcs {
+        "#moc_assin_dup" => moc_assin_dup,
+        "01_1" => s_01_1,
+        "Barcardi#ASN" => barcardi_asn,
+        "Beholder#ASNTEST" => beholder_asntest,
+        "Guildmaster#ASN1" => guildmaster_asn1,
+        "Guildmaster#ASN2" => guildmaster_asn2,
+        "Guildsman#ASN2" => guildsman_asn2,
+        "Guildsman#asn" => guildsman_asn,
+        "Keeper of the Door#ASN" => keeper_of_the_door_asn,
+        "Master Assist" => master_assist,
+        "Maze Assistant" => maze_assistant,
+        "Standby Room#ASNTEST" => standby_room_asntest,
+        "Test Guide#ASN" => test_guide_asn,
+        "Thomas#ASNTEST" => thomas_asntest,
+        "info 1" => info_1,
+        "info 2" => info_2,
+        "info 3" => info_3,
+        "info 4" => info_4,
+        "info 5" => info_5,
+        "info 6" => info_6,
+        "info 7" => info_7,
+        "info 8" => info_8,
+        "nameless_one" => nameless_one,
+        "timestopper#1" => timestopper_1,
+    }
+    events {
+        "#moc_assin_dup::OnInit" => moc_assin_dup_oninit,
+        "01_1::OnTouch_" => s_01_1_ontouch,
+        "Barcardi#ASN::OnTouch_" => barcardi_asn_ontouch,
+        "Beholder#ASNTEST::OnEnable" => beholder_asntest_onenable,
+        "Beholder#ASNTEST::OnMyMobDead" => beholder_asntest_onmymobdead,
+        "Beholder#ASNTEST::OnMyMobDead2" => beholder_asntest_onmymobdead2,
+        "Beholder#ASNTEST::OnReset" => beholder_asntest_onreset,
+        "Beholder#ASNTEST::OnResetmob" => beholder_asntest_onresetmob,
+        "Beholder#ASNTEST::OnTimer1000" => beholder_asntest_ontimer1000,
+        "Beholder#ASNTEST::OnTimer125000" => beholder_asntest_ontimer125000,
+        "Beholder#ASNTEST::OnTimer180000" => beholder_asntest_ontimer180000,
+        "Beholder#ASNTEST::OnTimer181000" => beholder_asntest_ontimer181000,
+        "Beholder#ASNTEST::OnTimer182000" => beholder_asntest_ontimer182000,
+        "Beholder#ASNTEST::OnTimer183000" => beholder_asntest_ontimer183000,
+        "Beholder#ASNTEST::OnTimer184000" => beholder_asntest_ontimer184000,
+        "Beholder#ASNTEST::OnTimer185000" => beholder_asntest_ontimer185000,
+        "Beholder#ASNTEST::OnTimer186000" => beholder_asntest_ontimer186000,
+        "Beholder#ASNTEST::OnTimer187000" => beholder_asntest_ontimer187000,
+        "Beholder#ASNTEST::OnTimer2000" => beholder_asntest_ontimer2000,
+        "Beholder#ASNTEST::OnTimer3000" => beholder_asntest_ontimer3000,
+        "Beholder#ASNTEST::OnTimer4000" => beholder_asntest_ontimer4000,
+        "Beholder#ASNTEST::OnTimer5000" => beholder_asntest_ontimer5000,
+        "Beholder#ASNTEST::OnTimer65000" => beholder_asntest_ontimer65000,
+        "Guildmaster#ASN1::OnCast" => guildmaster_asn1_oncast,
+        "Guildmaster#ASN1::OnTouch_" => guildmaster_asn1_ontouch,
+        "Guildmaster#ASN2::OnTouch_" => guildmaster_asn2_ontouch,
+        "Guildsman#ASN2::OnTouch_" => guildsman_asn2_ontouch,
+        "Keeper of the Door#ASN::OnDisable" => keeper_of_the_door_asn_ondisable,
+        "Keeper of the Door#ASN::OnEnable" => keeper_of_the_door_asn_onenable,
+        "Keeper of the Door#ASN::OnInit" => keeper_of_the_door_asn_oninit,
+        "Keeper of the Door#ASN::OnTouch_" => keeper_of_the_door_asn_ontouch,
+        "Maze Assistant::OnTouch_" => maze_assistant_ontouch,
+        "Standby Room#ASNTEST::OnInit" => standby_room_asntest_oninit,
+        "Standby Room#ASNTEST::OnStart" => standby_room_asntest_onstart,
+        "Standby Room#ASNTEST::OnStartArena" => standby_room_asntest_onstartarena,
+        "Test Guide#ASN::OnTouch_" => test_guide_asn_ontouch,
+        "Thomas#ASNTEST::OnDisable" => thomas_asntest_ondisable,
+        "Thomas#ASNTEST::OnTouch_" => thomas_asntest_ontouch,
+        "info 1::OnTouch_" => info_1_ontouch,
+        "info 2::OnTouch_" => info_2_ontouch,
+        "info 3::OnTouch_" => info_3_ontouch,
+        "info 4::OnTouch_" => info_4_ontouch,
+        "info 5::OnTouch_" => info_5_ontouch,
+        "info 6::OnTouch_" => info_6_ontouch,
+        "info 7::OnTouch_" => info_7_ontouch,
+        "info 8::OnTouch_" => info_8_ontouch,
+        "nameless_one::OnTouch_" => nameless_one_ontouch,
+        "timestopper#1::OnDisable" => timestopper_1_ondisable,
+        "timestopper#1::OnEnable" => timestopper_1_onenable,
+        "timestopper#1::OnMyMobDead" => timestopper_1_onmymobdead,
+        "timestopper#1::OnTimer187000" => timestopper_1_ontimer187000,
+    }
+}

@@ -1,0 +1,11 @@
+[package]
+name = "jobs_pre_re_jobs_novice"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+script-sdk-2.workspace = true
+shared.workspace = true

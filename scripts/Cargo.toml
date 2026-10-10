@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = ["shared", "items", "pets", "systems", "towns/*", "misc/*", "jobs/*", "quests/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+script-sdk-2 = { path = "../lib/script-sdk-2" }
+shared = { path = "shared" }
+
+[profile.release]
+opt-level = "s"
+lto = true
+panic = "abort"
+strip = "debuginfo"

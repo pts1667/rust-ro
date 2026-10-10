@@ -1,0 +1,71 @@
+pub mod tu_acolyte;
+pub mod tu_archer;
+pub mod tu_ma_th01;
+pub mod tu_magician01;
+pub mod tu_merchant;
+pub mod tu_thief01;
+
+script_sdk_2::script_module! {
+    npcs {
+        "#Target" => tu_archer::target,
+        "#sound_tu_" => tu_archer::sound_tu,
+        "#tu_monk" => tu_acolyte::tu_monk,
+        "1st Job Quest Reset" => tu_acolyte::s_1st_job_quest_reset,
+        "Acolyte_Tu" => tu_archer::acolyte_tu,
+        "Aigie" => tu_merchant::aigie,
+        "Alchemist Guildmember#tu" => tu_archer::alchemist_guildmember_tu,
+        "Arthail" => tu_archer::arthail,
+        "Asthe#tu" => tu_acolyte::asthe_tu,
+        "Bard Jet#tu" => tu_archer::bard_jet_tu,
+        "Bishop Maugins" => tu_archer::bishop_maugins,
+        "Boy#boy_voi" => tu_acolyte::boy_boy_voi,
+        "Cleope Verce" => tu_acolyte::cleope_verce,
+        "Dog#tu" => tu_acolyte::dog_tu,
+        "Eavesdrop#tu" => tu_acolyte::eavesdrop_tu,
+        "Gloria#tu" => tu_acolyte::gloria_tu,
+        "Guarnien" => tu_merchant::guarnien,
+        "Hedrick" => tu_acolyte::hedrick,
+        "Ill Girl#tu" => tu_acolyte::ill_girl_tu,
+        "Jayon" => tu_merchant::jayon,
+        "Karven" => tu_acolyte::karven,
+        "Kellion" => tu_merchant::kellion,
+        "Mage#tu" => tu_archer::mage_tu,
+        "Maos" => tu_merchant::maos,
+        "Master Kavaruk" => tu_archer::master_kavaruk,
+        "Minister#tu_" => tu_archer::minister_tu,
+        "New Guild Master#tu" => tu_archer::new_guild_master_tu,
+        "New Mage Manager#M" => tu_magician01::new_mage_manager_m,
+        "Priest Gardron#tu" => tu_acolyte::priest_gardron_tu,
+        "Priest Praupin" => tu_acolyte::priest_praupin,
+        "Reidin Corse#tu" => tu_archer::reidin_corse_tu,
+        "Sagle" => tu_merchant::sagle,
+        "Seisner" => tu_archer::seisner,
+        "Sign#M" => tu_magician01::sign_m,
+        "Sign#arc" => tu_archer::sign_arc,
+        "Thief Trainer#T" => tu_thief01::thief_trainer_t,
+        "Trace of Battle#1" => tu_ma_th01::trace_of_battle_1,
+        "Trace of Battle#10" => tu_ma_th01::trace_of_battle_10,
+        "Trace of Battle#11" => tu_ma_th01::trace_of_battle_11,
+        "Trace of Battle#12" => tu_ma_th01::trace_of_battle_12,
+        "Trace of Battle#13" => tu_ma_th01::trace_of_battle_13,
+        "Trace of Battle#14" => tu_ma_th01::trace_of_battle_14,
+        "Trace of Battle#15" => tu_ma_th01::trace_of_battle_15,
+        "Trace of Battle#16" => tu_ma_th01::trace_of_battle_16,
+        "Trace of Battle#2" => tu_ma_th01::trace_of_battle_2,
+        "Trace of Battle#3" => tu_ma_th01::trace_of_battle_3,
+        "Trace of Battle#4" => tu_ma_th01::trace_of_battle_4,
+        "Trace of Battle#5" => tu_ma_th01::trace_of_battle_5,
+        "Trace of Battle#6" => tu_ma_th01::trace_of_battle_6,
+        "Trace of Battle#7" => tu_ma_th01::trace_of_battle_7,
+        "Trace of Battle#8" => tu_ma_th01::trace_of_battle_8,
+        "Trace of Battle#9" => tu_ma_th01::trace_of_battle_9,
+        "Veiner" => tu_acolyte::veiner,
+        "Weapon Merchant#tu" => tu_acolyte::weapon_merchant_tu,
+    }
+    events {
+        "#sound_tu_::OnTouch_" => tu_archer::sound_tu_ontouch,
+        "#tu_monk::OnTouch_" => tu_acolyte::tu_monk_ontouch,
+        "Boy#boy_voi::OnTouch_" => tu_acolyte::boy_boy_voi_ontouch,
+        "Weapon Merchant#tu::OnTouch_" => tu_acolyte::weapon_merchant_tu_ontouch,
+    }
+}

@@ -1,3 +1,4 @@
+use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 use std::sync::{Arc, OnceLock};
 
@@ -76,6 +77,49 @@ impl WasmRuntime {
             }
         }
         Ok(Arc::new(runtime))
+    }
+
+    /// Loads every `<name>.wasm` of `directory` as the module `name`; `replacements` name other files for some of them, or add modules.
+    /// The modules are compiled, or restored from their cache, on one thread each.
+    pub fn from_directory(
+        directory: impl AsRef<Path>,
+        replacements: impl IntoIterator<Item = (String, std::path::PathBuf)>,
+    ) -> Result<HashMap<String, Arc<Self>>, String> {
+        let directory = directory.as_ref();
+        let mut paths: BTreeMap<String, std::path::PathBuf> = BTreeMap::new();
+        let listing = std::fs::read_dir(directory).map_err(|e| {
+            format!("Cannot list {}: {e}. Build scripts with cargo run --package tools --bin scripts-build", directory.display())
+        })?;
+        for entry in listing {
+            let path = entry.map_err(|e| e.to_string())?.path();
+            if path.extension().is_some_and(|extension| extension == "wasm") {
+                if let Some(name) = path.file_stem().and_then(|stem| stem.to_str()) {
+                    paths.insert(name.to_string(), path);
+                }
+            }
+        }
+        paths.extend(replacements);
+        let mut pending = paths.into_iter();
+        let mut modules = HashMap::new();
+        // The first module creates the shared engine; the others would race to build their own.
+        let Some((first_name, first_path)) = pending.next() else { return Ok(modules) };
+        modules.insert(first_name, Self::from_file(first_path)?);
+        let pending: Vec<_> = pending.collect();
+        let loaded = std::thread::scope(|scope| {
+            let threads: Vec<_> = pending
+                .iter()
+                .map(|(name, path)| (name, scope.spawn(move || Self::from_file(path))))
+                .collect();
+            threads
+                .into_iter()
+                .map(|(name, thread)| {
+                    let runtime = thread.join().map_err(|_| format!("Loading script module {name} panicked"))?;
+                    runtime.map(|runtime| (name.clone(), runtime)).map_err(|e| format!("Failed to load script module {name}: {e}"))
+                })
+                .collect::<Result<Vec<_>, String>>()
+        })?;
+        modules.extend(loaded);
+        Ok(modules)
     }
 
     fn from_precompiled(cache: &Path) -> Option<Self> {

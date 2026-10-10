@@ -1,0 +1,93 @@
+#![allow(
+    unused_imports,
+    unused_labels,
+    unused_assignments,
+    unused_mut,
+    unused_parens,
+    unused_variables,
+    unreachable_code
+)]
+
+mod common;
+mod part_01;
+mod part_02;
+
+pub use part_01::*;
+pub use part_02::*;
+
+script_sdk_2::script_module! {
+    npcs {
+        "#aru_flower_01" => aru_flower_01,
+        "Controller#gdevent_a" => controller_gdevent_a,
+        "Dwarf#aru_gd" => dwarf_aru_gd,
+        "Event controller#aru_gd" => event_controller_aru_gd,
+        "Gergath#aru_gd" => gergath_aru_gd,
+        "Monster Controler#aru_gd" => monster_controler_aru_gd,
+        "Monster Controler1#aru" => monster_controler1_aru,
+        "Pierrot Pier#aru_gd" => pierrot_pier_aru_gd,
+        "eff_mvp#aru_gd" => eff_mvp_aru_gd,
+        "paper_sp_1_a" => paper_sp_1_a,
+        "paper_sp_2_a" => paper_sp_2_a,
+        "paper_sp_3_a" => paper_sp_3_a,
+        "paper_sp_4_a" => paper_sp_4_a,
+        "paper_sp_5_a" => paper_sp_5_a,
+        "paper_sp_6_a" => paper_sp_6_a,
+        "paper_sp_7_a" => paper_sp_7_a,
+        "paper_sp_8_a" => paper_sp_8_a,
+        "paper_sp_9_a" => paper_sp_9_a,
+        "removepp_aru_gd" => removepp_aru_gd,
+    }
+    events {
+        "Controller#gdevent_a::OnInit" => controller_gdevent_a_oninit,
+        "Controller#gdevent_a::OnStop" => controller_gdevent_a_onstop,
+        "Controller#gdevent_a::OnTimer40000" => controller_gdevent_a_ontimer40000,
+        "Controller#gdevent_a::OnTimer60000" => controller_gdevent_a_ontimer60000,
+        "Controller#gdevent_a::OnTimer63000" => controller_gdevent_a_ontimer63000,
+        "Controller#gdevent_a::Ongame_start" => controller_gdevent_a_ongame_start,
+        "Controller#gdevent_a::Onwin" => controller_gdevent_a_onwin,
+        "Dwarf#aru_gd::OnEnable" => dwarf_aru_gd_onenable,
+        "Dwarf#aru_gd::OnInit" => dwarf_aru_gd_oninit,
+        "Gergath#aru_gd::OnEnable" => gergath_aru_gd_onenable,
+        "Gergath#aru_gd::OnInit" => gergath_aru_gd_oninit,
+        "Gergath#aru_gd::OnTimer10000" => gergath_aru_gd_ontimer10000,
+        "Gergath#aru_gd::OnTimer15000" => gergath_aru_gd_ontimer15000,
+        "Gergath#aru_gd::OnTimer20000" => gergath_aru_gd_ontimer20000,
+        "Gergath#aru_gd::OnTimer25000" => gergath_aru_gd_ontimer25000,
+        "Gergath#aru_gd::OnTimer30000" => gergath_aru_gd_ontimer30000,
+        "Gergath#aru_gd::OnTimer35000" => gergath_aru_gd_ontimer35000,
+        "Gergath#aru_gd::OnTimer40000" => gergath_aru_gd_ontimer40000,
+        "Gergath#aru_gd::OnTimer45000" => gergath_aru_gd_ontimer45000,
+        "Gergath#aru_gd::OnTimer5000" => gergath_aru_gd_ontimer5000,
+        "Gergath#aru_gd::OnTimer50000" => gergath_aru_gd_ontimer50000,
+        "Monster Controler#aru_gd::OnInit" => monster_controler_aru_gd_oninit,
+        "Monster Controler#aru_gd::OnTimer3600000" => monster_controler_aru_gd_ontimer3600000,
+        "Monster Controler1#aru::OnEnable" => monster_controler1_aru_onenable,
+        "Monster Controler1#aru::OnKill" => monster_controler1_aru_onkill,
+        "Monster Controler1#aru::OnMyMobDead" => monster_controler1_aru_onmymobdead,
+        "eff_mvp#aru_gd::OnTimer1000" => eff_mvp_aru_gd_ontimer1000,
+        "eff_mvp#aru_gd::OnTimer2000" => eff_mvp_aru_gd_ontimer2000,
+        "eff_mvp#aru_gd::OnTimer3000" => eff_mvp_aru_gd_ontimer3000,
+        "eff_mvp#aru_gd::OnTimer4000" => eff_mvp_aru_gd_ontimer4000,
+        "eff_mvp#aru_gd::Onmvp" => eff_mvp_aru_gd_onmvp,
+        "paper_sp_1_a::OnBingo" => paper_sp_1_a_onbingo,
+        "paper_sp_1_a::OnEnable" => paper_sp_1_a_onenable,
+        "paper_sp_2_a::OnBingo" => paper_sp_2_a_onbingo,
+        "paper_sp_2_a::OnEnable" => paper_sp_2_a_onenable,
+        "paper_sp_3_a::OnBingo" => paper_sp_3_a_onbingo,
+        "paper_sp_3_a::OnEnable" => paper_sp_3_a_onenable,
+        "paper_sp_4_a::OnBingo" => paper_sp_4_a_onbingo,
+        "paper_sp_4_a::OnEnable" => paper_sp_4_a_onenable,
+        "paper_sp_5_a::OnBingo" => paper_sp_5_a_onbingo,
+        "paper_sp_5_a::OnEnable" => paper_sp_5_a_onenable,
+        "paper_sp_6_a::OnBingo" => paper_sp_6_a_onbingo,
+        "paper_sp_6_a::OnEnable" => paper_sp_6_a_onenable,
+        "paper_sp_7_a::OnBingo" => paper_sp_7_a_onbingo,
+        "paper_sp_7_a::OnEnable" => paper_sp_7_a_onenable,
+        "paper_sp_8_a::OnBingo" => paper_sp_8_a_onbingo,
+        "paper_sp_8_a::OnEnable" => paper_sp_8_a_onenable,
+        "paper_sp_9_a::OnBingo" => paper_sp_9_a_onbingo,
+        "paper_sp_9_a::OnEnable" => paper_sp_9_a_onenable,
+        "removepp_aru_gd::OnInit" => removepp_aru_gd_oninit,
+        "removepp_aru_gd::OnTouch" => removepp_aru_gd_ontouch,
+    }
+}

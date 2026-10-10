@@ -33,7 +33,7 @@ Alternatives considered:
 - **Deref `ItemUse` to `Ctx`.** Rejected: an item script would then reach NPC-only calls such as `warp` or `npc().emotion`, which the server rejects.
 
 # Consequences
-- `lib/script-sdk-2/src/item.rs` implements the two contexts. `item_module!` registers the functions by id, `ItemVm` routes items and programs to the items module (`config/wasm/items.wasm`), and `import_items.py` generates the module.
+- `lib/script-sdk-2/src/item.rs` implements the two contexts. `item_module!` registers the functions by id, `ItemVm` routes items and programs to the items module (`config/wasm/modules/items.wasm`), and `import_items.py` generates the module.
 - Name-based routing in `ItemDialogHost` is unchanged. Scoped variables are served through `read_any` and `write_any`, which use the values the host pre-loads from each script's read list, so `ItemDialogHost` does not serve `VariableRead` to item scripts. The typed `read` and `write` still refuse scoped names.
 - A scoped read the host did not pre-load still returns the default without an error, as the legacy item module did. Pre-loading ignores a failed repository read (`prepare_host`), so that case stays silent until the host has an error path for it.
 - Generated code calls every host function through `item.call(Function::X, ...)` with the arguments the rathena script gives, so the port changes no request. Typed wrappers can replace those calls one function at a time, with the parity check as the guard.

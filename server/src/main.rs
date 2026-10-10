@@ -87,8 +87,8 @@ pub async fn main() {
 
     // Setup script virtual machine for NPC
     let script_modules = create_script_modules();
-    let items_module = script_modules.get("items").cloned().expect("scripting.modules must list the items module");
-    let pets_module = script_modules.get("pets").cloned().expect("scripting.modules must list the pets module");
+    let items_module = script_modules.get("items").cloned().expect("the scripting modules directory must hold items.wasm");
+    let pets_module = script_modules.get("pets").cloned().expect("the scripting modules directory must hold pets.wasm");
     let item_script_vm = Arc::new(ItemVm::new(items_module, pets_module));
     let npc_script_vm = Arc::new(ScriptVm::new(script_modules));
     let scripts = load_scripts();
@@ -257,15 +257,9 @@ pub fn configs() -> &'static Config {
 
 
 pub fn create_script_modules() -> HashMap<String, Arc<script_runtime::WasmRuntime>> {
-    configs()
-        .scripting
-        .modules
-        .iter()
-        .map(|(name, path)| {
-            let runtime = script_runtime::WasmRuntime::from_file(path).unwrap_or_else(|error| panic!("Failed to load script module {name}: {error}"));
-            (name.clone(), runtime)
-        })
-        .collect()
+    let scripting = &configs().scripting;
+    let replacements = scripting.modules.iter().map(|(name, path)| (name.clone(), path.into()));
+    script_runtime::WasmRuntime::from_directory(&scripting.modules_dir, replacements).unwrap_or_else(|error| panic!("{error}"))
 }
 
 #[cfg(test)]
