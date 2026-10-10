@@ -409,9 +409,9 @@ impl Session {
     }
 
     /// Session of a character driven by the bot API; it has no socket, the packets for it are read by `BotRegistry`.
-    pub fn create_for_bot(account_id: u32, char_id: u32, auth_code: i32, packetver: u32) -> Session {
+    pub fn create_for_bot(account_id: u32, char_id: u32, auth_code: i32, packetver: u32, group_id: u32) -> Session {
         Session {
-            account: Arc::new(AccountSession::default()),
+            account: Arc::new(AccountSession { group_id, ..AccountSession::default() }),
             char_server_socket: None,
             map_server_socket: None,
             account_id,

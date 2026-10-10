@@ -41,6 +41,10 @@ impl DuelBook {
         self.by_char.get(&char_id).copied()
     }
 
+    fn invitation_of(&self, char_id: u32) -> Option<u32> {
+        self.invites.get(&char_id).copied()
+    }
+
     fn prune(&mut self, is_online: impl Fn(u32) -> bool) {
         let offline: Vec<u32> = self.by_char.keys().copied().filter(|id| !is_online(*id)).collect();
         for char_id in offline {
@@ -126,6 +130,11 @@ impl Duels {
 
     pub fn duel_of(&self, char_id: u32) -> Option<u32> {
         self.book().duel_of(char_id)
+    }
+
+    /// The duel a character was invited to and has not answered.
+    pub fn invitation_of(&self, char_id: u32) -> Option<u32> {
+        self.book().invitation_of(char_id)
     }
 
     pub fn prune(&self, is_online: impl Fn(u32) -> bool) {

@@ -302,6 +302,13 @@
     "start_y": 191,
     "max_bots": 20,
     "action_timeout_secs": 30,
-    "idle_logout_secs": 1200
+    "idle_logout_secs": 1200,
+    "command_group": 1
+  },
+  "client_data": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 6903,
+    "root": "config/client-data"
   }
 }

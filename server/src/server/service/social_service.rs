@@ -70,6 +70,7 @@ impl Server {
     }
 
     pub(crate) fn tell(&self, char_id: u32, text: &str) {
+        crate::server::model::reply_capture::record_reply(char_id, text);
         self.send_raw(char_id, wire::notify_player_chat(text.as_bytes()));
     }
 

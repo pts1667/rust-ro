@@ -24,7 +24,7 @@ const WEAPON_LIST_PACKET: u16 = 0x0221;
 const AUTO_SPELL_LIST_PACKET: u16 = 0x01cd;
 const WEAPON_REFINE_MESSAGE_PACKET: u16 = 0x0223;
 const MENU_LIFETIME_MS: u128 = 120_000;
-const MENU_CANCELLED: u16 = 0xffff;
+pub(crate) const MENU_CANCELLED: u16 = 0xffff;
 /// Weapon refine entries and messages use the inventory index shifted past the two reserved slots.
 const CLIENT_INDEX_OFFSET: u32 = 2;
 
@@ -65,6 +65,38 @@ pub enum SkillMenuChoice {
     Repair(u16),
     AutoSpell(u32),
     StarPlace(u8),
+}
+
+/// One thing a pending menu lets the character pick: `choice` is the number to answer with.
+#[derive(Debug, Clone, PartialEq)]
+pub struct MenuOffer {
+    pub choice: u32,
+    pub name: String,
+}
+
+impl SkillMenu {
+    /// The choice a client sends for `value`, one of the `choice` of the offers.
+    pub fn choice(&self, value: u32) -> Result<SkillMenuChoice, String> {
+        let narrow = |value: u32| u16::try_from(value).map_err(|_| format!("{value} is not a choice of this menu"));
+        Ok(match self.kind {
+            SkillMenuKind::MakingArrow | SkillMenuKind::ElementalConverter => SkillMenuChoice::Arrow(narrow(value)?),
+            SkillMenuKind::WeaponRefine => SkillMenuChoice::WeaponRefine(value + CLIENT_INDEX_OFFSET),
+            SkillMenuKind::RepairWeapon { .. } => SkillMenuChoice::Repair(narrow(value)?),
+            SkillMenuKind::AutoSpell => SkillMenuChoice::AutoSpell(value),
+            SkillMenuKind::StarPlace => SkillMenuChoice::StarPlace(u8::try_from(value).map_err(|_| format!("{value} is not a choice of this menu"))?),
+        })
+    }
+
+    pub fn kind_name(&self) -> &'static str {
+        match self.kind {
+            SkillMenuKind::MakingArrow => "making_arrow",
+            SkillMenuKind::ElementalConverter => "elemental_converter",
+            SkillMenuKind::WeaponRefine => "weapon_refine",
+            SkillMenuKind::AutoSpell => "auto_spell",
+            SkillMenuKind::StarPlace => "star_place",
+            SkillMenuKind::RepairWeapon { .. } => "repair_weapon",
+        }
+    }
 }
 
 /// The menu a skill opens for its caster, read from its object.
@@ -166,7 +198,42 @@ fn broken_items(character: &Character) -> Vec<usize> {
     character.inventory.iter().enumerate().filter(|(_, item)| item.as_ref().is_some_and(|item| item.is_damaged)).map(|(index, _)| index).collect()
 }
 
+fn item_name(item_id: i32) -> String {
+    GlobalConfigService::item_name_if_loaded(item_id).unwrap_or_else(|| item_id.to_string())
+}
+
+fn inventory_offer(item: &InventoryItemModel, index: usize) -> MenuOffer {
+    let name = if item.refine > 0 { format!("+{} {}", item.refine, item.name_english) } else { item.name_english.clone() };
+    MenuOffer { choice: index as u32, name }
+}
+
 impl Server {
+    /// What the character can pick in its open menu, in the order of the client list.
+    pub(crate) fn skill_menu_offers(&self, state: &ServerState, character: &Character, menu: &SkillMenu) -> Vec<MenuOffer> {
+        let item_offers = |ids: Vec<i32>| ids.into_iter().map(|id| MenuOffer { choice: id as u32, name: item_name(id) }).collect();
+        match &menu.kind {
+            SkillMenuKind::MakingArrow => item_offers(arrow_sources(character)),
+            SkillMenuKind::ElementalConverter => item_offers(self.item_service().makeable_items(character, ELEMENTAL_CONVERTER_LEVEL)),
+            SkillMenuKind::WeaponRefine => refinable_weapons(character, menu.level)
+                .into_iter()
+                .filter_map(|index| character.inventory[index].as_ref().map(|item| inventory_offer(item, index)))
+                .collect(),
+            SkillMenuKind::AutoSpell => auto_spell_choices(character, menu.level)
+                .into_iter()
+                .map(|skill| MenuOffer { choice: skill.id(), name: skill.to_name().to_string() })
+                .collect(),
+            SkillMenuKind::StarPlace => star_gladiator::level_slot(menu.level)
+                .map(|slot| vec![MenuOffer { choice: slot as u32, name: format!("Remember {}", normalize_map(character.current_map_name())) }])
+                .unwrap_or_default(),
+            SkillMenuKind::RepairWeapon { target } => {
+                let owner = if *target == character.char_id { Some(character) } else { state.get_character(*target) };
+                owner
+                    .map(|owner| broken_items(owner).into_iter().filter_map(|index| owner.inventory[index].as_ref().map(|item| inventory_offer(item, index))).collect())
+                    .unwrap_or_default()
+            }
+        }
+    }
+
     pub(crate) fn open_skill_menu(
         &self,
         state: &ServerState,

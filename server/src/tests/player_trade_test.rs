@@ -24,7 +24,7 @@ use crate::server::service::player_trade_service::{TRADE_IDLE_TIMEOUT_MS, decode
 const FIRST: u32 = 150_000;
 const SECOND: u32 = 150_001;
 
-fn fixture() -> (ServerServiceTestContext, Arc<SledRepository>) {
+pub(super) fn fixture() -> (ServerServiceTestContext, Arc<SledRepository>) {
     let (context, repository) = super::world_party_tests::fixture();
     let first_items = vec![
         InventoryRecord {

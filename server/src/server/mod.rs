@@ -54,6 +54,7 @@ use crate::util::tick::{delayed_tick, get_tick};
 
 pub mod boot;
 pub mod bots;
+pub mod client_data;
 mod game_loop;
 pub mod map_instance_loop;
 pub mod model;
@@ -834,6 +835,16 @@ impl Server {
                     .spawn_scoped(server_thread_scope, move || {
                         bots::serve(server_ref_clone);
                         info!("Shutdown bots_api_thread");
+                    })
+                    .unwrap();
+            }
+            if enable_client_interfaces && server_ref.configuration.client_data.enabled {
+                let server_ref_clone = server_ref.clone();
+                thread::Builder::new()
+                    .name("client_data_thread".to_string())
+                    .spawn_scoped(server_thread_scope, move || {
+                        client_data::serve(server_ref_clone);
+                        info!("Shutdown client_data_thread");
                     })
                     .unwrap();
             }

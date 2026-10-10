@@ -3,21 +3,39 @@
 //! A bot is an ordinary character of its own account, but nothing connects for it: the API puts the character in the game, runs its
 //! commands as game loop events, and reads the packets the server addresses to it (NPC dialogues) from the notification thread.
 //! `SKILL.md` documents the API for the agents that use it.
+mod atcommand;
 mod auth;
+mod combat;
 mod command;
+mod commerce;
+mod companions;
 mod controller;
 mod dialog;
 mod http;
 mod interaction;
 mod lifecycle;
+mod menu;
 mod observation;
 mod registry;
+mod settings;
 mod websocket;
 
 use std::sync::Arc;
 use std::time::Duration;
 
 pub use command::BotCommand;
+#[cfg(test)]
+pub(crate) use combat::DuelRequest;
+#[cfg(test)]
+pub(crate) use observation::observe;
+#[cfg(test)]
+pub(crate) use commerce::{BuyingLine, CartMove, StoreAction, VendingLine};
+#[cfg(test)]
+pub(crate) use companions::{CompanionAction, HomunculusAction, MercenaryAction, Order, PetAction};
+#[cfg(test)]
+pub(crate) use interaction::{ChatAction, PartyAction, ProgressAction, SkillCast, SkillRef, Stat, StorageAction, TradeAction};
+#[cfg(test)]
+pub(crate) use menu::{CraftAction, MenuAnswer, SkillMenuAction};
 pub use registry::BotRegistry;
 
 use crate::server::model::events::game_event::{CharacterLoadedFromClientSide, GameEvent};

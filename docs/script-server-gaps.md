@@ -51,7 +51,7 @@ These are implemented and reviewed, but nothing has been run against a live clie
 ## Test coverage
 
 - `generated_npc_trace` (release) passes. It compares the generated scripts against the expected host call trace for the converted NPCs.
-- Full server unit suite passes: 881 passed, 0 failed, 8 ignored (release mode).
+- Full server unit suite passes: 913 passed, 0 failed, 8 ignored (release mode).
 - Integration tests were not run for this pass.
 - Covered by unit tests: clone removal on spawned mobs, guardian slot reuse, the slot-clearing event from `mob_die` and its castle handler, the castle binding of a script `guardian`, guild skill lookup by id or name, constant spelling retries and the remote dialogue channel.
 - `requestguildinfo` with a callback is covered by compilation only. No converted script passes a callback.

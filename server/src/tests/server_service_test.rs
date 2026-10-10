@@ -72,6 +72,15 @@ mod map_flag_tests;
 #[path = "castle_script_test.rs"]
 mod castle_script_tests;
 
+#[path = "bot_commerce_test.rs"]
+mod bot_commerce_tests;
+
+#[path = "bot_interaction_test.rs"]
+mod bot_interaction_tests;
+
+#[path = "bot_companion_test.rs"]
+mod bot_companion_tests;
+
 #[path = "item_map_flag_test.rs"]
 mod item_map_flag_tests;
 

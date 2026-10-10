@@ -13,8 +13,10 @@ serde = { version = "1.0.152", features = ["derive"] }
 serde_path_to_error = "0.1"
 convert_case = "0.6.0"
 futures = "0.3"
-flate2 = "1.0"
+flate2 = {workspace = true}
 md5 = "0.7.0"
+encoding_rs = {workspace = true}
+zstd = {workspace = true}
 log = "0.4"
 rand = {workspace = true}
 tracing = {workspace = true}
@@ -44,6 +46,10 @@ path = "account-setup/main.rs"
 [[bin]]
 name = "scripts-build"
 path = "scripts-build/main.rs"
+
+[[bin]]
+name = "client-data-setup"
+path = "client-data/main.rs"
 
 
 [features]

@@ -6,9 +6,13 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use tokio::time::{Instant, sleep, timeout};
 
-use super::command::{BotCommand, BotRequest, DialogInput};
+use super::combat::DuelRequest;
+use super::command::{BotCommand, BotRequest, Deal, DialogInput};
+use super::commerce::{BuyingLine, CartMove, StoreAction, VendingLine};
+use super::companions::{CompanionAction, HomunculusAction, MercenaryAction, Order, PetAction};
 use super::dialog::Prompt;
-use super::interaction::{ChatAction, ItemAction, PartyAction, ProgressAction, SkillCast, SkillRef, Stat, TradeAction};
+use super::interaction::{ChatAction, ItemAction, PartyAction, ProgressAction, SkillCast, SkillRef, Stat, StorageAction, TradeAction};
+use super::menu::{CraftAction, MenuAnswer, SkillMenuAction};
 use super::lifecycle::{CreateError, NewBot, StoredBot, create_stored_bot, delete_stored_bot, find_stored_bot, load_bot_character};
 use super::registry::BotHandle;
 use crate::server::Server;
@@ -34,6 +38,8 @@ const DIALOG_WAIT: Duration = Duration::from_secs(3);
 const DIALOG_POLL: Duration = Duration::from_millis(40);
 /// The packets of a script come one after the other, the dialogue is complete when none came for this long.
 const DIALOG_QUIET: Duration = Duration::from_millis(150);
+/// The map thread settles a capture within a few ticks.
+const CAPTURE_WAIT: Duration = Duration::from_secs(3);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorKind {
@@ -100,6 +106,50 @@ impl CreateBot {
     }
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct BuyLine {
+    item_id: u32,
+    #[serde(default = "one")]
+    amount: i16,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SellLine {
+    index: usize,
+    #[serde(default = "one")]
+    amount: i16,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct VendingItem {
+    cart_index: u16,
+    #[serde(default = "one_unit")]
+    amount: u16,
+    price: u32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct VendorLine {
+    index: u16,
+    #[serde(default = "one_unit")]
+    amount: u16,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct WantedItem {
+    item_id: i32,
+    #[serde(default = "one_unit")]
+    amount: u16,
+    price: u32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct BuyerLine {
+    index: usize,
+    #[serde(default = "one_unit")]
+    amount: u16,
+}
+
 /// Everything a bot can be told to do, as the JSON of a request.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
@@ -132,6 +182,18 @@ pub enum Action {
     },
     DialogText {
         text: String,
+    },
+    /// Answers the buy or sell choice of a shop.
+    DialogShop {
+        deal: Deal,
+    },
+    /// Buys from the list a shop showed.
+    DialogBuy {
+        items: Vec<BuyLine>,
+    },
+    /// Sells items of the inventory to a shop.
+    DialogSell {
+        items: Vec<SellLine>,
     },
     DialogClose,
     /// Spends status points on a stat: `str`, `agi`, `vit`, `int`, `dex` or `luk`.
@@ -201,6 +263,139 @@ pub enum Action {
     TradeLock,
     TradeConfirm,
     TradeCancel,
+    /// Puts an inventory item in the open storage.
+    StorageDeposit {
+        index: usize,
+        #[serde(default = "one_amount")]
+        amount: u32,
+    },
+    /// Takes an item of the open storage back, by the `index` of the observation's `storage`.
+    StorageWithdraw {
+        index: usize,
+        #[serde(default = "one_amount")]
+        amount: u32,
+    },
+    StorageClose,
+    /// Puts an inventory item in the cart.
+    CartPut {
+        index: usize,
+        #[serde(default = "one_amount")]
+        amount: u32,
+    },
+    /// Takes an item of the cart (`cart` in the observation) back to the inventory.
+    CartGet {
+        index: usize,
+        #[serde(default = "one_amount")]
+        amount: u32,
+    },
+    /// Moves a cart item to the open storage.
+    CartToStorage {
+        index: usize,
+        #[serde(default = "one_amount")]
+        amount: u32,
+    },
+    /// Moves an item of the open storage to the cart.
+    CartFromStorage {
+        index: usize,
+        #[serde(default = "one_amount")]
+        amount: u32,
+    },
+    /// Opens a vending store with items of the cart.
+    VendingOpen {
+        title: String,
+        items: Vec<VendingItem>,
+    },
+    VendingClose,
+    /// Buys from the store of a vendor of the observation.
+    VendingBuy {
+        vendor: u32,
+        items: Vec<VendorLine>,
+    },
+    /// Opens a buying store, after a store license (a usable item) prepared it.
+    BuyingOpen {
+        title: String,
+        zeny_limit: u32,
+        items: Vec<WantedItem>,
+    },
+    BuyingClose,
+    /// Sells inventory items to the buying store of a buyer of the observation.
+    BuyingSell {
+        buyer: u32,
+        items: Vec<BuyerLine>,
+    },
+    /// Answers the window a skill opened (`skill_menu` in the observation) with one of its choices.
+    SkillChoose {
+        choice: MenuAnswer,
+    },
+    SkillCancel,
+    /// Makes an item of the crafting window (`crafting` in the observation).
+    Craft {
+        item_id: i32,
+        #[serde(default)]
+        additives: Vec<i32>,
+    },
+    DuelCreate {
+        #[serde(default)]
+        limit: usize,
+    },
+    DuelInvite {
+        name: String,
+    },
+    DuelAccept,
+    DuelDecline,
+    DuelLeave,
+    /// Hatches the pet egg at an inventory index, in the window that using the egg opened (`pet_eggs` in the observation).
+    PetHatch {
+        index: usize,
+    },
+    PetFeed,
+    PetPerform,
+    PetReturnToEgg,
+    PetUnequip,
+    PetRename {
+        name: String,
+    },
+    PetEmote {
+        emotion: i32,
+    },
+    /// Puts the pet accessory at an inventory index on the pet.
+    PetEquip {
+        index: usize,
+    },
+    /// Throws the taming item that was just used (`pet_capture` in the observation) at a monster. Answers with the outcome.
+    PetCapture {
+        target: u32,
+    },
+    HomunculusFeed,
+    HomunculusRename {
+        name: String,
+    },
+    HomunculusDelete,
+    HomunculusMove {
+        x: u16,
+        y: u16,
+    },
+    HomunculusFollow,
+    HomunculusAttack {
+        target: u32,
+        #[serde(default = "default_true")]
+        repeat: bool,
+    },
+    MercenaryMove {
+        x: u16,
+        y: u16,
+    },
+    MercenaryFollow,
+    MercenaryAttack {
+        target: u32,
+        #[serde(default = "default_true")]
+        repeat: bool,
+    },
+    MercenaryDismiss,
+    /// Runs an `@` command the permission group of the bots allows (`bots.command_group`), and answers with what it said.
+    Command {
+        text: String,
+    },
 }
 
 fn one_point() -> u16 {
@@ -213,6 +408,28 @@ fn one() -> i16 {
 
 fn one_amount() -> u32 {
     1
+}
+
+fn one_unit() -> u16 {
+    1
+}
+
+/// `(listed, amount)` of every line of a purchase or a sale: a line the shop did not list ends the script with an error.
+fn check_lines(lines: impl Iterator<Item = (bool, i16)>, what: &str) -> Result<(), BotError> {
+    let mut count = 0;
+    for (listed, amount) in lines {
+        count += 1;
+        if !listed {
+            return Err(BotError::invalid(format!("A line names {what} the shop does not list")));
+        }
+        if amount < 1 {
+            return Err(BotError::invalid("Every amount is at least 1"));
+        }
+    }
+    if count == 0 {
+        return Err(BotError::invalid("Give at least one line in items, or close the dialogue"));
+    }
+    Ok(())
 }
 
 struct Probe {
@@ -549,6 +766,15 @@ impl BotController {
             Action::DialogChoose { option } => self.answer(&bot, DialogInput::Choose(option)).await,
             Action::DialogNumber { value } => self.answer(&bot, DialogInput::Number(value)).await,
             Action::DialogText { text } => self.answer(&bot, DialogInput::Text(text)).await,
+            Action::DialogShop { deal } => self.answer(&bot, DialogInput::Deal(deal)).await,
+            Action::DialogBuy { items } => {
+                let lines = items.into_iter().map(|line| (line.item_id, line.amount)).collect();
+                self.answer(&bot, DialogInput::Buy(lines)).await
+            }
+            Action::DialogSell { items } => {
+                let lines = items.into_iter().map(|line| (line.index, line.amount)).collect();
+                self.answer(&bot, DialogInput::Sell(lines)).await
+            }
             Action::RaiseStat { stat, amount } => self.send(&bot, BotRequest::Progress(ProgressAction::RaiseStat { stat, amount })).await,
             Action::LearnSkill { skill } => self.send(&bot, BotRequest::Progress(ProgressAction::LearnSkill { skill })).await,
             Action::UseItem { index } => self.send(&bot, BotRequest::Item(ItemAction::Use { index })).await,
@@ -575,10 +801,86 @@ impl BotController {
             Action::TradeLock => self.send(&bot, BotRequest::Trade(TradeAction::Lock)).await,
             Action::TradeConfirm => self.send(&bot, BotRequest::Trade(TradeAction::Confirm)).await,
             Action::TradeCancel => self.send(&bot, BotRequest::Trade(TradeAction::Cancel)).await,
+            Action::StorageDeposit { index, amount } => self.send(&bot, BotRequest::Storage(StorageAction::Deposit { index, amount })).await,
+            Action::StorageWithdraw { index, amount } => self.send(&bot, BotRequest::Storage(StorageAction::Withdraw { index, amount })).await,
+            Action::StorageClose => self.send(&bot, BotRequest::Storage(StorageAction::Close)).await,
+            Action::CartPut { index, amount } => self.store(&bot, StoreAction::CartMove { how: CartMove::Put, index, amount }).await,
+            Action::CartGet { index, amount } => self.store(&bot, StoreAction::CartMove { how: CartMove::Get, index, amount }).await,
+            Action::CartToStorage { index, amount } => self.store(&bot, StoreAction::CartMove { how: CartMove::ToStorage, index, amount }).await,
+            Action::CartFromStorage { index, amount } => self.store(&bot, StoreAction::CartMove { how: CartMove::FromStorage, index, amount }).await,
+            Action::VendingOpen { title, items } => {
+                let lines = items.into_iter().map(|item| VendingLine { cart_index: item.cart_index, amount: item.amount, price: item.price }).collect();
+                self.store(&bot, StoreAction::OpenVending { title, lines }).await
+            }
+            Action::VendingClose => self.store(&bot, StoreAction::CloseVending).await,
+            Action::VendingBuy { vendor, items } => {
+                let lines = items.into_iter().map(|line| (line.index, line.amount)).collect();
+                self.store(&bot, StoreAction::BuyFromVendor { vendor, lines }).await
+            }
+            Action::BuyingOpen { title, zeny_limit, items } => {
+                let lines = items.into_iter().map(|item| BuyingLine { item_id: item.item_id, amount: item.amount, price: item.price }).collect();
+                self.store(&bot, StoreAction::OpenBuying { title, zeny_limit, lines }).await
+            }
+            Action::BuyingClose => self.store(&bot, StoreAction::CloseBuying).await,
+            Action::BuyingSell { buyer, items } => {
+                let lines = items.into_iter().map(|line| (line.index, line.amount)).collect();
+                self.store(&bot, StoreAction::SellToBuyer { buyer, lines }).await
+            }
+            Action::SkillChoose { choice } => self.send(&bot, BotRequest::SkillMenu(SkillMenuAction::Choose(choice))).await,
+            Action::SkillCancel => self.send(&bot, BotRequest::SkillMenu(SkillMenuAction::Cancel)).await,
+            Action::Craft { item_id, additives } => self.send(&bot, BotRequest::Craft(CraftAction { item_id, additives })).await,
+            Action::DuelCreate { limit } => self.send(&bot, BotRequest::Duel(DuelRequest::Create { limit })).await,
+            Action::DuelInvite { name } => self.send(&bot, BotRequest::Duel(DuelRequest::Invite { name })).await,
+            Action::DuelAccept => self.send(&bot, BotRequest::Duel(DuelRequest::Accept)).await,
+            Action::DuelDecline => self.send(&bot, BotRequest::Duel(DuelRequest::Decline)).await,
+            Action::DuelLeave => self.send(&bot, BotRequest::Duel(DuelRequest::Leave)).await,
+            Action::PetHatch { index } => self.companion(&bot, PetAction::Hatch { index }.into()).await,
+            Action::PetFeed => self.companion(&bot, PetAction::Feed.into()).await,
+            Action::PetPerform => self.companion(&bot, PetAction::Perform.into()).await,
+            Action::PetReturnToEgg => self.companion(&bot, PetAction::ReturnToEgg.into()).await,
+            Action::PetUnequip => self.companion(&bot, PetAction::Unequip.into()).await,
+            Action::PetRename { name } => self.companion(&bot, PetAction::Rename(name).into()).await,
+            Action::PetEmote { emotion } => self.companion(&bot, PetAction::Emote(emotion).into()).await,
+            Action::PetEquip { index } => self.companion(&bot, PetAction::Equip { index }.into()).await,
+            Action::PetCapture { target } => self.capture_pet(&bot, target).await,
+            Action::HomunculusFeed => self.companion(&bot, HomunculusAction::Feed.into()).await,
+            Action::HomunculusRename { name } => self.companion(&bot, HomunculusAction::Rename(name).into()).await,
+            Action::HomunculusDelete => self.companion(&bot, HomunculusAction::Delete.into()).await,
+            Action::HomunculusMove { x, y } => self.companion(&bot, HomunculusAction::Order(Order::Move { x, y }).into()).await,
+            Action::HomunculusFollow => self.companion(&bot, HomunculusAction::Order(Order::Follow).into()).await,
+            Action::HomunculusAttack { target, repeat } => self.companion(&bot, HomunculusAction::Order(Order::Attack { target, repeat }).into()).await,
+            Action::MercenaryMove { x, y } => self.companion(&bot, MercenaryAction::Order(Order::Move { x, y }).into()).await,
+            Action::MercenaryFollow => self.companion(&bot, MercenaryAction::Order(Order::Follow).into()).await,
+            Action::MercenaryAttack { target, repeat } => self.companion(&bot, MercenaryAction::Order(Order::Attack { target, repeat }).into()).await,
+            Action::MercenaryDismiss => self.companion(&bot, MercenaryAction::Dismiss.into()).await,
+            Action::Command { text } => self.send(&bot, BotRequest::Command(text)).await,
             Action::DialogClose => {
                 let reply = self.run(&bot, BotRequest::Dialog(DialogInput::Close)).await?;
                 bot.clear_dialog();
                 Ok(reply)
+            }
+        }
+    }
+
+    async fn store(&self, bot: &BotHandle, action: StoreAction) -> Result<Value, BotError> {
+        self.send(bot, BotRequest::Store(action)).await
+    }
+
+    async fn companion(&self, bot: &BotHandle, action: CompanionAction) -> Result<Value, BotError> {
+        self.send(bot, BotRequest::Companion(action)).await
+    }
+
+    /// The capture is settled by the map thread, so the call waits for the outcome the game loop records.
+    async fn capture_pet(&self, bot: &BotHandle, target: u32) -> Result<Value, BotError> {
+        let started = self.run(bot, BotRequest::Companion(PetAction::Capture { target }.into())).await?;
+        let claim = started["claim"].as_u64().unwrap_or_default();
+        let deadline = Instant::now() + CAPTURE_WAIT;
+        loop {
+            sleep(POLL_INTERVAL).await;
+            let mut outcome = self.run(bot, BotRequest::Companion(PetAction::CaptureOutcome { claim }.into())).await?;
+            if outcome["capture"] != json!("pending") || Instant::now() > deadline {
+                outcome["target"] = target.into();
+                return Ok(outcome);
             }
         }
     }
@@ -730,6 +1032,13 @@ impl BotController {
             (DialogInput::Choose(_), Prompt::Menu { options }) => {
                 return Err(BotError::invalid(format!("Choose an option from 1 to {}", options.len())));
             }
+            (DialogInput::Deal(_), Prompt::Shop) => {}
+            (DialogInput::Buy(lines), Prompt::Buy { items }) => {
+                check_lines(lines.iter().map(|(item_id, amount)| (items.iter().any(|offer| offer.item_id == *item_id), *amount)), "an item_id")?
+            }
+            (DialogInput::Sell(lines), Prompt::Sell { items }) => {
+                check_lines(lines.iter().map(|(index, amount)| (items.iter().any(|offer| offer.index == *index), *amount)), "an index")?
+            }
             (_, prompt) => {
                 return Err(BotError::invalid(format!("The conversation is waiting for {prompt:?}, not for this answer")));
             }
@@ -761,5 +1070,64 @@ impl BotController {
                 quiet_since = Instant::now();
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn parse(json: &str) -> Action {
+        serde_json::from_str(json).unwrap_or_else(|error| panic!("{json}: {error}"))
+    }
+
+    #[test]
+    fn the_cart_and_store_actions_read_the_json_of_the_documentation() {
+        assert!(matches!(parse(r#"{"type":"cart_put","index":2}"#), Action::CartPut { index: 2, amount: 1 }));
+        assert!(matches!(parse(r#"{"type":"cart_to_storage","index":0,"amount":5}"#), Action::CartToStorage { index: 0, amount: 5 }));
+        let Action::VendingOpen { title, items } = parse(r#"{"type":"vending_open","title":"Cheap","items":[{"cart_index":0,"amount":20,"price":8},{"cart_index":1,"price":3}]}"#) else {
+            panic!("not a vending_open")
+        };
+        assert_eq!((title.as_str(), items.len(), items[1].amount, items[1].price), ("Cheap", 2, 1, 3));
+        assert!(matches!(parse(r#"{"type":"vending_buy","vendor":150001,"items":[{"index":0}]}"#), Action::VendingBuy { vendor: 150001, .. }));
+        let Action::BuyingOpen { zeny_limit, items, .. } = parse(r#"{"type":"buying_open","title":"Wanted","zeny_limit":300,"items":[{"item_id":909,"amount":100,"price":5}]}"#) else {
+            panic!("not a buying_open")
+        };
+        assert_eq!((zeny_limit, items[0].item_id), (300, 909));
+        assert!(matches!(parse(r#"{"type":"buying_sell","buyer":150002,"items":[{"index":4,"amount":10}]}"#), Action::BuyingSell { buyer: 150002, .. }));
+        assert!(matches!(parse(r#"{"type":"vending_close"}"#), Action::VendingClose));
+    }
+
+    #[test]
+    fn the_menu_and_duel_actions_read_the_json_of_the_documentation() {
+        assert!(matches!(parse(r#"{"type":"skill_choose","choice":"Random"}"#), Action::SkillChoose { choice: MenuAnswer::Text(_) }));
+        assert!(matches!(parse(r#"{"type":"skill_choose","choice":716}"#), Action::SkillChoose { choice: MenuAnswer::Number(716) }));
+        assert!(matches!(parse(r#"{"type":"skill_cancel"}"#), Action::SkillCancel));
+        let Action::Craft { item_id, additives } = parse(r#"{"type":"craft","item_id":501}"#) else { panic!("not a craft") };
+        assert_eq!((item_id, additives.len()), (501, 0));
+        assert!(matches!(parse(r#"{"type":"duel_create"}"#), Action::DuelCreate { limit: 0 }));
+        assert!(matches!(parse(r#"{"type":"duel_invite","name":"Other"}"#), Action::DuelInvite { .. }));
+        assert!(serde_json::from_str::<Action>(r#"{"type":"skill_choose","choice":-1}"#).is_err());
+    }
+
+    #[test]
+    fn the_companion_and_command_actions_read_the_json_of_the_documentation() {
+        assert!(matches!(parse(r#"{"type":"pet_hatch","index":3}"#), Action::PetHatch { index: 3 }));
+        assert!(matches!(parse(r#"{"type":"pet_capture","target":1234}"#), Action::PetCapture { target: 1234 }));
+        assert!(matches!(parse(r#"{"type":"pet_return_to_egg"}"#), Action::PetReturnToEgg));
+        assert!(matches!(parse(r#"{"type":"homunculus_move","x":10,"y":12}"#), Action::HomunculusMove { x: 10, y: 12 }));
+        assert!(matches!(parse(r#"{"type":"homunculus_attack","target":9}"#), Action::HomunculusAttack { target: 9, repeat: true }));
+        assert!(matches!(parse(r#"{"type":"mercenary_attack","target":9,"repeat":false}"#), Action::MercenaryAttack { target: 9, repeat: false }));
+        assert!(matches!(parse(r#"{"type":"mercenary_dismiss"}"#), Action::MercenaryDismiss));
+        let Action::Command { text } = parse(r#"{"type":"command","text":"@go prontera"}"#) else { panic!("not a command") };
+        assert_eq!(text, "@go prontera");
+    }
+
+    #[test]
+    fn a_purchase_names_listed_items_with_a_positive_amount() {
+        assert!(check_lines([(true, 1), (true, 30)].into_iter(), "an item_id").is_ok());
+        assert!(check_lines([(true, 1), (false, 1)].into_iter(), "an item_id").is_err());
+        assert!(check_lines([(true, 0)].into_iter(), "an item_id").is_err());
+        assert!(check_lines(std::iter::empty(), "an item_id").is_err());
     }
 }

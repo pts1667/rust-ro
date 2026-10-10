@@ -14,6 +14,7 @@ fastmurmur3 = {workspace = true}
 regex-lite = {workspace = true}
 tokio = {workspace = true}
 axum = {workspace = true}
+tower-http = {workspace = true}
 futures = {workspace = true}
 sled = {workspace = true}
 dashmap = {workspace = true}
@@ -55,6 +56,10 @@ path = "../tools/packets/main.rs"
 [[bin]]
 name = "maps"
 path = "../tools/map-cache/main.rs"
+
+[dev-dependencies]
+tower = "0.5"
+zstd = {workspace = true}
 
 [features]
 visual_debugger = ["eframe", "winit"]

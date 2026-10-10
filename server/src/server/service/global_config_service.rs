@@ -39,6 +39,11 @@ impl GlobalConfigService {
         }
     }
 
+    /// English name of an item for text shown to people, `None` before `init` and for an unknown item.
+    pub fn item_name_if_loaded(id: i32) -> Option<String> {
+        unsafe { (*&raw const SERVICE_INSTANCE).as_ref() }?.find_item(id).map(|item| item.name_english.clone())
+    }
+
     pub unsafe fn instance_mut() -> &'static mut GlobalConfigService {
         (*&raw mut SERVICE_INSTANCE).as_mut().unwrap()
     }

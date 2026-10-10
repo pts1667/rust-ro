@@ -33,6 +33,7 @@ pub mod mob_spawn;
 pub use movement;
 pub use movement::path;
 pub use movement::position;
+pub mod reply_capture;
 pub mod request;
 pub mod response;
 pub mod script;

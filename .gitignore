@@ -17,3 +17,5 @@ graph.png
 *.cwasm
 # Secret of the bot API (server/src/server/bots), created on first boot when missing
 /config/bots_api_key.txt
+# Extracted client data served under /data, built by the client-data-setup tool
+/config/client-data/

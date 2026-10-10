@@ -25,6 +25,7 @@ fn failure(error: &AdminError, name: &str) -> String {
 }
 
 fn tell(server: &Server, char_id: u32, text: &str) {
+    crate::server::model::reply_capture::record_reply(char_id, text);
     use packets::packets::Packet as _;
     let mut packet = crate::util::packet::playerchat_packet(server.packetver(), text);
     server

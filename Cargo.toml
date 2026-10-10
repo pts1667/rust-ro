@@ -37,6 +37,9 @@ fastmurmur3 = "0.2.0"
 regex-lite = "0.1.6"
 tokio = { version = "1.33.0", features = ["full", "tracing"] }
 axum = { version = "0.8", default-features = false, features = ["http1", "json", "query", "tokio", "ws"] }
+tower-http = { version = "0.6", default-features = false, features = ["fs", "compression-zstd"] }
+encoding_rs = "0.8"
+zstd = "0.13"
 futures = "0.3"
 wasmtime = { version = "43.0.2", default-features = false, features = ["async", "cranelift", "pooling-allocator", "runtime", "std", "wat", "anyhow"] }
 sled = "0.34.7"
@@ -46,7 +49,7 @@ tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["chrono", "fmt"] }
 rand = "0.8"
 fastrand = "2.0.1"
-flate2 = "1.0.28"
+flate2 = "1.1"
 md5 = "0.7.0"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = { version = "1.0.142", features = ["raw_value"] }

@@ -7,7 +7,11 @@ use movement::position::Position;
 use serde_json::{Value, json};
 use tokio::sync::oneshot;
 
-use super::interaction::{ChatAction, ItemAction, PartyAction, ProgressAction, SkillCast, TradeAction};
+use super::combat::DuelRequest;
+use super::commerce::StoreAction;
+use super::companions::CompanionAction;
+use super::interaction::{ChatAction, ItemAction, PartyAction, ProgressAction, SkillCast, StorageAction, TradeAction};
+use super::menu::{CraftAction, SkillMenuAction};
 use super::observation::{self, is_walkable};
 use crate::server::Server;
 use crate::server::model::character_lifecycle::{CharacterMapReady, CharacterRespawn, SelectedCharacter};
@@ -28,6 +32,8 @@ const ITEM_PICKUP_DISTANCE: u16 = 2;
 const ITEM_APPROACH_DISTANCE: u16 = 1;
 /// Cells from which a novice's melee attack lands; the server accepts adjacent diagonals.
 const ATTACK_REACH: u16 = 1;
+const PLAYERS_AT_PEACE: &str =
+    "Players can only fight in a duel, on a PvP, GvG or battleground map, or at a castle while a siege is on";
 const APPROACH_WIDENING: [u16; 3] = [1, 3, 6];
 const APPROACH_CANDIDATES: usize = 12;
 
@@ -39,7 +45,20 @@ pub enum DialogInput {
     Choose(u8),
     Number(i32),
     Text(String),
+    /// Buy or sell at a shop.
+    Deal(Deal),
+    /// Item ids and amounts to buy.
+    Buy(Vec<(u32, i16)>),
+    /// Inventory indexes and amounts to sell.
+    Sell(Vec<(usize, i16)>),
     Close,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Deal {
+    Buy,
+    Sell,
 }
 
 #[derive(Clone)]
@@ -65,6 +84,17 @@ pub enum BotRequest {
     Party(PartyAction),
     Trade(TradeAction),
     Progress(ProgressAction),
+    Storage(StorageAction),
+    /// Carts, vending stores and buying stores.
+    Store(StoreAction),
+    /// The answer to a window a skill opened.
+    SkillMenu(SkillMenuAction),
+    Craft(CraftAction),
+    Duel(DuelRequest),
+    /// Pets, homunculi and mercenaries.
+    Companion(CompanionAction),
+    /// An `@` command, with its text.
+    Command(String),
     Stop,
     Respawn,
 }
@@ -88,6 +118,13 @@ impl BotRequest {
             BotRequest::Party(_) => "Party",
             BotRequest::Trade(_) => "Trade",
             BotRequest::Progress(_) => "Progress",
+            BotRequest::Storage(_) => "Storage",
+            BotRequest::Store(_) => "Store",
+            BotRequest::SkillMenu(_) => "SkillMenu",
+            BotRequest::Craft(_) => "Craft",
+            BotRequest::Duel(_) => "Duel",
+            BotRequest::Companion(_) => "Companion",
+            BotRequest::Command(_) => "Command",
             BotRequest::Stop => "Stop",
             BotRequest::Respawn => "Respawn",
         }
@@ -231,11 +268,18 @@ impl Server {
             BotRequest::Attack { target_id } => self.bot_attack(state, char_id, *target_id),
             BotRequest::Dialog(input) => bot_dialog(state, command.account_id, char_id, input),
             BotRequest::Item(action) => self.bot_item(state, char_id, command.account_id, action),
-            BotRequest::Skill(cast) => self.bot_skill(state, char_id, cast),
+            BotRequest::Skill(cast) => self.bot_skill(state, char_id, cast, tick),
             BotRequest::Chat(action) => self.bot_chat(state, char_id, action),
             BotRequest::Party(action) => self.bot_party(state, char_id, action),
             BotRequest::Trade(action) => self.bot_trade(state, char_id, command.account_id, action),
             BotRequest::Progress(action) => self.bot_progress(state, char_id, action),
+            BotRequest::Storage(action) => self.bot_storage(state, char_id, action),
+            BotRequest::Store(action) => self.bot_store(state, char_id, action, tick),
+            BotRequest::SkillMenu(action) => self.bot_skill_menu(state, command.account_id, char_id, action, tick),
+            BotRequest::Craft(action) => self.bot_craft(state, char_id, action, tick),
+            BotRequest::Duel(request) => self.bot_duel(state, char_id, request),
+            BotRequest::Companion(action) => self.bot_companion(state, char_id, action, tick),
+            BotRequest::Command(text) => self.bot_command(state, char_id, text),
             BotRequest::Stop => {
                 let character = state.characters_mut().get_mut(&char_id).ok_or("Character is not in game")?;
                 self.character_service().cancel_movement(character, tick);
@@ -262,7 +306,7 @@ impl Server {
         }
         let mut character = selected.into_character();
         crate::server::service::map_position_service::restore_login_position(state, &mut character)?;
-        let session = Arc::new(Session::create_for_bot(account_id, char_id, rand::random(), self.packetver()));
+        let session = Arc::new(Session::create_for_bot(account_id, char_id, rand::random(), self.packetver(), self.configuration.bots.command_group));
         state
             .character_logins
             .insert(char_id, ScriptTimerOwner { char_id, account_id, session: session.clone() });
@@ -304,7 +348,7 @@ impl Server {
             TargetKind::Item => (ITEM_PICKUP_DISTANCE, vec![ITEM_APPROACH_DISTANCE]),
             TargetKind::Warp => (0, vec![target.half_width.max(target.half_height)]),
             TargetKind::Mob => (ATTACK_REACH, vec![ATTACK_REACH]),
-            TargetKind::Player => return Err("Players can not be targeted".into()),
+            TargetKind::Player => (ATTACK_REACH, vec![ATTACK_REACH]),
         };
         if target.kind != TargetKind::Warp && distance(here, (target.x, target.y)) <= reach {
             return Ok(json!({ "kind": target.kind.name(), "in_range": true }));
@@ -365,15 +409,23 @@ impl Server {
         Err(format!("No reachable cell from where target {target_id} can be used"))
     }
 
-    /// One step of a fight: attacks when the monster is within reach, walks towards it otherwise. A walk cancels the attack, so
-    /// the client side loop of a real player (walk, then attack again) is the caller's.
-    fn bot_attack(&self, state: &ServerState, char_id: u32, target_id: u32) -> Result<Value, String> {
+    /// One step of a fight: attacks when the monster or player is within reach, walks towards it otherwise. A walk cancels the
+    /// attack, so the client side loop of a real player (walk, then attack again) is the caller's.
+    pub(crate) fn bot_attack(&self, state: &ServerState, char_id: u32, target_id: u32) -> Result<Value, String> {
         let character = state.get_character(char_id).ok_or("Character is not in game")?;
         require_active(character)?;
         match locate(state, character, target_id) {
-            Some(Target { kind: TargetKind::Mob, x, y, .. }) => {
+            Some(Target { kind: kind @ (TargetKind::Mob | TargetKind::Player), x, y, .. }) => {
+                if kind == TargetKind::Player {
+                    if state.get_character(target_id).is_some_and(|player| player.is_dead() || player.status.hp == 0) {
+                        return Ok(json!({ "gone": true }));
+                    }
+                    if !self.player_combat_target_allowed(state, character, target_id) {
+                        return Err(PLAYERS_AT_PEACE.into());
+                    }
+                }
                 if distance((character.x(), character.y()), (x, y)) <= ATTACK_REACH {
-                    if !character.is_attacking() {
+                    if !character.is_attacking() || character.attack().target != target_id {
                         self.add_to_next_tick(GameEvent::CharacterAttack(CharacterAttack { char_id, target_id, repeat: true }));
                     }
                     Ok(json!({ "in_range": true }))
@@ -383,7 +435,7 @@ impl Server {
                     self.bot_approach(state, char_id, target_id)
                 }
             }
-            Some(_) => Err("Only monsters can be attacked".into()),
+            Some(_) => Err("Only monsters and players can be attacked".into()),
             None => Ok(json!({ "gone": true })),
         }
     }
@@ -410,7 +462,7 @@ impl Server {
                 Ok(json!({ "action": "attack" }))
             }
             TargetKind::Warp => Err("Warps trigger when the character walks onto them".into()),
-            TargetKind::Player => Err("Attacking players is not supported".into()),
+            TargetKind::Player => Err("Players are not used: attack them, trade with them or talk to them".into()),
         }
     }
 }
@@ -492,7 +544,7 @@ fn route_on_grid(cells: &[u16], width: u16, height: u16, from: (u16, u16), to: (
     Some(route)
 }
 
-fn bot_session(state: &ServerState, account_id: u32, char_id: u32) -> Result<Arc<Session>, String> {
+pub(super) fn bot_session(state: &ServerState, account_id: u32, char_id: u32) -> Result<Arc<Session>, String> {
     state
         .find_session(account_id)
         .filter(|session| session.char_id == Some(char_id))
@@ -513,6 +565,10 @@ fn bot_dialog(state: &ServerState, account_id: u32, char_id: u32, input: &Dialog
         DialogInput::Choose(option) => PlayerInput::Selection(*option),
         DialogInput::Number(number) => PlayerInput::Number(*number),
         DialogInput::Text(text) => PlayerInput::Text(text.clone()),
+        DialogInput::Deal(Deal::Buy) => PlayerInput::DealType(0),
+        DialogInput::Deal(Deal::Sell) => PlayerInput::DealType(1),
+        DialogInput::Buy(lines) => PlayerInput::Purchases(lines.clone()),
+        DialogInput::Sell(lines) => PlayerInput::Sales(lines.clone()),
     };
     let sender = session
         .script_handler_channel_sender

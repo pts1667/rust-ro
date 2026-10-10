@@ -12,6 +12,7 @@ use serde_json::{Value, json};
 
 use super::auth::{ApiKey, require_key};
 use super::controller::{Action, BotController, BotError, CreateBot, ErrorKind};
+use super::settings;
 use super::websocket;
 
 const SKILL: &str = include_str!("SKILL.md");
@@ -30,6 +31,11 @@ impl IntoResponse for BotError {
 
 type Controller = State<Arc<BotController>>;
 type Reply = Result<Json<Value>, BotError>;
+
+#[derive(Deserialize)]
+struct BattleQuery {
+    name: Option<String>,
+}
 
 #[derive(Deserialize)]
 struct MapQuery {
@@ -84,6 +90,14 @@ async fn action(State(controller): Controller, Path(name): Path<String>, Json(ac
     controller.act(&name, action).await.map(Json)
 }
 
+async fn server_settings() -> Json<Value> {
+    Json(settings::server_settings())
+}
+
+async fn battle_options(Query(query): Query<BattleQuery>) -> Json<Value> {
+    Json(settings::battle_options(query.name.as_deref()))
+}
+
 async fn socket(State(controller): Controller, upgrade: WebSocketUpgrade) -> Response {
     upgrade.on_upgrade(move |socket| websocket::serve(socket, controller))
 }
@@ -93,6 +107,8 @@ pub fn router(controller: Arc<BotController>, key: Arc<ApiKey>) -> Router {
     let protected = Router::new()
         .route("/bots", get(list).post(create))
         .route("/bots/ws", get(socket))
+        .route("/bots/server/settings", get(server_settings))
+        .route("/bots/server/battle", get(battle_options))
         .route("/bots/{name}", get(show).delete(remove))
         .route("/bots/{name}/connect", post(connect))
         .route("/bots/{name}/disconnect", post(disconnect))

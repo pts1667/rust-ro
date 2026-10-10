@@ -4,7 +4,10 @@ use models::enums::class::JobName;
 use models::enums::{EnumWithMaskValueU16, EnumWithNumberValue};
 use serde::Serialize;
 
+use super::commerce::{CommerceView, commerce_view};
+use super::companions::{CompanionsView, companions_view};
 use super::interaction::target_kind;
+use super::menu::{CraftingView, SkillMenuView, crafting_view, skill_menu_view};
 use crate::server::Server;
 use crate::server::model::game_systems::PlayerTradePhase;
 use crate::server::service::status_service::StatusService;
@@ -65,6 +68,8 @@ pub struct PlayerView {
     pub name: String,
     pub x: u16,
     pub y: u16,
+    /// Whether `attack` can hit the player here: in a duel, or on a map where players fight.
+    pub attackable: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -120,6 +125,15 @@ pub struct InventoryView {
     pub kind: String,
 }
 
+/// An item of the storage the bot has open, `index` is what withdrawing takes.
+#[derive(Debug, Serialize)]
+pub struct StorageItemView {
+    pub index: usize,
+    pub item_id: i32,
+    pub name: String,
+    pub amount: i16,
+}
+
 #[derive(Debug, Serialize)]
 pub struct GameView {
     /// Whether the character stands on its map, the client side loading is done.
@@ -133,10 +147,23 @@ pub struct GameView {
     pub items: Vec<GroundItemView>,
     pub warps: Vec<WarpView>,
     pub inventory: Vec<InventoryView>,
+    /// The items of the storage while the bot has one open (a Kafra opened it), `null` otherwise.
+    pub storage: Option<Vec<StorageItemView>>,
     pub skills: Vec<SkillView>,
     pub party: Option<PartyView>,
     pub party_invitation: Option<PartyInvitationView>,
     pub trade: Option<TradeView>,
+    /// A skill waiting for a choice (Teleport, Warp Portal, Arrow Crafting...): answer with `skill_choose`.
+    pub skill_menu: Option<SkillMenuView>,
+    /// The window of Pharmacy or a forging skill: `craft` makes one of its items.
+    pub crafting: Option<CraftingView>,
+    /// The duel the bot is in.
+    pub duel: Option<u32>,
+    /// A duel invitation waits for `duel_accept` or `duel_decline`.
+    pub duel_invitation: bool,
+    pub companions: CompanionsView,
+    #[serde(flatten)]
+    pub commerce: CommerceView,
 }
 
 #[derive(Debug, Serialize)]
@@ -358,6 +385,29 @@ pub fn status(server: &Server, state: &ServerState, char_id: u32, tick: u128) ->
     })
 }
 
+fn storage_view(character: &Character) -> Option<Vec<StorageItemView>> {
+    let systems = &character.game_systems;
+    let records = if systems.guild_storage_open.is_some() {
+        &systems.guild_storage_items
+    } else if systems.storage_open {
+        &systems.storage_items
+    } else {
+        return None;
+    };
+    Some(
+        records
+            .iter()
+            .enumerate()
+            .map(|(index, record)| StorageItemView {
+                index,
+                item_id: record.item_id,
+                name: GlobalConfigService::item_name_if_loaded(record.item_id).unwrap_or_default(),
+                amount: record.amount,
+            })
+            .collect(),
+    )
+}
+
 pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -> Result<GameView, String> {
     let character = state.get_character(char_id).ok_or("Character is not in game")?;
     let instance = state.get_map_instance_from_character(character);
@@ -382,10 +432,17 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
                 kind: format!("{:?}", item.item_type()),
             })
             .collect(),
+        storage: storage_view(character),
         skills: Vec::new(),
         party: None,
         party_invitation: None,
         trade: None,
+        skill_menu: skill_menu_view(server, state, character, tick),
+        crafting: crafting_view(character),
+        duel: server.duels().duel_of(char_id),
+        duel_invitation: server.duels().invitation_of(char_id).is_some(),
+        companions: companions_view(character, tick),
+        commerce: commerce_view(state, character),
     };
     view.skills = skill_views(character);
     view.party = party_view(state, character);
@@ -399,7 +456,13 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
         .characters()
         .values()
         .filter(|other| other.char_id != char_id && other.map_instance_key == character.map_instance_key)
-        .map(|other| PlayerView { id: other.char_id, name: other.name.clone(), x: other.x(), y: other.y() })
+        .map(|other| PlayerView {
+            id: other.char_id,
+            name: other.name.clone(),
+            x: other.x(),
+            y: other.y(),
+            attackable: server.player_combat_target_allowed(state, character, other.char_id),
+        })
         .collect();
     let Some(instance) = instance else {
         return Ok(view);

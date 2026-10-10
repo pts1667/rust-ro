@@ -69,12 +69,13 @@ pub use vending::StoreRequest;
 #[cfg(test)]
 pub(crate) use pet_support::PetSupportHost;
 pub use pet_support::pet_support_operation;
+pub(crate) use homunculus::available_homunculus_skills;
 pub use pets::{advance_pet_hunger, pet_bonus_state, pet_constant, pet_information, pet_script_state};
 #[path = "script_world_vending.rs"]
 mod vending;
 pub use guild::guild_actor_packet;
 pub use protocol::{client_frame_length, decode_request, world_frame_length};
-pub use vending::vending_store_sign_packet;
+pub use vending::{has_cart, vending_store_sign_packet};
 
 #[derive(Deserialize)]
 pub struct ScriptWorldData {

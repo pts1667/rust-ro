@@ -42,6 +42,8 @@ pub struct Config {
     pub battle: BattleConfig,
     #[serde(default)]
     pub bots: BotsConfig,
+    #[serde(default)]
+    pub client_data: ClientDataConfig,
 }
 
 /// HTTP and WebSocket API that lets external programs drive characters, see `server/src/server/bots`.
@@ -62,6 +64,8 @@ pub struct BotsConfig {
     pub action_timeout_secs: u64,
     /// A bot nobody sent a request for in this time leaves the game, 0 keeps bots in the game until they are told to leave.
     pub idle_logout_secs: u64,
+    /// Permission group (`config/groups.json`) the bots run `@` commands as: they can use the commands it lists and no other.
+    pub command_group: u32,
 }
 
 impl Default for BotsConfig {
@@ -77,6 +81,29 @@ impl Default for BotsConfig {
             max_bots: 20,
             action_timeout_secs: 30,
             idle_logout_secs: 1200,
+            command_group: 1,
+        }
+    }
+}
+
+/// Read-only HTTP server that publishes the extracted client data under `/data`, see `server/src/server/client_data`.
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
+pub struct ClientDataConfig {
+    pub enabled: bool,
+    pub host: String,
+    pub port: u16,
+    /// Directory the `client-data-setup` tool writes; every file in it is served at `/data/<relative path>`.
+    pub root: String,
+}
+
+impl Default for ClientDataConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            host: "127.0.0.1".into(),
+            port: 6903,
+            root: "config/client-data".into(),
         }
     }
 }

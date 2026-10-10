@@ -120,8 +120,8 @@ impl ItemType {
             "Armor" => Self::Armor,
             "Weapon" => Self::Weapon,
             "Card" => Self::Card,
-            "PetEgg" => Self::PetEgg,
-            "PetArmor" => Self::PetArmor,
+            "PetEgg" | "Petegg" => Self::PetEgg,
+            "PetArmor" | "Petarmor" => Self::PetArmor,
             "Unknown2" => Self::Unknown2,
             "Ammo" => Self::Ammo,
             "Delayconsume" => Self::DelayConsume,
@@ -220,4 +220,16 @@ pub enum ItemGroup {
     Accesory,
     Jewel,
     Potion,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_spellings_of_the_item_database_name_the_pet_types() {
+        assert_eq!(ItemType::from_string("Petegg"), ItemType::PetEgg);
+        assert_eq!(ItemType::from_string("Petarmor"), ItemType::PetArmor);
+        assert_eq!(ItemType::from_string("Delayconsume"), ItemType::DelayConsume);
+    }
 }

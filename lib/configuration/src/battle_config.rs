@@ -51,6 +51,11 @@ impl BattleConfig {
         self.get(name) != 0
     }
 
+    /// Every option as (name, value, default, minimum, maximum), in the order of rathena's `battle_data`.
+    pub fn options(&self) -> impl Iterator<Item = (&'static str, i64, i64, i64, i64)> + '_ {
+        BATTLE_OPTIONS.iter().map(|(name, default, min, max)| (*name, self.get(name), *default, *min, *max))
+    }
+
     pub fn is_known(name: &str) -> bool {
         BATTLE_OPTIONS.iter().any(|(known, _, _, _)| *known == name)
     }

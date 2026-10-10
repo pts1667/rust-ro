@@ -1,11 +1,16 @@
 //! What an NPC conversation shows, rebuilt from the packets the server addresses to a bot.
 use serde::Serialize;
 
+use crate::server::service::global_config_service::GlobalConfigService;
+
 const SAY_DIALOG: u16 = 0x00b4;
 const WAIT_DIALOG: u16 = 0x00b5;
 const CLOSE_DIALOG: u16 = 0x00b6;
 const MENU_LIST: u16 = 0x00b7;
 const SELECT_DEALTYPE: u16 = 0x00c4;
+const PURCHASE_ITEMLIST: u16 = 0x00c6;
+const SELL_ITEMLIST: u16 = 0x00c7;
+const PURCHASE_RESULT: u16 = 0x00ca;
 const OPEN_EDITDLG: u16 = 0x0142;
 const OPEN_EDITDLG_STRING: u16 = 0x01d4;
 const NOTIFY_PLAYER_CHAT: u16 = 0x008e;
@@ -18,6 +23,13 @@ const FIXED_NPC_ID: std::ops::Range<usize> = 2..6;
 const VARIABLE_NPC_ID: std::ops::Range<usize> = 4..8;
 const VARIABLE_TEXT_START: usize = 8;
 const CHAT_TEXT_START: usize = 4;
+/// Header and length, then one entry per item.
+const LIST_START: usize = 4;
+/// Price, price after discount, item type, item id.
+const BUY_ENTRY_LEN: usize = 11;
+/// Inventory index, price, price after overcharge.
+const SELL_ENTRY_LEN: usize = 10;
+const PURCHASE_RESULT_CODE: usize = 2;
 /// Header, speaker id.
 const HEARD_CHAT_TEXT_START: usize = 8;
 const WHISPER_SENDER: std::ops::Range<usize> = 4..28;
@@ -34,8 +46,29 @@ pub enum Prompt {
     Menu { options: Vec<String> },
     Number,
     Text,
-    /// Buy or sell choice of a shop; shops are not drivable through the API, close the dialogue instead.
+    /// Buy or sell choice of a shop.
     Shop,
+    /// What the shop sells.
+    Buy { items: Vec<BuyOffer> },
+    /// What the shop takes from the inventory.
+    Sell { items: Vec<SellOffer> },
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct BuyOffer {
+    pub item_id: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    /// What the character pays, the discount of Discount or Compulsion Discount included.
+    pub price: i32,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct SellOffer {
+    /// The `index` of the item in the inventory of the observation.
+    pub index: usize,
+    /// What the character gets, the bonus of Overcharge included.
+    pub price: i32,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -68,6 +101,49 @@ fn conversation<'a>(dialog: &'a mut Option<Dialog>, npc_id: u32) -> &'a mut Dial
         *dialog = Some(Dialog { npc_id, lines: Vec::new(), prompt: Prompt::Running });
     }
     dialog.as_mut().expect("conversation was just created")
+}
+
+fn le_u32(packet: &[u8], at: usize) -> Option<u32> {
+    Some(u32::from_le_bytes(packet.get(at..at + 4)?.try_into().ok()?))
+}
+
+fn le_u16(packet: &[u8], at: usize) -> Option<u16> {
+    Some(u16::from_le_bytes(packet.get(at..at + 2)?.try_into().ok()?))
+}
+
+fn buy_offers(packet: &[u8]) -> Vec<BuyOffer> {
+    packet
+        .get(LIST_START..)
+        .unwrap_or_default()
+        .chunks_exact(BUY_ENTRY_LEN)
+        .filter_map(|entry| {
+            let item_id = u32::from(le_u16(entry, 9)?);
+            Some(BuyOffer {
+                item_id,
+                name: GlobalConfigService::item_name_if_loaded(item_id as i32),
+                price: le_u32(entry, 4)? as i32,
+            })
+        })
+        .collect()
+}
+
+fn sell_offers(packet: &[u8]) -> Vec<SellOffer> {
+    packet
+        .get(LIST_START..)
+        .unwrap_or_default()
+        .chunks_exact(SELL_ENTRY_LEN)
+        .filter_map(|entry| Some(SellOffer { index: usize::from(le_u16(entry, 0)?), price: le_u32(entry, 6)? as i32 }))
+        .collect()
+}
+
+fn purchase_result(code: u8) -> &'static str {
+    match code {
+        0 => "The purchase is done",
+        1 => "The purchase failed: not enough zeny",
+        2 => "The purchase failed: too heavy to carry",
+        3 => "The purchase failed: no room in the inventory",
+        _ => "The purchase failed",
+    }
 }
 
 /// Applies one server packet to the dialogue of a bot.
@@ -107,6 +183,19 @@ pub fn decode(dialog: &mut Option<Dialog>, packet: &[u8]) -> Decoded {
             conversation(dialog, npc_id).prompt = Prompt::Menu { options };
             Decoded::Dialog
         }
+        PURCHASE_ITEMLIST | SELL_ITEMLIST => {
+            let Some(current) = dialog.as_mut() else { return Decoded::Unrelated };
+            current.prompt = if id == PURCHASE_ITEMLIST {
+                Prompt::Buy { items: buy_offers(packet) }
+            } else {
+                Prompt::Sell { items: sell_offers(packet) }
+            };
+            Decoded::Dialog
+        }
+        PURCHASE_RESULT => {
+            let code = packet.get(PURCHASE_RESULT_CODE).copied().unwrap_or(u8::MAX);
+            Decoded::Message { channel: "system", text: purchase_result(code).to_string() }
+        }
         CLOSE_DIALOG => {
             *dialog = None;
             Decoded::Dialog
@@ -124,7 +213,10 @@ pub fn decode(dialog: &mut Option<Dialog>, packet: &[u8]) -> Decoded {
 
 #[cfg(test)]
 mod tests {
-    use packets::packets::{Packet, PacketZcCloseDialog, PacketZcMenuList, PacketZcSayDialog, PacketZcWaitDialog};
+    use packets::packets::{
+        Packet, PacketZcCloseDialog, PacketZcMenuList, PacketZcPcPurchaseItemlist, PacketZcPcPurchaseResult, PacketZcPcSellItemlist, PacketZcSayDialog,
+        PacketZcWaitDialog, PurchaseItem, SellItem,
+    };
 
     use super::*;
 
@@ -167,5 +259,69 @@ mod tests {
 
         assert_eq!(decode(&mut dialog, &close.raw), Decoded::Dialog);
         assert_eq!(dialog, None);
+    }
+
+    fn conversation_with(npc: u32) -> Option<Dialog> {
+        let mut dialog = None;
+        decode(&mut dialog, &say(npc, "Welcome"));
+        dialog
+    }
+
+    #[test]
+    fn what_a_shop_sells_is_read_from_its_purchase_list() {
+        let mut entries = vec![];
+        for (item_id, price, discounted) in [(501u16, 50, 44), (502, 200, 176)] {
+            let mut entry = PurchaseItem::new(PACKETVER);
+            entry.set_itid(item_id);
+            entry.set_price(price);
+            entry.set_discountprice(discounted);
+            entries.push(entry);
+        }
+        let mut packet = PacketZcPcPurchaseItemlist::new(PACKETVER);
+        packet.set_packet_length((PacketZcPcPurchaseItemlist::base_len(PACKETVER) + entries.len() * PurchaseItem::base_len(PACKETVER)) as i16);
+        packet.set_item_list(entries);
+        packet.fill_raw();
+
+        let mut dialog = conversation_with(9);
+        assert_eq!(decode(&mut dialog, &packet.raw), Decoded::Dialog);
+        let Some(Dialog { prompt: Prompt::Buy { items }, .. }) = dialog else { panic!("no purchase list: {dialog:?}") };
+        assert_eq!(items.iter().map(|offer| (offer.item_id, offer.price)).collect::<Vec<_>>(), [(501, 44), (502, 176)]);
+    }
+
+    #[test]
+    fn what_a_shop_takes_is_read_from_its_sell_list() {
+        let mut entries = vec![];
+        for (index, price, overcharged) in [(3i16, 10, 12), (7, 40, 48)] {
+            let mut entry = SellItem::new(PACKETVER);
+            entry.set_index(index);
+            entry.set_price(price);
+            entry.set_overchargeprice(overcharged);
+            entries.push(entry);
+        }
+        let mut packet = PacketZcPcSellItemlist::new(PACKETVER);
+        packet.set_packet_length((PacketZcPcSellItemlist::base_len(PACKETVER) + entries.len() * SellItem::base_len(PACKETVER)) as i16);
+        packet.set_item_list(entries);
+        packet.fill_raw();
+
+        let mut dialog = conversation_with(9);
+        assert_eq!(decode(&mut dialog, &packet.raw), Decoded::Dialog);
+        let Some(Dialog { prompt: Prompt::Sell { items }, .. }) = dialog else { panic!("no sell list: {dialog:?}") };
+        assert_eq!(items.iter().map(|offer| (offer.index, offer.price)).collect::<Vec<_>>(), [(3, 12), (7, 48)]);
+    }
+
+    #[test]
+    fn a_shop_list_without_a_conversation_is_ignored_and_a_refused_purchase_is_reported() {
+        let mut packet = PacketZcPcSellItemlist::new(PACKETVER);
+        packet.set_packet_length(PacketZcPcSellItemlist::base_len(PACKETVER) as i16);
+        packet.fill_raw();
+        assert_eq!(decode(&mut None, &packet.raw), Decoded::Unrelated);
+
+        let mut result = PacketZcPcPurchaseResult::new(PACKETVER);
+        result.set_result(1);
+        result.fill_raw();
+        assert_eq!(
+            decode(&mut None, &result.raw),
+            Decoded::Message { channel: "system", text: "The purchase failed: not enough zeny".into() }
+        );
     }
 }

@@ -239,6 +239,7 @@ fn handle_itemreset(server: &Server, character: &mut crate::server::state::chara
 }
 
 fn send_chat_reply(server: &Server, char_id: u32, reply: PacketZcNotifyPlayerchat) {
+    crate::server::model::reply_capture::record_reply(char_id, &reply.msg);
     let mut packet = playerchat_packet(GlobalConfigService::instance().packetver(), &reply.msg);
     server
         .server_service()
