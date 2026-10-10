@@ -1,5 +1,7 @@
 # Cleanup of the generated scripts: plan for the orchestrating agent
 
+> **Status: not pursued.** The manual per-file cleanup was dropped after the clippy and `switch` passes; the file split and the module split ([ADR 6](../adr/6-script-modules.md)) were done instead. This plan and its paths (`scripts/<group>/src/...`) describe the layout before the module split. It is kept for reference.
+
 This document is the brief for a fresh session. You are the orchestrator of a large, mostly mechanical refactor: about 285 generated Rust files under `scripts/` have to be rewritten so that they read like hand-written code, without changing behaviour. You do not rewrite the files yourself. You launch one cheap subagent per file, compile the results, and send failures back.
 
 You should run 3 Haiku 5.5 subagents with high reasoning, and rotate (reuse) them between the file cleanup tasks for code consistency.

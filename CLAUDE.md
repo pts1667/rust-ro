@@ -14,6 +14,10 @@ cargo run --package server --bin server
 
 # Run with visual debugger (requires visual_debugger feature)
 cargo run --package server --bin server --features visual_debugger
+
+# Build every NPC, event, item and pet script into config/wasm/modules/<name>.wasm
+# (needs `rustup target add wasm32-unknown-unknown`; restart the server afterwards)
+cargo run --package tools --bin scripts-build --release
 ```
 
 ### Testing
@@ -26,6 +30,10 @@ cargo test --features integration_tests
 
 # Run unit tests only
 cargo test --features unit_tests
+
+# Replay what every NPC and event asks the host to do against npc_traces.json.
+# After changing a script on purpose, set UPDATE_TRACES=1 and rerun to record the new digests
+cargo test --release -p server npc_trace
 ```
 
 ## Architecture Overview
@@ -57,7 +65,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `server/`: Core server implementation
 - `server/src/server/boot/`: Server initialization (map loading, script compilation, etc.)
 - `server/src/server/service/`: Business logic layer (character, battle, inventory, etc.)
-- `server/src/server/repository/`: Data access layer with sled integration
+- `server/src/repository/`: Data access layer with sled integration
 - `server/src/server/request_handler/`: Packet handling controllers
 - `server/src/server/script/`: Typed game API for compiled Wasmtime NPC and item modules
 - `server/src/server/state/`: Game state management (characters, maps, mobs)
@@ -66,18 +74,32 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `server/src/server/map_instance_loop.rs`: Implementation of map instance loop, responsible to handle action on a specific map, like interaction with MOB or NPC. There is one loop per map instance thread.
 - `server/src/server/persistence.rs`: Implementation of an event loop for all database interaction which can be defered.
 - `server/src/server/request_handler/mod.rs`: A function calling packet parser then by downcasting reference to the packet implementation route the request to the right function to handle it.
-- `server/src/server/model/events/game_event.rs`: Contains enumeration of game event, that are handled by the game loop. It is used for message passing between request handler thread and game loop.
+- `server/src/server/model/events/game_event/mod.rs`: Contains enumeration of game event, that are handled by the game loop. It is used for message passing between request handler thread and game loop.
 - `server/src/server/model/events/client_notification.rs`: Enumeration for sending packet to the client
-- `server/src/server/state/server.rs`: Access to server state, access should only be done from game loop, state can be accessed for mutability in an unsafe way, thus it is mandatory to access it only from main game loop
-- `/src/repository/`: data access layer, implemented with sled key/value storage and transactions.
-- `/src/tests/`: unit and integration test of the server
+- `server/src/server/state/server.rs`: Access to server state, access should only be done from game loop, it is locked only by the game loop (see Server state below)
+- `server/src/tests/`: unit and integration test of the server
 - `lib/`: crate for specific logic implementation
   - `lib/configuration`: Structure for configuration the server. This is where configuration entry should be added 
   - `lib/models`: Structures shared accross crates
   - `lib/packets`: Structures of all packets exchanged between client and server
   - `lib/skills`: Implementation of all class skills, one file per skill under `skills/<job>/` (player) and `npc/` (monster). Each skill implements the `Skill` trait, which holds its behaviour as default-overridable hooks. These files are hand-maintained: do not run `tools/skills` without `--overwrite-hand-written-skills`, it overwrites them.
+  - `lib/script-sdk`: wire protocol between the server and the Wasm script modules (`Function`, `Request`, `Value`, `Entry`)
+  - `lib/script-sdk-2`: typed API that scripts are written against (`Ctx`, `script_module!`), see `docs/script-sdk-2.md`
+  - `lib/script-runtime`: Wasmtime runtime for the modules (pooling allocator, memory and host-call budgets)
+- `scripts/`: cargo workspace of the Wasm script modules, see Scripts below
+
+### Scripts (NPC, event, item and pet modules)
+- NPC and item behavior is Rust compiled to WebAssembly and run by Wasmtime. The sources are a cargo workspace in `scripts/` (`scripts/Cargo.toml`, one `Cargo.lock`, one `target/`); the original rathena `.txt` scripts are only import inputs and are never interpreted.
+- One crate per module, built to `config/wasm/modules/<crate name>.wasm`: `scripts/{towns,misc,jobs,quests}/<module>` hold the NPCs converted from rathena (about 100 modules, one per rathena folder or large file, named after its path such as `quests_ein`), `scripts/systems` the hand-written NPCs (warper, job masters, castles, weddings, battlegrounds), `scripts/items` and `scripts/pets` the item and pet scripts keyed by id, `scripts/shared` the `function script` library every module can call. Design: `docs/adr/6-script-modules.md`.
+- `config/wasm/npcs.json` and `events.json` place every NPC and event label: each entry names its `module` and `entry`. The server loads every `*.wasm` of `scripting.modules_dir` (`config/wasm/modules`), so a new module needs no registration beyond its manifest entries.
+- Scripts are written against `lib/script-sdk-2` (`docs/script-sdk-2.md`), on top of the wire protocol of `lib/script-sdk` (`Function`, `Request`, `Value`, `Entry`). A module registers its scripts with `script_sdk_2::script_module!` in its `lib.rs`. Most converted files are hand-maintained now; a file whose first line is `// Generated by tools/scripts-import/convert_sdk2.py` is still generator output.
+- `lib/script-runtime` runs the modules from one pooling allocator shared by all of them (4000 concurrent runs, 1 MiB of linear memory each, a 256 KiB guest stack). Guests have no WASI.
+- A script request that needs the server goes through `server/src/server/script/game_api.rs` to a handler in `server/src/server/service/script_*.rs`. Behavior the server only partly implements is listed in `docs/script-server-gaps.md`: read it before relying on a command.
+- `tools/scripts-import/convert_npcs.py --write` targets the layout from before the module split and must not be run until it is ported. `gen_sdk2_constants.py` and `gen_sdk2_bonus.py` still work.
+
 ### Configuration and Data
 - `config.json`: Main server configuration (copy from `config.template.json`)
+- `config/wasm/`: script assets: `modules/*.wasm` (built, tracked), `npcs.json`, `events.json`, `items.json`, `pets.json`, `map_flags.json`
 - Embedded sled database for persistent data (accounts, characters, etc.)
 
 ### Sending packet to the client
@@ -122,6 +144,13 @@ This section contains guidance for common implementation tasks
 - Anything else: set the `Route`, then add the bespoke code in the matching `server/src/server/script/skill_*.rs` file (name branches live there). Lowering the number of `Unrouted` skills means editing `UNROUTED_BASELINE` in the tests of `script/skill.rs`.
 - Passive effects are read through `known_skill_level`/`learned_level`: stat effects in `StatusService::passive_skill_bonuses` (`status_service.rs`), damage effects in `battle_service.rs`.
 - Monster (`NPC_*`) skills with bespoke server behavior are `MonsterSkill` variants in `server/src/server/script/monster_skill.rs`. Read them with `metadata.monster_skill()`; do not compare skill names.
+
+## How to change or add an NPC script?
+- Edit the crate under `scripts/<group>/<module>/src/`, run `cargo run --package tools --bin scripts-build --release`, then `cargo test --release -p server npc_trace`. The trace test fails when what a script asks the host to do changes; if the change is intended, rerun it with `UPDATE_TRACES=1` and commit `server/src/server/script/npc_traces.json` with the script.
+- A new NPC or event needs its handler in the `npcs`/`events` table of the module's `script_module!` and an entry in `config/wasm/npcs.json` or `events.json` (`module`, `entry`). Trace keys contain the module name, so renaming a module rewrites its keys.
+- A new module is a directory with a `Cargo.toml` (package name = directory name, `crate-type = ["cdylib"]`, dependencies `script-sdk-2.workspace = true` and `shared.workspace = true`, copy a neighbour) under `scripts/<group>/`. The workspace glob and `scripts-build` pick it up.
+- A command the host does not support yet is added as a `Function` variant in `lib/script-sdk`, an optional typed wrapper in `lib/script-sdk-2`, and a handler routed from `game_api.rs`. Rebuild every module after changing `lib/script-sdk`.
+- After adding a constant a script names, run `python tools/scripts-import/gen_sdk2_constants.py`. It only sees `ctx.constant("NAME")` and `constants::NAME`, not names kept in arrays; the server retries a name it does not know in other spellings (upper, lower, title case).
 
 ## How to implement a bitflag?
 - Create the enum in `lib/models/src/enums/` (add to existing file or create new one)

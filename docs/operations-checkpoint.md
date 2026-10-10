@@ -4,13 +4,12 @@ Handoff for the "implement all missing operations" goal (pre-renewal only). It l
 
 ## Working-tree notes for the next session
 
-- The Fire Pillar, Demonstration, `nogo`, `loadevent` and NPC touch work (2026-10-06) is uncommitted on `master`.
 - The checkout's `.cargo/config.toml` uses the `mold` linker; if it is not installed, export `RUSTFLAGS="-C link-arg=-fuse-ld=lld"` for each cargo invocation instead of editing the config.
-- Tests (2026-10-06): 704 server unit tests, 473 server integration tests and `test_mapflags.py` (3) pass. The two earlier failures were stale fixtures and are fixed. `character_service_tests::test_change_map_should_defer_position_update_in_db` has a 200 ms latch timeout and can flake under heavy load; it passed on repeated reruns.
+- Tests (2026-10-10): 881 server unit tests pass in release mode (8 ignored). Integration tests and `test_mapflags.py` were last run on 2026-10-06 (473 and 3 passed). `character_service_tests::test_change_map_should_defer_position_update_in_db` has a 200 ms latch timeout and can flake under heavy load; it passed on repeated reruns.
 - Mob statuses built from the mob model now clamp HP to at least 1 (a 0-HP Treasure Chest otherwise started dead).
-- The Wasm script modules (`config/wasm/modules/*.wasm`) match the current SDK and sources; rebuild them with `scripts-build`. `tools/scripts-import/import_npcs.py` regenerates the `systems` entries of `config/wasm/npcs.json` and `events.json`, and keeps the entries `convert_npcs.py` wrote.
+- The Wasm script modules (`config/wasm/modules/*.wasm`, about 100 crates in the `scripts/` workspace) match the current SDK and sources; rebuild them with `scripts-build`. `tools/scripts-import/import_npcs.py` regenerates the `systems` entries of `config/wasm/npcs.json` and `events.json`, and keeps the entries `convert_npcs.py` wrote.
 - Startup emits one nonfatal warning for the missing warp include `pre-re/warps/other/sign.txt`.
-- Compiler warnings remain (about 100 in the server crate).
+- The server crate builds without compiler warnings; the script workspace has a few dead-variant warnings.
 - Skip exhaustive testing unless the user asks; the standing instruction was build checks plus a bare minimum of tests.
 
 ## Implemented

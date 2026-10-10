@@ -14,7 +14,7 @@ The project keeps familiar game data names while storing persistent state in sle
 
 [Completed work and remaining operations](docs/operations-checkpoint.md) records the current checkpoint, its gameplay limits, and validation commands.
 
-Architecture and technical decision are documented [here](/doc/adr)
+Architecture and technical decision are documented [here](docs/adr)
 
 ## 1. Ambition
 
@@ -31,13 +31,13 @@ Although I mentioned above wanting to fully support packet version **20120307**,
 
 ## 3. Currently Working
 Below issues are under active development
-- [Skills issue](https://github.com/nmeylan/rust-ro/issues/11) - [Offensive skills progress](/doc/progress/offensive-skills-progress.md)
-- [Status and bonus issue](https://github.com/nmeylan/rust-ro/issues/29) - [Stats for each job level progress](/doc/progress/stats-for-each-job-level_progress.md) [Stats for each items](/doc/progress/stats-for-each-items_progress.md) [Stats for each cards](/doc/progress/stats-for-each-card_progress.md)
+- [Skills issue](https://github.com/nmeylan/rust-ro/issues/11) - [Offensive skills progress](docs/progress/offensive-skills-progress.md)
+- [Status and bonus issue](https://github.com/nmeylan/rust-ro/issues/29) - [Stats for each job level progress](docs/progress/stats-for-each-job-level_progress.md) [Stats for each items](docs/progress/stats-for-each-items_progress.md) [Stats for each cards](docs/progress/stats-for-each-card_progress.md)
 
 
 ## 4. Implementation details
 
-To understand what is going on at this project, check the [architectures notes](doc/Architecture.md).
+To understand what is going on at this project, check the [architectures notes](docs/Architecture.md).
 
 ### 4.1 Project files structure
 - `lib`: contains either, `proc-macro`, `reusable structure`, `generated code`
@@ -45,6 +45,9 @@ To understand what is going on at this project, check the [architectures notes](
   - `lib/models`: Plain old data structure to be reused in multiple modules
   - `lib/configuration`: Structure for configuration with serde deserializer implementation
   - `lib/skills`: Generated structures for skills from `configuration` and also manually implemented skills methods
+  - `lib/script-sdk`: Wire protocol between the server and the compiled NPC and item scripts
+  - `lib/script-sdk-2`: The typed API that scripts are written against, see [script-sdk-2](docs/script-sdk-2.md)
+  - `lib/script-runtime`: Wasmtime runtime that loads and runs the script modules
 - `server`: server core
   - `server/repository`: data access layer of the server, any access to dabase is written from this layer
   - `server/server`: global event loop, map instance event loop, persistence event loop
@@ -55,6 +58,8 @@ To understand what is going on at this project, check the [architectures notes](
   - `server/server/service`: any logic of the game is implemented in this layer
   - `server/server/state`: Data structure containing game state (character session, character state, mob state)
   -  `server/util`: Any utility methods
+- `scripts`: Rust workspace of the NPC, event, item and pet scripts, one crate (one Wasm module) per rathena folder or large file, see [script modules](docs/adr/6-script-modules.md)
+- `config/wasm`: the built script modules (`modules/*.wasm`) and the manifests that place them (`npcs.json`, `events.json`)
 - `tools`: code generator
   - `tools/map-cache`: generate map cache from map files
   - `tools/packets`: generate packets structure from database file
@@ -145,16 +150,18 @@ GM commands to manage players are `@ban`/`@unban`, `@charban`/`@charunban`, `@bl
 
 ### 5.3 Running the Server
 
-NPC, event, item and pet scripts run from the checked-in modules in `config/wasm` (`towns`, `misc`, `jobs`, `quests`, `systems`, `items`, `pets`). To edit and rebuild their Rust sources:
+NPC, event, item and pet scripts run from the checked-in modules in `config/wasm/modules`, about 100 `.wasm` files. The server loads every file of that directory at startup, so nothing has to be listed. To edit and rebuild their Rust sources:
 
 ```shell
 rustup target add wasm32-unknown-unknown
-cargo run --package tools --bin scripts-build
+cargo run --package tools --bin scripts-build --release
 ```
 
-The `scripting` configuration specifies `modules` (module name to `.wasm` path), `npcs_path`, `items_path`, `map_flags_path`, and `conversation_timeout_secs`. Defaults point at the assets in `config/wasm` and use a 120-second conversation timeout. Restart after rebuilding executable script code. [Script architecture and migration details](docs/adr/3-wasmtime.md).
+`scripts-build` builds the `scripts/` workspace once and installs each module as `config/wasm/modules/<name>.wasm`. Editing a script rebuilds only the modules that depend on it. Restart the server after rebuilding. When you change a script on purpose, `cargo test --release -p server npc_trace` fails until you record the new behavior with `UPDATE_TRACES=1`.
 
-The legacy NPC text files are offline import inputs. New NPC behavior is written in the matching crate under `scripts/`: `systems` holds the hand-written NPCs (warper, job masters, castles, weddings, battlegrounds), `towns`, `misc`, `jobs` and `quests` hold the converted rathena NPCs, `items` the item scripts and `pets` the pet scripts. The import tools under `tools/scripts-import/` can regenerate the initial NPC placements and convert legacy item expressions into Rust. Run `python tools/scripts-import/import_items.py` after editing an imported item source, then rebuild the Wasm module. Unsupported host operations return errors. Staged consumable changes are committed after validation.
+The `scripting` configuration specifies `modules_dir` (default `config/wasm/modules`), `npcs_path`, `items_path`, `map_flags_path`, and `conversation_timeout_secs`. An optional `modules` map (module name to `.wasm` path) replaces individual modules. Defaults point at the assets in `config/wasm` and use a 120-second conversation timeout. [Script architecture and migration details](docs/adr/3-wasmtime.md), [script modules](docs/adr/6-script-modules.md), [commands the server only partly implements](docs/script-server-gaps.md).
+
+The legacy NPC text files are offline import inputs. New NPC behavior is written in the matching crate under `scripts/`: `systems` holds the hand-written NPCs (warper, job masters, castles, weddings, battlegrounds), `towns`, `misc`, `jobs` and `quests` hold the converted rathena NPCs (a crate per folder, such as `scripts/quests/quests_ein`), `items` the item scripts and `pets` the pet scripts. The import tools under `tools/scripts-import/` can regenerate the initial NPC placements and convert legacy item expressions into Rust. Run `python tools/scripts-import/import_items.py` after editing an imported item source, then rebuild the Wasm module. Unsupported host operations return errors. Staged consumable changes are committed after validation.
 
 Run from the repository root:
 
@@ -240,16 +247,16 @@ A compilation of progress made so far, **click on streamable video below**
 https://user-images.githubusercontent.com/1909074/178155321-d3eeb4b8-32ed-4901-bbfe-b101b1a5a56d.mp4
 
 ### 7.2 Visual debugger
-![visual-debugger](doc/img/visual_debugger.PNG)
-![visual-debugger](doc/img/stats_debugger.PNG)
+![visual-debugger](docs/img/visual_debugger.PNG)
+![visual-debugger](docs/img/stats_debugger.PNG)
 Debug server state with a UI
 
 ### 7.3 Warps
-![warps](doc/img/warp_spawn.PNG)
-![warps](doc/img/warp.PNG)
+![warps](docs/img/warp_spawn.PNG)
+![warps](docs/img/warp.PNG)
 
 ### 7.4 Mobs
-![mobs](doc/img/mob_spawn.PNG)
+![mobs](docs/img/mob_spawn.PNG)
 
 
 ## 8. What has been done? ✔️
