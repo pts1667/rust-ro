@@ -76,6 +76,7 @@ pub enum CastleLifecycle {
     AnnounceConquest { map: String, guild_id: u32 },
     RestartArena { map: String },
     SummonGuardian { map: String, slot: u8 },
+    GuardianSlain { map: String, slot: u8 },
     DailyTick,
 }
 

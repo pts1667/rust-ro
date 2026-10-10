@@ -4,32 +4,38 @@ The converted NPC scripts (`scripts/`, generated from rathena) compile and pass 
 
 Status as of the blocker-clearing pass: the converter reports 4133 converted and 0 blocked. "Converted" means the script lowers to SDK calls. It does not mean every command has full server behaviour.
 
+Every row below was checked against the server code and `../rathena/src/map/script.cpp` in the verification pass that followed.
+
 ## Partial or stubbed commands
 
 | Command | Current behaviour | rathena behaviour | Where |
 | --- | --- | --- | --- |
-| `setitemscript` | Runtime error: `setitemscript is not supported: item bonus scripts are compiled into the item modules`. | Replaces an item's bonus script at run time. | `server/src/server/service/script_npc_commands.rs` |
-| `requestguildinfo` | No-op without a callback. With a callback it returns an error. | Sends guild info to the callback label. | `script_npc_commands.rs` |
-| `maprespawnguildid` clone removal | Flag `4` removes script mobs but spares guardians and Emperium. Clone-class removal is written (`RESPAWN_REMOVES_CLONES = false`, which matches rathena) but has no spawn-level test, because the test mob database has no class in 3999–20020. | Same. | `server/src/server/service/script_map_commands.rs`, `server/src/server/service/map_instance_service.rs` |
-| `getgdskilllv` | Returns `-1` for a guild skill the guild does not have. Not checked against rathena; whether `-1` is right is still open. | To confirm. | `server/src/server/script/game_api.rs` |
+| `setitemscript` | Runtime error: `setitemscript is not supported: item bonus scripts are compiled into the item modules`. Unsupported by design: rathena parses the replacement text with its script interpreter (`if`, `skill`, `itemheal` and the rest), and the server has no interpreter, because scripts are compiled ahead of time to Wasm. | Replaces an item's bonus script at run time. | `server/src/server/service/script_npc_commands.rs` |
+| `requestguildinfo` | Guild records are read from the repository on demand, so without a callback it does nothing, as the data is always available. With an event label it queues that NPC event like `donpcevent`. More than a guild and a label is an error. | Loads the guild into the cache and runs the event when it is there. | `script_npc_commands.rs` |
+| `maprespawnguildid` clone removal | Flag `4` removes script mobs but spares guardians and Emperium. Clone-class removal (`RESPAWN_REMOVES_CLONES = false`, which matches rathena's `guild_maprespawn_clones: no`) is covered by a spawn-level test that retags a spawned mob as a clone class, because the test mob database has none in 3999–20020. The range is inclusive on both ends, as in `mob_is_clone`. | Same. | `server/src/server/service/script_map_commands.rs`, `server/src/server/service/map_instance_service.rs` |
+| `getgdskilllv` | Returns `-1` when the guild does not exist and `0` when the guild lacks the skill, as rathena does. It accepts a numeric skill id or a guild skill name such as `"GD_GUARDUP"`. An unknown name reads as level `0`, as in rathena. | Same. | `server/src/server/service/castle_service.rs` |
 
 ## Guardians and castles
 
-- **Guardian index is not implemented.** Guardians are marked `Mob::guardian` (`server/src/server/state/mob.rs`). They have no index, so a script cannot address a specific guardian.
-- **Castle ownership is not checked by guardians.** Guardian spawns from `Function::Guardian` set `is_guardian`, but nothing ties a guardian to the castle owner.
-- **Clear-slot-on-death is not implemented.** rathena clears the guardian slot when a guardian dies. Here the slot stays occupied, so a respawn command can't reuse it.
-- **Agit scripts are not active.** The nguild and `guild2/agit_*` scripts convert, but all nguild lines are commented out in `npc/scripts_athena.conf`, and the castle definitions are in `db/pre-re/castle_db.yml`. They are untested in play.
+Castles that the server runs itself (`server/src/server/script/castles.json`, `castle_service.rs`) are separate from the `guardian` script command, but both give a guardian the same castle binding.
+
+- **Native castle guardians work.** They are spawned per slot with the owner's `GD_GUARDUP` bonus, defence investment and allied guilds, and carry `Mob::castle_owner` and `Mob::castle_slot`. A guardian that dies clears its `CD_ENABLED_GUARDIANxx` flag, as rathena does in `mob_dead`, so the next castle refresh does not bring it back. A castle refresh removes guardians without clearing the flag.
+- **The `guardian` script command is bound to its castle.** It takes the castle owner, allies, defence investment and `GD_GUARDUP` level from the castle of the map, accepts the optional guardian index, and returns the mob id. An index outside 0–7 and a map that is not a castle are errors, and so is a slot that already holds a living guardian, as in rathena's `mob_spawn_guardian`. The Agit castles (`nguild_*`) count as castles for this.
+- **`guardianinfo` is not implemented, on purpose.** rathena uses it only in `agit_main.txt`, which the native castle service replaces. No converted script calls it.
+- **Agit scripts are not active.** The nguild scripts convert, but rathena comments out every nguild line in `npc/scripts_athena.conf`, and the castle definitions are in `db/pre-re/castle_db.yml`. They are untested in play.
 
 ## Constant names
 
-- **Constant lookup is case-sensitive, rathena's is not.** rathena matches identifiers with `strcasecmp`, so `Ele_fire` and `Ele_Fire` are the same constant. The server's table matches the exact spelling, except the element names, which match in any case (`element_constant` in `server/src/server/script/constant.rs`). Any other spelling mismatch fails at run time with `Unknown script constant`, which stops the script. `gen_sdk2_constants.py` reports the names it cannot resolve, so run it after changing scripts.
-- **Enchant cards are not modelled.** `ITEMINFO_SUBTYPE` reports weapon or ammo type only, so no item has the `CARD_ENCHANT` subtype. Scripts that skip enchant cards behave as if none exist.
+- **Constant lookup is case-sensitive underneath, rathena's is not.** rathena matches identifiers with `strcasecmp` (`script.cpp`, `search_str`), so `Ele_fire` and `Ele_Fire` are the same constant. The server's tables hold one spelling each. When a name is not found, `constant` in `item_script_handler.rs` retries it as upper case, `Title_Case`, `PREFIX_Title_Case` and lower case, so `job_novice`, `Ele_fire` and `et_huk` resolve. A spelling outside those forms still fails with `Unknown script constant`, which stops the script.
+- **No current script depends on the retry.** `gen_sdk2_constants.py` resolves all 804 names it finds. It only sees names written as `ctx.constant("NAME")` or `constants::NAME`. Names kept in arrays or passed as arguments are invisible to it. A scan of every `SC_`, `ET_`, `EQI_`, `EFST_` and similar string literal in `scripts/` found 425 more names, and all resolve. Rerun that kind of scan after changing scripts.
+- **Enchant cards are not modelled.** `ITEMINFO_SUBTYPE` reports weapon or ammo type only, and `CARD_ENCHANT` resolves to `1` while no item has that subtype. The pre-renewal item database has no enchant cards, so scripts that skip them behave correctly.
 
 ## Attached players (`attachrid` / `detachrid`)
 
 - `attachrid` makes character commands (`set`, `getitem`, `equip`, `delequip`, `warpchar`, `isloggedin`) act on the attached player. The attached player is stored in `NpcScriptHost::attached` (`server/src/server/script/host.rs`).
-- **Dialogue to a non-session attached player is refused.** `mes`, `menu` and `next` aimed at an attached player other than the session's player return `Dialogue with an attached player is not supported`. The NPC can't talk to a second player yet.
-- **Not tested in game.** The paths are covered by code review and unit tests, not by playing through them.
+- **Dialogue goes to the attached player.** `mes`, `close`, `message`, `dispbottom` and `cutin` are sent to their client. `next`, `menu` and the input commands register an input channel on their session (`remote_dialogue.rs`), so their client's replies reach the script. The channel is released, and any window left open is closed, on `detachrid`, on a new `attachrid` and when the script ends. Attaching to a player who is in another conversation, or offline, makes the dialogue command fail.
+- **Background scripts can talk to an attached player.** The wedding ceremony in `marriage.txt` is a timer script that attaches the bride and talks to her.
+- **Not tested in game.** The channel routing and release are unit tested. The wedding flow has not been played through.
 
 ## Character commands without an in-game check
 
@@ -45,12 +51,12 @@ These are implemented and reviewed, but nothing has been run against a live clie
 ## Test coverage
 
 - `generated_npc_trace` (release) passes. It compares the generated scripts against the expected host call trace for the converted NPCs.
-- Full server unit suite passes: 920 passed, 0 failed, 8 ignored (release mode).
+- Full server unit suite passes: 881 passed, 0 failed, 8 ignored (release mode).
 - Integration tests were not run for this pass.
-- The clone-class range and `maprespawnguildid` on clones are covered only by a direct unit test of `is_clone_class`.
+- Covered by unit tests: clone removal on spawned mobs, guardian slot reuse, the slot-clearing event from `mob_die` and its castle handler, the castle binding of a script `guardian`, guild skill lookup by id or name, constant spelling retries and the remote dialogue channel.
+- `requestguildinfo` with a callback is covered by compilation only. No converted script passes a callback.
 
 ## Not yet decided
 
-- Whether `setitemscript` needs a runtime mechanism for item bonuses, or stays a stub. Only the inactive `valentinesday_2012` event uses it.
-- Whether guardians need an index and castle ownership before the agit scripts are enabled.
+- Whether `setitemscript` is worth an item-script interpreter. Only the inactive `valentinesday_2012` event and unloaded custom events use it. A narrower option is to convert such calls at import time.
 - Whether nguild and agit scripts should be left out of blocker counts while they are inactive.

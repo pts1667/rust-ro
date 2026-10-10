@@ -93,6 +93,8 @@ pub struct GuardianSpawn {
     pub emperium: bool,
     pub friendly_guilds: Vec<u32>,
     pub owner_guild: u32,
+    /// Castle guardian slot, so its death can clear `CD_ENABLED_GUARDIANxx`.
+    pub slot: Option<u8>,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]

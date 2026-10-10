@@ -27,7 +27,7 @@ impl Server {
         let generation = session.set_script_handler_channel_sender(sender);
         let notifications = self.server_service().notification_sender();
         let host = NpcScriptHost { server, session: session.clone(), script: script.clone(), inputs: receiver,
-            notifications: notifications.clone(), generation, background: false, event_depth: 0, event_arguments: None, timer_context: None, logout_token: None, map_instance, dialog_open: false, attached: None, error: None };
+            notifications: notifications.clone(), generation, background: false, event_depth: 0, event_arguments: None, timer_context: None, logout_token: None, map_instance, dialog_open: false, attached: None, remote_dialogue: Default::default(), error: None };
         let vm = self.script_service().vm.clone();
         let entry = script.entry_id;
         let npc_id = script.id;

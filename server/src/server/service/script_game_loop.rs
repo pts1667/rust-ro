@@ -275,7 +275,7 @@ impl Server {
             inputs,
             notifications: self.server_service().notification_sender(),
             map_instance: character.current_map_instance(),
-            dialog_open: false, attached: None,
+            dialog_open: false, attached: None, remote_dialogue: Default::default(),
             error: None,
         };
         let vm = self.script_service().vm.clone();

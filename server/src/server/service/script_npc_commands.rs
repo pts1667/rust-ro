@@ -422,8 +422,13 @@ impl Server {
                 Ok(Value::default())
             }
             Function::RequestGuildInfo => {
-                if arguments.len() > 1 {
-                    return Err("requestguildinfo with an event callback is not supported".into());
+                // Guild records are read from the repository on demand, so only the callback needs work.
+                let Some(event) = arguments.get(1) else { return Ok(Value::default()) };
+                if arguments.len() > 2 {
+                    return Err("requestguildinfo takes a guild and an optional event label".into());
+                }
+                if number(0)? > 0 {
+                    self.npc_event_call(state, context, Function::DoNpcEvent, std::slice::from_ref(event))?;
                 }
                 Ok(Value::default())
             }

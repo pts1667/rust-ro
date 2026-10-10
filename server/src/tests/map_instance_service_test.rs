@@ -1415,6 +1415,106 @@ mod tests {
     }
 
     #[test]
+    fn a_slain_castle_guardian_reports_its_slot_so_the_castle_stops_respawning_it() {
+        use crate::server::model::events::game_event::CastleLifecycle;
+        use crate::server::model::events::map_event::{GuardianSpawn, ScriptSpawn};
+        let context = before_each();
+        let mut state = create_empty_map_instance_state();
+        let spawn = |slot: Option<u8>| ScriptSpawn {
+            is_guardian: false,
+            event_npc: None,
+            mob_id: 1002,
+            x: 1,
+            y: 1,
+            name: "Guardian".into(),
+            amount: 1,
+            event: String::new(),
+            size: None,
+            ai: None,
+            owner_id: 0,
+            guardian: Some(GuardianSpawn { defense: 0, guard_upgrade: 0, emperium: false, friendly_guilds: Vec::new(), owner_guild: 7, slot }),
+            bg_id: 0,
+            max_hp: None,
+            lifetime_ms: None,
+            reserved_id: None,
+            area_end: None,
+        };
+        let slotted = context.map_instance_service.script_spawn(&mut state, spawn(Some(3))).unwrap()[0];
+        let unslotted = context.map_instance_service.script_spawn(&mut state, spawn(None)).unwrap()[0];
+        let slain = |events: Vec<GameEvent>| events.into_iter().filter(|event| matches!(event, GameEvent::CastleLifecycle(CastleLifecycle::GuardianSlain { .. }))).count();
+
+        context.map_instance_service.mob_die(&mut state, unslotted, 0);
+        assert_eq!(slain(context.server_task_queue.pop().unwrap_or_default()), 0);
+        context.map_instance_service.mob_die(&mut state, slotted, 0);
+        let events = context.server_task_queue.pop().unwrap();
+        assert!(events.iter().any(|event| matches!(event, GameEvent::CastleLifecycle(CastleLifecycle::GuardianSlain { slot: 3, .. }))));
+    }
+
+    #[test]
+    fn a_castle_guardian_slot_holds_one_living_guardian() {
+        use crate::server::model::events::map_event::{GuardianSpawn, ScriptSpawn};
+        let context = before_each();
+        let mut state = create_empty_map_instance_state();
+        let spawn = |slot: u8| ScriptSpawn {
+            is_guardian: true,
+            event_npc: None,
+            mob_id: 1002,
+            x: 1,
+            y: 1,
+            name: "Guardian".into(),
+            amount: 1,
+            event: String::new(),
+            size: None,
+            ai: None,
+            owner_id: 0,
+            guardian: Some(GuardianSpawn { defense: 0, guard_upgrade: 0, emperium: false, friendly_guilds: Vec::new(), owner_guild: 7, slot: Some(slot) }),
+            bg_id: 0,
+            max_hp: None,
+            lifetime_ms: None,
+            reserved_id: None,
+            area_end: None,
+        };
+        let first = context.map_instance_service.script_spawn(&mut state, spawn(4)).unwrap()[0];
+        assert!(context.map_instance_service.script_spawn(&mut state, spawn(4)).is_err());
+        assert!(context.map_instance_service.script_spawn(&mut state, spawn(5)).is_ok());
+        context.map_instance_service.mob_die(&mut state, first, 0);
+        assert!(context.map_instance_service.script_spawn(&mut state, spawn(4)).is_ok());
+    }
+
+    #[test]
+    fn respawn_removal_spares_clones_unless_asked() {
+        use crate::server::model::events::map_event::{ScriptMobCommand, ScriptSpawn};
+        let context = before_each();
+        let spawn = || ScriptSpawn {
+            is_guardian: false,
+            event_npc: None,
+            mob_id: 1002,
+            x: 1,
+            y: 1,
+            name: "Respawn Target".into(),
+            amount: 1,
+            event: String::new(),
+            size: None,
+            ai: None,
+            owner_id: 0,
+            guardian: None,
+            bg_id: 0,
+            max_hp: None,
+            lifetime_ms: None,
+            reserved_id: None,
+            area_end: None,
+        };
+        for (remove_clones, clone_removed) in [(false, false), (true, true)] {
+            let mut state = create_empty_map_instance_state();
+            let clone = context.map_instance_service.script_spawn(&mut state, spawn()).unwrap()[0];
+            // the test mob database has no clone classes, so retag a spawned mob
+            state.mobs_mut().get_mut(&clone).unwrap().mob_id = 4000;
+            context.map_instance_service.script_mob_command(&mut state, ScriptMobCommand::RemoveRespawnable { remove_clones });
+            assert_eq!(state.get_mob(clone).is_none_or(|mob| !mob.is_present()), clone_removed);
+        }
+    }
+
+    #[test]
     fn clone_class_range_matches_rathena() {
         use crate::server::state::mob::is_clone_class;
         assert!(!is_clone_class(1002));

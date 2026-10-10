@@ -12,6 +12,7 @@ mod game_api;
 pub(crate) mod game_data;
 mod host;
 mod interaction;
+mod remote_dialogue;
 pub mod item_script_handler;
 pub(crate) mod item_dialog;
 mod shop;

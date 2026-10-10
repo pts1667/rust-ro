@@ -69,6 +69,9 @@ mod party_reward_tests;
 #[path = "map_flag_test.rs"]
 mod map_flag_tests;
 
+#[path = "castle_script_test.rs"]
+mod castle_script_tests;
+
 #[path = "item_map_flag_test.rs"]
 mod item_map_flag_tests;
 

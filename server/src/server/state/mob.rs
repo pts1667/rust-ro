@@ -165,6 +165,7 @@ pub struct Mob {
     pub castle_owner: u32,
     /// Castle guardian or script guardian; `maprespawnguildid` leaves these standing.
     pub guardian: bool,
+    pub castle_slot: Option<u8>,
     pub trickcasting_until: u128,
     pub trickcasting_speed_lost: u16,
     pub bg_id: u32,
@@ -650,6 +651,7 @@ impl Mob {
             friendly_guilds: Vec::new(),
             castle_owner: 0,
             guardian: false,
+            castle_slot: None,
             trickcasting_until: 0,
             trickcasting_speed_lost: 0,
             bg_id: 0,

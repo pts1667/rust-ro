@@ -24,3 +24,14 @@ fn export_script_constant_values() {
         .collect();
     std::fs::write(values_path, serde_json::to_string_pretty(&values).expect("constant values serialise")).expect("constant values file is writable");
 }
+
+#[test]
+fn constants_match_without_regard_to_case_like_rathena() {
+    let value = |name: &str| constant(name).unwrap();
+    assert_eq!(value("JOB_NOVICE"), value("Job_Novice"));
+    assert_eq!(value("job_novice"), value("Job_Novice"));
+    assert_eq!(value("Ele_fire"), value("Ele_Fire"));
+    assert_eq!(value("ELE_FIRE"), value("Ele_Fire"));
+    assert_eq!(value("et_huk"), value("ET_HUK"));
+    assert!(constant("Job_Imaginary").is_err());
+}

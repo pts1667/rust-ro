@@ -10,7 +10,8 @@ use crate::util::packet::playerchat_packet;
 
 impl NpcScriptHost {
     pub fn send_packet<'a>(&'a self, packet: &mut dyn Packet) -> impl std::future::Future<Output = Result<(), String>> + Send + 'a {
-        let mut notification = Notification::Char(CharNotification::new(self.session.char_id(), std::mem::take(packet.raw_mut())));
+        let target = self.attached.map_or_else(|| self.session.char_id(), |attached| attached.char_id);
+        let mut notification = Notification::Char(CharNotification::new(target, std::mem::take(packet.raw_mut())));
         async move { loop {
             if !self.current() { return Err("Conversation cancelled".into()); }
             match self.notifications.try_send(notification) {
@@ -25,10 +26,22 @@ impl NpcScriptHost {
     pub async fn interaction(&mut self, function: Function, arguments: Vec<Value>) -> Reply {
         let packetver = self.server.packetver();
         let npc = self.script.id;
-        match function {
-            Function::Mes | Function::Next | Function::Select | Function::InputNumber | Function::InputString => self.dialog_open = true,
-            Function::Close => self.dialog_open = false,
-            _ => {}
+        let remote = self.remote_player();
+        let dialogue = matches!(function, Function::Mes | Function::Close | Function::Next | Function::Select | Function::InputNumber | Function::InputString);
+        if let Some(remote) = remote.filter(|_| dialogue) {
+            self.remote_dialogue.open(self.server.sessions(), remote.char_id, npc, &self.notifications, packetver)?;
+        }
+        let window_open = match function {
+            Function::Mes | Function::Next | Function::Select | Function::InputNumber | Function::InputString => Some(true),
+            Function::Close => Some(false),
+            _ => None,
+        };
+        if let Some(open) = window_open {
+            if remote.is_some() {
+                self.remote_dialogue.set_window_open(open);
+            } else {
+                self.dialog_open = open;
+            }
         }
         match function {
             Function::Mes => {

@@ -442,6 +442,7 @@ fn compiled_wasm_npc_reads_and_writes_unit_data_through_the_real_host_and_map_lo
             logout_token: None,
             dialog_open: false,
             attached: None,
+            remote_dialogue: Default::default(),
             error: None,
         },
         replies: vec![],

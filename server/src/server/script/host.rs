@@ -77,6 +77,7 @@ pub struct NpcScriptHost {
     /// The client shows a dialogue window the script has not closed yet.
     pub dialog_open: bool,
     pub attached: Option<AttachedPlayer>,
+    pub remote_dialogue: super::remote_dialogue::RemoteDialogue,
     pub error: Option<String>,
 }
 
@@ -87,8 +88,14 @@ impl NpcScriptHost {
         if char_id == 0 {
             return Ok(Value::Number(0));
         }
+        self.remote_dialogue.release();
         self.attached = Some(AttachedPlayer { char_id, account_id });
         Ok(Value::Number(1))
+    }
+
+    /// The attached player when they are not the one who started the conversation.
+    pub fn remote_player(&self) -> Option<AttachedPlayer> {
+        self.attached.filter(|attached| attached.char_id != self.session.char_id())
     }
 
     pub fn current(&self) -> bool {
@@ -122,6 +129,9 @@ impl NpcScriptHost {
         if !self.current() {
             return Err("Conversation cancelled".into());
         }
+        if self.remote_player().is_some() {
+            return self.remote_dialogue.receive().await;
+        }
         self.inputs
             .recv()
             .await
@@ -143,7 +153,7 @@ impl Host for NpcScriptHost {
                 _ => {},
             }
         }
-        if self.session.char_id == Some(0) && matches!(&request, Request::Call { function: Function::Shop | Function::Mes | Function::Close | Function::Next | Function::Select | Function::InputNumber | Function::InputString | Function::Message | Function::DispBottom | Function::Cutin, .. }) {
+        if self.session.char_id == Some(0) && self.attached.is_none() && matches!(&request, Request::Call { function: Function::Shop | Function::Mes | Function::Close | Function::Next | Function::Select | Function::InputNumber | Function::InputString | Function::Message | Function::DispBottom | Function::Cutin, .. }) {
             return Err("NPC interaction requires an attached player".into());
         }
         match request {
@@ -158,6 +168,7 @@ impl Host for NpcScriptHost {
             Request::Call {
                 function: Function::DetachRid, ..
             } => {
+                self.remote_dialogue.release();
                 self.attached = None;
                 Ok(Value::default())
             }
@@ -203,9 +214,6 @@ impl Host for NpcScriptHost {
                         | Function::Cutin
                 ) =>
             {
-                if self.attached.is_some_and(|attached| attached.char_id != self.session.char_id()) {
-                    return Err("Dialogue with an attached player is not supported".into());
-                }
                 self.interaction(function, arguments).await
             }
             Request::ReportError(error) => {

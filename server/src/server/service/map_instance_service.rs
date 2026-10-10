@@ -698,6 +698,11 @@ impl MapInstanceService {
         if request.amount == 0 {
             return Err("Script monster count must be positive".into());
         }
+        if let Some(slot) = request.guardian.as_ref().and_then(|guardian| guardian.slot) {
+            if state.mobs().values().any(|mob| mob.castle_slot == Some(slot) && mob.is_present()) {
+                return Err(format!("Castle guardian slot {slot} already has a guardian"));
+            }
+        }
         let ai = request.ai.unwrap_or(0);
         if ai > 3 {
             return Err("Monster AI is unavailable in pre-renewal".into());
@@ -797,6 +802,7 @@ impl MapInstanceService {
         }
         mob.friendly_guilds = guardian.friendly_guilds.clone();
         mob.castle_owner = guardian.owner_guild;
+        mob.castle_slot = guardian.slot;
     }
 
     fn mob_from_model(&self, id: u32, x: u16, y: u16, model: &crate::repository::model::mob_model::MobModel, spawn_id: u32) -> Mob {
@@ -1464,6 +1470,15 @@ impl MapInstanceService {
                         mob_job_exp: (mob_model.job_exp as u32).saturating_mul(experience_rate) / 100,
                         mob_max_hp: mob.status.max_hp(),
                         contributions,
+                    }),
+                    delayed_tick(delay, GAME_TICK_RATE),
+                );
+            }
+            if let Some(slot) = mob.castle_slot {
+                self.server_task_queue.add_to_index(
+                    GameEvent::CastleLifecycle(crate::server::model::events::game_event::CastleLifecycle::GuardianSlain {
+                        map: instance_key.map_name().to_string(),
+                        slot,
                     }),
                     delayed_tick(delay, GAME_TICK_RATE),
                 );

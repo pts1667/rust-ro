@@ -340,7 +340,7 @@ impl Server {
                 _ => None,
             },
             logout_token: None,
-            dialog_open: false, attached: None,
+            dialog_open: false, attached: None, remote_dialogue: Default::default(),
             error: None,
         };
         if let Some(guard) = event.timer_guard { state.script_timers.consume(guard); }
@@ -439,10 +439,15 @@ impl Server {
             // `guardian(map, x, y, name, class, "label", index)`: the label may come before or after the index
             let event = arguments[5..].iter().find(|value| matches!(value, Value::String(_))).cloned().unwrap_or_default();
             let spawn_arguments = [arguments[0].clone(), arguments[1].clone(), arguments[2].clone(), arguments[3].clone(), arguments[4].clone(), Value::Number(1), event];
+            let index = arguments[5..].iter().find_map(|value| match value {
+                Value::Number(index) => Some(*index),
+                _ => None,
+            });
             let mut request = self.item_service().spawn_request(&spawn_arguments, context.char_id)?;
             request.is_guardian = true;
-            self.spawn_script_monster(state, context, arguments[0].string_value()?, request)?;
-            return Ok(Value::default());
+            request.guardian = Some(self.script_guardian(arguments[0].string_value()?, index)?);
+            let id = self.spawn_script_monster(state, context, arguments[0].string_value()?, request)?;
+            return Ok(id.map_or_else(Value::default, |id| Value::Number(id as i32)));
         }
         if function == Function::AreaMonster {
             if arguments.len() < 8 {

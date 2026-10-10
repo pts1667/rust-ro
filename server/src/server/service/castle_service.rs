@@ -9,6 +9,7 @@ use crate::server::Server;
 use crate::server::model::events::client_notification::{CharNotification, Notification};
 use crate::server::model::events::game_event::{CastleLifecycle, GameEvent};
 use crate::server::model::events::map_event::{CastleCommand, GuardianSpawn, MapEvent, ScriptMapCommand, ScriptSpawn};
+use crate::server::model::game_systems::GUILD_SKILL_TREE;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_flag_service::normalize_map;
 use crate::server::state::server::ServerState;
@@ -159,6 +160,27 @@ impl Server {
         Some((guild.name, castle.name.clone()))
     }
 
+    /// The castle strength, owner and allies a script `guardian` takes on, as rathena's `mob_spawn_guardian` binds them.
+    pub(crate) fn script_guardian(&self, map: &str, slot: Option<i32>) -> Result<GuardianSpawn, String> {
+        let map = normalize_map(map);
+        if castle_name(&map).is_none() {
+            return Err(format!("No castle set at map {map}"));
+        }
+        let slot = slot
+            .map(|slot| u8::try_from(slot).ok().filter(|slot| *slot < GUARDIAN_SLOTS).ok_or_else(|| format!("Invalid guardian index {slot} for castle map {map}")))
+            .transpose()?;
+        let value = |field: u8| self.repository.castle_value(&map, field).unwrap_or(0);
+        let owner = u32::try_from(value(CD_GUILD_ID)).unwrap_or(0);
+        Ok(GuardianSpawn {
+            defense: value(CD_CURRENT_DEFENSE),
+            guard_upgrade: self.guild_skill_level(owner, GD_GUARDUP),
+            emperium: false,
+            friendly_guilds: if owner == 0 { Vec::new() } else { self.castle_friendly_guilds(owner) },
+            owner_guild: owner,
+            slot,
+        })
+    }
+
     fn set_castle_value(&self, castle: &Castle, field: u8, value: i32) {
         if let Err(error) = self.repository.set_castle_value(&castle.map, field, value) {
             error!("Castle {} field {field} update failed: {error}", castle.map);
@@ -228,7 +250,7 @@ impl Server {
     fn start_castle_arena(&self, state: &mut ServerState, castle: &Castle) {
         let defense = self.castle_value(castle, CD_CURRENT_DEFENSE);
         let mut request = spawn_request(EMPERIUM, castle.emperium[0], castle.emperium[1], "Emperium", 1);
-        request.guardian = Some(GuardianSpawn { defense, guard_upgrade: 0, emperium: true, friendly_guilds: Vec::new(), owner_guild: self.castle_owner(castle) });
+        request.guardian = Some(GuardianSpawn { defense, guard_upgrade: 0, emperium: true, friendly_guilds: Vec::new(), owner_guild: self.castle_owner(castle), slot: None });
         self.send_castle_command(state, castle, CastleCommand::SpawnUnlessPresent(request));
     }
 
@@ -259,7 +281,7 @@ impl Server {
     fn spawn_guardian_slot(&self, state: &mut ServerState, castle: &Castle, slot: usize, defense: i32, guard_upgrade: u8, friendly: &[u32]) {
         let guardian = &castle.guardians[slot];
         let mut request = spawn_request(guardian_class(guardian.kind), guardian.x, guardian.y, "", 1);
-        request.guardian = Some(GuardianSpawn { defense, guard_upgrade, emperium: false, friendly_guilds: friendly.to_vec(), owner_guild: friendly.first().copied().unwrap_or(0) });
+        request.guardian = Some(GuardianSpawn { defense, guard_upgrade, emperium: false, friendly_guilds: friendly.to_vec(), owner_guild: friendly.first().copied().unwrap_or(0), slot: u8::try_from(slot).ok() });
         self.send_castle_command(state, castle, CastleCommand::Spawn(request));
     }
 
@@ -359,6 +381,11 @@ impl Server {
                 let friendly = self.castle_friendly_guilds(owner);
                 self.spawn_guardian_slot(state, castle, usize::from(slot), defense, self.guild_skill_level(owner, GD_GUARDUP), &friendly);
             }
+            CastleLifecycle::GuardianSlain { map, slot } => {
+                if let Some(castle) = castle_by_map(&map) {
+                    self.set_castle_value(castle, CD_ENABLED_GUARDIAN00 + slot, 0);
+                }
+            }
             CastleLifecycle::DailyTick => self.castle_daily_tick(state, tick),
         }
     }
@@ -453,7 +480,10 @@ impl Server {
             }
             Function::GetGuildSkillLevel => {
                 let guild = u32::try_from(number(0)?).map_err(|_| "Invalid guild")?;
-                let skill = u32::try_from(number(1)?).map_err(|_| "Invalid guild skill")?;
+                let skill = match arguments.get(1).ok_or("Missing guild skill")? {
+                    Value::String(name) => GUILD_SKILL_TREE.iter().find(|(_, known, ..)| known.eq_ignore_ascii_case(name)).map_or(0, |(id, ..)| *id),
+                    _ => u32::try_from(number(1)?).map_err(|_| "Invalid guild skill")?,
+                };
                 let Some(record) = self.repository.guild(guild).map_err(|error| error.to_string())? else {
                     return Ok(Value::Number(-1));
                 };

@@ -516,7 +516,7 @@ impl Server {
             event_arguments: None,
             timer_context: Some(callback.key),
             logout_token: Some(token),
-            dialog_open: false, attached: None,
+            dialog_open: false, attached: None, remote_dialogue: Default::default(),
             error: None,
         };
         let vm = self.script_service().vm.clone();

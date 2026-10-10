@@ -74,7 +74,32 @@ struct GuildStorageScriptContext {
     guild_opened_in_script: bool,
 }
 
+/// rathena matches constant names without regard to case. The tables hold one spelling each, so a miss
+/// that is not a pass-through name is retried with the usual spellings before it is rejected.
 pub fn constant(name: &str) -> Reply {
+    known_constant(name)
+        .or_else(|| passthrough_constant(name))
+        .or_else(|| alternative_spellings(name).iter().find_map(|spelling| known_constant(spelling)))
+        .ok_or_else(|| format!("Unknown script constant {name}"))
+}
+
+fn alternative_spellings(name: &str) -> Vec<String> {
+    let title = |part: &str| {
+        let mut letters = part.chars();
+        letters.next().map_or_else(String::new, |first| first.to_ascii_uppercase().to_string() + &letters.as_str().to_ascii_lowercase())
+    };
+    let title_case = name.split('_').map(title).collect::<Vec<_>>().join("_");
+    let prefix_upper = name.split_once('_').map_or_else(String::new, |(prefix, rest)| format!("{}_{}", prefix.to_ascii_uppercase(), rest.split('_').map(title).collect::<Vec<_>>().join("_")));
+    let mut spellings = Vec::new();
+    for spelling in [name.to_ascii_uppercase(), title_case, prefix_upper, name.to_ascii_lowercase()] {
+        if spelling != name && !spelling.is_empty() && !spellings.contains(&spelling) {
+            spellings.push(spelling);
+        }
+    }
+    spellings
+}
+
+fn known_constant(name: &str) -> Option<Value> {
     super::unit_data::constant(name)
         .or_else(|| crate::server::service::script_presentation_service::presentation_constant(name))
         .or_else(|| super::utilities::constant(name))
@@ -95,20 +120,17 @@ pub fn constant(name: &str) -> Reply {
             "W_BOW" => Some(Value::Number(WeaponType::Bow.value() as i32)),
             _ => None,
         })
-        .or_else(|| {
-            if name.starts_with('b')
-                || name.starts_with("SC_")
-                || name.starts_with("DT_")
-                || name.starts_with("EQI_")
-                || name.starts_with("ITEMINFO_")
-                || name.starts_with("EF_")
-            {
-                Some(Value::String(name.to_string()))
-            } else {
-                None
-            }
-        })
-        .ok_or_else(|| format!("Unknown script constant {name}"))
+}
+
+/// Bonus, status, effect and item-info names stand for themselves.
+fn passthrough_constant(name: &str) -> Option<Value> {
+    let named = name.starts_with('b')
+        || name.starts_with("SC_")
+        || name.starts_with("DT_")
+        || name.starts_with("EQI_")
+        || name.starts_with("ITEMINFO_")
+        || name.starts_with("EF_");
+    named.then(|| Value::String(name.to_string()))
 }
 
 /// `EQI_*` slot name of an equipment command.
