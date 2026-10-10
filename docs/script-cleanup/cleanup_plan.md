@@ -1,6 +1,8 @@
-# Cleanup of the generated NPC scripts: plan for the orchestrating agent
+# Cleanup of the generated scripts: plan for the orchestrating agent
 
-This document is the brief for a fresh session. You are the orchestrator of a large, mostly mechanical refactor: about 285 generated Rust files under `scripts/` have to be rewritten so that they read like hand-written code, without changing what any NPC does. You do not rewrite the files yourself. You launch one cheap subagent per file, compile the results, and send failures back.
+This document is the brief for a fresh session. You are the orchestrator of a large, mostly mechanical refactor: about 285 generated Rust files under `scripts/` have to be rewritten so that they read like hand-written code, without changing behaviour. You do not rewrite the files yourself. You launch one cheap subagent per file, compile the results, and send failures back.
+
+You should run 3 Haiku 5.5 subagents with high reasoning, and rotate (reuse) them between the file cleanup tasks for code consistency.
 
 ## Background
 
