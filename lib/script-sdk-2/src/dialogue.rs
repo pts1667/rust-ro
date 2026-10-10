@@ -51,9 +51,9 @@ impl Ctx<'_> {
     }
 
     /// Offers `options` and returns the index of the one the player picked. Cancelling the menu is an error.
-    pub fn menu(&self, options: &[&str]) -> Result<usize, Stop> {
+    pub fn menu(&self, options: &[impl AsRef<str>]) -> Result<usize, Stop> {
         let selected = self
-            .call(Function::Select, options.iter().map(|option| (*option).into()).collect())?
+            .call(Function::Select, options.iter().map(|option| option.as_ref().into()).collect())?
             .number()?;
         usize::try_from(selected)
             .ok()

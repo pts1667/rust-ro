@@ -110,6 +110,29 @@ fn npc_special_effects_are_broadcast_from_the_npc() {
 }
 
 #[test]
+fn percent_heal_changes_the_attached_player_and_a_full_loss_leaves_one_hp() {
+    let (context, _, _, target) = super::actor_unit_skill_tests::fixture();
+    let char_id = target - 1;
+    let resources = || {
+        let state = context.server.state();
+        let character = state.get_character(char_id).unwrap();
+        (character.status.hp, character.status.sp)
+    };
+    {
+        let mut state = context.server.state_mut();
+        let character = state.characters_mut().get_mut(&char_id).unwrap();
+        let snapshot = crate::server::service::status_service::StatusService::instance().to_snapshot(&character.status);
+        character.status.hp = snapshot.max_hp();
+        character.status.sp = snapshot.max_sp();
+    }
+    call_as(&context, char_id, Function::PercentHeal, vec![(-100).into(), (-100).into()]).unwrap();
+    assert_eq!(resources(), (1, 0));
+    call_as(&context, char_id, Function::PercentHeal, vec![50.into(), 0.into()]).unwrap();
+    assert!(resources().0 > 1);
+    assert!(call(&context, Function::PercentHeal, vec![10.into(), 10.into()]).is_err(), "no attached player");
+}
+
+#[test]
 fn bg_monster_returns_the_spawned_id_and_set_team_reassigns_it() {
     let (context, instance, service, _) = super::actor_unit_skill_tests::fixture();
     let spawned = call(&context, Function::BgMonster, vec![7.into(), "this".into(), 50.into(), 50.into(), "Guard".into(), 1002.into(), "".into()]).unwrap();

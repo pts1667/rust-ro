@@ -54,14 +54,14 @@ impl Battleground<'_, '_> {
         Ok(self.ctx.call(Function::BgJoin, args![bg, map, x, y, char_id])?.number()? != 0)
     }
 
-    /// Removes character `char_id` (`0` for the attached player) from their team.
-    pub fn leave(&self, char_id: i32) -> Script {
-        self.ctx.call(Function::BgLeave, args![char_id]).map(|_| ())
+    /// Removes character `char_id` (the attached player when `None`) from their team.
+    pub fn leave(&self, char_id: Option<i32>) -> Script {
+        self.ctx.call(Function::BgLeave, char_id.map(|id| args![id]).unwrap_or_default()).map(|_| ())
     }
 
     /// Like [`leave`](Self::leave), but counts as a desertion and starts the deserter penalty.
-    pub fn desert(&self, char_id: i32) -> Script {
-        self.ctx.call(Function::BgDesert, args![char_id]).map(|_| ())
+    pub fn desert(&self, char_id: Option<i32>) -> Script {
+        self.ctx.call(Function::BgDesert, char_id.map(|id| args![id]).unwrap_or_default()).map(|_| ())
     }
 
     pub fn destroy(&self, bg: i32) -> Script {

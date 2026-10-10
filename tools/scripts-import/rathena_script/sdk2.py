@@ -2,11 +2,10 @@
 
 A script with no labels, `goto`, `callsub` or local functions becomes plain functions: one for the main dialogue and one per
 `On...` event label. Anything else becomes a state machine: one `Step` enum with a variant per label, and one `run` function
-that dispatches on it. Locals are declared where they are used, as in the legacy generator, and every call runs with its own
-locals, so the behaviour matches the generated code this replaces.
+that dispatches on it. Locals are declared where they are used, and every call runs with its own locals.
 
-The statement and command lowering mirrors `codegen.BodyGenerator` one for one, so each rathena command issues the same
-host requests in the same order.
+Each rathena command issues the same host requests in the same order as the retired numeric generator did; the trace snapshot
+of `server/src/server/script/npc_trace.rs` holds the scripts to that.
 """
 
 import re
@@ -1062,7 +1061,7 @@ def unique_variants(labels):
 def lower_machine(statements, local_functions, world, base, npc):
     """A state machine: one `Step` variant per label, dispatched by one `run` function that keeps its locals between steps.
 
-    Each `run` call starts with fresh locals, so a `callsub` or local function gets its own, as the legacy generator does."""
+    Each `run` call starts with fresh locals, so a `callsub` or local function gets its own."""
     labels = {}
     for node in statements:
         if isinstance(node, Label):

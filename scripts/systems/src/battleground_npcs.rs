@@ -1,8 +1,7 @@
-use script_sdk::{Context, Function, Value};
+use script_sdk_2::{Ctx, Script, Stop};
 
-use crate::battleground_arena::{arguments, number, read};
+use crate::battleground_arena::{WAITING_ROOM, read};
 
-const WAITING_ROOM: (&str, i32, i32) = ("bat_room", 154, 150);
 const BRAVERY_BADGE: i32 = 7828;
 const VALOR_BADGE: i32 = 7829;
 const WEAPON_BADGE_COST: i32 = 100;
@@ -175,239 +174,210 @@ const ACCESSORY_JOBS: [(&str, i32, &str); 7] = [
 const ACCESSORY_COST: i32 = 500;
 const CONSUMABLES: [(i32, i32); 5] = [(12269, 10), (12270, 10), (12271, 5), (12272, 10), (12273, 10)];
 
-fn item_name(ctx: &Context, item: i32) -> Result<String, String> {
-    Ok(ctx.call(Function::GetItemName, vec![item.into()])?.text())
-}
+const EXCHANGER: &str = "Erundek";
 
-fn menu(options: &[&str]) -> Vec<String> {
-    options.iter().map(|option| option.to_string()).collect()
-}
-
-fn warp_to_waiting_room(ctx: &Context) -> Result<(), String> {
-    ctx.call(Function::Warp, vec![WAITING_ROOM.0.into(), WAITING_ROOM.1.into(), WAITING_ROOM.2.into()]).map(|_| ())
-}
-
-fn recruiter(ctx: &Context, return_code: i32) -> Result<(), String> {
-    ctx.mes("[Maroll Battle Recruiter]")?;
-    ctx.mes("Good day, adventurer.\nI'm a knight from a far country called Maroll Kingdom.")?;
+fn recruiter(ctx: &Ctx, return_code: i32) -> Script {
+    const TITLE: &str = "Maroll Battle Recruiter";
+    ctx.mes_as(TITLE, "Good day, adventurer.\nI'm a knight from a far country called Maroll Kingdom.")?;
     ctx.next()?;
-    ctx.mes("[Maroll Battle Recruiter]")?;
-    ctx.mes("The two princes of the kingdom are now battling for the throne of Maroll, and are in need of experienced soldiers like you.\nHow would you like to lend your power to one of the princes in the Maroll Kingdom?")?;
+    ctx.mes_as(TITLE, "The two princes of the kingdom are now battling for the throne of Maroll, and are in need of experienced soldiers like you.\nHow would you like to lend your power to one of the princes in the Maroll Kingdom?")?;
     ctx.next()?;
-    if ctx.select(&menu(&["Join", "Don't Join"]))? == 1 {
-        ctx.mes("[Maroll Battle Recruiter]")?;
-        ctx.mes("I'll always be stationed here for more soldiers. Feel free to come back whenever you're interested.")?;
+    if ctx.menu(&["Join", "Don't Join"])? == 1 {
+        ctx.mes_as(TITLE, "I'll always be stationed here for more soldiers. Feel free to come back whenever you're interested.")?;
         return ctx.close();
     }
-    ctx.mes("[Maroll Battle Recruiter]")?;
-    ctx.mes("May the war god bless you.")?;
-    ctx.close()?;
-    ctx.write(RETURN_VARIABLE, return_code.into())?;
-    warp_to_waiting_room(ctx)
+    ctx.mes_as(TITLE, "May the war god bless you.")?;
+    ctx.close_window()?;
+    ctx.var(RETURN_VARIABLE).set(return_code)?;
+    ctx.warp(WAITING_ROOM.map, WAITING_ROOM.x, WAITING_ROOM.y)
 }
 
-fn teleporter(ctx: &Context) -> Result<(), String> {
-    ctx.mes("[Teleporter]")?;
-    ctx.mes("Do you wish to leave the battlefield? Use my services to return to town.")?;
+fn teleporter(ctx: &Ctx) -> Script {
+    const TITLE: &str = "Teleporter";
+    ctx.mes_as(TITLE, "Do you wish to leave the battlefield? Use my services to return to town.")?;
     ctx.next()?;
-    if ctx.select(&menu(&["Leave", "Don't Leave"]))? == 1 {
-        ctx.mes("[Teleporter]")?;
-        ctx.mes("I'll be here whenever you're in need of my services.")?;
+    if ctx.menu(&["Leave", "Don't Leave"])? == 1 {
+        ctx.mes_as(TITLE, "I'll be here whenever you're in need of my services.")?;
         return ctx.close();
     }
     let code = read(ctx, RETURN_VARIABLE)?;
     let (name, map, x, y) = RETURN_POINTS[usize::try_from(code - 1).ok().filter(|index| *index < RETURN_POINTS.len()).unwrap_or(0)];
-    ctx.mes("[Teleporter]")?;
-    ctx.mes(format!("You will be sent back to {name}"))?;
-    ctx.close()?;
-    ctx.call(Function::Warp, vec![map.into(), x.into(), y.into()]).map(|_| ())
+    ctx.mes_as(TITLE, &format!("You will be sent back to {name}"))?;
+    ctx.close_window()?;
+    ctx.warp(map, x, y)
 }
 
-fn show_pages(ctx: &Context, noble: &Noble, pages: &[&[&str]]) -> Result<(), String> {
+fn show_pages(ctx: &Ctx, noble: &Noble, pages: &[&[&str]]) -> Script {
     for (index, lines) in pages.iter().enumerate() {
         if index > 0 {
             ctx.next()?;
         }
         ctx.mes(noble.title)?;
-        ctx.mes(lines.join("\n"))?;
+        ctx.mes(&lines.join("\n"))?;
     }
     Ok(())
 }
 
-fn noble(ctx: &Context, noble: &Noble) -> Result<(), String> {
-    let cutin = |name: &str, position: i32| ctx.call(Function::Cutin, vec![name.into(), position.into()]).map(|_| ());
-    cutin(noble.cutins.0, 2)?;
+fn noble(ctx: &Ctx, noble: &Noble) -> Script {
+    let fx = ctx.fx();
+    fx.cutin(noble.cutins.0, 2)?;
     ctx.mes(noble.title)?;
     ctx.mes(noble.greeting)?;
     ctx.next()?;
-    let topics = [noble.topics[0].0, noble.topics[1].0];
-    let topic = ctx.select(&menu(&topics))?;
-    cutin(noble.cutins.1, 2)?;
+    let topic = ctx.menu(&[noble.topics[0].0, noble.topics[1].0])?;
+    fx.cutin(noble.cutins.1, 2)?;
     show_pages(ctx, noble, noble.topics[topic].1)?;
     ctx.next()?;
-    if ctx.select(&menu(&[noble.joins[topic], "End Conversation"]))? == 0 {
-        cutin(noble.cutins.0, 2)?;
+    if ctx.menu(&[noble.joins[topic], "End Conversation"])? == 0 {
+        fx.cutin(noble.cutins.0, 2)?;
         show_pages(ctx, noble, noble.accept)?;
     } else {
         ctx.mes(noble.title)?;
         ctx.mes(noble.refusal)?;
     }
-    ctx.close()?;
-    cutin(noble.cutins.0, 255)?;
-    cutin(noble.cutins.1, 255)
+    ctx.close_window()?;
+    fx.cutin(noble.cutins.0, 255)?;
+    fx.cutin(noble.cutins.1, 255)
 }
 
 fn badge_label(badge: i32) -> &'static str {
     if badge == BRAVERY_BADGE { "(BB)" } else { "(VB)" }
 }
 
-fn exchange_weapon(ctx: &Context) -> Result<(), String> {
-    ctx.mes("[Erundek]")?;
-    ctx.mes("You chose ^3131FFWeapon^000000.\nThe following weapons are available for exchange with the battlefield badges.\nPlease note that items for ^3131FFBravery Badges are indicated as (BB)^000000, and ^3131FFValor Badges as (VB)^000000.")?;
-    ctx.next()?;
-    let categories: Vec<String> = WEAPON_CATEGORIES.iter().map(|category| category.0.to_string()).collect();
-    let (_, description, items) = WEAPON_CATEGORIES[ctx.select(&categories)?];
-    ctx.mes("[Erundek]")?;
-    ctx.mes(format!("The following items are available in the ^3131FF{description}^000000 category."))?;
-    ctx.next()?;
-    let mut options = Vec::with_capacity(items.len());
-    for (item, badge) in items {
-        options.push(format!("{}{}", item_name(ctx, *item)?, badge_label(*badge)));
+/// Takes `cost` of `badge` for one `item`, or says the player has too few badges.
+fn trade(ctx: &Ctx, item: i32, badge: i32, cost: i32, too_few: &str) -> Script {
+    let items = ctx.items();
+    if items.count(badge)? < cost {
+        return ctx.mes(too_few);
     }
-    let (item, badge) = items[ctx.select(&options)?];
-    let name = item_name(ctx, item)?;
-    let badge_name = item_name(ctx, badge)?;
-    let label = badge_label(badge);
-    ctx.mes("[Erundek]")?;
-    ctx.mes(format!("You chose ^3131FF{name}{label}^000000.\nYou can exchange for this item with ^FF0000{WEAPON_BADGE_COST} {badge_name}^000000.\nWould you like to exchange?"))?;
+    ctx.mes("Thank you for exchanging.")?;
+    items.take(badge, cost)?;
+    items.give(item, 1)
+}
+
+fn exchange_weapon(ctx: &Ctx) -> Script {
+    let items = ctx.items();
+    ctx.mes_as(EXCHANGER, "You chose ^3131FFWeapon^000000.\nThe following weapons are available for exchange with the battlefield badges.\nPlease note that items for ^3131FFBravery Badges are indicated as (BB)^000000, and ^3131FFValor Badges as (VB)^000000.")?;
     ctx.next()?;
-    if ctx.select(&menu(&["Do not exchange", "Exchange"]))? == 1 {
-        ctx.mes("[Erundek]")?;
-        ctx.mes(format!("Would you like to spend ^FF0000{WEAPON_BADGE_COST} {badge_name}^000000 and receive a ^3131FF{name}{label}^000000?"))?;
+    let categories: Vec<&str> = WEAPON_CATEGORIES.iter().map(|category| category.0).collect();
+    let (_, description, weapons) = WEAPON_CATEGORIES[ctx.menu(&categories)?];
+    ctx.mes_as(EXCHANGER, &format!("The following items are available in the ^3131FF{description}^000000 category."))?;
+    ctx.next()?;
+    let mut options = Vec::with_capacity(weapons.len());
+    for (item, badge) in weapons {
+        options.push(format!("{}{}", items.name(*item)?, badge_label(*badge)));
+    }
+    let (item, badge) = weapons[ctx.menu(&options)?];
+    let name = items.name(item)?;
+    let badge_name = items.name(badge)?;
+    let label = badge_label(badge);
+    ctx.mes_as(EXCHANGER, &format!("You chose ^3131FF{name}{label}^000000.\nYou can exchange for this item with ^FF0000{WEAPON_BADGE_COST} {badge_name}^000000.\nWould you like to exchange?"))?;
+    ctx.next()?;
+    if ctx.menu(&["Do not exchange", "Exchange"])? == 1 {
+        ctx.mes_as(EXCHANGER, &format!("Would you like to spend ^FF0000{WEAPON_BADGE_COST} {badge_name}^000000 and receive a ^3131FF{name}{label}^000000?"))?;
         ctx.next()?;
-        ctx.mes("[Erundek]")?;
-        ctx.mes("Remember, Battleground Reward Items are ^FF0000Character Bound^000000. Are you sure you want this item?")?;
+        ctx.mes_as(EXCHANGER, "Remember, Battleground Reward Items are ^FF0000Character Bound^000000. Are you sure you want this item?")?;
         ctx.next()?;
-        if ctx.select(&menu(&["Yes", "No"]))? == 0 {
-            ctx.mes("[Erundek]")?;
-            if number(ctx, Function::CountItem, vec![badge.into()])? >= WEAPON_BADGE_COST {
-                ctx.mes("Thank you for exchanging.")?;
-                ctx.call(Function::DelItem, vec![badge.into(), WEAPON_BADGE_COST.into()])?;
-                ctx.call(Function::GetItem, vec![item.into(), 1.into()])?;
-            } else {
-                ctx.mes("I'm sorry, but you don't have enough badges to exchange.")?;
-            }
+        if ctx.menu(&["Yes", "No"])? == 0 {
+            ctx.mes(&format!("[{EXCHANGER}]"))?;
+            trade(ctx, item, badge, WEAPON_BADGE_COST, "I'm sorry, but you don't have enough badges to exchange.")?;
             return ctx.close();
         }
     }
-    ctx.mes("[Erundek]")?;
-    ctx.mes("Do you need more time to check the items?")?;
+    ctx.mes_as(EXCHANGER, "Do you need more time to check the items?")?;
     ctx.close()
 }
 
-fn exchange_priced_item(ctx: &Context, item: i32, cost: i32, note: Option<&str>) -> Result<(), String> {
-    let name = item_name(ctx, item)?;
-    let bravery = item_name(ctx, BRAVERY_BADGE)?;
-    let valor = item_name(ctx, VALOR_BADGE)?;
-    ctx.mes("[Erundek]")?;
-    ctx.mes(format!("You chose ^3131FF{name}^000000."))?;
+fn exchange_priced_item(ctx: &Ctx, item: i32, cost: i32, note: Option<&str>) -> Script {
+    let items = ctx.items();
+    let name = items.name(item)?;
+    let bravery = items.name(BRAVERY_BADGE)?;
+    let valor = items.name(VALOR_BADGE)?;
+    ctx.mes_as(EXCHANGER, &format!("You chose ^3131FF{name}^000000."))?;
     if let Some(note) = note {
         ctx.mes(note)?;
     }
-    ctx.mes(format!("You can exchange for this item with ^FF0000{cost} {bravery} or {cost} {valor}^000000.\nWould you like to exchange?"))?;
+    ctx.mes(&format!("You can exchange for this item with ^FF0000{cost} {bravery} or {cost} {valor}^000000.\nWould you like to exchange?"))?;
     ctx.next()?;
-    if ctx.select(&menu(&["Do not exchange", "Exchange"]))? == 0 {
-        ctx.mes("[Erundek]")?;
-        ctx.mes("Do you need more time to check the items?")?;
+    if ctx.menu(&["Do not exchange", "Exchange"])? == 0 {
+        ctx.mes_as(EXCHANGER, "Do you need more time to check the items?")?;
         return ctx.close();
     }
-    ctx.mes("[Erundek]")?;
-    ctx.mes(format!("Which Badge do you want to exchange?\nYou need ^3131FF{cost} Badges^000000 to exchange."))?;
+    ctx.mes_as(EXCHANGER, &format!("Which Badge do you want to exchange?\nYou need ^3131FF{cost} Badges^000000 to exchange."))?;
     ctx.next()?;
-    ctx.mes("[Erundek]")?;
-    ctx.mes("Remember, Battleground Reward Items are ^FF0000Character Bound^000000. Are you sure you want this item?")?;
+    ctx.mes_as(EXCHANGER, "Remember, Battleground Reward Items are ^FF0000Character Bound^000000. Are you sure you want this item?")?;
     ctx.next()?;
-    let choice = ctx.select(&menu(&["Bravery Badge", "Valor Badge", "Cancel"]))?;
-    ctx.mes("[Erundek]")?;
+    let choice = ctx.menu(&["Bravery Badge", "Valor Badge", "Cancel"])?;
+    ctx.mes(&format!("[{EXCHANGER}]"))?;
     if choice == 2 {
         ctx.mes("You cancelled the exchange.")?;
         return ctx.close();
     }
     let badge = if choice == 0 { BRAVERY_BADGE } else { VALOR_BADGE };
-    if number(ctx, Function::CountItem, vec![badge.into()])? >= cost {
-        ctx.mes("Thank you for exchanging.")?;
-        ctx.call(Function::DelItem, vec![badge.into(), cost.into()])?;
-        ctx.call(Function::GetItem, vec![item.into(), 1.into()])?;
-    } else {
-        ctx.mes(format!("You do not have enough {}s.", item_name(ctx, badge)?))?;
-    }
+    let too_few = format!("You do not have enough {}s.", items.name(badge)?);
+    trade(ctx, item, badge, cost, &too_few)?;
     ctx.close()
 }
 
-fn exchange_listed(ctx: &Context, heading: &str, items: &[(i32, i32)]) -> Result<(), String> {
-    ctx.mes("[Erundek]")?;
-    ctx.mes(heading)?;
-    ctx.next()?;
+/// Offers the items of a list, each for its price in either badge.
+fn exchange_listed(ctx: &Ctx, items: &[(i32, i32)]) -> Script {
     let mut options = Vec::with_capacity(items.len());
     for (item, _) in items {
-        options.push(item_name(ctx, *item)?);
+        options.push(ctx.items().name(*item)?);
     }
-    let (item, cost) = items[ctx.select(&options)?];
+    let (item, cost) = items[ctx.menu(&options)?];
     exchange_priced_item(ctx, item, cost, None)
 }
 
-fn exchange_armor(ctx: &Context) -> Result<(), String> {
-    ctx.mes("[Erundek]")?;
-    ctx.mes("You chose ^3131FFArmor^000000.\nThe following armors are available for exchange with the battlefield badges.")?;
+fn exchange_armor(ctx: &Ctx) -> Script {
+    ctx.mes_as(EXCHANGER, "You chose ^3131FFArmor^000000.\nThe following armors are available for exchange with the battlefield badges.")?;
     ctx.next()?;
-    let items: &[(i32, i32)] = if ctx.select(&menu(&["Garments / Shoes", "Armor"]))? == 0 { &GARMENTS } else { &ARMORS };
-    let mut options = Vec::with_capacity(items.len());
-    for (item, _) in items {
-        options.push(item_name(ctx, *item)?);
-    }
-    let (item, cost) = items[ctx.select(&options)?];
-    exchange_priced_item(ctx, item, cost, None)
+    let items: &[(i32, i32)] = if ctx.menu(&["Garments / Shoes", "Armor"])? == 0 { &GARMENTS } else { &ARMORS };
+    exchange_listed(ctx, items)
 }
 
-fn exchange_accessory(ctx: &Context) -> Result<(), String> {
-    ctx.mes("[Erundek]")?;
-    ctx.mes("You chose ^3131FFAccessory^000000.\nYou can exchange the Medal of Honors with your Badges according to the job classes, as follows:")?;
+fn exchange_accessory(ctx: &Ctx) -> Script {
+    ctx.mes_as(EXCHANGER, "You chose ^3131FFAccessory^000000.\nYou can exchange the Medal of Honors with your Badges according to the job classes, as follows:")?;
     ctx.next()?;
-    let jobs: Vec<String> = ACCESSORY_JOBS.iter().map(|job| job.0.to_string()).collect();
-    let (_, item, note) = ACCESSORY_JOBS[ctx.select(&jobs)?];
+    let jobs: Vec<&str> = ACCESSORY_JOBS.iter().map(|job| job.0).collect();
+    let (_, item, note) = ACCESSORY_JOBS[ctx.menu(&jobs)?];
     exchange_priced_item(ctx, item, ACCESSORY_COST, Some(note))
 }
 
-fn exchanger(ctx: &Context) -> Result<(), String> {
-    ctx.mes("[Erundek]")?;
-    ctx.mes("Do you have the battlefield badges?\nI can exchange Bravery Badges and Valor Badges for reward items.")?;
+fn exchange_consumable(ctx: &Ctx) -> Script {
+    ctx.mes_as(EXCHANGER, "You chose ^3131FFConsumable^000000.\nThe following consumable items are available for exchange with the battlefield badges:")?;
     ctx.next()?;
-    if ctx.select(&menu(&["Exchange Badges", "Check the Catalog"]))? == 1 {
-        ctx.mes("[Erundek]")?;
-        ctx.mes("We have many items, so please take a look and purchase deliberately. Every exchange menu lists the items together with their prices.")?;
+    exchange_listed(ctx, &CONSUMABLES)
+}
+
+fn exchanger(ctx: &Ctx) -> Script {
+    ctx.mes_as(EXCHANGER, "Do you have the battlefield badges?\nI can exchange Bravery Badges and Valor Badges for reward items.")?;
+    ctx.next()?;
+    if ctx.menu(&["Exchange Badges", "Check the Catalog"])? == 1 {
+        ctx.mes_as(EXCHANGER, "We have many items, so please take a look and purchase deliberately. Every exchange menu lists the items together with their prices.")?;
         return ctx.close();
     }
-    ctx.mes("[Erundek]")?;
-    ctx.mes("Which type of items would you like to exchange?\nTo check more information about the reward items, please use our ^3131FFCatalog^000000.")?;
+    ctx.mes_as(EXCHANGER, "Which type of items would you like to exchange?\nTo check more information about the reward items, please use our ^3131FFCatalog^000000.")?;
     ctx.next()?;
-    match ctx.select(&menu(&["Weapon", "Armor", "Accessory", "Consumable"]))? {
+    match ctx.menu(&["Weapon", "Armor", "Accessory", "Consumable"])? {
         0 => exchange_weapon(ctx),
         1 => exchange_armor(ctx),
         2 => exchange_accessory(ctx),
-        _ => exchange_listed(ctx, "You chose ^3131FFConsumable^000000.\nThe following consumable items are available for exchange with the battlefield badges:", &CONSUMABLES),
+        _ => exchange_consumable(ctx),
     }
 }
 
-pub fn npc(ctx: &Context) -> Result<(), String> {
-    let args: Vec<Value> = arguments(ctx)?;
-    let role = args.first().ok_or("Battleground NPC needs a role")?.number_value()?;
+/// A battleground NPC outside the arenas. Its placement gives the role, then a recruiter's town code.
+pub fn npc(ctx: &Ctx) -> Script {
+    let arguments = ctx.arguments()?;
+    let role = arguments.first().ok_or("Battleground NPC needs a role")?.number()?;
     match role {
-        ROLE_RECRUITER => recruiter(ctx, args.get(1).ok_or("Recruiter needs a return code")?.number_value()?),
+        ROLE_RECRUITER => recruiter(ctx, arguments.get(1).ok_or("Recruiter needs a return code")?.number()?),
         ROLE_TELEPORTER => teleporter(ctx),
         ROLE_PRINCE => noble(ctx, &PRINCE_CROIX),
         ROLE_GENERAL => noble(ctx, &GENERAL_GUILLAUME),
         ROLE_EXCHANGER => exchanger(ctx),
         ROLE_DECORATION => Ok(()),
-        _ => Err(format!("Unknown battleground NPC role {role}")),
+        _ => Err(Stop::Error(format!("Unknown battleground NPC role {role}"))),
     }
 }

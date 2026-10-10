@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Generates lib/script-sdk-2/src/constants.rs from the server's own script constant values.
 
-The names are the constants the generated scripts look up at run time (`constant(ctx, "JOB_NOVICE")`).
+The names are the constants the scripts look up at run time (`ctx.constant("JOB_NOVICE")`) or name directly
+(`constants::JOB_NOVICE`).
 Values come from the server: a unit test in `server/src/tests/script_constant_export_test.rs` resolves
 each name through the same lookup the game uses, so the typed constants cannot drift from the server.
 Names the server does not resolve are left out and stay on the run-time `ctx.constant` path.
@@ -19,14 +20,20 @@ ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
 OUTPUT = ROOT / "lib/script-sdk-2/src/constants.rs"
 EXPORT_TEST = "export_script_constant_values"
-NAME_PATTERN = re.compile(r'constant\(ctx, "([A-Za-z0-9_]+)"\)|\.constant\("([A-Za-z0-9_]+)"\)')
+NAME_PATTERN = re.compile(r'\.constant\("([A-Za-z0-9_]+)"\)|constants::([A-Za-z0-9_]*[A-Za-z0-9])\b(?!\*)')
+IMPORT_PATTERN = re.compile(r"constants::\{([^}]*)\}")
 
 
 def collect_names() -> list[str]:
     names = set()
-    for path in SCRIPTS.rglob("*.rs"):
-        for match in NAME_PATTERN.finditer(path.read_text(encoding="utf-8", errors="replace")):
+    sources = [path for path in SCRIPTS.rglob("*.rs") if "target" not in path.relative_to(SCRIPTS).parts]
+    sources += [path for path in OUTPUT.parent.rglob("*.rs") if path != OUTPUT]
+    for path in sources:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for match in NAME_PATTERN.finditer(text):
             names.add(match.group(1) or match.group(2))
+        for match in IMPORT_PATTERN.finditer(text):
+            names.update(name.strip() for name in match.group(1).split(",") if name.strip())
     return sorted(names)
 
 

@@ -1,5 +1,4 @@
 //! NPCs and events that run on server-side systems: the warper, job masters, castles, weddings and battlegrounds.
-//! They use the raw `script_sdk::Context`; the adapters below put them on the named ABI.
 
 mod battleground_arena;
 mod battleground_kvm;
@@ -9,65 +8,28 @@ mod castle_npcs;
 mod npcs;
 mod wedding_npcs;
 
-use script_sdk::{Context, Function, Request, Value, Variable, VariableScope};
-use script_sdk_2::{Ctx, Script, Stop};
+use script_sdk_2::{Ctx, Script, VariableScope};
 
-fn adapt(result: Result<(), String>) -> Script {
-    result.map_err(Stop::Error)
-}
-
-macro_rules! npc {
-    ($name:ident => $path:path) => {
-        fn $name(_: &Ctx) -> Script {
-            adapt($path(&Context))
-        }
-    };
-}
-
+/// The event table entry of one `kind` of a battleground arena's events.
 macro_rules! event {
     ($name:ident => $path:path, $arena:literal, $kind:literal) => {
-        fn $name(_: &Ctx) -> Script {
-            adapt($path(&Context, $arena, $kind))
+        fn $name(ctx: &Ctx) -> Script {
+            $path(ctx, $arena, $kind)
         }
     };
 }
 
-fn shop(_: &Ctx) -> Script {
-    Context.call(Function::Shop, vec![]).map(|_| ()).map_err(Stop::Error)
+fn shop(ctx: &Ctx) -> Script {
+    ctx.npc().open_shop()
 }
 
 /// Counts the monsters a player summoned that died.
-fn summoned_mob_death(_: &Ctx) -> Script {
-    let Value::Array(arguments) = Context.request(Request::Arguments).map_err(Stop::Error)? else {
-        return Err(Stop::Error("Event arguments are invalid".into()));
-    };
-    if arguments.len() < 2 {
-        return Err(Stop::Error("Monster death event needs its runtime and class IDs".into()));
+fn summoned_mob_death(ctx: &Ctx) -> Script {
+    if ctx.arguments()?.len() < 2 {
+        return Err("Monster death event needs its runtime and class IDs".into());
     }
-    Context
-        .request(Request::VariablesIncrement(vec![Variable { scope: VariableScope::Character, name: "SummonedMobKills".into(), index: 0, value: 1.into() }]))
-        .map(|_| ())
-        .map_err(Stop::Error)
+    ctx.increment(&[(VariableScope::Character, "SummonedMobKills", 1)]).map(|_| ())
 }
-
-npc!(battleground_arena => battleground_arena::npc);
-npc!(battleground_kvm => battleground_kvm::npc);
-npc!(battleground_recruiter => battleground_npcs::npc);
-npc!(battleground_tierra => battleground_tierra::npc);
-npc!(breeder => npcs::breeder);
-npc!(castle_flag => castle_npcs::flag);
-npc!(castle_kafra => castle_npcs::kafra);
-npc!(castle_lever => castle_npcs::lever);
-npc!(castle_steward => castle_npcs::steward);
-npc!(counter => npcs::counter);
-npc!(job_master => npcs::job_master);
-npc!(mount_master => npcs::mount_master);
-npc!(stylist => npcs::stylist);
-npc!(variables => npcs::variables);
-npc!(warper => npcs::warper);
-npc!(wedding_bishop => wedding_npcs::bishop);
-npc!(wedding_divorce => wedding_npcs::divorce);
-npc!(wedding_staff => wedding_npcs::staff);
 
 event!(arena_0_0 => battleground_arena::event, 0, 0);
 event!(arena_0_1 => battleground_arena::event, 0, 1);
@@ -160,25 +122,25 @@ event!(tierra_0_63 => battleground_tierra::event, 0, 63);
 
 script_sdk_2::script_module! {
     npcs {
-        "battleground_arena" => battleground_arena,
-        "battleground_kvm" => battleground_kvm,
-        "battleground_recruiter" => battleground_recruiter,
-        "battleground_tierra" => battleground_tierra,
-        "breeder" => breeder,
-        "castle_flag" => castle_flag,
-        "castle_kafra" => castle_kafra,
-        "castle_lever" => castle_lever,
-        "castle_steward" => castle_steward,
-        "counter" => counter,
-        "job_master" => job_master,
-        "mount_master" => mount_master,
+        "battleground_arena" => battleground_arena::npc,
+        "battleground_kvm" => battleground_kvm::npc,
+        "battleground_recruiter" => battleground_npcs::npc,
+        "battleground_tierra" => battleground_tierra::npc,
+        "breeder" => npcs::breeder,
+        "castle_flag" => castle_npcs::flag,
+        "castle_kafra" => castle_npcs::kafra,
+        "castle_lever" => castle_npcs::lever,
+        "castle_steward" => castle_npcs::steward,
+        "counter" => npcs::counter,
+        "job_master" => npcs::job_master,
+        "mount_master" => npcs::mount_master,
         "shop" => shop,
-        "stylist" => stylist,
-        "variables" => variables,
-        "warper" => warper,
-        "wedding_bishop" => wedding_bishop,
-        "wedding_divorce" => wedding_divorce,
-        "wedding_staff" => wedding_staff,
+        "stylist" => npcs::stylist,
+        "variables" => npcs::variables,
+        "warper" => npcs::warper,
+        "wedding_bishop" => wedding_npcs::bishop,
+        "wedding_divorce" => wedding_npcs::divorce,
+        "wedding_staff" => wedding_npcs::staff,
     }
     events {
         "arena_0_0" => arena_0_0,

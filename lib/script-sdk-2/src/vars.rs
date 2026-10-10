@@ -11,6 +11,20 @@ impl<'a> Ctx<'a> {
     pub fn var<'c>(&'c self, name: &'c str) -> Var<'c, 'a> {
         Var { ctx: self, name }
     }
+
+    /// Adds each `(scope, name, amount)` to its numeric variable in one host request and returns the new values. The
+    /// host applies the whole batch at once, so another script never sees only part of it.
+    pub fn increment(&self, counters: &[(VariableScope, &str, i32)]) -> Result<Vec<i32>, Stop> {
+        let variables = counters
+            .iter()
+            .map(|(scope, name, amount)| Variable { scope: *scope, name: (*name).into(), index: 0, value: Value::Number(*amount) })
+            .collect();
+        let values = self.request(Request::VariablesIncrement(variables))?.into_array().unwrap_or_default();
+        if values.len() != counters.len() {
+            return Err(Stop::from("Invalid counters"));
+        }
+        values.iter().map(Val::number).collect()
+    }
 }
 
 /// A script variable, read and written through the host.
@@ -63,6 +77,23 @@ impl Var<'_, '_> {
                 value,
             }]))
             .map(|_| ())
+    }
+
+    /// Writes `values` to elements `0`, `1`, ... of an array variable in one request, as rathena's `setarray`.
+    pub fn set_array<T: Into<Val>>(&self, values: impl IntoIterator<Item = T>) -> Script {
+        let (scope, name) = split_scope(self.name);
+        let variables = values
+            .into_iter()
+            .zip(0..)
+            .map(|(value, index)| Variable { scope, name: name.into(), index, value: coerce(self.name, value.into().into_value()) })
+            .collect();
+        self.ctx.request(Request::VariablesWrite(variables)).map(|_| ())
+    }
+
+    /// Adds `amount` to a numeric variable on the host and returns its new value.
+    pub fn add(&self, amount: i32) -> Result<i32, Stop> {
+        let (scope, name) = split_scope(self.name);
+        Ok(self.ctx.increment(&[(scope, name, amount)])?[0])
     }
 }
 
@@ -142,6 +173,28 @@ mod tests {
                 },
             ]
         );
+    }
+
+    #[test]
+    fn set_array_writes_every_element_in_one_request() {
+        let transport = MockTransport::silent();
+        Ctx::new(&transport).var("$list$").set_array([1, 2]).unwrap();
+        let element = |index, value: &str| Variable { scope: VariableScope::Server, name: "list$".into(), index, value: Value::String(value.into()) };
+        assert_eq!(transport.requests(), vec![Request::VariablesWrite(vec![element(0, "1"), element(1, "2")])]);
+    }
+
+    #[test]
+    fn add_returns_the_new_value() {
+        let transport = MockTransport::new(|_| Ok(Value::Array(vec![Value::Number(8)])));
+        assert_eq!(Ctx::new(&transport).var("@kills").add(1), Ok(8));
+        let counter = Variable { scope: VariableScope::CharacterTemporary, name: "kills".into(), index: 0, value: Value::Number(1) };
+        assert_eq!(transport.requests(), vec![Request::VariablesIncrement(vec![counter])]);
+    }
+
+    #[test]
+    fn increment_rejects_a_reply_of_the_wrong_length() {
+        let transport = MockTransport::new(|_| Ok(Value::Array(vec![])));
+        assert!(Ctx::new(&transport).increment(&[(VariableScope::Npc, "visits", 1)]).is_err());
     }
 
     #[test]

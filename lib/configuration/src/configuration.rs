@@ -85,6 +85,8 @@ impl Default for BotsConfig {
 #[serde(default)]
 pub struct ScriptingConfig {
     /// Script modules by name. NPC and event manifests route to them; `items` and `pets` serve the item and pet scripts.
+    /// Entries in `config.json` replace the path of a module, and a module they leave out keeps its default path.
+    #[serde(deserialize_with = "modules_over_defaults")]
     pub modules: BTreeMap<String, String>,
     pub npcs_path: String,
     pub items_path: String,
@@ -92,18 +94,23 @@ pub struct ScriptingConfig {
     pub map_flags_path: String,
 }
 
+fn default_modules() -> BTreeMap<String, String> {
+    ["items", "jobs", "misc", "pets", "quests", "systems", "towns"]
+        .into_iter()
+        .map(|name| (name.to_string(), format!("config/wasm/{name}.wasm")))
+        .collect()
+}
+
+fn modules_over_defaults<'de, D: Deserializer<'de>>(deserializer: D) -> Result<BTreeMap<String, String>, D::Error> {
+    let mut modules = default_modules();
+    modules.extend(BTreeMap::<String, String>::deserialize(deserializer)?);
+    Ok(modules)
+}
+
 impl Default for ScriptingConfig {
     fn default() -> Self {
         Self {
-            modules: BTreeMap::from([
-                ("items".into(), "config/wasm/items.wasm".into()),
-                ("jobs".into(), "config/wasm/jobs.wasm".into()),
-                ("misc".into(), "config/wasm/misc.wasm".into()),
-                ("pets".into(), "config/wasm/pets.wasm".into()),
-                ("quests".into(), "config/wasm/quests.wasm".into()),
-                ("systems".into(), "config/wasm/systems.wasm".into()),
-                ("towns".into(), "config/wasm/towns.wasm".into()),
-            ]),
+            modules: default_modules(),
             npcs_path: "config/wasm/npcs.json".into(),
             items_path: "config/wasm/items.json".into(),
             conversation_timeout_secs: 120,
@@ -1515,7 +1522,16 @@ impl Config {
 mod tests {
     use std::fs;
 
-    use crate::configuration::{ServerConfig, SkillsConfig};
+    use crate::configuration::{ScriptingConfig, ServerConfig, SkillsConfig};
+
+    #[test]
+    fn script_modules_left_out_of_the_config_keep_their_default_path() {
+        let config: ScriptingConfig = serde_json::from_str(r#"{"module_path": "config/wasm/game_scripts.wasm", "modules": {"towns": "custom/towns.wasm"}}"#).unwrap();
+        assert_eq!(config.modules["towns"], "custom/towns.wasm");
+        assert_eq!(config.modules["pets"], "config/wasm/pets.wasm");
+        assert_eq!(config.modules["systems"], "config/wasm/systems.wasm");
+        assert_eq!(config.modules.len(), 7);
+    }
 
     fn server_config(extra: &str) -> ServerConfig {
         let json = format!(

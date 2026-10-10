@@ -13,6 +13,12 @@ impl From<String> for Stop {
     }
 }
 
+impl From<&str> for Stop {
+    fn from(error: &str) -> Self {
+        Self::Error(error.into())
+    }
+}
+
 /// The result of a script. `Ok(())` and [`Stop::End`] both finish the script.
 pub type Script = Result<(), Stop>;
 

@@ -25,6 +25,7 @@ pub(crate) fn handles(function: Function) -> bool {
             | Function::MapWarp
             | Function::AreaWarp
             | Function::AreaPercentHeal
+            | Function::PercentHeal
             | Function::EnableNpc
             | Function::DisableNpc
             | Function::SetCell
@@ -259,6 +260,22 @@ impl Server {
                     }
                 }
                 Ok(Value::default())
+            }
+            // rathena kills the player at -100; there is no script-caused death yet, so a full loss leaves 1 HP
+            Function::PercentHeal => {
+                if context.char_id == 0 {
+                    return Err("percentheal requires an attached player".into());
+                }
+                let effect = ItemEffect::Heal { hp: number(0)?, sp: number(1)?, percentage: true, item_scaling: false, item_id: 0 };
+                state
+                    .with_character_taken(context.char_id, |state, character| {
+                        self.item_service().apply_effects(self, state, self.runtime(), character, vec![effect])?;
+                        if character.status.hp == 0 {
+                            self.character_service().update_hp_sp(character, 1, character.status.sp);
+                        }
+                        Ok(Value::default())
+                    })
+                    .ok_or("percentheal target character disconnected")?
             }
             Function::MapWarp | Function::AreaWarp | Function::AreaPercentHeal => {
                 let (source_map, source_instance) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);

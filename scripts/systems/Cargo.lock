@@ -6,7 +6,6 @@ version = 4
 name = "game-systems"
 version = "0.1.0"
 dependencies = [
- "script-sdk",
  "script-sdk-2",
  "serde",
  "serde_json",

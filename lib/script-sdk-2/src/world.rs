@@ -40,6 +40,11 @@ impl Ctx<'_> {
         self.call(Function::Announce, args![message, flag]).map(|_| ())
     }
 
+    /// [`announce`](Self::announce) in text colour `color`, written as rathena does, such as `"0xFFCE00"`.
+    pub fn announce_colored(&self, message: &str, flag: i32, color: &str) -> Script {
+        self.call(Function::Announce, args![message, flag, color]).map(|_| ())
+    }
+
     /// Shows or hides a named NPC on the map.
     pub fn set_npc_visible(&self, npc: &str, visible: bool) -> Script {
         let function = if visible { Function::EnableNpc } else { Function::DisableNpc };
@@ -131,6 +136,16 @@ impl Ctx<'_> {
         let mut arguments = args![map, x, y, name, class];
         arguments.extend(event.map(Val::from));
         self.call(Function::Guardian, arguments).map(|_| ())
+    }
+
+    /// Makes the script monsters of event `label` on `map` immune to damage, or lifts it.
+    pub fn set_mob_immunity(&self, map: &str, label: &str, immune: bool) -> Script {
+        self.call(Function::SetMobImmunity, args![map, label, immune]).map(|_| ())
+    }
+
+    /// The value of server battle setting `name`, such as `"max_hair_style"`, as rathena's `getbattleflag`.
+    pub fn battle_flag(&self, name: &str) -> Result<i32, Stop> {
+        self.call(Function::GetBattleFlag, args![name])?.number()
     }
 
     fn map_flag(&self, function: Function, map: &str, flag: i32, values: &[i32]) -> Script {

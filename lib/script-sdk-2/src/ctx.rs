@@ -31,4 +31,9 @@ impl<'a> Ctx<'a> {
     pub fn constant(&self, name: &str) -> Result<Val, Stop> {
         self.request(Request::Constant(name.into()))
     }
+
+    /// The values the NPC's placement passes to its script, or the ones of the event that started it.
+    pub fn arguments(&self) -> Result<Vec<Val>, Stop> {
+        self.request(Request::Arguments)?.into_array().ok_or_else(|| Stop::from("Script arguments are invalid"))
+    }
 }

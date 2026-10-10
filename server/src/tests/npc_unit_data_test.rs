@@ -415,8 +415,8 @@ fn compiled_wasm_npc_reads_and_writes_unit_data_through_the_real_host_and_map_lo
         (memory (export "memory") 1)
         (data (i32.const 0) "{}")
         (data (i32.const 256) "{}")
-        (func (export "script_abi") (result i32) i32.const 1)
-        (func (export "run_npc") (param i32) (result i32)
+        (func (export "script_abi") (result i32) i32.const 2)
+        (func (export "script_run") (result i32)
             i32.const 0 i32.const {} i32.const 4096 i32.const 4096 call $invoke drop
             i32.const 256 i32.const {} i32.const 4096 i32.const 4096 call $invoke drop i32.const 0))"#,
         escape(&write),
@@ -448,7 +448,8 @@ fn compiled_wasm_npc_reads_and_writes_unit_data_through_the_real_host_and_map_lo
     };
     let (host, result) = runtime.block_on(async {
         tokio::time::timeout(std::time::Duration::from_secs(10), async {
-            let execution = vm.execute(host, "run_npc", 0);
+            let entry = script_sdk::Entry::Npc("test".into());
+            let execution = vm.execute_named(host, &entry);
             tokio::pin!(execution);
             loop {
                 tokio::select! {

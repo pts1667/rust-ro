@@ -214,6 +214,7 @@ mod battleground_arena {
         async fn invoke(&mut self, request: Request) -> Reply {
             match request {
                 Request::Read(name) => Ok(self.variables.get(&name).cloned().unwrap_or_default()),
+                Request::VariableRead { scope, name, index: 0 } => Ok(self.variables.get(&prefixed(scope, &name)).cloned().unwrap_or_default()),
                 Request::Write { name, value } => {
                     self.variables.insert(name, value);
                     Ok(Value::default())
@@ -236,6 +237,20 @@ mod battleground_arena {
                 other => Err(format!("Unexpected request {other:?}")),
             }
         }
+    }
+
+    /// The name a scoped read of element 0 has when written by name, so both reach the same variable as on the server.
+    fn prefixed(scope: script_sdk::VariableScope, name: &str) -> String {
+        use script_sdk::VariableScope;
+        let prefix = match scope {
+            VariableScope::Character => "",
+            VariableScope::CharacterTemporary => "@",
+            VariableScope::Account => "#",
+            VariableScope::Server => "$",
+            VariableScope::ServerTemporary => "$@",
+            other => panic!("Unexpected scope {other:?}"),
+        };
+        format!("{prefix}{name}")
     }
 
     fn arena_host() -> ArenaHost {

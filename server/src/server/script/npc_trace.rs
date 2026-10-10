@@ -6,12 +6,13 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Mutex;
 
 use script_runtime::Host;
-use script_sdk::{Function, Reply, Request, Value};
+use script_sdk::{Function, Reply, Request, Value, VariableScope};
 
 use super::entries::{NAMED_BASE, resolve};
 use super::generated_npc_smoke::RandomHost;
 use super::vm::ScriptVm;
 use crate::server::boot::script_loader::ScriptLoader;
+use crate::server::service::item_effect_service::script_variable_name;
 use crate::server::service::script_service::ScriptService;
 
 const SEEDS: u64 = 3;
@@ -32,7 +33,10 @@ fn fnv(bytes: &[u8]) -> u64 {
 enum Step {
     Say(String),
     Call(Function, Vec<Value>),
-    Write(String, Value),
+    /// A status the host updates when a script writes it by name: `Zeny` or `Hp`.
+    Set(String, Value),
+    Write(VariableScope, String, u32, Value),
+    Increment(VariableScope, String, u32, Value),
     Error(String),
 }
 
@@ -45,18 +49,38 @@ struct Trace {
 
 struct TraceHost {
     seed: u64,
+    arguments: Vec<Value>,
     occurrences: HashMap<String, u64>,
     steps: Vec<Step>,
+}
+
+/// The host reads a prefixed name the same way as a scoped read of its first element, so both shapes trace alike. Writes
+/// are recorded the same way for the same reason.
+fn canonical(request: Request) -> Request {
+    match request {
+        Request::Read(name) => match script_variable_name(&name) {
+            (VariableScope::Character, _) => Request::Read(name),
+            (scope, name) => Request::VariableRead { scope, name, index: 0 },
+        },
+        request => request,
+    }
 }
 
 #[async_trait::async_trait]
 impl Host for TraceHost {
     async fn invoke(&mut self, request: Request) -> Reply {
+        let request = canonical(request);
         match &request {
+            Request::Arguments => return Ok(Value::Array(self.arguments.clone())),
             Request::Call { function: Function::Mes, arguments } => self.steps.push(Step::Say(arguments.iter().map(Value::text).collect::<Vec<_>>().join("\n"))),
             Request::Call { function, arguments } => self.steps.push(Step::Call(function.clone(), arguments.clone())),
-            Request::Write { name, value } => self.steps.push(Step::Write(name.clone(), value.clone())),
-            Request::VariablesWrite(variables) => self.steps.extend(variables.iter().map(|variable| Step::Write(variable.name.clone(), variable.value.clone()))),
+            Request::Write { name, value } if name == "Zeny" || name == "Hp" => self.steps.push(Step::Set(name.clone(), value.clone())),
+            Request::Write { name, value } => {
+                let (scope, name) = script_variable_name(name);
+                self.steps.push(Step::Write(scope, name, 0, value.clone()));
+            }
+            Request::VariablesWrite(variables) => self.steps.extend(variables.iter().map(|variable| Step::Write(variable.scope, variable.name.clone(), variable.index, variable.value.clone()))),
+            Request::VariablesIncrement(variables) => self.steps.extend(variables.iter().map(|variable| Step::Increment(variable.scope, variable.name.clone(), variable.index, variable.value.clone()))),
             Request::ReportError(error) => self.steps.push(Step::Error(error.clone())),
             _ => {}
         }
@@ -91,8 +115,8 @@ fn dialogues(steps: Vec<Step>) -> Vec<Step> {
     merged
 }
 
-fn trace(vm: &ScriptVm, handle: u32, seed: u64) -> Trace {
-    let host = TraceHost { seed, occurrences: HashMap::new(), steps: vec![] };
+fn trace(vm: &ScriptVm, handle: u32, arguments: &[Value], seed: u64) -> Trace {
+    let host = TraceHost { seed, arguments: arguments.to_vec(), occurrences: HashMap::new(), steps: vec![] };
     let (host, result) = futures::executor::block_on(vm.run(host, handle));
     let mut steps = dialogues(host.steps);
     let result = match result.err() {
@@ -106,14 +130,33 @@ fn trace(vm: &ScriptVm, handle: u32, seed: u64) -> Trace {
     Trace { steps, result }
 }
 
-/// One digest per script and kind of entry over every seed, keyed by the script that runs, so NPCs placed from one template share it.
+/// The key of a script run: the script, plus the placement when its arguments make each placement run differently.
+fn key(kind: &str, handle: u32, placement: Option<&str>) -> String {
+    assert!(handle >= NAMED_BASE, "handle {handle} is not routed to a named module");
+    let script = resolve(handle).unwrap();
+    let key = format!("{kind}:{}:{:?}", script.module, script.entry);
+    placement.map_or(key.clone(), |placement| format!("{key}:{placement}"))
+}
+
+/// One digest per script and kind of entry over every seed. NPCs placed from one template share it, unless the placement
+/// gives the script arguments.
 fn digests() -> BTreeMap<String, String> {
     let wasm = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm");
     let npcs = ScriptLoader::load_scripts(wasm.join("npcs.json").to_str().unwrap()).unwrap();
     let events: serde_json::Value = serde_json::from_slice(&std::fs::read(wasm.join("events.json")).unwrap()).unwrap();
-    let mut handles: BTreeMap<u32, &str> = npcs.values().flatten().map(|npc| (npc.entry_id, "npc")).collect();
-    handles.extend(events.as_object().unwrap().keys().map(|label| (ScriptService::event_entry(label).unwrap(), "event")));
-    let handles: Vec<(u32, &str)> = handles.into_iter().collect();
+    let mut runs: BTreeMap<String, (u32, Vec<Value>)> = npcs
+        .values()
+        .flatten()
+        .map(|npc| {
+            let placement = (!npc.constructor_args.is_empty()).then_some(npc.name.as_str());
+            (key("npc", npc.entry_id, placement), (npc.entry_id, npc.constructor_args.clone()))
+        })
+        .collect();
+    runs.extend(events.as_object().unwrap().keys().map(|label| {
+        let handle = ScriptService::event_entry(label).unwrap();
+        (key("event", handle, None), (handle, vec![]))
+    }));
+    let runs: Vec<(String, (u32, Vec<Value>))> = runs.into_iter().collect();
 
     let vm = crate::tests::common::test_npc_vm();
     let next = AtomicUsize::new(0);
@@ -121,11 +164,9 @@ fn digests() -> BTreeMap<String, String> {
     std::thread::scope(|scope| {
         for _ in 0..std::thread::available_parallelism().map_or(1, |count| count.get()) {
             scope.spawn(|| {
-                while let Some(&(handle, kind)) = handles.get(next.fetch_add(1, Ordering::Relaxed)) {
-                    assert!(handle >= NAMED_BASE, "handle {handle} is not routed to a named module");
-                    let script = resolve(handle).unwrap();
-                    let traces: String = (0..SEEDS).map(|seed| format!("{:?}", trace(&vm, handle, seed))).collect();
-                    digests.lock().unwrap().insert(format!("{kind}:{}:{:?}", script.module, script.entry), format!("{:016x}", fnv(traces.as_bytes())));
+                while let Some((key, (handle, arguments))) = runs.get(next.fetch_add(1, Ordering::Relaxed)) {
+                    let traces: String = (0..SEEDS).map(|seed| format!("{:?}", trace(&vm, *handle, arguments, seed))).collect();
+                    digests.lock().unwrap().insert(key.clone(), format!("{:016x}", fnv(traces.as_bytes())));
                 }
             });
         }
@@ -133,8 +174,8 @@ fn digests() -> BTreeMap<String, String> {
     digests.into_inner().unwrap()
 }
 
-/// The recorded traces are what the scripts did when the numeric module was retired. A script changed on purpose changes its
-/// digest: rerun with `UPDATE_TRACES=1` to record the new one.
+/// The recorded traces are what the scripts did when they were last recorded, starting from the retired numeric module. A
+/// script changed on purpose changes its digest: rerun with `UPDATE_TRACES=1` to record the new one.
 #[test]
 fn every_npc_and_event_still_does_what_the_snapshot_recorded() {
     let digests = digests();

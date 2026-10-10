@@ -31,6 +31,11 @@ impl Npc<'_, '_> {
     pub fn special_effect(&self, effect: i32) -> Script {
         self.ctx.call(Function::NpcSpecialEffect, args![effect]).map(|_| ())
     }
+
+    /// Opens the buy and sell window of the NPC's shop, stocked from its placement.
+    pub fn open_shop(&self) -> Script {
+        self.ctx.call(Function::Shop, args![]).map(|_| ())
+    }
 }
 
 impl Npc<'_, '_> {

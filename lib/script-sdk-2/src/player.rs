@@ -75,6 +75,11 @@ impl Player<'_, '_> {
         self.id_of(3)
     }
 
+    /// The battleground team of the attached player, `0` outside a battleground.
+    pub fn battleground_id(&self) -> Result<i32, Stop> {
+        self.id_of(4)
+    }
+
     fn id_of(&self, kind: i32) -> Result<i32, Stop> {
         self.ctx.call(script_sdk::Function::GetCharacterId, crate::args![kind])?.number()
     }
@@ -199,6 +204,58 @@ impl Player<'_, '_> {
     }
 }
 
+impl Player<'_, '_> {
+    /// One of the attached player's looks, such as `constants::LOOK_HAIR`, as rathena's `getlook`.
+    pub fn look(&self, look_type: i32) -> Result<i32, Stop> {
+        self.ctx.call(script_sdk::Function::GetLook, crate::args![look_type])?.number()
+    }
+
+    /// Shows `text` in the attached player's chat window, as rathena's `message`.
+    pub fn message(&self, text: &str) -> Script {
+        self.ctx.call(script_sdk::Function::Message, crate::args![text]).map(|_| ())
+    }
+
+    /// Restores `hp` and `sp` percent of the attached player's maximum. Negative values take them away.
+    pub fn percent_heal(&self, hp: i32, sp: i32) -> Script {
+        self.ctx.call(script_sdk::Function::PercentHeal, crate::args![hp, sp]).map(|_| ())
+    }
+
+    /// Opens the attached player's storage.
+    pub fn open_storage(&self) -> Script {
+        self.ctx.call(script_sdk::Function::OpenStorage, crate::args![]).map(|_| ())
+    }
+
+    /// Resets the attached player's levels, as rathena's `resetlvl`. Kind `1` is the reset of a rebirth.
+    pub fn reset_level(&self, kind: i32) -> Script {
+        self.ctx.call(script_sdk::Function::ResetLevel, crate::args![kind]).map(|_| ())
+    }
+}
+
+impl Player<'_, '_> {
+    /// Gives the attached player a cart, or takes it away.
+    pub fn set_cart(&self, on: bool) -> Script {
+        self.ctx.call(script_sdk::Function::SetCart, crate::args![on]).map(|_| ())
+    }
+
+    pub fn set_falcon(&self, on: bool) -> Script {
+        self.ctx.call(script_sdk::Function::SetFalcon, crate::args![on]).map(|_| ())
+    }
+
+    pub fn set_riding(&self, on: bool) -> Script {
+        self.ctx.call(script_sdk::Function::SetRiding, crate::args![on]).map(|_| ())
+    }
+
+    /// Marries the attached player to the online player named `partner`. Returns whether the marriage happened.
+    pub fn marry(&self, partner: &str) -> Result<bool, Stop> {
+        Ok(self.ctx.call(script_sdk::Function::Marriage, crate::args![partner])?.number()? == 1)
+    }
+
+    /// Ends the attached player's marriage.
+    pub fn divorce(&self) -> Script {
+        self.ctx.call(script_sdk::Function::Divorce, crate::args![]).map(|_| ())
+    }
+}
+
 /// How a granted skill is kept, as rathena's `skill` flag.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SkillGrant {
@@ -292,6 +349,22 @@ mod tests {
         let transport = MockTransport::silent();
         Ctx::new(&transport).player().grant_skill("NV_BASIC", 9, SkillGrant::KeptOnReset).unwrap();
         assert_eq!(transport.calls(Function::Skill)[0], vec![Value::new_string("NV_BASIC".into()), Value::new_number(9), Value::new_number(3)]);
+    }
+
+    #[test]
+    fn marry_succeeds_only_on_a_reply_of_one() {
+        let transport = MockTransport::new(|_| Ok(Value::Number(1)));
+        assert_eq!(Ctx::new(&transport).player().marry("Partner"), Ok(true));
+        let transport = MockTransport::new(|_| Ok(Value::Number(0)));
+        assert_eq!(Ctx::new(&transport).player().marry("Partner"), Ok(false));
+        assert_eq!(transport.calls(Function::Marriage)[0], vec![Value::new_string("Partner".into())]);
+    }
+
+    #[test]
+    fn mounts_send_the_flag_as_a_number() {
+        let transport = MockTransport::silent();
+        Ctx::new(&transport).player().set_falcon(false).unwrap();
+        assert_eq!(transport.calls(Function::SetFalcon)[0], vec![Value::new_number(0)]);
     }
 
     #[test]

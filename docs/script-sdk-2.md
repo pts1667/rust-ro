@@ -31,7 +31,8 @@ fn prontera_guard(ctx: &Ctx) -> Script {
 | `ctx.mes(text)` | One dialogue box. `\n` in `text` breaks lines. |
 | `ctx.mes_as(speaker, text)` | Same, with a `[speaker]` title line first. |
 | `ctx.next()` | Waits for the player to press next. |
-| `ctx.menu(&[..])` | Offers options and returns the 0-based index. Cancel is `Stop::Error`. |
+| `ctx.menu(&[..])` | Offers options (`&str` or `String`) and returns the 0-based index. Cancel is `Stop::Error`. |
+| `ctx.lines(args![..])` | One dialogue box, one argument per line, so no line needs `\n` or hides a trailing space. `lines_as(speaker, ..)` adds the title. |
 | `ctx.close()` | Closes the window and ends the script. |
 | `ctx.close_window()` | Closes the window and keeps running (rathena `close2`). |
 | `ctx.end()` | Ends the script without touching the window. |
@@ -63,7 +64,11 @@ Consecutive lines belong in one `mes` call, separated by `\n`. The host already 
 
 A trailing `$` makes a text variable. `ctx.var("name$").set(7)` stores the text `"7"`, and `ctx.var("level").set("12")` stores the number `12`.
 
-Array elements use `get_at(index)` and `set_at(index, value)`.
+Array elements use `get_at(index)` and `set_at(index, value)`. `set_array(values)` writes elements `0`, `1`, ... in one request, as rathena's `setarray`.
+
+`ctx.var(name).add(amount)` adds to a number on the host and returns the new value. `ctx.increment(&[(scope, name, amount), ..])` does the same for several variables in one request, which the host applies at once; it also reaches the NPC scope (`VariableScope::Npc`), which has no name prefix.
+
+`ctx.arguments()` returns the values the NPC's placement passes to its script (`constructor_args` in `npcs.json`), or the ones of the event that started it.
 
 ## Player and input
 
@@ -91,17 +96,21 @@ Actions are grouped by domain. Each group is a thin typed wrapper over one or mo
 
 - `ctx.items()`: `count(item)`, `give(item, amount)`, `take(item, amount)`, `is_equipped(item)`, `check_weight(&[(item, amount)])`, `name(item)`, `place(item, amount, map, x, y)` (rathena `makeitem`, dropped on the floor for everyone).
 - `ctx.quests()`: `start`, `complete`, `erase`, `change(old, new)`, `check(quest)`, `progress(quest)`.
-- `ctx.timers()`: `init`, `start`, `stop`, for the current NPC's timer, and `set_elapsed(ms, npc)` for the timer of `npc` (`None` for the current NPC).
-- `ctx.npc()`: `emotion(id)`, `special_effect(effect)`, `do_event("NPC::Label")`, `id(npc)` (`None` for the current NPC), `name()`, `visible_name()`, `hidden_name()`, `map_name()` for the current NPC, `variable(".name", npc, index)` and `set_variable(".name", npc, index, value)` for another NPC's variables.
+- `ctx.timers()`: `init(npc)`, `stop(npc)`, `restart(npc)` (stop, then init) and `set_elapsed(ms, npc)` for the timer of `npc` (`None` for the current NPC), and `start()` for the current NPC's timer.
+- `ctx.npc()`: `emotion(id)`, `special_effect(effect)`, `do_event("NPC::Label")`, `id(npc)` (`None` for the current NPC), `name()`, `visible_name()`, `hidden_name()`, `map_name()` for the current NPC, `variable(".name", npc, index)` and `set_variable(".name", npc, index, value)` for another NPC's variables, and `open_shop()` for the shop window its placement stocks.
+- `ctx.castle()`: `data(map, field)`, `set_data(map, field, value)` (rathena's `getcastledata` fields: `1` owner guild, `2` economy, `3` defense, `9` Kafra, `10` onwards the guardian slots) and `summon_guardian(map, slot)`.
+- `ctx.ea_class(job)` (`None` for the attached player's job), `ctx.ro_class(mask)` and `ctx.job_name(job)` convert between jobs and their `EAJ_*`/`EAJL_*` class masks.
+- `ctx.battle_flag(name)` reads a server battle setting, and `ctx.set_mob_immunity(map, label, immune)` makes the script monsters of an event immune to damage.
 - `ctx.fx()`: `cutin(image, position)`, `special_effect(effect)`, `sound_effect(file, kind)`, `sound_effect_all(file, kind, map, area)`.
 - `ctx.party()`: `is_leader(party_id)`, `name(party_id)`.
-- `ctx.player()` also has `char_id()`, `party_id()`, `guild_id()`, `account_id()` for the attached player, `skill_level(skill)`, and `give_experience(base, job)`.
+- `ctx.player()` also has `char_id()`, `party_id()`, `guild_id()`, `account_id()`, `battleground_id()` for the attached player, `skill_level(skill)`, and `give_experience(base, job)`.
+- `ctx.player()` also has `look(type)`, `message(text)` (chat window), `percent_heal(hp, sp)`, `open_storage()`, `reset_level(kind)`, `set_cart(on)`, `set_falcon(on)`, `set_riding(on)`, `marry(partner)` (whether it happened) and `divorce()`.
 - `ctx.guild()`: `name(guild)`, `master_name(guild)`, `is_master(guild)`, `skill_level(guild, skill)`, `experience(amount)`, `open_storage()`.
 - `ctx.instance()`: `create(name, mode)`, `enter(name, position)`, `warp_all(map, x, y, id, flags)`, `destroy(id)`, `announce(id, message)`, `npc_name(npc, id)`, `map_name(map, id)`, `id()`, `check_party(party, amount)`, `check_guild(guild, amount)`, `info(name, kind)`, `info_at(name, index)`, `live_info(kind, id)`, `list(map, mode)`, `var(name, id)`, `set_var(name, value, id)`. An `id` of `None` means the player's own instance. `enter_with(name, EnterOptions)` also picks the character and an explicit instance.
-- `ctx.battleground()`: `create(cemetery, events)`, `join(bg, char, destination)`, `leave(char)`, `desert(char)`, `destroy(bg)`, `warp(bg, spot)`, `set_cemetery(bg, x, y)`, `members(bg)`, `member_count(bg)`, `count_in_area(bg, map, area)`, `update_score(map, first, second)`, `reserve(map, ended)`, `unbook(map)`, `info(name, kind)`, `monster(bg, spot, name, class, event)`, `set_monster_team(mob, bg)`. A `char` of `0` means the attached player.
+- `ctx.battleground()`: `create(cemetery, events)`, `join(bg, char, destination)`, `leave(char)`, `desert(char)`, `destroy(bg)`, `warp(bg, spot)`, `set_cemetery(bg, x, y)`, `members(bg)`, `member_count(bg)`, `count_in_area(bg, map, area)`, `update_score(map, first, second)`, `reserve(map, ended)`, `unbook(map)`, `info(name, kind)`, `monster(bg, spot, name, class, event)`, `set_monster_team(mob, bg)`. A `char` of `0` in `join`, and of `None` in `leave` and `desert`, means the attached player.
 - `ctx.waiting_room()`: `open(title, limit, rules)`, `delete(npc)`, `kick(npc, name)`, `kick_all(npc)`, `enable_event(npc)`, `disable_event(npc)`, `state(kind, npc)`, `title(npc)`, `event(npc)`, `warp(map, x, y, count)`. `npc` of `None` means the current NPC. `title` and `event` return `None` when the NPC has no room.
 - `ctx.warp(map, x, y)`, `ctx.set_npc_visible(npc, visible)`.
-- `ctx.monster(map, x, y, name, class, amount, event)`, `ctx.area_monster(map, area, name, class, amount, event)`, `ctx.kill_monster(map, label)`, `ctx.announce(message, flag)`.
+- `ctx.monster(map, x, y, name, class, amount, event)`, `ctx.area_monster(map, area, name, class, amount, event)`, `ctx.kill_monster(map, label)`, `ctx.announce(message, flag)`, and `ctx.announce_colored(message, flag, "0xFFCE00")`.
 - `ctx.map_announce(map, message, flag, color)`, `ctx.view_point(action, x, y, number, color)`, `ctx.map_users(map)`, `ctx.mob_count(map, label)`, `ctx.time_string(format, limit)`.
 - `ctx.rand(max)` for `0..max - 1`, and `ctx.rand_range(min, max)` for both ends included, as rathena's `rand`.
 - `ctx.map_warp(source, destination)`, `ctx.area_warp(source, area, destination)`, `ctx.area_heal(map, area, hp, sp)` (percentages), `ctx.time_field(field)`, `ctx.time_tick(kind)`.
@@ -136,7 +145,7 @@ Some calls take a positional list of optional values. The wrappers fill any gap 
 
 `script_sdk_2::constants` holds the server's values for the constants scripts use, such as `constants::JOB_NOVICE` and `constants::BC_ALL`. Numeric constants are `i32`. A few names the server resolves to their own text (`EQI_*`, `SC_*`, `EF_*`, `DT_*`, `ITEMINFO_*`) are `&str`.
 
-The file is generated. After a server change to a constant, run `python tools/scripts-import/gen_sdk2_constants.py`, which reruns the server's own lookup and rewrites the file. `--check` fails instead of writing when the file is stale. The generator prints the names the server does not resolve; those stay on `ctx.constant(name)`.
+The file is generated from the names the scripts and the SDK use, as `ctx.constant("NAME")`, `constants::NAME` or `use ...::constants::{..}`. After a server change to a constant, or when a script starts naming a new one, run `python tools/scripts-import/gen_sdk2_constants.py`, which reruns the server's own lookup and rewrites the file. `--check` fails instead of writing when the file is stale. The generator prints the names the server does not resolve; those stay on `ctx.constant(name)`.
 
 ## Testing a script without a host
 
@@ -180,7 +189,8 @@ The item layer is `lib/script-sdk-2/src/item.rs`. Every item is in the items mod
 ## Not covered yet
 
 - `Function` variants that only an item script can use. The item script queues them, and the server applies them when the item is used. An NPC script that calls one gets `Unsupported game request`, so they have no wrapper here:
-  - `PercentHeal`, `ItemHeal`, `Heal`, `ItemSkill`, `SkillEffect`, `Produce`, `Cooking`.
+  - `ItemHeal`, `Heal`, `ItemSkill`, `SkillEffect`, `Produce`, `Cooking`.
+- `PercentHeal` in an NPC script does not kill: rathena's `percentheal -100` kills the player, the server leaves 1 HP because it has no script-caused death yet.
   - `GetRefine` and `RandomGroupItem`, which read the item being used.
 - Text fields of the waiting room state other than `title` and `event` (kind `5`), which the server leaves empty.
 

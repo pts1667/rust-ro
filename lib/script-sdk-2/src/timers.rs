@@ -17,16 +17,24 @@ pub struct Timers<'c, 'a> {
 }
 
 impl Timers<'_, '_> {
-    pub fn init(&self) -> Script {
-        self.ctx.call(Function::InitNpcTimer, vec![]).map(|_| ())
+    /// Resets the timer of `npc` (the current NPC when `None`) to zero and starts it.
+    pub fn init(&self, npc: Option<&str>) -> Script {
+        self.ctx.call(Function::InitNpcTimer, npc_arguments(npc)).map(|_| ())
     }
 
     pub fn start(&self) -> Script {
         self.ctx.call(Function::StartNpcTimer, vec![]).map(|_| ())
     }
 
-    pub fn stop(&self) -> Script {
-        self.ctx.call(Function::StopNpcTimer, vec![]).map(|_| ())
+    /// Stops the timer of `npc` (the current NPC when `None`).
+    pub fn stop(&self, npc: Option<&str>) -> Script {
+        self.ctx.call(Function::StopNpcTimer, npc_arguments(npc)).map(|_| ())
+    }
+
+    /// Stops the timer of `npc` and starts it again from zero.
+    pub fn restart(&self, npc: Option<&str>) -> Script {
+        self.stop(npc)?;
+        self.init(npc)
     }
 
     /// Sets the elapsed time of the timer of `npc` (the current NPC when `None`), in milliseconds.
@@ -35,6 +43,10 @@ impl Timers<'_, '_> {
         arguments.extend(npc.map(Val::from));
         self.ctx.call(Function::SetNpcTimer, arguments).map(|_| ())
     }
+}
+
+fn npc_arguments(npc: Option<&str>) -> Vec<Val> {
+    npc.map(|npc| args![npc]).unwrap_or_default()
 }
 
 #[cfg(test)]
@@ -53,5 +65,14 @@ mod tests {
         let calls = transport.calls(Function::SetNpcTimer);
         assert_eq!(calls[0], vec![Value::new_number(5000)]);
         assert_eq!(calls[1].len(), 2);
+    }
+
+    #[test]
+    fn restart_stops_then_inits_the_same_npc() {
+        let transport = MockTransport::silent();
+        Ctx::new(&transport).timers().restart(Some("Guard")).unwrap();
+        let guard = vec![Value::new_string("Guard".into())];
+        assert_eq!(transport.calls(Function::StopNpcTimer), vec![guard.clone()]);
+        assert_eq!(transport.calls(Function::InitNpcTimer), vec![guard]);
     }
 }
